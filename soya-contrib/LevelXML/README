@@ -1,0 +1,14 @@
+LevelXML
+--------
+
+Some python so you can store your levels as xml code. 
+
+LevelXML.py may be used to convert your xml into a .data file. ( kind of like a xml2soya.py )
+
+LevelReader.py actually does the work. You can import this module directly if you want to bypass the step of converting or if you wish to implement some sort of auto-conversion.
+
+have fun 
+dunk
+
+d1223m
+dunk@dunkfordyce.co.uk

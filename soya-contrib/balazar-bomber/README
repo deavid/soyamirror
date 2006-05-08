@@ -1,0 +1,32 @@
+Balazar Bomber Readme
+---------------------
+
+This is a small project with several aims:
+	
+	- write a small complete game with soya 
+	- discover "best practices" for moving between game states and other such tasks
+	- use as a test for a new widget set 
+	- use as a test for new network code
+	- blow up friends in a mad frenzy =] bomberman rocks!
+
+Running
+-------
+
+To run the game run 
+	$ python bomber.py
+
+To test the client/server lobby run 
+	$ python bomberserver.py
+and then in another term/dosbox whatever
+	$ python bomberclient.py
+
+Once in the client goto the lobby and type:
+	\connect localhost 8001 your_name
+others will be able to connect with 
+	\connect <your_ip/host_name> 8001 theyre_name
+
+	
+Contact
+-------
+
+Talk to d1223m or jovian in #slune on irc.freenode.org

@@ -1,0 +1,17 @@
+This is a simple example/demo of creating a pyrex module for your application/
+game that subclasses something from soya.
+
+files:
+  test.pyx      -      file containing all the pyrex code 
+  setup.py      -      distutils script for compiling the module 
+  testit.py     -      script to test our module
+
+running:
+compile the pyrex module: 
+  $ python setup.py build_ext --inplace
+
+run the test program: 
+  $ python testit.py
+
+contact: 
+dunk@dunkfordyce.co.uk d1223m on irc.freenode.net
