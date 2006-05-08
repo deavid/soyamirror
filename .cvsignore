@@ -1,0 +1,10 @@
+bug.pyx
+bug.c
+bug.h
+setup2.py
+setup3.py
+test*
+build*
+*.pyc
+*.pyo
+test_data

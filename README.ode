@@ -1,0 +1,19 @@
+This was the old README for building ODE woth Soya. You no longer need
+to do that manually; Soya's setup.py handle it automatically.
+
+
+
+To build ODE:
+
+cd ode-0.5
+make clean
+make configure
+make
+
+You do not need to do make install. In fact, please don't. You need to build
+ODE before building Soya.
+
+The ODE that's included with Soya is already set up to compile with single
+precision floats and trimesh enabled. The drawstuff library is disabled
+because it's useless to us and can only cause compile issues for people.
+

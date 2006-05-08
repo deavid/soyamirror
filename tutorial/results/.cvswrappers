@@ -1,0 +1,22 @@
+# Soya files
+*.data -k 'b'
+
+# Cal3D files
+*.cfg  -k 'o'
+*.cmf  -k 'b'
+*.crf  -k 'b'
+*.csf  -k 'b'
+*.caf  -k 'b'
+
+# Image files
+*.jpeg -k 'b'
+*.jpg  -k 'b'
+*.png  -k 'b'
+*.tga  -k 'b'
+*.gif  -k 'b'
+
+# Sound files
+*.wav  -k 'b'
+*.ogg  -k 'b'
+*.mp3  -k 'b'
+
