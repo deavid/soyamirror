@@ -20,7 +20,7 @@
 import os.path, sys, distutils.core
 
 distutils.core.setup(name         = "Cerealizer",
-                     version      = "0.1",
+                     version      = "0.2",
                      license      = "GPL",
                      description  = "A secure pickle-like module",
                      long_description = """A secure pickle-like module.

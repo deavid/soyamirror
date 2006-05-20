@@ -17,51 +17,52 @@
 
 from cerealizer import *
 
-s = dumps({"a" : 1})
-print s
-
-print loads(s)
-print
-print
-
+import time
+import psyco
+psyco.full()
 
 class O(object):
   def __init__(self):
     self.x = 1
-    self.self = self
-    self.l = [1, 2, "e"]
-    self.unic = u"abcdéf"
-    self.s = set([1, 2, 2])
-    self.none = None
-  #def __getstate__(self): return self.__dict__
-  #def __setstate__(self, state): self.__dict__ = state
+    self.s = "jiba"
+    self.o = None
 
-register_class(O)
+register(O)
+freeze_configuration()
 
-o = O()
-s = dumps(o)
-print s
-o2 = loads(s)
-print o2, o2.x, o2.self is o2, o2.l, o2.unic, o2.s
+l = []
+for i in range(2000):
+  o = O()
+  if l: o.o = l[-1]
+  l.append(o)
 
-print
-print
-
-o1 = (1, 2, 3)
-s = dumps(o1)
-print s
-r = loads(s)
-print r
-
-o1 = (1, (4, 5), 3)
-s = dumps(o1)
-print s
-r = loads(s)
-print r
-
-t = (1, 2)
-l = [t, (t, 3)]
+t = time.time()
 s = dumps(l)
-print s
-r = loads(s)
-print r
+print time.time() - t
+
+print len(s)
+
+t = time.time()
+l2 = loads(s)
+print time.time() - t
+
+print l2[0]
+print l2[0].x
+print l2[0].s
+print l2[1].o
+
+
+
+from cPickle import *
+
+t = time.time()
+s = dumps(l)
+print time.time() - t
+
+print len(s)
+
+t = time.time()
+l2 = loads(s)
+print time.time() - t
+
+
