@@ -29,21 +29,21 @@ Cerealizer can be considered as secure AS LONG AS YourClass.__new__, YourClass._
 and YourClass.__setstate__ are secure. These methods are the only one Cerealizer may call.
 For a higher security, Cerealizer maintains its own reference to these methods.
 
-Cerealizer doesn't aim at producing Human-readable files. About performance, Cerealizer is
+Cerealizer doesn't aim at producing Human-readable files. About performances, Cerealizer is
 really fast and, when powered by Psyco, it may even beat cPickle! Although Cerealizer is
 implemented in less than 300 lines of pure-Python code (which is another reason for Cerealizer
 to be secure, since less code means less bugs :-).
 
 Compared to Pickle (cPickle):
  - Cerealizer is secure
- - Cerealizer achieves similar performance (using Psyco)
+ - Cerealizer achieves similar performances (using Psyco)
  - Cerealizer requires you to declare the serializable classes
 
 Compared to Jelly (from TwistedMatrix):
  - Cerealizer is faster
  - Cerealizer generates smaller files
  - Cerealizer does a better job with object cycles, C-defined types and tuples (*)
- - Cerealizer files are not human readable
+ - Cerealizer files are not Human readable
 
 (*) Jelly handles them, but tuples and objects in a cycle are first created as _Tuple or
 _Dereference objects; this works for Python classes, but not with C-defined types which
