@@ -1085,15 +1085,15 @@ Use the Cerealizer serialization module for LOCAL and/or NETWORK serialization."
         
   Level .Handler = SavedInAPathHandler
   Player.Handler = SavedInAPathHandler
-  cerealizer.register_class(Mobile)
-  cerealizer.register_class(LocalController)
-  cerealizer.register_class(LocalDoer)
-  cerealizer.register_class(RemoteController)
-  cerealizer.register_class(RemoteDoer)
-  cerealizer.register_class(State)
-  cerealizer.register_class(Action)
-  cerealizer.register_class(Level)
-  cerealizer.register_class(Player)
+  cerealizer.register(Mobile)
+  cerealizer.register(LocalController)
+  cerealizer.register(LocalDoer)
+  cerealizer.register(RemoteController)
+  cerealizer.register(RemoteDoer)
+  cerealizer.register(State)
+  cerealizer.register(Action)
+  cerealizer.register(Level)
+  cerealizer.register(Player)
   
   global local_serializer, network_serializer
   if local  : local_serializer   = cerealizer

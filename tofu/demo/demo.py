@@ -455,13 +455,13 @@ tofu.enable_cerealizer(0, 1)
 # Registers our classes as safe for Cerealizer
 
 import cerealizer
-cerealizer.register_class(Action)
-cerealizer.register_class(State)
-cerealizer.register_class(Mobile)
-cerealizer.register_class(Bot)
-cerealizer.register_class(PlayerCharacter)
-cerealizer.register_class(Level)
-cerealizer.register_class(Player)
+cerealizer.register(Action)
+cerealizer.register(State)
+cerealizer.register(Mobile)
+cerealizer.register(Bot)
+cerealizer.register(PlayerCharacter)
+cerealizer.register(Level)
+cerealizer.register(Player)
 
 
 
@@ -482,19 +482,6 @@ cerealizer.register_class(Player)
 #   "demo.State",
 #   "demo.Player",
 #   )
-
-
-# To use Cerealizer:
-
-# tofu.enable_cerealizer(1, 1)
-# import cerealizer
-# cerealizer.register_class(Action)
-# cerealizer.register_class(State)
-# cerealizer.register_class(Mobile)
-# cerealizer.register_class(Bot)
-# cerealizer.register_class(PlayerCharacter)
-# cerealizer.register_class(Level)
-# cerealizer.register_class(Player)
 
 
 # To use Jelly:
