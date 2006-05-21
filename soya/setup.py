@@ -32,6 +32,7 @@ INCDIR = [
   "/usr/include/cal3d",
   "/usr/local/include/cal3d",
   "/sw/include", # For Mac OS X
+  "/home/cubicool/local/include"
   ]
 LIBDIR = [
   "ode-0.5/lib",
@@ -39,13 +40,14 @@ LIBDIR = [
   "/usr/local/lib",
   "/usr/X11R6/lib",
   "/sw/lib/", # For Mac OS X
+  "/home/cubicool/local/lib"
   ]
 
 
 import os, os.path, sys, glob, distutils.core, distutils.sysconfig
 from distutils.core import setup, Extension
 
-try:  
+try:
   from Pyrex.Distutils import build_ext
   HAVE_PYREX = 1
 except:
@@ -114,7 +116,7 @@ if HAVE_PYREX:
   soya_pyx_mtime=os.path.getmtime('_soya.pyx')
   for f in glob.glob('*.pyx'):
     if os.path.getmtime(f)>soya_pyx_mtime:
-      os.utime('_soya.pyx',None) 
+      os.utime('_soya.pyx',None)
       break
   
   KARGS = {
@@ -214,7 +216,7 @@ Soya is designed with game in mind. It includes heightmaps, particles systems, a
   packages     = ["soya", "soya.editor", "soya.pudding", "soya.pudding.ext", "soya.pudding.styles"],
   
   data_files   = [(os.path.join("soya", "data"),
-                   [os.path.join("data", file) for file in os.listdir("data") if (file != "CVS") and (file != ".arch-ids")]
+                   [os.path.join("data", file) for file in os.listdir("data") if (file != "CVS") and (file != ".arch-ids") and (file != ".svn")]
                    )],
   **KARGS)
 
