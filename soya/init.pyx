@@ -178,33 +178,29 @@ cdef void base_quit():
   cdef int i
   global JOYSTICKS, NB_JOYSTICK
  
-  import soya
-  if soya.inited == 1:
-    print "* Soya3D * Quit..."
+  print "* Soya3D * Quit..."
   
-    # renderer
-    #P3_list_dealloc(land_tri_recycler)
-    #free(NULL_packs)
-    # fx
-    if renderer.engine_option & FX_INITED: fx_quit()
-    # chunks
-    #for (i = 0; i < chunks->nb; i++)
-    #  P3_chunk_dealloc ((P3_chunk*) P3_list_get (chunks, i));
-    #P3_list_dealloc(chunks)
+  # renderer
+  #P3_list_dealloc(land_tri_recycler)
+  #free(NULL_packs)
+  # fx
+  if renderer.engine_option & FX_INITED: fx_quit()
+  # chunks
+  #for (i = 0; i < chunks->nb; i++)
+  #  P3_chunk_dealloc ((P3_chunk*) P3_list_get (chunks, i));
+  #P3_list_dealloc(chunks)
   
   
-    if SHADOW_DISPLAY_LIST != -1:
-      glDeleteLists(SHADOW_DISPLAY_LIST, 1)
-      chunk_dealloc(SHADOW_TESS_CHUNK)
-      gluDeleteTess(SHADOW_TESS)
-    
-    for i from 0 <= i < NB_JOYSTICK: SDL_JoystickClose(JOYSTICKS[i])
-    SDL_Quit()
+  if SHADOW_DISPLAY_LIST != -1:
+    glDeleteLists(SHADOW_DISPLAY_LIST, 1)
+    chunk_dealloc(SHADOW_TESS_CHUNK)
+    gluDeleteTess(SHADOW_TESS)
   
-    free(JOYSTICKS)
-    renderer.engine_option = renderer.engine_option & ~INITED
-
-    soya.inited = 0
+  for i from 0 <= i < NB_JOYSTICK: SDL_JoystickClose(JOYSTICKS[i])
+  SDL_Quit()
+  
+  free(JOYSTICKS)
+  renderer.engine_option = renderer.engine_option & ~INITED
 
 cdef void init_joysticks():
   cdef int i
