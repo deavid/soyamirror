@@ -173,6 +173,7 @@ Raise ValueError if the file is not found in soya.path."""
 Loads the object of this class with the given FILENAME attribute.
 Contrary to get, load ALWAYS returns a new object.
 Raise ValueError if the file is not found in soya.path."""
+    if ".." in filename: raise ValueError("Cannot have .. in filename (security reason)!")
     filename = filename.replace("/", os.sep)
     for p in path:
       file = os.path.join(p, klass.DIRNAME, filename + ".data")
@@ -274,6 +275,7 @@ Attributes are:
   palette = None
   
   def load(klass, filename):
+    if ".." in filename: raise ValueError("Cannot have .. in filename (security reason)!")
     filename = filename.replace("/", os.sep)
     for p in path:
       file = os.path.join(p, klass.DIRNAME, filename)
@@ -333,6 +335,7 @@ Attributes are:
   _alls = weakref.WeakValueDictionary()
   
   def load(klass, filename):
+    if ".." in filename: raise ValueError("Cannot have .. in filename (security reason)!")
     need_export, image_file, file = klass._check_export(filename + ".data", filename, (Image.DIRNAME, filename + ".png"), (Image.DIRNAME, filename + ".jpeg"))
     if need_export:
       image = Image.get(os.path.basename(image_file))
@@ -369,6 +372,7 @@ Shapes are used in conjunction with Volume."""
   _alls = weakref.WeakValueDictionary()
   
   def load(klass, filename):
+    if ".." in filename: raise ValueError("Cannot have .. in filename (security reason)!")
     need_export, world_file, file = klass._check_export(filename + ".data", filename, (World.DIRNAME, filename + ".data"), ("blender", filename.split("@")[0] + ".blend"), ("obj", filename + ".obj"), ("obj", filename + ".mtl"), ("3ds", filename + ".3ds"))
     if need_export:
       shape = World.get(filename).shapify()
@@ -482,6 +486,7 @@ Attributes are (see also Volume, CoordSyst and SavedInAPath for inherited attrib
   _alls = weakref.WeakValueDictionary()
   
   def load(klass, filename):
+    if ".." in filename: raise ValueError("Cannot have .. in filename (security reason)!")
     need_export, source_file, file = klass._check_export(filename + ".data", filename, ("blender", filename.split("@")[0] + ".blend"), ("obj", filename + ".obj"), ("obj", filename + ".mtl"), ("3ds", filename + ".3ds"))
     if need_export:
       if   need_export == "blender":
@@ -739,6 +744,7 @@ class Cal3dVolume(_soya._Cal3dVolume):
 
 class Cal3dShape(Shape, _soya._Cal3dShape):
   def load(klass, filename):
+    if ".." in filename: raise ValueError("Cannot have .. in filename (security reason)!")
     need_export, source_file, file = klass._check_export(os.path.join(filename, filename + ".cfg"), filename, ("blender", filename.split("@")[0] + ".blend"))
     if need_export:
       if need_export == "blender":

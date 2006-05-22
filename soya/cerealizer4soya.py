@@ -22,7 +22,7 @@ Import this module to make Soya's objects cerealizable.
 
 import sys
 import cerealizer
-import soya, soya.cursor, soya.laser, soya.ray
+import soya, soya.cursor, soya.laser, soya.ray, soya.spc_material
 _soya = sys.modules["soya._soya"]
 
 
@@ -86,21 +86,23 @@ cerealizer.register_class(soya.cursor.Cursor)
 cerealizer.register_class(soya.laser.Laser)
 cerealizer.register_class(soya.ray.Ray)
 cerealizer.register_class(soya.ray.HalfRay)
+cerealizer.register_class(soya.spc_material.ZoomingMaterial)
+cerealizer.register_class(soya.spc_material.MovingMaterial)
 
 cerealizer.register_class(_soya.TreeShapifier)
 cerealizer.register_class(_soya.SimpleShapifier)
-cerealizer.register_class(_soya.RaypickContext)
-cerealizer.register_class(_soya.CoordSyst)
+#cerealizer.register_class(_soya.RaypickContext)
+#cerealizer.register_class(_soya.CoordSyst)
 cerealizer.register_class(_soya.FlagFirework)
 cerealizer.register_class(_soya.Fountain)
 cerealizer.register_class(_soya.Smoke)
 cerealizer.register_class(_soya.CellShadingShapifier)
 cerealizer.register_class(_soya.Traveling)
-cerealizer.register_class(_soya.PythonCoordSyst)
+#cerealizer.register_class(_soya.PythonCoordSyst)
 cerealizer.register_class(_soya.FlagSubFire)
-cerealizer.register_class(_soya.Position)
-cerealizer.register_class(_soya.Shapifier)
-cerealizer.register_class(_soya._CObj)
+#cerealizer.register_class(_soya.Position)
+#cerealizer.register_class(_soya.Shapifier)
+#cerealizer.register_class(_soya._CObj)
 
 
 if __name__ == "__main__": # Testing stuff

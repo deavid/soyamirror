@@ -344,8 +344,11 @@ RESIZEABLE is true for a resizeable window."""
   dump_info()
   
 def quit():
-  base_quit()
-  quit_cal3d()
+  import soya
+  if soya.inited:
+    soya.inited = 0
+    base_quit()
+    quit_cal3d()
 
 def set_use_unicode(state):
   """when set process_event will return a 4 part tuple for a keydown event.
