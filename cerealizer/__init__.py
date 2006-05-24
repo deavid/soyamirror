@@ -118,11 +118,12 @@ same file, or a raw value (e.g. an integer).
  -    None             is saved by      'n'
 """
 
-__alls__ = ["load", "dump", "loads", "dumps"]
+__alls__ = ["load", "dump", "loads", "dumps", "freeze_configuration", "register"]
 VERSION = "0.2"
 
 import logging
 logger = logging.getLogger("cerealizer")
+logging.basicConfig(level=logging.INFO)
 
 from cStringIO import StringIO
 from new       import instance
@@ -397,13 +398,17 @@ have to write a custom Handler or a __getstate__ and __setstate__ pair)."""
   if not _configurable: raise StandardError("Cannot register new classes after freeze_configuration has been called!")
   if "\n" in classname: raise ValueError("CLASSNAME cannot have \\n (Cerealizer automatically add a trailing \\n for performance reason)!")
   handler = handler or ObjHandler(Class, classname)
-  if _HANDLERS_.has_key(Class            ): raise ValueError("Class %s has already been registred!" % Class)
+  if _HANDLERS_.has_key(Class): raise ValueError("Class %s has already been registred!" % Class)
   if not isinstance(handler, RefHandler):
     if _HANDLERS .has_key(handler.classname): raise ValueError("A class has already been registred under the name %s!" % handler.classname)
     _HANDLERS [handler.classname] = handler
-    logger.info("Registring class %s as %s" % (Class, handler.classname[:-1]))
+    if handler.__class__ is ObjHandler:
+      logger.info("Registring class %s as '%s'" % (Class, handler.classname[:-1]))
+    else:
+      logger.info("Registring class %s as '%s' (using %s)" % (Class, handler.classname[:-1], handler.__class__.__name__))
   else:
-    logger.info("Registring reference %s" % Class)
+    logger.info("Registring reference '%s'" % Class)
+    
   _HANDLERS_[Class] = handler
 
 register_class = register # For backward compatibility
