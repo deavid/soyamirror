@@ -15,20 +15,25 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-from cerealizer import *
+import cerealizer
+import twisted.spread.jelly, twisted.spread.banana
+import cPickle
+
+
 
 import time
 import psyco
 psyco.full()
 
-class O(object):
+class O(twisted.spread.jelly.Jellyable):
   def __init__(self):
     self.x = 1
     self.s = "jiba"
     self.o = None
+  
+cerealizer.register(O)
+cerealizer.freeze_configuration()
 
-register(O)
-freeze_configuration()
 
 l = []
 for i in range(2000):
@@ -36,33 +41,63 @@ for i in range(2000):
   if l: o.o = l[-1]
   l.append(o)
 
+print "cerealizer"
 t = time.time()
-s = dumps(l)
-print time.time() - t
+s = cerealizer.dumps(l)
+print "dumps in", time.time() - t, "s,",
 
-print len(s)
-
-t = time.time()
-l2 = loads(s)
-print time.time() - t
-
-print l2[0]
-print l2[0].x
-print l2[0].s
-print l2[1].o
-
-
-
-from cPickle import *
+print len(s), "bytes length"
 
 t = time.time()
-s = dumps(l)
-print time.time() - t
+l2 = cerealizer.loads(s)
+print "loads in", time.time() - t, "s"
 
-print len(s)
+
+
+print
+print "cPickle"
+t = time.time()
+s = cPickle.dumps(l)
+print "dumps in", time.time() - t, "s,",
+
+print len(s), "bytes length"
 
 t = time.time()
-l2 = loads(s)
-print time.time() - t
+l2 = cPickle.loads(s)
+print "loads in", time.time() - t, "s"
 
 
+print
+print "jelly + banana"
+t = time.time()
+s = twisted.spread.banana.encode(twisted.spread.jelly.jelly(l))
+print "dumps in", time.time() - t, "s",
+
+print len(s), "bytes length"
+
+t = time.time()
+l2 = twisted.spread.jelly.unjelly(twisted.spread.banana.decode(s))
+print "loads in", time.time() - t, "s"
+
+
+import twisted.spread.cBanana
+twisted.spread.banana.cBanana = twisted.spread.cBanana
+twisted.spread.cBanana.pyb1282int=twisted.spread.banana.b1282int
+twisted.spread.cBanana.pyint2b128=twisted.spread.banana.int2b128
+twisted.spread.banana._i = twisted.spread.banana.Canana()
+twisted.spread.banana._i.connectionMade()
+twisted.spread.banana._i._selectDialect("none")
+
+
+
+print
+print "jelly + cBanana"
+t = time.time()
+s = twisted.spread.banana.encode(twisted.spread.jelly.jelly(l))
+print "dumps in", time.time() - t, "s",
+
+print len(s), "bytes length"
+
+t = time.time()
+l2 = twisted.spread.jelly.unjelly(twisted.spread.banana.decode(s))
+print "loads in", time.time() - t, "s"
