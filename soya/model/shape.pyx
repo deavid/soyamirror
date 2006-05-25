@@ -531,7 +531,7 @@ and if the angle between their 2 faces is < ANGLE."""
 #           vertex2ivertex2[vertex] = vertex
 #           ivertex2vertices2[vertex] = [vertex]
 #           ivertices = ivertices + [vertex]
-          
+    
     vertex2ivertex2   = {}
     ivertex2vertices2 = {}
     from sets import Set

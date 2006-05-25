@@ -15,7 +15,7 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-import sys, os, os.path, weakref,cPickle as  pickle
+import sys, os, os.path, weakref,cPickle as pickle
 
 if os.path.exists(os.path.join(__path__[0], "build")):
   # We are using a source directory.
@@ -30,12 +30,33 @@ from soya._soya import _CObj
 
 _soya = sys.modules["soya._soya"]
 
-
 #from soya import opengl
 #from soya import sdlconst
 
 # For file compatibility
 sys.modules["soyapyrex"] = _soya
+
+
+dumps = pickle.dumps
+def set_file_format(dumps_func):
+  """set_file_format(dumps_func)
+
+Sets the file format used when saving files. DUMPS_FUNC is a function called to serialize the object.
+It is a function similar to pickle.dumps. The following functions are known to work:
+  - cPickle.dumps (default value)
+  - cerealizer.dumps
+"""
+  global dumps
+  dumps = dumps_func
+
+def loads(s):
+  if s.startswith("cereal1\n"):
+    import cerealizer
+    return cerealizer.loads(s)
+  else:
+    return pickle.loads(s)
+    
+
 
 def set_root_widget(widget):
   """set_root_widget(WIDGET)
@@ -173,12 +194,12 @@ Raise ValueError if the file is not found in soya.path."""
 Loads the object of this class with the given FILENAME attribute.
 Contrary to get, load ALWAYS returns a new object.
 Raise ValueError if the file is not found in soya.path."""
-    if ".." in filename: raise ValueError("Cannot have .. in filename (security reason)!")
+    if ".." in filename: raise ValueError("Cannot have .. in filename (security reason)!", filename)
     filename = filename.replace("/", os.sep)
     for p in path:
       file = os.path.join(p, klass.DIRNAME, filename + ".data")
       if os.path.exists(file):
-        obj = klass._alls[filename] = pickle.loads(open(file, "rb").read())
+        obj = klass._alls[filename] = loads(open(file, "rb").read())
         obj.loaded()
         return obj
     raise ValueError("No %s named %s" % (klass.__name__, filename))
@@ -193,12 +214,11 @@ Raise ValueError if the file is not found in soya.path."""
 Saves this object. If no FILENAME is given, the object is saved in the path,
 using its filename attribute. If FILENAME is given, it is saved at this
 location."""
+    if ".." in self.filename: raise ValueError("Cannot have .. in filename (security reason)!", filename)
     global _SAVING
     try:
       _SAVING = self # Hack !!
-      #pickle.dump(self, open(filename or os.path.join(path[0], self.DIRNAME, self.filename.replace("/", os.sep)) + ".data", "wb"), 1)
-      # Avoid destroying the file if the serialization causes an error.
-      data = pickle.dumps(self, 1)
+      data = dumps(self, 1) # Avoid destroying the file if the serialization causes an error.
       open(filename or os.path.join(path[0], self.DIRNAME, self.filename.replace("/", os.sep)) + ".data", "wb").write(data)
     finally:
       _SAVING = None
@@ -275,7 +295,7 @@ Attributes are:
   palette = None
   
   def load(klass, filename):
-    if ".." in filename: raise ValueError("Cannot have .. in filename (security reason)!")
+    if ".." in filename: raise ValueError("Cannot have .. in filename (security reason)!", filename)
     filename = filename.replace("/", os.sep)
     for p in path:
       file = os.path.join(p, klass.DIRNAME, filename)
@@ -335,11 +355,11 @@ Attributes are:
   _alls = weakref.WeakValueDictionary()
   
   def load(klass, filename):
-    if ".." in filename: raise ValueError("Cannot have .. in filename (security reason)!")
+    if ".." in filename: raise ValueError("Cannot have .. in filename (security reason)!", filename)
     need_export, image_file, file = klass._check_export(filename + ".data", filename, (Image.DIRNAME, filename + ".png"), (Image.DIRNAME, filename + ".jpeg"))
     if need_export:
       image = Image.get(os.path.basename(image_file))
-      if os.path.exists(file): material = pickle.loads(open(file, "rb").read())
+      if os.path.exists(file): material = loads(open(file, "rb").read())
       else:
         material = Material()
         material._filename = filename
@@ -350,7 +370,7 @@ Attributes are:
         print "* Soya * WARNING : can't save material %s!" % filename
       return material
     else:
-      obj = pickle.loads(open(file, "rb").read())
+      obj = loads(open(file, "rb").read())
       obj.loaded()
       return obj
 
@@ -372,7 +392,7 @@ Shapes are used in conjunction with Volume."""
   _alls = weakref.WeakValueDictionary()
   
   def load(klass, filename):
-    if ".." in filename: raise ValueError("Cannot have .. in filename (security reason)!")
+    if ".." in filename: raise ValueError("Cannot have .. in filename (security reason)!", filename)
     need_export, world_file, file = klass._check_export(filename + ".data", filename, (World.DIRNAME, filename + ".data"), ("blender", filename.split("@")[0] + ".blend"), ("obj", filename + ".obj"), ("obj", filename + ".mtl"), ("3ds", filename + ".3ds"))
     if need_export:
       shape = World.get(filename).shapify()
@@ -383,7 +403,7 @@ Shapes are used in conjunction with Volume."""
         print "* Soya * WARNING : can't save compiled shape %s!" % filename
       return shape
     else:
-      obj = pickle.loads(open(file, "rb").read())
+      obj = loads(open(file, "rb").read())
       obj.loaded()
       return obj
   load = classmethod(load)
@@ -486,7 +506,7 @@ Attributes are (see also Volume, CoordSyst and SavedInAPath for inherited attrib
   _alls = weakref.WeakValueDictionary()
   
   def load(klass, filename):
-    if ".." in filename: raise ValueError("Cannot have .. in filename (security reason)!")
+    if ".." in filename: raise ValueError("Cannot have .. in filename (security reason)!", filename)
     need_export, source_file, file = klass._check_export(filename + ".data", filename, ("blender", filename.split("@")[0] + ".blend"), ("obj", filename + ".obj"), ("obj", filename + ".mtl"), ("3ds", filename + ".3ds"))
     if need_export:
       if   need_export == "blender":
@@ -515,7 +535,7 @@ Attributes are (see also Volume, CoordSyst and SavedInAPath for inherited attrib
         world.save()
         return world
       
-    obj = pickle.loads(open(file, "rb").read())
+    obj = loads(open(file, "rb").read())
     obj.loaded()
     return obj
   load = classmethod(load)
@@ -744,7 +764,7 @@ class Cal3dVolume(_soya._Cal3dVolume):
 
 class Cal3dShape(Shape, _soya._Cal3dShape):
   def load(klass, filename):
-    if ".." in filename: raise ValueError("Cannot have .. in filename (security reason)!")
+    if ".." in filename: raise ValueError("Cannot have .. in filename (security reason)!", filename)
     need_export, source_file, file = klass._check_export(os.path.join(filename, filename + ".cfg"), filename, ("blender", filename.split("@")[0] + ".blend"))
     if need_export:
       if need_export == "blender":
@@ -789,7 +809,7 @@ DEFAULT_MATERIAL.filename  = "__DEFAULT_MATERIAL__"
 DEFAULT_MATERIAL.shininess = 128.0
 _soya._set_default_material(DEFAULT_MATERIAL)
 
-PARTICLE_DEFAULT_MATERIAL = pickle.load(open(os.path.join(DATADIR, "particle_default.data"), "rb"))
+PARTICLE_DEFAULT_MATERIAL = loads(open(os.path.join(DATADIR, "particle_default.data"), "rb").read())
 PARTICLE_DEFAULT_MATERIAL.filename = "__PARTICLE_DEFAULT_MATERIAL__"
 # PARTICLE_DEFAULT_MATERIAL = Material()
 # PARTICLE_DEFAULT_MATERIAL.additive_blending = 1
@@ -799,7 +819,7 @@ PARTICLE_DEFAULT_MATERIAL.filename = "__PARTICLE_DEFAULT_MATERIAL__"
 # PARTICLE_DEFAULT_MATERIAL.save("/home/jiba/src/soya/data/particle_default.data")
 _soya._set_particle_default_material(PARTICLE_DEFAULT_MATERIAL)
 
-SHADER_DEFAULT_MATERIAL = pickle.load(open(os.path.join(DATADIR, "shader_default.data"), "rb"))
+SHADER_DEFAULT_MATERIAL = loads(open(os.path.join(DATADIR, "shader_default.data"), "rb").read())
 SHADER_DEFAULT_MATERIAL.filename = "__SHADER_DEFAULT_MATERIAL__"
 #SHADER_DEFAULT_MATERIAL = Material()
 #SHADER_DEFAULT_MATERIAL.texture = open_image(os.path.join(DATADIR, "shader.png"))
