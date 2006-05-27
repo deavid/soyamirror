@@ -328,7 +328,8 @@ class Blender2Soya:
           # (without extension).
           if(face.image != None):
             image_filename    = face.image.name
-            material_filename = image_filename[:image_filename.rfind(".")]
+            if "." in image_filename:
+              material_filename = image_filename[:image_filename.rfind(".")]
             material_filename = self.materials_map.get(material_filename, material_filename)
             f.material = get_material(material_filename)
             
