@@ -3,11 +3,11 @@
 
     <overlay
             type = "svn"
-            src  = "http://svn.gna.org/svn/soya/trunk/ebuild"
-            name = "soya">
+            src  = "http://svn.gna.org/svn/soya/trunk/ebuilds"
+            name = "oomadness">
 
         <link>
-            http://home.gna.org/oomadness/en/index.html
+            http://home.gna.org/oomadness/en/
         </link>
 
         <description>
