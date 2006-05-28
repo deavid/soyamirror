@@ -12,4 +12,5 @@ SLOT="0"
 KEYWORDS="x86 ppc"
 IUSE=""
 
-DEPEND=">=dev-lang/python-2.4"
+DEPEND=">=dev-lang/python-2.4
+	media-libs/sdl-mixer"
