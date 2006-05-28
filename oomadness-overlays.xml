@@ -1,0 +1,19 @@
+<?xml version="1.0" ?>
+<layman>
+
+    <overlay
+            type = "svn"
+            src  = "http://svn.gna.org/svn/soya/trunk/ebuild"
+            name = "soya">
+
+        <link>
+            http://home.gna.org/oomadness/en/index.html
+        </link>
+
+        <description>
+        Overlays for all the soya relative projects.
+        Include Soya3D, Tofu (network engine), Cerealizer (cPickle like) and
+        many more (Balazar, Balazar Brother...)
+        </description>
+
+  </overlay>
