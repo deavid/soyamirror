@@ -224,7 +224,6 @@ See CellShadingShapifier.__doc__ for more info."""
     return self._shadow, self._max_face_angle, self._shader, self._outline_color, self._outline_width, self._outline_attenuation
   
   cdef void __setcstate__(self, cstate):
-    #self._shadow, self._max_face_angle, self._shader, self._outline_color, self._outline_width = cstate
     self._shadow, self._max_face_angle, self._shader, self._outline_color, self._outline_width, self._outline_attenuation = cstate
     
   cdef _Shape _shapify(self, _World world):

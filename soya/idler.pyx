@@ -56,7 +56,8 @@ Interesting attributes:
   #cdef                 _scenes
   #cdef public   double round_duration, min_frame_duration
   #cdef readonly double fps
-  #cdef readonly int    running
+  #cdef public   int    running
+  #cdef public   int    will_render
   #cdef double          _time, _time_since_last_round
   
   property scenes:
@@ -66,7 +67,11 @@ Interesting attributes:
   property next_round_tasks:
     def __get__(self):
       return self._next_round_tasks
-      
+    
+  property return_value:
+    def __get__(self):
+      return self._return_value
+    
   def __init__(self, *scenes):
     """Idler(scene1, scene2,...) -> Idler
 
@@ -142,7 +147,7 @@ Starts idling with the current thread. This method never finishes, until you cal
             
           delta = delta - spent_time
           self._time_since_last_round = 0
-
+          
         self.will_render = 1
         self.advance_time(delta / self.round_duration) # start the current round
         self.will_render = 0

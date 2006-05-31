@@ -295,11 +295,16 @@ Attributes are:
   palette = None
   
   def load(klass, filename):
+    if filename[0] == "/": # Old-style, non-relative filename
+      filename = filename.split(os.sep)[-1]
     if ".." in filename: raise ValueError("Cannot have .. in filename (security reason)!", filename)
     filename = filename.replace("/", os.sep)
     for p in path:
       file = os.path.join(p, klass.DIRNAME, filename)
-      if os.path.exists(file): return open_image(file)
+      if os.path.exists(file):
+        image = open_image(file)
+        image._filename = filename
+        return image
     raise ValueError("No %s named %s" % (klass.__name__, filename))
   load = classmethod(load)
   
@@ -510,14 +515,18 @@ Attributes are (see also Volume, CoordSyst and SavedInAPath for inherited attrib
     need_export, source_file, file = klass._check_export(filename + ".data", filename, ("blender", filename.split("@")[0] + ".blend"), ("obj", filename + ".obj"), ("obj", filename + ".mtl"), ("3ds", filename + ".3ds"))
     if need_export:
       if   need_export == "blender":
+        if dumps is pickle.dumps: file_format = "pickle"
+        else:                     file_format = "cerealizer"
+        
         extra = ""
         if "@" in filename:
-          extra += "CONFIG_TEXT=%s" % filename[filename.index("@") + 1:]
-            
-        do_cmd("blender %s -P %s --blender2soya FILENAME=%s %s" % (
+          extra += " CONFIG_TEXT=%s" % filename[filename.index("@") + 1:]
+          
+        do_cmd("blender %s -P %s --blender2soya FILENAME=%s FILE_FORMAT=%s %s" % (
           source_file,
           os.path.join(os.path.dirname(__file__), "blender2soya.py"),
           filename,
+          file_format,
           extra,
           ))
         

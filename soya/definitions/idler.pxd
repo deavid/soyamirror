@@ -20,6 +20,7 @@ cdef class Idler:
   cdef                 _scenes
   cdef public   double round_duration, min_frame_duration
   cdef readonly double fps
-  cdef readonly int    running, will_render
+  cdef public   int    running
+  cdef public   int    will_render
   cdef double          _time, _time_since_last_round
     

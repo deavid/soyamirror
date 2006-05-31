@@ -209,3 +209,8 @@
     older version) was causing a segfault bug in
     Cal3DVolume.detach_from_bone().
 
+* June 2006 : Soya3D 0.11
+  * Full support for cerealizer (i.e. save(), load() and get() can use
+    cerealizer, see set_file_format)
+  * Idler.return_value is now readable (ease hacking the Idler :-)
+

@@ -23,7 +23,7 @@ __bpydoc__  = """blender2soya.py
          5. Press OK
 """
 
-# Copyright (C) 2003-2004 Jean-Baptiste LAMY -- jibalamy@free.fr
+# Copyright (C) 2003-2006 Jean-Baptiste LAMY -- jibalamy@free.fr
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -51,7 +51,7 @@ except ImportError:
 PATH                  = os.path.join(os.path.dirname(Blender.Get("filename")), "..")
 FILENAME              = os.path.splitext(os.path.basename(Blender.Get("filename")))[0]
 KEEP_POINTS_AND_LINES = 0
-LAUNCH_EDITOR     = 0
+LAUNCH_EDITOR         = 0
 
 # Make current the animation of the given name, at the given time / key.
 # Usefull for batch mode.
@@ -83,6 +83,10 @@ MAX_FACE_ANGLE = 80.0
 # Set this param to 0 is you want the script exports immediately, using the above default
 # values, instead of showing a dialog box.
 SHOW_DIALOG = 1
+
+
+# File format (currently, "pickle" or "cerealizer")
+FILE_FORMAT = "pickle"
 
 
 # WARNING : there are some hack on this script since Blender python module
@@ -254,6 +258,16 @@ class Blender2Soya:
   def export(self):
     Blender.Redraw() # Needed for GetRawFromObject
     
+    print "setting file format to %s..." % self.file_format
+    if   self.file_format == "pickle":
+      import cPickle as pickle
+      soya.set_file_format(pickle.dumps)
+    elif self.file_format == "cerealizer":
+      import cerealizer, soya.cerealizer4soya as cerealizer4soya
+      soya.set_file_format(cerealizer.dumps)
+    else:
+      raise ValueError("Unsupported file format %s" % self.file_format)
+    
     objs = Blender.Object.Get()
     
     if self.animation:
@@ -394,7 +408,7 @@ if "--blender2soya" in sys.argv:
   Blender.Quit()
   
   
-if __name__ == '__main__': # Only execute if ran as the main script
+if __name__ == '__main__': # Only executed if ran as the main script
   if SHOW_DIALOG:
     # Create the dialog instance and register the event handlers with blender
     dialog = BlenderDialog()
