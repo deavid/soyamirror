@@ -36,7 +36,7 @@ cerealizer.freeze_configuration()
 
 
 l = []
-for i in range(2000):
+for i in range(10000):
   o = O()
   if l: o.o = l[-1]
   l.append(o)

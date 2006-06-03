@@ -120,7 +120,7 @@ same file, or a raw value (e.g. an integer).
 """
 
 __alls__ = ["load", "dump", "loads", "dumps", "freeze_configuration", "register"]
-VERSION = "0.2"
+VERSION = "0.3"
 
 import logging
 logger = logging.getLogger("cerealizer")
@@ -280,13 +280,13 @@ class ComplexHandler(RefHandler):
     s.write("c%s\n" % c)
     
 
-def tuple_depth(t): return max([0] + [tuple_depth(i) + 1 for i in t if isinstance(i, tuple)])
+def immutable_depth(t): return max([0] + [immutable_depth(i) + 1 for i in t if isinstance(i, tuple) or isinstance(i, frozenset)])
 
 class TupleHandler(Handler):
   classname = "tuple\n"
   def collect(self, obj, dumper):
     if not id(obj) in dumper.objs_id:
-      dumper.priorities_objs.append((tuple_depth(obj), obj))
+      dumper.priorities_objs.append((immutable_depth(obj), obj))
       dumper.objs_id.add(id(obj))
       
       for i in obj: _HANDLERS_[i.__class__].collect(i, dumper)
@@ -298,6 +298,11 @@ class TupleHandler(Handler):
     
   def undump_obj(self, dumper, s):
     return tuple([dumper.undump_ref(s) for i in range(int(s.readline()))])
+  
+class FrozensetHandler(TupleHandler):
+  classname = "frozenset\n"
+  def undump_obj(self, dumper, s):
+    return frozenset([dumper.undump_ref(s) for i in range(int(s.readline()))])
   
   
 class ListHandler(Handler):
@@ -316,19 +321,9 @@ class ListHandler(Handler):
   def undump_data(self, obj, dumper, s):
     for i in range(int(s.readline())): obj.append(dumper.undump_ref(s))
     
-class SetHandler(Handler):
+class SetHandler(ListHandler):
   classname = "set\n"
-  def collect(self, obj, dumper):
-    if Handler.collect(self, obj, dumper):
-      for i in obj: _HANDLERS_[i.__class__].collect(i, dumper)
-      return 1
-    
-  def dump_data(self, obj, dumper, s):
-    s.write("%s\n" % len(obj))
-    for i in obj: _HANDLERS_[i.__class__].dump_ref(i, dumper, s)
-    
   def undump_obj(self, dumper, s): return set()
-  
   def undump_data(self, obj, dumper, s):
     for i in range(int(s.readline())): obj.add(dumper.undump_ref(s))
     
@@ -524,18 +519,19 @@ unexpected calls to register()."""
   _configurable = 0
   logger.info("Configuration frozen")
   
-register(type(None), NoneHandler   ())
-register(str       , StrHandler    ())
-register(unicode   , UnicodeHandler())
-register(bool      , BoolHandler   ())
-register(int       , IntHandler    ())
-register(float     , FloatHandler  ())
-register(complex   , ComplexHandler())
-register(dict      , DictHandler   ())
-register(list      , ListHandler   ())
-register(set       , SetHandler    ())
-register(tuple     , TupleHandler  ())
- 
+register(type(None), NoneHandler     ())
+register(str       , StrHandler      ())
+register(unicode   , UnicodeHandler  ())
+register(bool      , BoolHandler     ())
+register(int       , IntHandler      ())
+register(float     , FloatHandler    ())
+register(complex   , ComplexHandler  ())
+register(dict      , DictHandler     ())
+register(list      , ListHandler     ())
+register(set       , SetHandler      ())
+register(tuple     , TupleHandler    ())
+register(frozenset , FrozensetHandler())
+
 
 def dump(obj, file, protocol = 0):
   """dump(obj, file, protocol = 0)

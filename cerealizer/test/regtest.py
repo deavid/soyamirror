@@ -43,17 +43,18 @@ class TestBasicType(unittest.TestCase):
   def test_unicode1(self): self.loads_dumps_and_compare(u"jiba")
   def test_unicode2(self): self.loads_dumps_and_compare(u"jibé")
   
-  def test_tuple1  (self): self.loads_dumps_and_compare(())
-  def test_tuple2  (self): self.loads_dumps_and_compare((1, 2.2, "jiba"))
-  def test_tuple3  (self): self.loads_dumps_and_compare((1, (2.2, "jiba")))
-  def test_list1   (self): self.loads_dumps_and_compare([])
-  def test_list2   (self): self.loads_dumps_and_compare([1, 2.2, "jiba"])
-  def test_list3   (self): self.loads_dumps_and_compare([1, [2.2, "jiba"]])
-  def test_set1    (self): self.loads_dumps_and_compare(set())
-  def test_set2    (self): self.loads_dumps_and_compare(set([1, 2.2, "jiba"]))
-  def test_dict1   (self): self.loads_dumps_and_compare({})
-  def test_dict2   (self): self.loads_dumps_and_compare({ "jiba" : 100, "other" : 0 })
-  def test_dict3   (self): self.loads_dumps_and_compare({ "jiba" : range(100), "other" : { 1:2 } })
+  def test_tuple1   (self): self.loads_dumps_and_compare(())
+  def test_tuple2   (self): self.loads_dumps_and_compare((1, 2.2, "jiba"))
+  def test_tuple3   (self): self.loads_dumps_and_compare((1, (2.2, "jiba")))
+  def test_frozenset(self): self.loads_dumps_and_compare(frozenset([1, (2.2, "jiba")]))
+  def test_list1    (self): self.loads_dumps_and_compare([])
+  def test_list2    (self): self.loads_dumps_and_compare([1, 2.2, "jiba"])
+  def test_list3    (self): self.loads_dumps_and_compare([1, [2.2, "jiba"]])
+  def test_set1     (self): self.loads_dumps_and_compare(set())
+  def test_set2     (self): self.loads_dumps_and_compare(set([1, 2.2, "jiba"]))
+  def test_dict1    (self): self.loads_dumps_and_compare({})
+  def test_dict2    (self): self.loads_dumps_and_compare({ "jiba" : 100, "other" : 0 })
+  def test_dict3    (self): self.loads_dumps_and_compare({ "jiba" : range(100), "other" : { 1:2 } })
   
   def test_None    (self): self.loads_dumps_and_compare(None)
   
@@ -140,11 +141,35 @@ class TestBasicType(unittest.TestCase):
     l2 = cerealizer.loads(cerealizer.dumps(l1))
     assert l2[0] is l2[1]
     
-  def test_cycle(self):
+  def test_cycle1(self):
     obj1 = [1, [2.2, "jiba"]]
     obj1[1].append(obj1)
     obj2 = cerealizer.loads(cerealizer.dumps(obj1))
     assert repr(obj1) == repr(obj2) # Cannot use == on cyclic list!
+    
+  def test_cycle2(self):
+    class Obj11(object):
+      pass
+    cerealizer.register(Obj11)
+    o = Obj11()
+    o.o = o
+    o2 = cerealizer.loads(cerealizer.dumps(o))
+    assert o2.o is o2
+    
+  def test_cycle3(self):
+    class Parent: pass
+    class Child:
+      def __init__(self, parent): self.parent = parent
+      def __getstate__(self): return (self.parent,)
+      def __setstate__(self, state): self.parent = state[0]
+    cerealizer.register(Parent)
+    cerealizer.register(Child)
+    
+    p = Parent()
+    p.c = Child(p)
+    p2 = cerealizer.loads(cerealizer.dumps(p))
+    assert not p2.c.parent is None
+    
     
   def test_obj_slot(self):
     class Obj7(object):
