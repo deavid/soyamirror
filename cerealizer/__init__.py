@@ -129,6 +129,9 @@ logger = logging.getLogger("cerealizer")
 from cStringIO import StringIO
 from new       import instance
 
+class NotCerealizerFileError(StandardError): pass
+class NonCerealizableObjectError(StandardError): pass
+
 def _priority_sorter(a, b): return cmp(a[0], b[0])
 
 class Dumper(object):
@@ -137,10 +140,10 @@ class Dumper(object):
     self.objs_id         = set()
     self.priorities_objs = [] # [(priority1, obj1), (priority2, obj2),...]
     self.obj2state       = {}
-    self.obj2newsargs    = {}
+    self.obj2newargs     = {}
     self.id2id           = {}
     
-    _HANDLERS_[root_obj.__class__].collect(root_obj, self)
+    self.collect(root_obj)
     self.priorities_objs.sort(_priority_sorter)
     self.objs.extend([o for (priority, o) in self.priorities_objs])
     
@@ -152,15 +155,19 @@ class Dumper(object):
       i += 1
     for obj in self.objs: _HANDLERS_[obj.__class__].dump_obj (obj, self, s)
     for obj in self.objs: _HANDLERS_[obj.__class__].dump_data(obj, self, s)
-      
+    
     _HANDLERS_[root_obj.__class__].dump_ref(root_obj, self, s)
     
   def undump(self, s):
-    if s.read(8) != "cereal1\n": raise ValueError("Not a cerealizer file!")
+    if s.read(8) != "cereal1\n": raise NotCerealizerFileError("Not a cerealizer file!")
     
     nb = int(s.readline())
     self.id2obj = [ None ] * nb  # DO NOT DO  self.id2obj = [comprehension list], since undump_ref may access id2obj during its construction
-    for i in range(nb): self.id2obj[i] = _HANDLERS[s.readline()].undump_obj(self, s)
+    for i in range(nb):
+      classname = s.readline()
+      handler = _HANDLERS.get(classname)
+      if not handler: raise NonCerealizableObjectError("Object of class/type '%s' cannot be de-cerealized! Use cerealizer.register to extend Cerealizer support to other classes." % classname)
+      self.id2obj[i] = handler.undump_obj(self, s)
     for obj in self.id2obj: _HANDLERS_[obj.__class__].undump_data(obj, self, s)
     
     return self.undump_ref(s)
@@ -169,7 +176,9 @@ class Dumper(object):
     """Dumper.collect(OBJ) -> bool
 
 Collects OBJ for serialization. Returns false is OBJ is already collected; else returns true."""
-    return _HANDLERS_[obj.__class__].collect(obj, self)
+    handler = _HANDLERS_.get(obj.__class__)
+    if not handler: raise NonCerealizableObjectError("Object of class/type '%s' cannot be cerealized! Use cerealizer.register to extend Cerealizer support to other classes." % obj.__class__)
+    handler.collect(obj, self)
   
   def dump_ref (self, obj, s):
     """Dumper.dump_ref(OBJ, S)
@@ -192,6 +201,10 @@ Reads a reference from file S."""
     elif c == "c": return complex(s.readline())
     raise ValueError("Unknown ref code '%s'!" % c)
     
+  def immutable_depth(self, t):
+    t = self.obj2newargs.get(t, t)
+    return max([0] + [self.immutable_depth(i) + 1 for i in t if isinstance(i, tuple) or isinstance(i, frozenset)])
+  
     
 class Handler(object):
   """Handler
@@ -280,16 +293,16 @@ class ComplexHandler(RefHandler):
     s.write("c%s\n" % c)
     
 
-def immutable_depth(t): return max([0] + [immutable_depth(i) + 1 for i in t if isinstance(i, tuple) or isinstance(i, frozenset)])
-
+#def immutable_depth(t): return max([0] + [immutable_depth(i) + 1 for i in t if isinstance(i, tuple) or isinstance(i, frozenset)])
+    
 class TupleHandler(Handler):
   classname = "tuple\n"
   def collect(self, obj, dumper):
     if not id(obj) in dumper.objs_id:
-      dumper.priorities_objs.append((immutable_depth(obj), obj))
+      dumper.priorities_objs.append((dumper.immutable_depth(obj), obj))
       dumper.objs_id.add(id(obj))
       
-      for i in obj: _HANDLERS_[i.__class__].collect(i, dumper)
+      for i in obj: dumper.collect(i)
       return 1
     
   def dump_obj(self, obj, dumper, s):
@@ -309,7 +322,7 @@ class ListHandler(Handler):
   classname = "list\n"
   def collect(self, obj, dumper):
     if Handler.collect(self, obj, dumper):
-      for i in obj: _HANDLERS_[i.__class__].collect(i, dumper)
+      for i in obj: dumper.collect(i)
       return 1
     
   def dump_data(self, obj, dumper, s):
@@ -331,9 +344,8 @@ class DictHandler(Handler):
   classname = "dict\n"
   def collect(self, obj, dumper):
     if Handler.collect(self, obj, dumper):
-      for k, v in obj.iteritems():
-        _HANDLERS_[v.__class__].collect(v, dumper)
-        _HANDLERS_[k.__class__].collect(k, dumper)
+      for i in obj.iterkeys  (): dumper.collect(i) # Collect is not ordered
+      for i in obj.itervalues(): dumper.collect(i)
       return 1
     
   def dump_data(self, obj, dumper, s):
@@ -371,7 +383,7 @@ as well as C-defined types (although it may not save the C-side data)."""
       if self.Class_getstate: state = self.Class_getstate(obj)
       else:                   state = obj.__dict__
       dumper.obj2state[i] = state
-      _HANDLERS_[state.__class__].collect(state, dumper)
+      dumper.collect(state)
       return 1
     
   def dump_data(self, obj, dumper, s):
@@ -401,7 +413,7 @@ A Cerealizer Handler that can support new-style class instances with __slot__.""
       if self.Class_getstate: state = self.Class_getstate(obj)
       else:                   state = dict([(slot, getattr(obj, slot, None)) for slot in self.Class_slots])
       dumper.obj2state[i] = state
-      _HANDLERS_[state.__class__].collect(state, dumper)
+      dumper.collect(state)
       return 1
     
   def undump_data(self, obj, dumper, s):
@@ -426,22 +438,56 @@ A Cerealizer Handler that can support class instances with __getinitargs__."""
       dumper.objs_id.add(i)
       
       dumper.obj2state[i] = state = self.Class_getinitargs(obj)
-      _HANDLERS_[state.__class__].collect(state, dumper)
+      dumper.collect(state)
       return 1
     
   def undump_data(self, obj, dumper, s):
     self.Class_init(obj, *dumper.undump_ref(s))
       
+# class NewArgsObjHandler(ObjHandler):
+#   """NewArgsObjHandler
+
+# A Cerealizer Handler that can support class instances with __getnewargs__.
+# Currently, it works ONLY if __getnewargs__() returns a tuple containing only strings, unicode,
+# numbers or None. However, the real problem is not in Cerealizer but in __getnewargs__ API:
+# what about the following:
+#   def __getnewargs__(self): return (self,)
+# Uisng this __getnewargs__, the object cannot be created before it exists,
+# which is an unsolvable problem..."""
+#   def __init__(self, Class, classname = ""):
+#     ObjHandler.__init__(self, Class, classname = "")
+#     self.Class_getnewargs = Class.__getnewargs__
+    
+#   def collect(self, obj, dumper):
+#     i = id(obj)
+#     if not i in dumper.objs_id:
+#       dumper.priorities_objs.append((-1, obj))
+#       dumper.objs_id.add(i)
+      
+#       if self.Class_getstate: state = self.Class_getstate(obj)
+#       else:                   state = obj.__dict__
+#       dumper.obj2state[i] = state
+#       dumper.collect(state)
+#       return 1
+    
+#   def dump_obj (self, obj, dumper, s):
+#     s.write(self.classname)
+#     newargs = self.Class_getnewargs(obj)
+    
+#     s.write("%s\n" % len(newargs))
+#     for newarg in newargs:
+#       handler = _HANDLERS_[newarg.__class__]
+#       if not isinstance(handler, RefHandler): raise ValueError("Only string, unicode, numbers and None are supported in the return value of __getnewargs__!", newargs)
+#       handler.dump_ref(newarg, dumper, s)
+      
+#   def undump_obj(self, dumper, s):
+#     return self.Class_new(self.Class, *tuple([dumper.undump_ref(s) for i in range(int(s.readline()))]))
+  
+  
 class NewArgsObjHandler(ObjHandler):
   """NewArgsObjHandler
 
-A Cerealizer Handler that can support class instances with __getnewargs__.
-Currently, it works ONLY if __getnewargs__() returns a tuple containing only strings, unicode,
-numbers or None. However, the real problem is not in Cerealizer but in __getnewargs__ API:
-what about the following:
-  def __getnewargs__(self): return (self,)
-Uisng this __getnewargs__, the object cannot be created before it exists,
-which is an unsolvable problem..."""
+A Cerealizer Handler that can support class instances with __getnewargs__."""
   def __init__(self, Class, classname = ""):
     ObjHandler.__init__(self, Class, classname = "")
     self.Class_getnewargs = Class.__getnewargs__
@@ -449,29 +495,33 @@ which is an unsolvable problem..."""
   def collect(self, obj, dumper):
     i = id(obj)
     if not i in dumper.objs_id:
-      dumper.priorities_objs.append((-1, obj))
+      newargs = self.Class_getnewargs(obj)
+      dumper.obj2newargs[i] = newargs
+      dumper.collect(newargs)
+      
+      dumper.priorities_objs.append((dumper.immutable_depth(newargs), obj))
       dumper.objs_id.add(i)
       
       if self.Class_getstate: state = self.Class_getstate(obj)
       else:                   state = obj.__dict__
       dumper.obj2state[i] = state
-      _HANDLERS_[state.__class__].collect(state, dumper)
+      dumper.collect(state)
       return 1
     
   def dump_obj (self, obj, dumper, s):
     s.write(self.classname)
-    newargs = self.Class_getnewargs(obj)
+    newargs = dumper.obj2newargs[id(obj)]
     
     s.write("%s\n" % len(newargs))
     for newarg in newargs:
       handler = _HANDLERS_[newarg.__class__]
-      if not isinstance(handler, RefHandler): raise ValueError("Only string, unicode, numbers and None are supported in the return value of __getnewargs__!", newargs)
+      #if not isinstance(handler, RefHandler): raise ValueError("Only string, unicode, numbers and None are supported in the return value of __getnewargs__!", newargs)
       handler.dump_ref(newarg, dumper, s)
       
   def undump_obj(self, dumper, s):
     return self.Class_new(self.Class, *tuple([dumper.undump_ref(s) for i in range(int(s.readline()))]))
   
-
+  
 _configurable = 1
 _HANDLERS  = {}
 _HANDLERS_ = {}

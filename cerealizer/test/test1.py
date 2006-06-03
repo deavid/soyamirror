@@ -17,7 +17,7 @@
 
 import cerealizer
 import twisted.spread.jelly, twisted.spread.banana
-import cPickle
+import cPickle, pickle
 
 
 
@@ -25,7 +25,7 @@ import time
 import psyco
 psyco.full()
 
-class O(twisted.spread.jelly.Jellyable):
+class O(object, twisted.spread.jelly.Jellyable):
   def __init__(self):
     self.x = 1
     self.s = "jiba"
@@ -36,7 +36,7 @@ cerealizer.freeze_configuration()
 
 
 l = []
-for i in range(10000):
+for i in range(2000):
   o = O()
   if l: o.o = l[-1]
   l.append(o)
@@ -65,6 +65,20 @@ print len(s), "bytes length"
 t = time.time()
 l2 = cPickle.loads(s)
 print "loads in", time.time() - t, "s"
+
+
+print
+print "pickle"
+t = time.time()
+s = pickle.dumps(l)
+print "dumps in", time.time() - t, "s,",
+
+print len(s), "bytes length"
+
+t = time.time()
+l2 = pickle.loads(s)
+print "loads in", time.time() - t, "s"
+
 
 
 print

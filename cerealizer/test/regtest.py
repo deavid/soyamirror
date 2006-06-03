@@ -204,7 +204,7 @@ class TestBasicType(unittest.TestCase):
     o = Obj9(45, u"uioef")
     self.loads_dumps_and_compare(o)
     
-  def test_obj_newargs(self):
+  def test_obj_newargs1(self):
     class Obj10(object):
       def __new__(Class, x, name):
         self      = object.__new__(Class)
@@ -217,13 +217,26 @@ class TestBasicType(unittest.TestCase):
     o = Obj10(45, u"uioef")
     self.loads_dumps_and_compare(o)
     
+  def test_obj_newargs2(self):
+    class Obj12(object):
+      def __new__(Class, x):
+        self      = object.__new__(Class)
+        self.x    = x
+        return self
+      def __getnewargs__(self): return (self.x,)
+      def __eq__(a, b): return (a.__class__ is b.__class__) and (a.x == b.x)
+    cerealizer.register(Obj12)
+    o  = Obj12(45)
+    o2 = Obj12(o)
+    self.loads_dumps_and_compare(o2)
+    
     
     
     
 class TestSecurity(unittest.TestCase):
   def test_register1(self):
     class Sec1: pass
-    self.assertRaises(StandardError, lambda : cerealizer.dumps(Obj1()))
+    self.assertRaises(cerealizer.NonCerealizableObjectError, lambda : cerealizer.dumps(Sec1()))
     
   def test_register2(self):
     class Sec2: pass
