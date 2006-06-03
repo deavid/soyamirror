@@ -25,9 +25,10 @@ class instances. C-defined types are supported but saving the C-side data may re
 a specific Handler or a __getstate__ and __setstate__ pair.
 
 You have to register the class you want to serialize, by calling cerealizer.register(YourClass).
-Cerealizer can be considered as secure AS LONG AS YourClass.__new__, YourClass.__getstate__
-and YourClass.__setstate__ are secure. These methods are the only one Cerealizer may call.
-For a higher security, Cerealizer maintains its own reference to these methods.
+Cerealizer can be considered as secure AS LONG AS YourClass.__new__, YourClass.__getstate__,
+YourClass.__setstate__ and YourClass.__del__ are secure. These methods are the only one Cerealizer
+may call. For a higher security, Cerealizer maintains its own reference to __new__, __getstate__
+and __setstate__ (__del__ can only be called indirectly).
 
 Cerealizer doesn't aim at producing Human-readable files. About performances, Cerealizer is
 really fast and, when powered by Psyco, it may even beat cPickle! Although Cerealizer is
@@ -55,7 +56,7 @@ IMPLEMENTATION DETAILS
 
 GENERAL FILE FORMAT STRUCTURE
 
-Cerealizer format is simple but quite surprising. First it is a "flat" format.
+Cerealizer format is simple but quite surprising. At is a "double flat list" format.
 It looks like that :
 
   <magic code (currently cereal1)>\\n
@@ -89,13 +90,13 @@ The part <data of object #n> saves the data of object #n. It may contains refere
 (see below, in Cerealizer references include reference to other objects but also raw data like int).
 
  - an object           is saved by :  <reference to the object state (the value returned by object.__getstate__() or object.__dict__)>
-                                      e.g. 'r7\\n' (object #7 being a e.g. the __dict__).
+                                      e.g. 'r7\\n' (object #7 being e.g. the __dict__).
 
  - a  list or a set    is saved by :  <number of item>\\n
                                       <reference to item #0>
                                       <reference to item #1>
                                       [...]
-                                      e.g. '3\\ni0\\ni1\\ni2\n' for [0, 1, 2]
+                                      e.g. '3\\ni0\\ni1\\ni2\\n' for [0, 1, 2]
 
  - a  dict             is saved by :  <number of item>\\n
                                       <reference to value #0>
@@ -123,7 +124,7 @@ VERSION = "0.2"
 
 import logging
 logger = logging.getLogger("cerealizer")
-logging.basicConfig(level=logging.INFO)
+#logging.basicConfig(level=logging.INFO)
 
 from cStringIO import StringIO
 from new       import instance
@@ -136,6 +137,7 @@ class Dumper(object):
     self.objs_id         = set()
     self.priorities_objs = [] # [(priority1, obj1), (priority2, obj2),...]
     self.obj2state       = {}
+    self.obj2newsargs    = {}
     self.id2id           = {}
     
     _HANDLERS_[root_obj.__class__].collect(root_obj, self)
@@ -187,6 +189,7 @@ Reads a reference from file S."""
     elif c == "r": return self.id2obj[int(s.readline())]
     elif c == "n": return None
     elif c == "b": return bool(int(s.read(1)))
+    elif c == "c": return complex(s.readline())
     raise ValueError("Unknown ref code '%s'!" % c)
     
     
@@ -270,6 +273,12 @@ class IntHandler(RefHandler):
 class FloatHandler(RefHandler):
   def dump_ref (self, obj, dumper, s): s.write("f%s\n" % obj)
   
+class ComplexHandler(RefHandler):
+  def dump_ref (self, obj, dumper, s):
+    c = str(obj)
+    if c.startswith("("): c = c[1:-1] # complex("(1+2j)") doesn't work
+    s.write("c%s\n" % c)
+    
 
 def tuple_depth(t): return max([0] + [tuple_depth(i) + 1 for i in t if isinstance(i, tuple)])
 
@@ -283,7 +292,7 @@ class TupleHandler(Handler):
       for i in obj: _HANDLERS_[i.__class__].collect(i, dumper)
       return 1
     
-  def dump_obj (self, obj, dumper, s):
+  def dump_obj(self, obj, dumper, s):
     s.write("%s%s\n" % (self.classname, len(obj)))
     for i in obj: _HANDLERS_[i.__class__].dump_ref(i, dumper, s)
     
@@ -372,7 +381,7 @@ as well as C-defined types (although it may not save the C-side data)."""
     
   def dump_data(self, obj, dumper, s):
     i = dumper.obj2state[id(obj)]
-    _HANDLERS_[i.__class__].dump_ref (i, dumper, s)
+    _HANDLERS_[i.__class__].dump_ref(i, dumper, s)
     
   def undump_obj(self, dumper, s): return self.Class_new(self.Class)
   
@@ -380,6 +389,93 @@ as well as C-defined types (although it may not save the C-side data)."""
     if self.Class_setstate: self.Class_setstate(obj, dumper.undump_ref(s))
     else:                   obj.__dict__ =           dumper.undump_ref(s)
     
+class SlotedObjHandler(ObjHandler):
+  """SlotedObjHandler
+
+A Cerealizer Handler that can support new-style class instances with __slot__."""
+  def __init__(self, Class, classname = ""):
+    ObjHandler.__init__(self, Class, classname = "")
+    self.Class_slots = Class.__slots__
+    
+  def collect(self, obj, dumper):
+    i = id(obj)
+    if not i in dumper.objs_id:
+      dumper.priorities_objs.append((-1, obj))
+      dumper.objs_id.add(i)
+      
+      if self.Class_getstate: state = self.Class_getstate(obj)
+      else:                   state = dict([(slot, getattr(obj, slot, None)) for slot in self.Class_slots])
+      dumper.obj2state[i] = state
+      _HANDLERS_[state.__class__].collect(state, dumper)
+      return 1
+    
+  def undump_data(self, obj, dumper, s):
+    if self.Class_setstate: self.Class_setstate(obj, dumper.undump_ref(s))
+    else:
+      state = dumper.undump_ref(s)
+      for slot in self.Class_slots: setattr(obj, slot, state[slot])
+      
+class InitArgsObjHandler(ObjHandler):
+  """InitArgsObjHandler
+
+A Cerealizer Handler that can support class instances with __getinitargs__."""
+  def __init__(self, Class, classname = ""):
+    ObjHandler.__init__(self, Class, classname = "")
+    self.Class_getinitargs = Class.__getinitargs__
+    self.Class_init        = Class.__init__
+    
+  def collect(self, obj, dumper):
+    i = id(obj)
+    if not i in dumper.objs_id:
+      dumper.priorities_objs.append((-1, obj))
+      dumper.objs_id.add(i)
+      
+      dumper.obj2state[i] = state = self.Class_getinitargs(obj)
+      _HANDLERS_[state.__class__].collect(state, dumper)
+      return 1
+    
+  def undump_data(self, obj, dumper, s):
+    self.Class_init(obj, *dumper.undump_ref(s))
+      
+class NewArgsObjHandler(ObjHandler):
+  """NewArgsObjHandler
+
+A Cerealizer Handler that can support class instances with __getnewargs__.
+Currently, it works ONLY if __getnewargs__() returns a tuple containing only strings, unicode,
+numbers or None. However, the real problem is not in Cerealizer but in __getnewargs__ API:
+what about the following:
+  def __getnewargs__(self): return (self,)
+Uisng this __getnewargs__, the object cannot be created before it exists,
+which is an unsolvable problem..."""
+  def __init__(self, Class, classname = ""):
+    ObjHandler.__init__(self, Class, classname = "")
+    self.Class_getnewargs = Class.__getnewargs__
+    
+  def collect(self, obj, dumper):
+    i = id(obj)
+    if not i in dumper.objs_id:
+      dumper.priorities_objs.append((-1, obj))
+      dumper.objs_id.add(i)
+      
+      if self.Class_getstate: state = self.Class_getstate(obj)
+      else:                   state = obj.__dict__
+      dumper.obj2state[i] = state
+      _HANDLERS_[state.__class__].collect(state, dumper)
+      return 1
+    
+  def dump_obj (self, obj, dumper, s):
+    s.write(self.classname)
+    newargs = self.Class_getnewargs(obj)
+    
+    s.write("%s\n" % len(newargs))
+    for newarg in newargs:
+      handler = _HANDLERS_[newarg.__class__]
+      if not isinstance(handler, RefHandler): raise ValueError("Only string, unicode, numbers and None are supported in the return value of __getnewargs__!", newargs)
+      handler.dump_ref(newarg, dumper, s)
+      
+  def undump_obj(self, dumper, s):
+    return self.Class_new(self.Class, *tuple([dumper.undump_ref(s) for i in range(int(s.readline()))]))
+  
 
 _configurable = 1
 _HANDLERS  = {}
@@ -397,7 +493,11 @@ new_style Python class, and also C-defined types (although if it has some C-side
 have to write a custom Handler or a __getstate__ and __setstate__ pair)."""
   if not _configurable: raise StandardError("Cannot register new classes after freeze_configuration has been called!")
   if "\n" in classname: raise ValueError("CLASSNAME cannot have \\n (Cerealizer automatically add a trailing \\n for performance reason)!")
-  handler = handler or ObjHandler(Class, classname)
+  if not handler:
+    if   hasattr(Class, "__getnewargs__" ): handler = NewArgsObjHandler (Class, classname)
+    elif hasattr(Class, "__getinitargs__"): handler = InitArgsObjHandler(Class, classname)
+    elif hasattr(Class, "__slots__"      ): handler = SlotedObjHandler  (Class, classname)
+    else:                                   handler = ObjHandler        (Class, classname)
   if _HANDLERS_.has_key(Class): raise ValueError("Class %s has already been registred!" % Class)
   if not isinstance(handler, RefHandler):
     if _HANDLERS .has_key(handler.classname): raise ValueError("A class has already been registred under the name %s!" % handler.classname)
@@ -430,6 +530,7 @@ register(unicode   , UnicodeHandler())
 register(bool      , BoolHandler   ())
 register(int       , IntHandler    ())
 register(float     , FloatHandler  ())
+register(complex   , ComplexHandler())
 register(dict      , DictHandler   ())
 register(list      , ListHandler   ())
 register(set       , SetHandler    ())

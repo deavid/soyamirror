@@ -36,6 +36,7 @@ class TestBasicType(unittest.TestCase):
   def test_float1  (self): self.loads_dumps_and_compare(4.9)
   def test_float2  (self): self.loads_dumps_and_compare(-0.0043)
   def test_float3  (self): self.loads_dumps_and_compare(4.0)
+  def test_complex (self): self.loads_dumps_and_compare(1+2j)
   
   def test_string1 (self): self.loads_dumps_and_compare( "jiba")
   def test_string2 (self): self.loads_dumps_and_compare( "jibé")
@@ -144,6 +145,54 @@ class TestBasicType(unittest.TestCase):
     obj1[1].append(obj1)
     obj2 = cerealizer.loads(cerealizer.dumps(obj1))
     assert repr(obj1) == repr(obj2) # Cannot use == on cyclic list!
+    
+  def test_obj_slot(self):
+    class Obj7(object):
+      __slots__ = ["x", "name"]
+      def __init__(self):
+        self.x    = 11.1
+        self.name = "jiba"
+      def __eq__(a, b): return (a.__class__ is b.__class__) and (a.x == b.x) and (a.name == b.name)
+    cerealizer.register(Obj7)
+    o = Obj7()
+    self.loads_dumps_and_compare(o)
+    
+  def test_obj_initargs1(self):
+    class Obj8:
+      def __init__(self, x, name):
+        self.x    = x
+        self.name = name
+      def __getinitargs__(self): return self.x, self.name
+      def __eq__(a, b): return (a.__class__ is b.__class__) and (a.x == b.x) and (a.name == b.name)
+    cerealizer.register(Obj8)
+    o = Obj8(45, u"uioef")
+    self.loads_dumps_and_compare(o)
+    
+  def test_obj_initargs2(self):
+    class Obj9(object):
+      def __init__(self, x, name):
+        self.x    = x
+        self.name = name
+      def __getinitargs__(self): return self.x, self.name
+      def __eq__(a, b): return (a.__class__ is b.__class__) and (a.x == b.x) and (a.name == b.name)
+    cerealizer.register(Obj9)
+    o = Obj9(45, u"uioef")
+    self.loads_dumps_and_compare(o)
+    
+  def test_obj_newargs(self):
+    class Obj10(object):
+      def __new__(Class, x, name):
+        self      = object.__new__(Class)
+        self.x    = x
+        self.name = name
+        return self
+      def __getnewargs__(self): return self.x, self.name
+      def __eq__(a, b): return (a.__class__ is b.__class__) and (a.x == b.x) and (a.name == b.name)
+    cerealizer.register(Obj10)
+    o = Obj10(45, u"uioef")
+    self.loads_dumps_and_compare(o)
+    
+    
     
     
 class TestSecurity(unittest.TestCase):
