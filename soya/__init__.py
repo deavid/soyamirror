@@ -38,24 +38,62 @@ sys.modules["soyapyrex"] = _soya
 
 
 dumps = pickle.dumps
-def set_file_format(dumps_func):
-  """set_file_format(dumps_func)
-
-Sets the file format used when saving files. DUMPS_FUNC is a function called to serialize the object.
-It is a function similar to pickle.dumps. The following functions are known to work:
-  - cPickle.dumps (default value)
-  - cerealizer.dumps
-"""
-  global dumps
-  dumps = dumps_func
+loadss = [pickle.loads]
+try:
+  import cerealizer
+  loadss.insert(0, cerealizer.loads)
+except ImportError: pass
 
 def loads(s):
-  if s.startswith("cereal1\n"):
-    import cerealizer
-    return cerealizer.loads(s)
-  else:
-    return pickle.loads(s)
+  for loads_func in loadss:
+    if   (loads_func.__module__ == "cerealizer") and s.startswith("cereal"): return loads_func(s)
+    else:
+      try: return loads_func(s)
+      except:
+        pass
+  raise ValueError("Cannot read file / data!")
+  
+def set_file_format(dumps_func, loads_funcs = None):
+  """set_file_format(dumps_func, loads_funcs)
+
+Sets the file format used when saving or loading files.
+DUMPS_FUNC is a function or module called to serialize objects.
+It can be either a function similar to pickle.dumps, or a module with a dumps function.
+The following are known to work:
+  - cPickle
+  - cerealizer
+
+LOADS_FUNCS is a function, a module or a list of functions or modules called to de-serialize objects.
+It can be either a function similar to pickle.loads, or a module with a loads function, or a list
+of several of these function or module. If a list is given, the functions are tried in order.
+If LOADS_FUNCS is not given, the file formats supported for loading are not modified.
+The following are known to work:
+  - cPickle
+  - cerealizer
+
+The actual default (which will probably change) is equivalent to:
+  set_file_format(cPickle, [cerealizer, cPickle])  if Cerealizer is available
+  set_file_format(cPickle, cPickle)                if Cerealizer is not available
+
+To use Cerealizer while still being able to read cPickle files:
+  set_file_format(cerealizer, [cerealizer, cPickle])
+
+To use only Cerealizer (especially ineresting if you need security, e.g. for networking games):
+  set_file_format(cerealizer, cerealizer)
+
+To use only cPickle (for compatibility with older apps):
+  set_file_format(cPickle, cPickle)
+"""
+  global dumps, loadss
+  
+  dumps = (callable(dumps_func) and dumps_func) or dumps_func.dumps
+  
+  if   loads_funcs:
+    if not hasattr(loads_funcs, "__iter__"): loads_funcs = [loads_funcs]
+    loadss = [(callable(loads_func) and loads_func) or loads_func.loads for loads_func in loads_funcs]
     
+  if "cerealizer" in [dumps.__module__] + [loads_func.__module__ for loads_func in loadss]:
+    import soya.cerealizer4soya
 
 
 def set_root_widget(widget):
@@ -510,6 +548,9 @@ Attributes are (see also Volume, CoordSyst and SavedInAPath for inherited attrib
   DIRNAME = "worlds"
   _alls = weakref.WeakValueDictionary()
   
+  def loaded(self):
+    for i in self:
+      if hasattr(i, "loaded"): i.loaded()
   def load(klass, filename):
     if ".." in filename: raise ValueError("Cannot have .. in filename (security reason)!", filename)
     need_export, source_file, file = klass._check_export(filename + ".data", filename, ("blender", filename.split("@")[0] + ".blend"), ("obj", filename + ".obj"), ("obj", filename + ".mtl"), ("3ds", filename + ".3ds"))

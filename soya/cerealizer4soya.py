@@ -51,7 +51,7 @@ class SavedInAPathHandler(cerealizer.ObjHandler):
   def undump_data(self, obj, dumper, s):
     if not getattr(obj, "_filename", 0): # else, has been get'ed
       cerealizer.ObjHandler.undump_data(self, obj, dumper, s)
-      
+
 cerealizer.register_class(soya.Vertex)
 cerealizer.register_class(soya.World, SavedInAPathHandler(soya.World))
 cerealizer.register_class(soya.NoBackgroundAtmosphere)
