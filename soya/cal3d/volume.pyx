@@ -125,7 +125,7 @@ mesh names."""
     cdef int           i, j
     cdef _Cal3dSubMesh submesh
     
-    if self._vertex_ok < 0: self._build_vertices(1)
+    if self._vertex_ok <= 0: self._build_vertices(1)
       
     plane = self._face_planes
     
@@ -276,7 +276,7 @@ It also resets the cycle animation time : i.e. cycles will restart from their be
     self._vertex_ok     = self._vertex_ok     - 1
     self._face_plane_ok = self._face_plane_ok - 1
     
-    if (not self._shape is None) and (self._vertex_ok < 0):
+    if (not self._shape is None) and (self._vertex_ok <= 0):
       self._build_vertices(0)
       
   def _build_vertices(self, int vertices):
@@ -352,8 +352,8 @@ It also resets the cycle animation time : i.e. cycles will restart from their be
 
   cdef void _raypick(self, RaypickData data, CoordSyst parent):
     if (self._shape is None) or (self._option & NON_SOLID): return
-    if self._vertex_ok     < 0: self._build_vertices(1)
-    if self._face_plane_ok < 0: self._build_face_planes()
+    if self._vertex_ok     <= 0: self._build_vertices(1)
+    if self._face_plane_ok <= 0: self._build_face_planes()
     
     cdef float*        raydata, *ptrf, *plane
     cdef float         z, root_z
@@ -398,7 +398,7 @@ It also resets the cycle animation time : i.e. cycles will restart from their be
     cdef int           i, j
     cdef _Cal3dSubMesh submesh
     
-    if self._vertex_ok < 0: self._build_vertices(1)
+    if self._vertex_ok <= 0: self._build_vertices(1)
     
     # XXX take into account the ray length ? e.g., if ray_length == 1.0, sphere_radius = 1.0 and (ray_origin >> self).length() > 2.0, no collision can occur
     raydata = parent._raypick_data(data)

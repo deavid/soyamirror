@@ -331,6 +331,7 @@ cdef class Renderer:
     glDisable          (GL_FOG)
     glDepthFunc        (GL_LEQUAL)
     glPushMatrix       ()
+    glEnable      (GL_CULL_FACE)
     
     for light in LIGHTS: # XXX LIGHTS, really ???
       if (light is None) or (light._option & LIGHT_NO_SHADOW): continue
@@ -352,7 +353,7 @@ cdef class Renderer:
         glStencilOp   (GL_KEEP, GL_KEEP, GL_KEEP)
         glDisable     (GL_CULL_FACE)
         
-        # Avoid casting shadows on the camera back plane :
+        # Avoid casting shadows on the camera back plane:
         # Draws only if the depth value is different than 1.0
         # (the most far possible value).
         glEnable       (GL_DEPTH_TEST)
