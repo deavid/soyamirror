@@ -357,7 +357,7 @@ cdef class _Cal3dShape(_Shape):
     ptrn   = volume._vertex_normals
     
     if renderer.state == RENDERER_STATE_SECONDPASS:
-      if volume._face_plane_ok == 0: volume._build_face_planes()
+      if volume._face_plane_ok < 0: volume._build_face_planes()
       
       frustum = renderer._frustum(coordsyst)
       plane = volume._face_planes
@@ -735,7 +735,7 @@ cdef class _Cal3dShape(_Shape):
     cdef int             i, r
     
     volume = coordsyst
-    if volume._face_plane_ok == 0: volume._build_face_planes()
+    if volume._face_plane_ok < 0: volume._build_face_planes()
     
     ptrf   = volume._vertex_coords
     ptrn   = volume._vertex_normals
