@@ -51,7 +51,8 @@ sword_model = soya.Shape.get("sword")
 
 class RotatingVolume(soya.Volume):
   
-  # The advance_time method is called repeatedly by the Idler, for all object in the scene.
+  # The Idler calls repeatedly the advance_time method, for all object in the scene.
+  # To make the volume rotate, we just have to override this method.
   # In Soya, the time unit is the "round" ; one round is 30 milliseconds (default value).
   # The proportion argument of advance_time is the proportion of a round that has occured:
   # e.g. 0.3 means that 30% of a round has occured since last call, i.e. 9 milliseconds.
