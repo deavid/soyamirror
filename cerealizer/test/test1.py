@@ -16,12 +16,25 @@ import time
 import psyco
 psyco.full()
 
-class O(object, twisted.spread.jelly.Jellyable):
+class O(object, twisted.spread.jelly.Jellyable, twisted.spread.jelly.Unjellyable):
   def __init__(self):
     self.x = 1
     self.s = "jiba"
     self.o = None
+    
+#   def getStateFor(self, jellier):
+#     return self.__dict__
   
+#   def setStateFor(self, unjellier, state):
+#     self.__dict__ = state
+    
+#   def _unjellyable_factory(clazz, state):
+#     o = clazz.__new__(clazz)
+#     o.__dict__ = state
+#     return o
+#   _unjellyable_factory = classmethod(_unjellyable_factory)
+
+
 cerealizer.register(O)
 cerealizer.freeze_configuration()
 

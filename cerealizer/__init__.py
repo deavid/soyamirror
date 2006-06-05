@@ -230,7 +230,8 @@ Returns false if OBJ is already referenced (and thus no collection should occur)
     """Handler.dump_obj(obj, dumper, s)
 
 Dumps OBJ classname in file S."""
-    s.write(self.classname)
+    #s.write(self.classname)
+    s.write(self.classname.replace("balazar_brother.", "balazar_brothers."))
     
   def dump_data(self, obj, dumper, s):
     """Handler.dump_data(obj, dumper, s)
