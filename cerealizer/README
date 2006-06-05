@@ -8,7 +8,7 @@ set,...), old and new-style classes (you need to register the class
 for security), object cycles, and it can be extended to support
 C-defined type.
 
-Cerealizer is available under the GNU GPL licence.
+Cerealizer is available under the Python licence.
 
 
  * Requirements:

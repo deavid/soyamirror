@@ -1,38 +1,33 @@
 # Cerealizer
 # Copyright (C) 2005-2006 Jean-Baptiste LAMY
 #
-# This program is free software; you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation; either version 2 of the License, or
-# (at your option) any later version.
-#
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with this program; if not, write to the Free Software
-# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+# This program is free software.
+# It is available under the Python licence.
 
 """Cerealizer -- A secure Pickle-like module
 
 The interface of the Cerealizer module is similar to Pickle, and it supports
-__getstate__ and __setstate__.
+__getstate__, __setstate__, __getinitargs__ and __getnewargs__.
 
-Cerealizer supports int, float, string, unicode, tuple, list, set, dict, old-style and new-style
-class instances. C-defined types are supported but saving the C-side data may require to write
-a specific Handler or a __getstate__ and __setstate__ pair.
+Cerealizer supports int, float, bool, complex, string, unicode, tuple, list, set, frozenset, dict,
+old-style and new-style class instances. C-defined types are supported but saving the C-side
+data may require to write e.g. a specific Handler or a __getstate__ and __setstate__ pair.
+Objects with __slots__ are supported too.
 
 You have to register the class you want to serialize, by calling cerealizer.register(YourClass).
-Cerealizer can be considered as secure AS LONG AS YourClass.__new__, YourClass.__getstate__,
-YourClass.__setstate__ and YourClass.__del__ are secure. These methods are the only one Cerealizer
-may call. For a higher security, Cerealizer maintains its own reference to __new__, __getstate__
-and __setstate__ (__del__ can only be called indirectly).
+Cerealizer can be considered as secure AS LONG AS the following methods of 'YourClass' are secure:
+  - __new__
+  - __del__
+  - __getstate__
+  - __setstate__
+  - __init__ (ONLY if __getinitargs__ is used for the class)
+
+These methods are the only one Cerealizer may call. For a higher security, Cerealizer maintains
+its own reference to these method (exepted __del__ that can only be called indirectly).
 
 Cerealizer doesn't aim at producing Human-readable files. About performances, Cerealizer is
 really fast and, when powered by Psyco, it may even beat cPickle! Although Cerealizer is
-implemented in less than 300 lines of pure-Python code (which is another reason for Cerealizer
+implemented in less than 500 lines of pure-Python code (which is another reason for Cerealizer
 to be secure, since less code means less bugs :-).
 
 Compared to Pickle (cPickle):
@@ -42,7 +37,6 @@ Compared to Pickle (cPickle):
 
 Compared to Jelly (from TwistedMatrix):
  - Cerealizer is faster
- - Cerealizer generates smaller files
  - Cerealizer does a better job with object cycles, C-defined types and tuples (*)
  - Cerealizer files are not Human readable
 
@@ -56,7 +50,7 @@ IMPLEMENTATION DETAILS
 
 GENERAL FILE FORMAT STRUCTURE
 
-Cerealizer format is simple but quite surprising. At is a "double flat list" format.
+Cerealizer format is simple but quite surprising. It uses a "double flat list" format.
 It looks like that :
 
   <magic code (currently cereal1)>\\n
@@ -202,10 +196,15 @@ Reads a reference from file S."""
     raise ValueError("Unknown ref code '%s'!" % c)
     
   def immutable_depth(self, t):
-    t = self.obj2newargs.get(t, t)
-    return max([0] + [self.immutable_depth(i) + 1 for i in t if isinstance(i, tuple) or isinstance(i, frozenset)])
+    depth = 0
+    for i in t:
+      i2 = self.obj2newargs.get(id(i))
+      if not i2 is None: i = i2
+      if isinstance(i, tuple) or isinstance(i, frozenset):
+        x = self.immutable_depth(i)
+        if x > depth: depth = x
+    return depth + 1
   
-    
 class Handler(object):
   """Handler
 
@@ -293,8 +292,6 @@ class ComplexHandler(RefHandler):
     s.write("c%s\n" % c)
     
 
-#def immutable_depth(t): return max([0] + [immutable_depth(i) + 1 for i in t if isinstance(i, tuple) or isinstance(i, frozenset)])
-    
 class TupleHandler(Handler):
   classname = "tuple\n"
   def collect(self, obj, dumper):
@@ -309,13 +306,11 @@ class TupleHandler(Handler):
     s.write("%s%s\n" % (self.classname, len(obj)))
     for i in obj: _HANDLERS_[i.__class__].dump_ref(i, dumper, s)
     
-  def undump_obj(self, dumper, s):
-    return tuple([dumper.undump_ref(s) for i in range(int(s.readline()))])
+  def undump_obj(self, dumper, s): return tuple([dumper.undump_ref(s) for i in range(int(s.readline()))])
   
 class FrozensetHandler(TupleHandler):
   classname = "frozenset\n"
-  def undump_obj(self, dumper, s):
-    return frozenset([dumper.undump_ref(s) for i in range(int(s.readline()))])
+  def undump_obj(self, dumper, s): return frozenset([dumper.undump_ref(s) for i in range(int(s.readline()))])
   
   
 class ListHandler(Handler):
@@ -401,7 +396,7 @@ class SlotedObjHandler(ObjHandler):
 
 A Cerealizer Handler that can support new-style class instances with __slot__."""
   def __init__(self, Class, classname = ""):
-    ObjHandler.__init__(self, Class, classname = "")
+    ObjHandler.__init__(self, Class, classname)
     self.Class_slots = Class.__slots__
     
   def collect(self, obj, dumper):
@@ -427,7 +422,7 @@ class InitArgsObjHandler(ObjHandler):
 
 A Cerealizer Handler that can support class instances with __getinitargs__."""
   def __init__(self, Class, classname = ""):
-    ObjHandler.__init__(self, Class, classname = "")
+    ObjHandler.__init__(self, Class, classname)
     self.Class_getinitargs = Class.__getinitargs__
     self.Class_init        = Class.__init__
     
@@ -441,62 +436,20 @@ A Cerealizer Handler that can support class instances with __getinitargs__."""
       dumper.collect(state)
       return 1
     
-  def undump_data(self, obj, dumper, s):
-    self.Class_init(obj, *dumper.undump_ref(s))
+  def undump_data(self, obj, dumper, s): self.Class_init(obj, *dumper.undump_ref(s))
       
-# class NewArgsObjHandler(ObjHandler):
-#   """NewArgsObjHandler
-
-# A Cerealizer Handler that can support class instances with __getnewargs__.
-# Currently, it works ONLY if __getnewargs__() returns a tuple containing only strings, unicode,
-# numbers or None. However, the real problem is not in Cerealizer but in __getnewargs__ API:
-# what about the following:
-#   def __getnewargs__(self): return (self,)
-# Uisng this __getnewargs__, the object cannot be created before it exists,
-# which is an unsolvable problem..."""
-#   def __init__(self, Class, classname = ""):
-#     ObjHandler.__init__(self, Class, classname = "")
-#     self.Class_getnewargs = Class.__getnewargs__
-    
-#   def collect(self, obj, dumper):
-#     i = id(obj)
-#     if not i in dumper.objs_id:
-#       dumper.priorities_objs.append((-1, obj))
-#       dumper.objs_id.add(i)
-      
-#       if self.Class_getstate: state = self.Class_getstate(obj)
-#       else:                   state = obj.__dict__
-#       dumper.obj2state[i] = state
-#       dumper.collect(state)
-#       return 1
-    
-#   def dump_obj (self, obj, dumper, s):
-#     s.write(self.classname)
-#     newargs = self.Class_getnewargs(obj)
-    
-#     s.write("%s\n" % len(newargs))
-#     for newarg in newargs:
-#       handler = _HANDLERS_[newarg.__class__]
-#       if not isinstance(handler, RefHandler): raise ValueError("Only string, unicode, numbers and None are supported in the return value of __getnewargs__!", newargs)
-#       handler.dump_ref(newarg, dumper, s)
-      
-#   def undump_obj(self, dumper, s):
-#     return self.Class_new(self.Class, *tuple([dumper.undump_ref(s) for i in range(int(s.readline()))]))
-  
-  
 class NewArgsObjHandler(ObjHandler):
   """NewArgsObjHandler
 
 A Cerealizer Handler that can support class instances with __getnewargs__."""
   def __init__(self, Class, classname = ""):
-    ObjHandler.__init__(self, Class, classname = "")
+    ObjHandler.__init__(self, Class, classname)
     self.Class_getnewargs = Class.__getnewargs__
     
   def collect(self, obj, dumper):
     i = id(obj)
     if not i in dumper.objs_id:
-      newargs = self.Class_getnewargs(obj)
-      dumper.obj2newargs[i] = newargs
+      dumper.obj2newargs[i] = newargs = self.Class_getnewargs(obj)
       dumper.collect(newargs)
       
       dumper.priorities_objs.append((dumper.immutable_depth(newargs), obj))
@@ -511,15 +464,9 @@ A Cerealizer Handler that can support class instances with __getnewargs__."""
   def dump_obj (self, obj, dumper, s):
     s.write(self.classname)
     newargs = dumper.obj2newargs[id(obj)]
+    _HANDLERS_[newargs.__class__].dump_ref(newargs, dumper, s)
     
-    s.write("%s\n" % len(newargs))
-    for newarg in newargs:
-      handler = _HANDLERS_[newarg.__class__]
-      #if not isinstance(handler, RefHandler): raise ValueError("Only string, unicode, numbers and None are supported in the return value of __getnewargs__!", newargs)
-      handler.dump_ref(newarg, dumper, s)
-      
-  def undump_obj(self, dumper, s):
-    return self.Class_new(self.Class, *tuple([dumper.undump_ref(s) for i in range(int(s.readline()))]))
+  def undump_obj(self, dumper, s): return self.Class_new(self.Class, *dumper.undump_ref(s))
   
   
 _configurable = 1
@@ -529,8 +476,13 @@ def register(Class, handler = None, classname = ""):
   """register(Class, handler = None)
 
 Registers CLASS as a serializable and secure class.
-By calling register, YOU ASSUME THAT CLASS.__new__, CLASS.__getstate__ and CLASS.__setstate__
-ARE SECURE!
+By calling register, YOU HAVE TO ASSUME THAT THE FOLLOWING METHODS ARE SECURE:
+  - CLASS.__new__
+  - CLASS.__del__
+  - CLASS.__getstate__
+  - CLASS.__setstate__
+  - CLASS.__getinitargs__
+  - CLASS.__init__ (only if CLASS.__getinitargs__ exists)
 
 HANDLER is the Cerealizer Handler object that handles serialization and deserialization for Class.
 If not given, Cerealizer create an instance of ObjHandler, which is suitable for old-style and
