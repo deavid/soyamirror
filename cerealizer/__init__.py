@@ -192,6 +192,7 @@ Reads a reference from file S."""
     elif c == "r": return self.id2obj[int(s.readline())]
     elif c == "n": return None
     elif c == "b": return bool(int(s.read(1)))
+    elif c == "l": return long(s.readline())
     elif c == "c": return complex(s.readline())
     raise ValueError("Unknown ref code '%s'!" % c)
     
@@ -281,6 +282,9 @@ class BoolHandler(RefHandler):
 
 class IntHandler(RefHandler):
   def dump_ref (self, obj, dumper, s): s.write("i%s\n" % obj)
+  
+class LongHandler(RefHandler):
+  def dump_ref (self, obj, dumper, s): s.write("l%s\n" % obj)
   
 class FloatHandler(RefHandler):
   def dump_ref (self, obj, dumper, s): s.write("f%s\n" % obj)
@@ -526,6 +530,7 @@ register(str       , StrHandler      ())
 register(unicode   , UnicodeHandler  ())
 register(bool      , BoolHandler     ())
 register(int       , IntHandler      ())
+register(long      , LongHandler     ())
 register(float     , FloatHandler    ())
 register(complex   , ComplexHandler  ())
 register(dict      , DictHandler     ())
