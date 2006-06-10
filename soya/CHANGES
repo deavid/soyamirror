@@ -213,6 +213,7 @@
   * Full support for cerealizer (i.e. save(), load() and get() can use
     cerealizer, see set_file_format and basic-savingfile-* and
     basic-loadingfile-* tutorials)
+  * Pudding listbox, by Reto Spoerri (thanks :-))
   * Idler.return_value is now readable (ease hacking the Idler :-)
   * rotate/turn_lateral/vertical/incline become rotate/turn_x/y/z
     (the old names are still their and I don't really consider them as
