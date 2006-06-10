@@ -1,3 +1,5 @@
+# -*- indent-tabs-mode: t -*-
+
 # Soya 3D tutorial
 # Copyright (C) 2004 Jean-Baptiste LAMY
 #
@@ -35,23 +37,23 @@ scene = soya.World()
 # Create a volume class that interpolates between two States.
 
 class InterpolatingVolume(soya.Volume):
-  def __init__(self, parent = None, shape = None):
-    soya.Volume.__init__(self, parent, shape)
-    
-    # Create two State objects, based on the current position of 'self'.
-    
-    self.state1 = soya.CoordSystState(self)
-    self.state2 = soya.CoordSystState(self)
-    
-    self.factor = 0.0
-    
-  def advance_time(self, proportion):
-    self.factor += 0.01 * proportion
-    
-    # interpolate(state1, state2, factor) interpolates between state1 and state2.
-    
-    self.interpolate(self.state1, self.state2, self.factor)
-    
+	def __init__(self, parent = None, shape = None):
+		soya.Volume.__init__(self, parent, shape)
+		
+		# Create two State objects, based on the current position of 'self'.
+		
+		self.state1 = soya.CoordSystState(self)
+		self.state2 = soya.CoordSystState(self)
+		
+		self.factor = 0.0
+		
+	def advance_time(self, proportion):
+		self.factor += 0.01 * proportion
+		
+		# interpolate(state1, state2, factor) interpolates between state1 and state2.
+		
+		self.interpolate(self.state1, self.state2, self.factor)
+		
 
 
 volume = InterpolatingVolume(scene, soya.cube.Cube(None).shapify())
@@ -63,7 +65,7 @@ volume = InterpolatingVolume(scene, soya.cube.Cube(None).shapify())
 volume.state1.set_xyz(-1.0, -0.5, 0.0)
 
 volume.state2.set_xyz(1.0, 1.0, -1.0)
-volume.state2.rotate_lateral(90.0)
+volume.state2.rotate_y(90.0)
 volume.state2.scale(3.0, 1.0, 1.0)
 
 

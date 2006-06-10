@@ -1,3 +1,5 @@
+# -*- indent-tabs-mode: t -*-
+
 #!/usr/bin/env python
 
 import sys, os
@@ -18,10 +20,10 @@ scene = soya.World()
 sword_model = soya.Shape.get("sword")
 sword = soya.Volume(scene, sword_model)
 sword.x = 1
-sword.rotate_lateral(90.)
+sword.rotate_y(90.)
 
 # one line rotation :)
-sword.advance_time = lambda p: sword.rotate_lateral(5.*p)
+sword.advance_time = lambda p: sword.rotate_y(5.*p)
 
 light = soya.Light(scene)
 light.set_xyz( .5, 0., 2.)
@@ -32,7 +34,7 @@ camera.z = 3.
 soya.set_root_widget(pudding.core.RootWidget())
 
 meter = pudding.ext.meter.Meter(soya.root_widget, min=0, max=100,
-                                left=10, top=10, width=100, height=20)
+																left=10, top=10, width=100, height=20)
 meter.border_color = (1, 1, 1, 1)
 
 # meterplus = pudding.ext.meter.MeterPlus(soya.root_widget, "health:", 

@@ -1,3 +1,5 @@
+# -*- indent-tabs-mode: t -*-
+
 #! /usr/bin/python -O
 
 # Game Skeleton
@@ -37,14 +39,14 @@ HERE = os.path.dirname(sys.argv[0])
 soya.path.append(os.path.join(HERE, "data"))
 
 class Level(soya.World):
-  """A game level.
+	"""A game level.
 Level is a subclass of soya.World."""
 
 
 class Action:
-  """An action that the character can do."""
-  def __init__(self, action):
-    self.action = action
+	"""An action that the character can do."""
+	def __init__(self, action):
+		self.action = action
 
 # The available actions
 ACTION_WAIT          = 0
@@ -59,166 +61,166 @@ ACTION_GO_BACK_RIGHT = 8
 
 
 class KeyboardController:
-  """A controller is an object that gives orders to a character.
+	"""A controller is an object that gives orders to a character.
 Here, we define a keyboard based controller, but there may be mouse-based or IA-based
 controllers.
 Notice that the unique method is called "next", which allows to use Python generator
 as controller."""
-  def __init__(self):
-    self.left_key_down = self.right_key_down = self.up_key_down = self.down_key_down = 0
-    
-  def next(self):
-    """Returns the next action"""
-    for event in soya.process_event():
-      if   event[0] == sdlconst.KEYDOWN:
-        if   (event[1] == sdlconst.K_q) or (event[1] == sdlconst.K_ESCAPE):
-          sys.exit() # Quit the game
+	def __init__(self):
+		self.left_key_down = self.right_key_down = self.up_key_down = self.down_key_down = 0
+		
+	def next(self):
+		"""Returns the next action"""
+		for event in soya.process_event():
+			if   event[0] == sdlconst.KEYDOWN:
+				if   (event[1] == sdlconst.K_q) or (event[1] == sdlconst.K_ESCAPE):
+					sys.exit() # Quit the game
 
-        elif event[1] == sdlconst.K_LEFT:  self.left_key_down  = 1
-        elif event[1] == sdlconst.K_RIGHT: self.right_key_down = 1
-        elif event[1] == sdlconst.K_UP:    self.up_key_down    = 1
-        elif event[1] == sdlconst.K_DOWN:  self.down_key_down  = 1
-        
-      elif event[0] == sdlconst.KEYUP:
-        if   event[1] == sdlconst.K_LEFT:  self.left_key_down  = 0
-        elif event[1] == sdlconst.K_RIGHT: self.right_key_down = 0
-        elif event[1] == sdlconst.K_UP:    self.up_key_down    = 0
-        elif event[1] == sdlconst.K_DOWN:  self.down_key_down  = 0
-    
-    # People saying that Python doesn't have switch/select case are wrong...
-    # Remember this if you are coding a fighting game !
-    return Action({
-      (0, 0, 1, 0) : ACTION_ADVANCE,
-      (1, 0, 1, 0) : ACTION_ADVANCE_LEFT,
-      (0, 1, 1, 0) : ACTION_ADVANCE_RIGHT,
-      (1, 0, 0, 0) : ACTION_TURN_LEFT,
-      (0, 1, 0, 0) : ACTION_TURN_RIGHT,
-      (0, 0, 0, 1) : ACTION_GO_BACK,
-      (1, 0, 0, 1) : ACTION_GO_BACK_LEFT,
-      (0, 1, 0, 1) : ACTION_GO_BACK_RIGHT,
-      }.get((self.left_key_down, self.right_key_down, self.up_key_down, self.down_key_down), ACTION_WAIT))
+				elif event[1] == sdlconst.K_LEFT:  self.left_key_down  = 1
+				elif event[1] == sdlconst.K_RIGHT: self.right_key_down = 1
+				elif event[1] == sdlconst.K_UP:    self.up_key_down    = 1
+				elif event[1] == sdlconst.K_DOWN:  self.down_key_down  = 1
+				
+			elif event[0] == sdlconst.KEYUP:
+				if   event[1] == sdlconst.K_LEFT:  self.left_key_down  = 0
+				elif event[1] == sdlconst.K_RIGHT: self.right_key_down = 0
+				elif event[1] == sdlconst.K_UP:    self.up_key_down    = 0
+				elif event[1] == sdlconst.K_DOWN:  self.down_key_down  = 0
+		
+		# People saying that Python doesn't have switch/select case are wrong...
+		# Remember this if you are coding a fighting game !
+		return Action({
+			(0, 0, 1, 0) : ACTION_ADVANCE,
+			(1, 0, 1, 0) : ACTION_ADVANCE_LEFT,
+			(0, 1, 1, 0) : ACTION_ADVANCE_RIGHT,
+			(1, 0, 0, 0) : ACTION_TURN_LEFT,
+			(0, 1, 0, 0) : ACTION_TURN_RIGHT,
+			(0, 0, 0, 1) : ACTION_GO_BACK,
+			(1, 0, 0, 1) : ACTION_GO_BACK_LEFT,
+			(0, 1, 0, 1) : ACTION_GO_BACK_RIGHT,
+			}.get((self.left_key_down, self.right_key_down, self.up_key_down, self.down_key_down), ACTION_WAIT))
 
 
 class Character(soya.World):
-  """A character in the game."""
-  def __init__(self, parent, controller):
-    soya.World.__init__(self, parent)
-    self.set_shape(soya.Shape.get("cube"))
-    
-    # Disable raypicking on the character itself !!!
-    self.solid = 0
-    
-    self.controller     = controller
-    self.speed          = soya.Vector(self)
-    self.rotation_speed = 0.0
+	"""A character in the game."""
+	def __init__(self, parent, controller):
+		soya.World.__init__(self, parent)
+		self.set_shape(soya.Shape.get("cube"))
+		
+		# Disable raypicking on the character itself !!!
+		self.solid = 0
+		
+		self.controller     = controller
+		self.speed          = soya.Vector(self)
+		self.rotation_speed = 0.0
 
-    # This variable are used for collision detection.
-    # radius is the radius of an approximative bounding sphere around the character,
-    # and radius_y is the same but in Y (vertical) direction only (a character is
-    # usually higher that large ;-).
-    # We need radius * sqrt(2)/2 < max speed (here, 0.35)
-    self.radius         = 0.5
-    self.radius_y       = 1.0
-    
-    # Center is a center point of the character (center of the previously mentioned
-    # bounding sphere)
-    self.center         = soya.Point(self, 0.0, self.radius_y, 0.0)
-    
-    # These vectors are the -X, X, -Y, Y, -Z, Z direction of the character.
-    self.left   = soya.Vector(self, -1.0,  0.0,  0.0)
-    self.right  = soya.Vector(self,  1.0,  0.0,  0.0)
-    self.down   = soya.Vector(self,  0.0, -1.0,  0.0)
-    self.up     = soya.Vector(self,  0.0,  1.0,  0.0)
-    self.front  = soya.Vector(self,  0.0,  0.0, -1.0)
-    self.back   = soya.Vector(self,  0.0,  0.0,  1.0)
-    
-  def begin_round(self):
-    self.begin_action(self.controller.next())
-    soya.World.begin_round(self)
-    
-  def begin_action(self, action):
-    """This method begins the action ACTION. It DOES NOT perform the action
+		# This variable are used for collision detection.
+		# radius is the radius of an approximative bounding sphere around the character,
+		# and radius_y is the same but in Y (vertical) direction only (a character is
+		# usually higher that large ;-).
+		# We need radius * sqrt(2)/2 < max speed (here, 0.35)
+		self.radius         = 0.5
+		self.radius_y       = 1.0
+		
+		# Center is a center point of the character (center of the previously mentioned
+		# bounding sphere)
+		self.center         = soya.Point(self, 0.0, self.radius_y, 0.0)
+		
+		# These vectors are the -X, X, -Y, Y, -Z, Z direction of the character.
+		self.left   = soya.Vector(self, -1.0,  0.0,  0.0)
+		self.right  = soya.Vector(self,  1.0,  0.0,  0.0)
+		self.down   = soya.Vector(self,  0.0, -1.0,  0.0)
+		self.up     = soya.Vector(self,  0.0,  1.0,  0.0)
+		self.front  = soya.Vector(self,  0.0,  0.0, -1.0)
+		self.back   = soya.Vector(self,  0.0,  0.0,  1.0)
+		
+	def begin_round(self):
+		self.begin_action(self.controller.next())
+		soya.World.begin_round(self)
+		
+	def begin_action(self, action):
+		"""This method begins the action ACTION. It DOES NOT perform the action
 (see advance_time for that). But it does "decode" the action, and NOW it check for any
 character-level collision that may occur. It also check if the character is on the
 ground, and if not it make him stat falling."""
-    # Reset
-    self.rotation_speed = self.speed.x = self.speed.z = 0.0
-    if self.speed.y > 0.0: self.speed.y = 0.0
-    # If self.speed.y < 0.0, the character is falling, and we want him to continue
-    # to fall, and even fall faster and faster, so we don't reset self.speed.y to 0.0.
-    
-    # Determine the character rotation
-    if   action.action in (ACTION_TURN_LEFT, ACTION_ADVANCE_LEFT, ACTION_GO_BACK_LEFT):
-      self.rotation_speed = 5.0
-    elif action.action in (ACTION_TURN_RIGHT, ACTION_ADVANCE_RIGHT, ACTION_GO_BACK_RIGHT):
-      self.rotation_speed = -5.0
-      
-    # Determine the character speed
-    if   action.action in (ACTION_ADVANCE, ACTION_ADVANCE_LEFT, ACTION_ADVANCE_RIGHT):
-      self.speed.z = -0.35
-    elif action.action in (ACTION_GO_BACK, ACTION_GO_BACK_LEFT, ACTION_GO_BACK_RIGHT):
-      self.speed.z = 0.2
+		# Reset
+		self.rotation_speed = self.speed.x = self.speed.z = 0.0
+		if self.speed.y > 0.0: self.speed.y = 0.0
+		# If self.speed.y < 0.0, the character is falling, and we want him to continue
+		# to fall, and even fall faster and faster, so we don't reset self.speed.y to 0.0.
+		
+		# Determine the character rotation
+		if   action.action in (ACTION_TURN_LEFT, ACTION_ADVANCE_LEFT, ACTION_GO_BACK_LEFT):
+			self.rotation_speed = 5.0
+		elif action.action in (ACTION_TURN_RIGHT, ACTION_ADVANCE_RIGHT, ACTION_GO_BACK_RIGHT):
+			self.rotation_speed = -5.0
+			
+		# Determine the character speed
+		if   action.action in (ACTION_ADVANCE, ACTION_ADVANCE_LEFT, ACTION_ADVANCE_RIGHT):
+			self.speed.z = -0.35
+		elif action.action in (ACTION_GO_BACK, ACTION_GO_BACK_LEFT, ACTION_GO_BACK_RIGHT):
+			self.speed.z = 0.2
 
-    # Computes the new center of the character, after the move
-    # (this is a Point + Vector addition, i.e. a translation)
-    new_center = self.center + self.speed
-    
-    # Creates a raypicking context, from a center and a radius.
-    # Raypicking contexts allows faster raypicking if you perform several raypicking
-    # in the same region, by selecting in advance all the objects susceptible to
-    # collide with the ray.
-    context = scene.RaypickContext(new_center, max(self.radius, 0.1 + self.radius_y))
-    
-    # Gets the ground, and check if the character is falling
-    # To do so, we perform a raypicking in the down direction.
-    # If successful, the raypick method returns a
-    # (collision point, collision normal) tuple.
-    r = context.raypick(new_center, self.down, 0.1 + self.radius_y, 1, 1)
-    if r:
-      # Character's feet are on or below the ground, so we puts the character
-      # on the ground.
-      ground, ground_normal = r
-      ground.convert_to(self)
-      self.speed.y = ground.y
-    else:
-      # No ground => start falling
-      # Test the fall with the pit behind the second house
-      # We increase self.speed.y from 0.0 to -0.5 with a step of -0.05
-      self.speed.y = max(self.speed.y - 0.05, -0.5)
-      
-    # The movement (defined by the speed vector) may be impossible if the character
-    # would encounter a wall.
-    
-    # Character-level collision
-    for vec in (self.left, self.right, self.front, self.back, self.up):
-      r = context.raypick(new_center, vec, self.radius, 1, 1)
-      if r:
-        # The ray encounters a wall => the character cannot perform the planned movement.
-        # We compute a correction vector, and add it to the speed vector, as well as to
-        # new_center (for the following raypicks ; remember that
-        # new_center = self.center + self.speed, so if speed has changed, we must update
-        # it).
-        
-        collision, wall_normal = r
-        hypo = vec.length() * self.radius - new_center.distance_to(collision)
-        correction = wall_normal * hypo
-        
-        # Theorical formula, but more complex and identical result
-        #angle = (180.0 - vec.angle_to(wall_normal)) / 180.0 * math.pi
-        #correction = wall_normal * hypo * math.cos(angle)
+		# Computes the new center of the character, after the move
+		# (this is a Point + Vector addition, i.e. a translation)
+		new_center = self.center + self.speed
+		
+		# Creates a raypicking context, from a center and a radius.
+		# Raypicking contexts allows faster raypicking if you perform several raypicking
+		# in the same region, by selecting in advance all the objects susceptible to
+		# collide with the ray.
+		context = scene.RaypickContext(new_center, max(self.radius, 0.1 + self.radius_y))
+		
+		# Gets the ground, and check if the character is falling
+		# To do so, we perform a raypicking in the down direction.
+		# If successful, the raypick method returns a
+		# (collision point, collision normal) tuple.
+		r = context.raypick(new_center, self.down, 0.1 + self.radius_y, 1, 1)
+		if r:
+			# Character's feet are on or below the ground, so we puts the character
+			# on the ground.
+			ground, ground_normal = r
+			ground.convert_to(self)
+			self.speed.y = ground.y
+		else:
+			# No ground => start falling
+			# Test the fall with the pit behind the second house
+			# We increase self.speed.y from 0.0 to -0.5 with a step of -0.05
+			self.speed.y = max(self.speed.y - 0.05, -0.5)
+			
+		# The movement (defined by the speed vector) may be impossible if the character
+		# would encounter a wall.
+		
+		# Character-level collision
+		for vec in (self.left, self.right, self.front, self.back, self.up):
+			r = context.raypick(new_center, vec, self.radius, 1, 1)
+			if r:
+				# The ray encounters a wall => the character cannot perform the planned movement.
+				# We compute a correction vector, and add it to the speed vector, as well as to
+				# new_center (for the following raypicks ; remember that
+				# new_center = self.center + self.speed, so if speed has changed, we must update
+				# it).
+				
+				collision, wall_normal = r
+				hypo = vec.length() * self.radius - new_center.distance_to(collision)
+				correction = wall_normal * hypo
+				
+				# Theorical formula, but more complex and identical result
+				#angle = (180.0 - vec.angle_to(wall_normal)) / 180.0 * math.pi
+				#correction = wall_normal * hypo * math.cos(angle)
 
-        # Adds the correction vector to the speed vector and to new_center
-        # (Point + Vector addition, i.e. translation)
-        self.speed += correction
-        new_center += correction
-        
-  def advance_time(self, proportion):
-    soya.World.advance_time(self, proportion)
-    
-    self.add_mul_vector(proportion, self.speed)
-    self.rotate_lateral(proportion * self.rotation_speed)
-    
-    
+				# Adds the correction vector to the speed vector and to new_center
+				# (Point + Vector addition, i.e. translation)
+				self.speed += correction
+				new_center += correction
+				
+	def advance_time(self, proportion):
+		soya.World.advance_time(self, proportion)
+		
+		self.add_mul_vector(proportion, self.speed)
+		self.rotate_y(proportion * self.rotation_speed)
+		
+		
 # Create the scene (a world with no parent)
 scene = soya.World()
 

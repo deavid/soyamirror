@@ -1,3 +1,5 @@
+# -*- indent-tabs-mode: t -*-
+
 # Soya 3D
 # Copyright (C) 2004 Jean-Baptiste LAMY -- jiba@tuxfamily.org
 #
@@ -16,6 +18,6 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 cdef class _WaterCube(CoordSyst):
-  cdef void _render_watercube(self)
+	cdef void _render_watercube(self)
 
 

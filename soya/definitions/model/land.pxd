@@ -1,3 +1,5 @@
+# -*- indent-tabs-mode: t -*-
+
 # Soya 3D
 # Copyright (C) 2004 Jean-Baptiste LAMY -- jiba@tuxfamily.org
 #
@@ -16,40 +18,40 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 ctypedef struct LandVertex:
-  float texcoord[2]
-  float normal  [3]
-  float coord   [3]
-  Pack* pack
+	float texcoord[2]
+	float normal  [3]
+	float coord   [3]
+	Pack* pack
 
 cdef struct _LandTri
 
 cdef struct _LandPatch:
-  float     sphere[4]
-  char      level # precision level for rendering
-  _LandTri* tri_top
-  _LandTri* tri_left
-  _LandTri* tri_right
-  _LandTri* tri_bottom
-  int       visible
+	float     sphere[4]
+	char      level # precision level for rendering
+	_LandTri* tri_top
+	_LandTri* tri_left
+	_LandTri* tri_right
+	_LandTri* tri_bottom
+	int       visible
 ctypedef _LandPatch LandPatch
 
 cdef struct _LandTri:
-  char        level
-  float       normal[3]
-  float       sphere[4]
-  # 3 vertices that determine the triangle. turn right to left (CCW)
-  LandVertex* v1 # apex vertex
-  LandVertex* v2 # right vertex for the apex
-  LandVertex* v3 # left vertex for the apex
-  _LandTri*   parent
-  _LandTri*   left_child
-  _LandTri*   right_child
-  _LandTri*   left_neighbor
-  _LandTri*   right_neighbor
-  _LandTri*   base_neighbor
-  Pack*       pack
-  LandPatch*  patch
-  int         texcoord_type # 0: use landvertex texcoord, 1, 2, 3, 4: the tri use a texture generated (from blend_material), and the texcoord are (0.0, 0.0) - (1.0, 1.0)
+	char        level
+	float       normal[3]
+	float       sphere[4]
+	# 3 vertices that determine the triangle. turn right to left (CCW)
+	LandVertex* v1 # apex vertex
+	LandVertex* v2 # right vertex for the apex
+	LandVertex* v3 # left vertex for the apex
+	_LandTri*   parent
+	_LandTri*   left_child
+	_LandTri*   right_child
+	_LandTri*   left_neighbor
+	_LandTri*   right_neighbor
+	_LandTri*   base_neighbor
+	Pack*       pack
+	LandPatch*  patch
+	int         texcoord_type # 0: use landvertex texcoord, 1, 2, 3, 4: the tri use a texture generated (from blend_material), and the texcoord are (0.0, 0.0) - (1.0, 1.0)
 ctypedef _LandTri LandTri
 
 ctypedef void (*land_drawColor_FUNC   )(float*)
@@ -57,69 +59,69 @@ ctypedef void (*land_disableColor_FUNC)()
 ctypedef void (*land_enableColor_FUNC )()
 
 cdef class _Land(CoordSyst):
-  cdef             _materials
-  cdef LandVertex* _vertices
-  cdef char*       _vertex_options
-  cdef int*        _vertex_colors
-  cdef float*      _vertex_geos # Geomorph Y coordinate
-  cdef float*      _normals # full LOD triangles normals
-  cdef int         _nb_colors
-  cdef float*      _colors # vertices colors
-  cdef int         _nb_vertex_width # size_width and size_depth must be (2^n) + 1
-  cdef int         _nb_vertex_depth # or I don't know what happen (crash?)
-  cdef int         _patch_size
-  cdef int         _max_level
-  cdef float       _texture_factor # a factor that multiply the texture coordinates
-  cdef float       _scale_factor # a factor to decide when the triangle must split (higher value means more accuracy)
-  cdef float       _split_factor
-  cdef int         _nb_patchs
-  cdef int         _nb_patch_width
-  cdef int         _nb_patch_depth
-  cdef LandPatch*  _patchs
+	cdef             _materials
+	cdef LandVertex* _vertices
+	cdef char*       _vertex_options
+	cdef int*        _vertex_colors
+	cdef float*      _vertex_geos # Geomorph Y coordinate
+	cdef float*      _normals # full LOD triangles normals
+	cdef int         _nb_colors
+	cdef float*      _colors # vertices colors
+	cdef int         _nb_vertex_width # size_width and size_depth must be (2^n) + 1
+	cdef int         _nb_vertex_depth # or I don't know what happen (crash?)
+	cdef int         _patch_size
+	cdef int         _max_level
+	cdef float       _texture_factor # a factor that multiply the texture coordinates
+	cdef float       _scale_factor # a factor to decide when the triangle must split (higher value means more accuracy)
+	cdef float       _split_factor
+	cdef int         _nb_patchs
+	cdef int         _nb_patch_width
+	cdef int         _nb_patch_depth
+	cdef LandPatch*  _patchs
 
-  cdef LandVertex* _get_vertex(self, int x, int z)
-  cdef void _check_size(self)
-  cdef void _free_patchs(self)
-  cdef void __del__(self)
-  cdef void _add_material(self, _Material material)
-  cdef float _get_height(self, int x, int z)
-  cdef void _set_height (self, int x, int z, float height)
-  cdef void _init(self)
-  cdef void _compute_normal(self, int x, int y)
-  cdef void _compute_normals(self)
-  cdef void _compute_coords(self)
-  cdef void _create_patch(self, LandPatch* patch, int x, int z, int patch_size)
-  cdef void _create_patchs(self)
-  cdef int _register_color(self, float color[4])
-  cdef void _tri_split(self, LandTri* tri)
-  cdef int _tri_merge_child(self, LandTri* tri)
-  cdef void _tri_set_level(self, LandTri* tri, char level)
-  cdef void _patch_set_level(self, LandPatch* patch, char level)
-  cdef int _patch_update(self, LandPatch* patch, Frustum* frustum, float* frustum_box)
-  cdef void _tri_force_presence(self, LandTri* tri, LandVertex* v)
-  cdef void _force_presence(self)
-  cdef void _tri_batch(self, LandTri* tri, Frustum* frustum)
-  cdef void _patch_batch(self, LandPatch* patch, Frustum* frustum)
-  cdef void _batch(self, CoordSyst coordsyst)
-  cdef void _tri_render_middle(self, LandTri* tri)
-  cdef void _tri_render_secondpass(self, LandTri* tri)
-  cdef void _render(self, CoordSyst coordsyst)
-  cdef void _tri_raypick(self, LandTri* tri, float* raydata, RaypickData data)
-  cdef int _tri_raypick_b(self, LandTri* tri, float* raydata, int option)
-  cdef void _full_raypick(self, LandVertex* v1, LandVertex* v2, LandVertex* v3, float* normal, float* raydata, RaypickData data)
-  cdef void _full_raypick_rect(self, int x1, int z1, int x2, int z2, float* raydata, RaypickData data)
-  cdef void _raypick(self, RaypickData raypick_data, CoordSyst raypickable)
-  cdef int _full_raypick_b(self, LandVertex* v1, LandVertex* v2, LandVertex* v3, float* normal, float* raydata, int option)
-  cdef int _full_raypick_rect_b(self, int x1, int z1, int x2, int z2, float* raydata, int option)
-  cdef int _raypick_b(self, RaypickData raypick_data, CoordSyst raypickable)
-  cdef void _collect_raypickables(self, Chunk* items, float* rsphere, float* sphere)
-  cdef __getcstate__(self)
-  cdef void __setcstate__(self, object cstate)
-  cdef void _check_vertex_options(self)
-  cdef int _check_color(self, float* color)
-  
-  # For Blam landscape
-  cdef void _vertex_render_special(self, LandVertex* vertex)
+	cdef LandVertex* _get_vertex(self, int x, int z)
+	cdef void _check_size(self)
+	cdef void _free_patchs(self)
+	cdef void __del__(self)
+	cdef void _add_material(self, _Material material)
+	cdef float _get_height(self, int x, int z)
+	cdef void _set_height (self, int x, int z, float height)
+	cdef void _init(self)
+	cdef void _compute_normal(self, int x, int y)
+	cdef void _compute_normals(self)
+	cdef void _compute_coords(self)
+	cdef void _create_patch(self, LandPatch* patch, int x, int z, int patch_size)
+	cdef void _create_patchs(self)
+	cdef int _register_color(self, float color[4])
+	cdef void _tri_split(self, LandTri* tri)
+	cdef int _tri_merge_child(self, LandTri* tri)
+	cdef void _tri_set_level(self, LandTri* tri, char level)
+	cdef void _patch_set_level(self, LandPatch* patch, char level)
+	cdef int _patch_update(self, LandPatch* patch, Frustum* frustum, float* frustum_box)
+	cdef void _tri_force_presence(self, LandTri* tri, LandVertex* v)
+	cdef void _force_presence(self)
+	cdef void _tri_batch(self, LandTri* tri, Frustum* frustum)
+	cdef void _patch_batch(self, LandPatch* patch, Frustum* frustum)
+	cdef void _batch(self, CoordSyst coordsyst)
+	cdef void _tri_render_middle(self, LandTri* tri)
+	cdef void _tri_render_secondpass(self, LandTri* tri)
+	cdef void _render(self, CoordSyst coordsyst)
+	cdef void _tri_raypick(self, LandTri* tri, float* raydata, RaypickData data)
+	cdef int _tri_raypick_b(self, LandTri* tri, float* raydata, int option)
+	cdef void _full_raypick(self, LandVertex* v1, LandVertex* v2, LandVertex* v3, float* normal, float* raydata, RaypickData data)
+	cdef void _full_raypick_rect(self, int x1, int z1, int x2, int z2, float* raydata, RaypickData data)
+	cdef void _raypick(self, RaypickData raypick_data, CoordSyst raypickable)
+	cdef int _full_raypick_b(self, LandVertex* v1, LandVertex* v2, LandVertex* v3, float* normal, float* raydata, int option)
+	cdef int _full_raypick_rect_b(self, int x1, int z1, int x2, int z2, float* raydata, int option)
+	cdef int _raypick_b(self, RaypickData raypick_data, CoordSyst raypickable)
+	cdef void _collect_raypickables(self, Chunk* items, float* rsphere, float* sphere)
+	cdef __getcstate__(self)
+	cdef void __setcstate__(self, object cstate)
+	cdef void _check_vertex_options(self)
+	cdef int _check_color(self, float* color)
+	
+	# For Blam landscape
+	cdef void _vertex_render_special(self, LandVertex* vertex)
 
-  
+	
 

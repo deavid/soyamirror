@@ -1,3 +1,5 @@
+# -*- indent-tabs-mode: t -*-
+
 # Soya 3D tutorial
 # Copyright (C) 2001-2004 Jean-Baptiste LAMY
 #
@@ -104,21 +106,21 @@ sword_cellshaded_shape = sword.shapify()
 # one is cell-shaded.
 
 class RotatingVolume(soya.Volume):
-  def __init__(self, parent = None, shape = None, sens = 1.0):
-    soya.Volume.__init__(self, parent, shape)
-    self.sens = sens
-    
-  def advance_time(self, proportion):
-    soya.Volume.advance_time(self, proportion)
-    self.rotate_lateral(proportion * 2.0 * self.sens)
+	def __init__(self, parent = None, shape = None, sens = 1.0):
+		soya.Volume.__init__(self, parent, shape)
+		self.sens = sens
+		
+	def advance_time(self, proportion):
+		soya.Volume.advance_time(self, proportion)
+		self.rotate_y(proportion * 2.0 * self.sens)
 
 volume1 = RotatingVolume(scene, sword_shape)
 volume1.set_xyz(-1.0, 0.0, 0.0)
-volume1.rotate_vertical(90.0)
+volume1.rotate_x(90.0)
 
 volume2 = RotatingVolume(scene, sword_cellshaded_shape, -1)
 volume2.set_xyz( 1.0, 0.0, 0.0)
-volume2.rotate_vertical(90.0)
+volume2.rotate_x(90.0)
 
 # Creates a light.
 

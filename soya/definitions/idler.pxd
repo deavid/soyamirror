@@ -1,3 +1,5 @@
+# -*- indent-tabs-mode: t -*-
+
 # Soya 3D
 # Copyright (C) 2001-2004 Jean-Baptiste LAMY -- jiba@tuxfamily.org
 #
@@ -16,11 +18,11 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 cdef class Idler:
-  cdef                 _next_round_tasks, _return_value
-  cdef                 _scenes
-  cdef public   double round_duration, min_frame_duration
-  cdef readonly double fps
-  cdef public   int    running
-  cdef public   int    will_render
-  cdef double          _time, _time_since_last_round
-    
+	cdef                 _next_round_tasks, _return_value
+	cdef                 _scenes
+	cdef public   double round_duration, min_frame_duration
+	cdef readonly double fps
+	cdef public   int    running
+	cdef public   int    will_render
+	cdef double          _time, _time_since_last_round
+		

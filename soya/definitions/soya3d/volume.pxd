@@ -1,3 +1,5 @@
+# -*- indent-tabs-mode: t -*-
+
 # Soya 3D
 # Copyright (C) 2003-2004 Jean-Baptiste LAMY -- jiba@tuxfamily.org
 #
@@ -18,15 +20,15 @@
 
 
 cdef class _Volume(CoordSyst):
-  cdef _Shape _shape
-  
-  cdef __getcstate__(self)
-  cdef void __setcstate__(self, object cstate)
-  cdef void _batch(self, CoordSyst coordsyst)
-  cdef int _shadow(self, CoordSyst coordsyst, _Light light)
-  cdef void _raypick(self, RaypickData raypick_data, CoordSyst raypickable)
-  cdef int _raypick_b(self, RaypickData raypick_data, CoordSyst raypickable)
-  cdef void _collect_raypickables(self, Chunk* items, float* rsphere, float* sphere)
-  cdef int _contains(self, _CObj obj)
-  cdef void _get_box(self, float* box, float* matrix)
+	cdef _Shape _shape
+	
+	cdef __getcstate__(self)
+	cdef void __setcstate__(self, object cstate)
+	cdef void _batch(self, CoordSyst coordsyst)
+	cdef int _shadow(self, CoordSyst coordsyst, _Light light)
+	cdef void _raypick(self, RaypickData raypick_data, CoordSyst raypickable)
+	cdef int _raypick_b(self, RaypickData raypick_data, CoordSyst raypickable)
+	cdef void _collect_raypickables(self, Chunk* items, float* rsphere, float* sphere)
+	cdef int _contains(self, _CObj obj)
+	cdef void _get_box(self, float* box, float* matrix)
 

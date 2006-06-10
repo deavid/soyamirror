@@ -1,3 +1,5 @@
+# -*- indent-tabs-mode: t -*-
+
 # Soya 3D tutorial
 # Copyright (C) 2004 Jean-Baptiste LAMY
 #
@@ -42,71 +44,71 @@ scene = soya.World()
 # So... no comment!
 
 class CaterpillarHead(soya.Volume):
-  def __init__(self, parent):
-    soya.Volume.__init__(self, parent, soya.Shape.get("caterpillar_head"))
-    self.speed = soya.Vector(self, 0.0, 0.0, -0.2)
-    
-  def begin_round(self):
-    soya.Volume.begin_round(self)
-    
-    self.rotate_lateral((random.random() - 0.5) * 50.0)
-    
-  def advance_time(self, proportion):
-    soya.Volume.advance_time(self, proportion)
-    
-    self.add_mul_vector(proportion, self.speed)
+	def __init__(self, parent):
+		soya.Volume.__init__(self, parent, soya.Shape.get("caterpillar_head"))
+		self.speed = soya.Vector(self, 0.0, 0.0, -0.2)
+		
+	def begin_round(self):
+		soya.Volume.begin_round(self)
+		
+		self.rotate_y((random.random() - 0.5) * 50.0)
+		
+	def advance_time(self, proportion):
+		soya.Volume.advance_time(self, proportion)
+		
+		self.add_mul_vector(proportion, self.speed)
 
 
 # A CaterpillarPiece is a piece of the body of the caterpillar.
 # It follows another object -- the previous piece, or the head for the first one.
 
 class CaterpillarPiece(soya.Volume):
-  
-  # The constructor takes two arguments: the parent and the previous piece of body that
-  # we must follow.
-  # Similarly to the head, we define a speed vector.
-  
-  def __init__(self, parent, previous):
-    soya.Volume.__init__(self, parent, soya.Shape.get("caterpillar"))
-    self.previous = previous
-    self.speed = soya.Vector(self, 0.0, 0.0, -0.2)
-    
-  def begin_round(self):
-    soya.Volume.begin_round(self)
-    
-    # We rotates the caterpillar piece so as it looks toward the previous piece.
-    
-    self.look_at(self.previous)
-    
-    # The distance_to method returns the distance between two position.
-    # If we are too close to the previous piece of body, we set the speed's Z to 0.0,
-    # and thus the speed is a null vector : this piece no longer moves.
-    
-    # Else, we reset the speed's Z to -0.2.
-    
-    if self.distance_to(self.previous) < 1.5: self.speed.z =  0.0
-    else:                                     self.speed.z = -0.2
-    
-  # advance_time is identical to the CaterpillarHead ones.
-  
-  def advance_time(self, proportion):
-    soya.Volume.advance_time(self, proportion)
-    
-    self.add_mul_vector(proportion, self.speed)
-    
+	
+	# The constructor takes two arguments: the parent and the previous piece of body that
+	# we must follow.
+	# Similarly to the head, we define a speed vector.
+	
+	def __init__(self, parent, previous):
+		soya.Volume.__init__(self, parent, soya.Shape.get("caterpillar"))
+		self.previous = previous
+		self.speed = soya.Vector(self, 0.0, 0.0, -0.2)
+		
+	def begin_round(self):
+		soya.Volume.begin_round(self)
+		
+		# We rotates the caterpillar piece so as it looks toward the previous piece.
+		
+		self.look_at(self.previous)
+		
+		# The distance_to method returns the distance between two position.
+		# If we are too close to the previous piece of body, we set the speed's Z to 0.0,
+		# and thus the speed is a null vector : this piece no longer moves.
+		
+		# Else, we reset the speed's Z to -0.2.
+		
+		if self.distance_to(self.previous) < 1.5: self.speed.z =  0.0
+		else:                                     self.speed.z = -0.2
+		
+	# advance_time is identical to the CaterpillarHead ones.
+	
+	def advance_time(self, proportion):
+		soya.Volume.advance_time(self, proportion)
+		
+		self.add_mul_vector(proportion, self.speed)
+		
 
 # Creates a caterpillar head.
 
 caterpillar_head = CaterpillarHead(scene)
-caterpillar_head.rotate_lateral(90.0)
+caterpillar_head.rotate_y(90.0)
 
 # Creates 10 caterpillar piece of body.
 
 previous_caterpillar_piece = caterpillar_head
 for i in range(10):
-  previous_caterpillar_piece = CaterpillarPiece(scene, previous_caterpillar_piece)
-  previous_caterpillar_piece.x = i + 1
-  
+	previous_caterpillar_piece = CaterpillarPiece(scene, previous_caterpillar_piece)
+	previous_caterpillar_piece.x = i + 1
+	
 # Creates a light.
 
 light = soya.Light(scene)

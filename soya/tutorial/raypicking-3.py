@@ -1,3 +1,5 @@
+# -*- indent-tabs-mode: t -*-
+
 # Soya 3D tutorial
 # Copyright (C) 2001-2004 Jean-Baptiste LAMY
 #
@@ -35,7 +37,7 @@ scene = soya.World()
 sorcerer_shape = soya.Cal3dShape.get("balazar")
 
 sorcerer = soya.Cal3dVolume(scene, sorcerer_shape)
-sorcerer.rotate_lateral(-120.0)
+sorcerer.rotate_y(-120.0)
 sorcerer.animate_blend_cycle("marche")
 sorcerer.set_xyz(-1.0, -1.0, 0.0)
 sorcerer.solid = 1
@@ -63,26 +65,26 @@ soya.cursor_set_visible(0)
 # MouseLaser is a subclass of laser that is controlled by the mouse.
 
 class MouseLaser(soya.laser.Laser):
-  def begin_round(self):
-    soya.laser.Laser.begin_round(self)
-    
-    # Processes the events
-    
-    for event in soya.process_event():
-      if event[0] == soya.sdlconst.MOUSEMOTION:
+	def begin_round(self):
+		soya.laser.Laser.begin_round(self)
+		
+		# Processes the events
+		
+		for event in soya.process_event():
+			if event[0] == soya.sdlconst.MOUSEMOTION:
 
-        # For mouse motion event, rotate the laser (quite) toward the mouse.
-        # The formulas are empirical; see soya.cursor for a better algorithm
-        # if you want to translate mouse positions into 3D coordinates.
+				# For mouse motion event, rotate the laser (quite) toward the mouse.
+				# The formulas are empirical; see soya.cursor for a better algorithm
+				# if you want to translate mouse positions into 3D coordinates.
 
-        mouse = soya.Point(
-          scene,
-          (float(event[1]) / camera.get_screen_width () - 0.5) *  4.0,
-          (float(event[2]) / camera.get_screen_height() - 0.5) * -4.0,
-          0.0,
-          )
-        self.look_at(mouse)
-      
+				mouse = soya.Point(
+					scene,
+					(float(event[1]) / camera.get_screen_width () - 0.5) *  4.0,
+					(float(event[2]) / camera.get_screen_height() - 0.5) * -4.0,
+					0.0,
+					)
+				self.look_at(mouse)
+			
 
 # Creates a red mouse-controlled laser, which reflect on walls.
 # You can change the laser color with laser.color = (r, g, b, a).

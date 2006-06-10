@@ -1,3 +1,5 @@
+# -*- indent-tabs-mode: t -*-
+
 # Soya 3D
 # Copyright (C) 2003-2004 Jean-Baptiste LAMY -- jiba@tuxfamily.org
 #
@@ -16,15 +18,15 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 cdef class _Camera(CoordSyst):
-  cdef _World   _to_render
-  cdef float    _front, _back, _fov
-  cdef Frustum* _frustum
-  cdef int      _viewport[4]
-  cdef          _master
-  
-  cdef __getcstate__(self)
-  cdef void __setcstate__(self, object cstate)
-  cdef void _init_frustum(self)
-  cdef void _subrender_scene(self)
-  cdef void _render_scene(self)
+	cdef _World   _to_render
+	cdef float    _front, _back, _fov
+	cdef Frustum* _frustum
+	cdef int      _viewport[4]
+	cdef          _master
+	
+	cdef __getcstate__(self)
+	cdef void __setcstate__(self, object cstate)
+	cdef void _init_frustum(self)
+	cdef void _subrender_scene(self)
+	cdef void _render_scene(self)
 

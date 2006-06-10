@@ -1,3 +1,5 @@
+# -*- indent-tabs-mode: t -*-
+
 # Soya 3D tutorial
 # Copyright (C) 2004 Jean-Baptiste LAMY
 #
@@ -58,13 +60,13 @@ soya.facecutter.cut(sword2, 80)
 
 volume1 = soya.Volume(scene, sword1.shapify())
 volume1.set_xyz(-1.0, -0.5, 0.0)
-volume1.rotate_vertical(90.0)
-volume1.rotate_lateral (90.0)
+volume1.rotate_x(90.0)
+volume1.rotate_y(90.0)
 
 volume2 = soya.Volume(scene, sword2.shapify())
 volume2.set_xyz(1.0, -0.5, 0.0)
-volume2.rotate_vertical(90.0)
-volume2.rotate_lateral (90.0)
+volume2.rotate_x(90.0)
+volume2.rotate_y(90.0)
 
 # Renders the scene in wireframe mode -- it's easier to see the facecutter action
 # in wireframe.

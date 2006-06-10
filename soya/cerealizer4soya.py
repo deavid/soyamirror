@@ -1,3 +1,5 @@
+# -*- indent-tabs-mode: t -*-
+
 # Soya
 # Copyright (C) 2005 Jean-Baptiste LAMY
 #
@@ -27,30 +29,30 @@ _soya = sys.modules["soya._soya"]
 
 
 class SavedInAPathHandler(cerealizer.ObjHandler):
-  def collect(self, obj, dumper):
-    if (not soya._SAVING is obj) and obj._filename: # self is saved in another file, save filename only
-      return cerealizer.Handler.collect(self, obj, dumper)
-    else: return cerealizer.ObjHandler.collect(self, obj, dumper)
-    
-  def dump_obj(self, obj, dumper, s):
-    cerealizer.ObjHandler.dump_obj(self, obj, dumper, s)
-    if (not soya._SAVING is obj) and obj._filename: # self is saved in another file, save filename only
-      dumper.dump_ref(obj._filename, s)
-    else: dumper.dump_ref("", s)
-    
-  def dump_data(self, obj, dumper, s):
-    if (not soya._SAVING is obj) and obj._filename: # self is saved in another file, save filename only
-      return cerealizer.Handler.dump_data(self, obj, dumper, s)
-    else: cerealizer.ObjHandler.dump_data(self, obj, dumper, s)
-    
-  def undump_obj(self, dumper, s):
-    filename = dumper.undump_ref(s)
-    if filename: return self.Class._reffed(filename)
-    return cerealizer.ObjHandler.undump_obj(self, dumper, s)
-  
-  def undump_data(self, obj, dumper, s):
-    if not getattr(obj, "_filename", 0): # else, has been get'ed
-      cerealizer.ObjHandler.undump_data(self, obj, dumper, s)
+	def collect(self, obj, dumper):
+		if (not soya._SAVING is obj) and obj._filename: # self is saved in another file, save filename only
+			return cerealizer.Handler.collect(self, obj, dumper)
+		else: return cerealizer.ObjHandler.collect(self, obj, dumper)
+		
+	def dump_obj(self, obj, dumper, s):
+		cerealizer.ObjHandler.dump_obj(self, obj, dumper, s)
+		if (not soya._SAVING is obj) and obj._filename: # self is saved in another file, save filename only
+			dumper.dump_ref(obj._filename, s)
+		else: dumper.dump_ref("", s)
+		
+	def dump_data(self, obj, dumper, s):
+		if (not soya._SAVING is obj) and obj._filename: # self is saved in another file, save filename only
+			return cerealizer.Handler.dump_data(self, obj, dumper, s)
+		else: cerealizer.ObjHandler.dump_data(self, obj, dumper, s)
+		
+	def undump_obj(self, dumper, s):
+		filename = dumper.undump_ref(s)
+		if filename: return self.Class._reffed(filename)
+		return cerealizer.ObjHandler.undump_obj(self, dumper, s)
+	
+	def undump_data(self, obj, dumper, s):
+		if not getattr(obj, "_filename", 0): # else, has been get'ed
+			cerealizer.ObjHandler.undump_data(self, obj, dumper, s)
 
 cerealizer.register_class(soya.Vertex)
 cerealizer.register_class(soya.World, SavedInAPathHandler(soya.World))
@@ -104,31 +106,31 @@ cerealizer.register_class(_soya.FlagSubFire)
 
 
 if __name__ == "__main__": # Testing stuff
-  class W(soya.World):
-    def __setstate__(self, state):
-      print "children", self.children
-      print "W.__setstate__", state
-      soya.World.__setstate__(self, state)
-      print "children", self.children
-  cerealizer.register_class(W)
-    
-  class V(soya.Volume):
-    def __setstate__(self, state):
-      print "V.__setstate__", state
-  cerealizer.register_class(V)
-  
-  w = W()
-  #v = soya.Volume(w)
-  v = V(w)
-  
-  
-  print w.__getstate__()
-  
-  s = cerealizer.dumps(w)
-  print s
-  z = cerealizer.loads(s)
-  print z
-  print
-  
-  print z.children[0].parent
-  
+	class W(soya.World):
+		def __setstate__(self, state):
+			print "children", self.children
+			print "W.__setstate__", state
+			soya.World.__setstate__(self, state)
+			print "children", self.children
+	cerealizer.register_class(W)
+		
+	class V(soya.Volume):
+		def __setstate__(self, state):
+			print "V.__setstate__", state
+	cerealizer.register_class(V)
+	
+	w = W()
+	#v = soya.Volume(w)
+	v = V(w)
+	
+	
+	print w.__getstate__()
+	
+	s = cerealizer.dumps(w)
+	print s
+	z = cerealizer.loads(s)
+	print z
+	print
+	
+	print z.children[0].parent
+	

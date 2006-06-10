@@ -1,3 +1,5 @@
+# -*- indent-tabs-mode: t -*-
+
 # Soya 3D
 # Copyright (C) 2004 Jean-Baptiste LAMY -- jiba@tuxfamily.org
 #
@@ -16,35 +18,35 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 cdef class Shapifier(_CObj):
-  cdef _Shape _shapify(self, _World world)
+	cdef _Shape _shapify(self, _World world)
 
 
 cdef class SimpleShapifier(Shapifier):
-  cdef int   _shadow
-  cdef float _max_face_angle
-  
-  cdef __getcstate__(self)
-  cdef void __setcstate__(self, object cstate)
-  cdef _Shape _shapify(self, _World world)
+	cdef int   _shadow
+	cdef float _max_face_angle
+	
+	cdef __getcstate__(self)
+	cdef void __setcstate__(self, object cstate)
+	cdef _Shape _shapify(self, _World world)
 
-  
+	
 cdef class TreeShapifier(SimpleShapifier):
-  cdef float _collapsing_distance
-  cdef int   _quality
-  cdef float _max_child_radius
-  
-  cdef __getcstate__(self)
-  cdef void __setcstate__(self, object cstate)
-  cdef _Shape _shapify(self, _World world)
-  
-    
+	cdef float _collapsing_distance
+	cdef int   _quality
+	cdef float _max_child_radius
+	
+	cdef __getcstate__(self)
+	cdef void __setcstate__(self, object cstate)
+	cdef _Shape _shapify(self, _World world)
+	
+		
 cdef class CellShadingShapifier(SimpleShapifier):
-  cdef _Material _shader
-  cdef           _outline_color
-  cdef float     _outline_width, _outline_attenuation
-  
-  cdef __getcstate__(self)
-  cdef void __setcstate__(self, object cstate)
-  cdef _Shape _shapify(self, _World world)
-    
-  
+	cdef _Material _shader
+	cdef           _outline_color
+	cdef float     _outline_width, _outline_attenuation
+	
+	cdef __getcstate__(self)
+	cdef void __setcstate__(self, object cstate)
+	cdef _Shape _shapify(self, _World world)
+		
+	

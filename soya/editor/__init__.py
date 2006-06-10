@@ -1,3 +1,5 @@
+# -*- indent-tabs-mode: t -*-
+
 # Soya 3D
 # Copyright (C) 2001-2002 Jean-Baptiste LAMY
 #
@@ -27,9 +29,9 @@ import soya.widget
 # Config and hacks for EditObj.
 #
 
-custom.register_method("rotate_lateral" , soya.CoordSyst, editor.FloatEditor)
-custom.register_method("rotate_vertical", soya.CoordSyst, editor.FloatEditor)
-custom.register_method("rotate_incline" , soya.CoordSyst, editor.FloatEditor)
+custom.register_method("rotate_y", soya.CoordSyst, editor.FloatEditor)
+custom.register_method("rotate_x", soya.CoordSyst, editor.FloatEditor)
+custom.register_method("rotate_z", soya.CoordSyst, editor.FloatEditor)
 
 custom.register_children_attr("children"  , "add", "__delitem__", clazz = soya.World)
 custom.register_children_attr("vertices"  , clazz = soya.Face)
@@ -40,53 +42,53 @@ soya.Particles.generators = property(lambda self: [self.generator], None)
 # Register properties' editors
 
 class XTextureCoordEditor(editor.Editor, Tkinter.Frame):
-  require_right_menu = 0
-  
-  def __init__(self, master, obj, attr):
-    editor.Editor.__init__(self, master, obj, attr)
-    
-    Tkinter.Frame.__init__(self, master)
-    self.columnconfigure(0, weight = 1)
-    
-    if obj.face.material and obj.face.material.texture:
-      try:
-        import Image, ImageTk
+	require_right_menu = 0
+	
+	def __init__(self, master, obj, attr):
+		editor.Editor.__init__(self, master, obj, attr)
+		
+		Tkinter.Frame.__init__(self, master)
+		self.columnconfigure(0, weight = 1)
+		
+		if obj.face.material and obj.face.material.texture:
+			try:
+				import Image, ImageTk
 
-        self.image = Image.open(os.path.join(soya.path[0], obj.face.material.texture.filename))
-        
-        self.image_width = self.image_height = 0
-        
-        self.label = Tkinter.Label(self, bd = 0, width = 500)
-        self.label.grid(row = 0, column = 0, sticky = "EWN")
-        self.label.bind("<Configure>"     , self.label_conf)
-        self.label.bind("<Button-1>"      , self.motion)
-        self.label.bind("<Button1-Motion>", self.motion)
-      except ImportError: # PIL is not installed !
-        self.label = None
-        
-    self.internal_editor = editor.FloatEditor(self, obj, attr)
-    self.internal_editor.grid(row = 1, column = 0, sticky = "EWS")
-    self.cancel = self.master.cancel
-    
-  def label_conf(self, event = None):
-    import Image, ImageTk
-    
-    if self.image_width != self.label.winfo_width():
-      self.image_width  = self.label.winfo_width()
-      self.image_height = (self.image.size[1] / float(self.image.size[0])) * self.image_width
-      
-      self.imagetk = ImageTk.PhotoImage(self.image.resize((int(self.image_width), int(self.image_height))))
-      
-      self.label.configure(image = self.imagetk)
-      
-  def get_value(self): return self.internal_editor.get_value()
-  def set_value(self, value): self.internal_editor.set_value(value)
-  def update(self): self.internal_editor.update()
-  
-  def motion(self, event):
-    self.obj.tex_x = max(0.0, min(1.0, float(event.x) / self.image_width ))
-    self.obj.tex_y = max(0.0, min(1.0, float(event.y) / self.image_height))
-    
+				self.image = Image.open(os.path.join(soya.path[0], obj.face.material.texture.filename))
+				
+				self.image_width = self.image_height = 0
+				
+				self.label = Tkinter.Label(self, bd = 0, width = 500)
+				self.label.grid(row = 0, column = 0, sticky = "EWN")
+				self.label.bind("<Configure>"     , self.label_conf)
+				self.label.bind("<Button-1>"      , self.motion)
+				self.label.bind("<Button1-Motion>", self.motion)
+			except ImportError: # PIL is not installed !
+				self.label = None
+				
+		self.internal_editor = editor.FloatEditor(self, obj, attr)
+		self.internal_editor.grid(row = 1, column = 0, sticky = "EWS")
+		self.cancel = self.master.cancel
+		
+	def label_conf(self, event = None):
+		import Image, ImageTk
+		
+		if self.image_width != self.label.winfo_width():
+			self.image_width  = self.label.winfo_width()
+			self.image_height = (self.image.size[1] / float(self.image.size[0])) * self.image_width
+			
+			self.imagetk = ImageTk.PhotoImage(self.image.resize((int(self.image_width), int(self.image_height))))
+			
+			self.label.configure(image = self.imagetk)
+			
+	def get_value(self): return self.internal_editor.get_value()
+	def set_value(self, value): self.internal_editor.set_value(value)
+	def update(self): self.internal_editor.update()
+	
+	def motion(self, event):
+		self.obj.tex_x = max(0.0, min(1.0, float(event.x) / self.image_width ))
+		self.obj.tex_y = max(0.0, min(1.0, float(event.y) / self.image_height))
+		
 custom.register_attr("lefthanded"          , None)
 custom.register_attr("matrix"              , None)
 custom.register_attr("root_matrix"         , None)
@@ -105,9 +107,9 @@ custom.register_attr("scale_z"             , editor.FloatEditor)
 custom.register_attr("front"               , editor.FloatEditor)
 custom.register_attr("back"                , editor.FloatEditor)
 custom.register_attr("fov"                 , editor.FloatEditor)
-custom.register_attr("rot_lateral"         , editor.FloatEditor)
-custom.register_attr("rot_vertical"        , editor.FloatEditor)
-custom.register_attr("rot_incline"         , editor.FloatEditor)
+custom.register_attr("rot_y"               , editor.FloatEditor)
+custom.register_attr("rot_x"               , editor.FloatEditor)
+custom.register_attr("rot_z"               , editor.FloatEditor)
 custom.register_attr("red"                 , editor.FloatEditor)
 custom.register_attr("green"               , editor.FloatEditor)
 custom.register_attr("blue"                , editor.FloatEditor)
@@ -145,54 +147,54 @@ custom.register_attr("endpoint"            , editor.SubEditor)
 custom.register_attr("portal_linked"       , editor.BoolEditor)
 
 def _all_parent(item):
-  if isinstance(item, soya.World):
-    inner_worlds = item.recursive()
-    inner_worlds.append(item)
-    return filter(lambda item: isinstance(item, soya.World) and (not getattr(item, "name", "").startswith("_")) and (not item in inner_worlds), item.get_root().recursive())
-  else:
-    return filter(lambda item: isinstance(item, soya.World) and (not getattr(item, "name", "").startswith("_")), item.get_root().recursive())
-  
+	if isinstance(item, soya.World):
+		inner_worlds = item.recursive()
+		inner_worlds.append(item)
+		return filter(lambda item: isinstance(item, soya.World) and (not getattr(item, "name", "").startswith("_")) and (not item in inner_worlds), item.get_root().recursive())
+	else:
+		return filter(lambda item: isinstance(item, soya.World) and (not getattr(item, "name", "").startswith("_")), item.get_root().recursive())
+	
 custom.register_attr("parent" , editor.LambdaListEditor(_all_parent))
 
 def _get_all_texture_names(obj):
-  names = sets.Set([None])
-  for path in soya.path:
-    print path, os.path.join(path, soya.Material.DIRNAME)
-    for name in dircache.listdir(os.path.join(path, soya.Image.DIRNAME)):
-      print name
-      names.add(name)
-  return list(names)
+	names = sets.Set([None])
+	for path in soya.path:
+		print path, os.path.join(path, soya.Material.DIRNAME)
+		for name in dircache.listdir(os.path.join(path, soya.Image.DIRNAME)):
+			print name
+			names.add(name)
+	return list(names)
 
 custom.register_attr("texture", editor.LambdaListEditor(lambda obj: [None] + soya.Image.availables(), lambda name: name and soya.Image.get(name)))
 custom.register_attr("image"  , None, soya.Material)
 
 class MaterialEditor(editor.WithButtonEditor):
-  INTERNAL_EDITOR_CLASS = editor.LambdaListEditor(lambda obj: filter(lambda filename: not (filename and filename.startswith("_")), soya.Material.availables()), lambda filename: filename and soya.Material.get(filename))
-  
-  def __init__(self, master, obj, attr):
-    editor.WithButtonEditor.__init__(self, master, obj, attr, self.INTERNAL_EDITOR_CLASS, "...")
-    
-  def button_click(self, event = None):
-    edit(getattr(self.obj, self.attr))
-    
+	INTERNAL_EDITOR_CLASS = editor.LambdaListEditor(lambda obj: filter(lambda filename: not (filename and filename.startswith("_")), soya.Material.availables()), lambda filename: filename and soya.Material.get(filename))
+	
+	def __init__(self, master, obj, attr):
+		editor.WithButtonEditor.__init__(self, master, obj, attr, self.INTERNAL_EDITOR_CLASS, "...")
+		
+	def button_click(self, event = None):
+		edit(getattr(self.obj, self.attr))
+		
 class ShapeEditor(editor.WithButtonEditor):
-  INTERNAL_EDITOR_CLASS = editor.LambdaListEditor(lambda obj: filter(lambda filename: not (filename and filename.startswith("_")), soya.Shape.availables()), lambda filename: filename and soya.Shape.get(filename))
-  
-  def __init__(self, master, obj, attr):
-    editor.WithButtonEditor.__init__(self, master, obj, attr, self.INTERNAL_EDITOR_CLASS, "...")
-    
-  def button_click(self, event = None):
-    edit(getattr(self.obj, self.attr).to_world())
-    
+	INTERNAL_EDITOR_CLASS = editor.LambdaListEditor(lambda obj: filter(lambda filename: not (filename and filename.startswith("_")), soya.Shape.availables()), lambda filename: filename and soya.Shape.get(filename))
+	
+	def __init__(self, master, obj, attr):
+		editor.WithButtonEditor.__init__(self, master, obj, attr, self.INTERNAL_EDITOR_CLASS, "...")
+		
+	def button_click(self, event = None):
+		edit(getattr(self.obj, self.attr).to_world())
+		
 class WorldEditor(editor.WithButtonEditor):
-  INTERNAL_EDITOR_CLASS = editor.LambdaListEditor(lambda obj: filter(lambda filename: not (filename and filename.startswith("_")), soya.World.availables()), lambda filename: filename and soya.World.get(filename))
-  
-  def __init__(self, master, obj, attr):
-    editor.WithButtonEditor.__init__(self, master, obj, attr, self.INTERNAL_EDITOR_CLASS, "...")
-    
-  def button_click(self, event = None):
-    edit(getattr(self.obj, self.attr))
-    
+	INTERNAL_EDITOR_CLASS = editor.LambdaListEditor(lambda obj: filter(lambda filename: not (filename and filename.startswith("_")), soya.World.availables()), lambda filename: filename and soya.World.get(filename))
+	
+	def __init__(self, master, obj, attr):
+		editor.WithButtonEditor.__init__(self, master, obj, attr, self.INTERNAL_EDITOR_CLASS, "...")
+		
+	def button_click(self, event = None):
+		edit(getattr(self.obj, self.attr))
+		
 custom.register_attr("shape"            , ShapeEditor)
 custom.register_attr("material"         , MaterialEditor)
 custom.register_attr("beyond"           , WorldEditor)
@@ -209,25 +211,25 @@ custom.register_method("reverse_vertices", soya.Face)
 
 
 def ImmatureVertex():
-  vertex = soya.Vertex()
-  vertex.immature = 1
-  return vertex
+	vertex = soya.Vertex()
+	vertex.immature = 1
+	return vertex
 
 _last_face = None
 
 def _Gone(vertices):
-  global _last_face
-  
-  f = soya.Face(None, vertices)
-  if _last_face:
-    f.double_sided = _last_face.double_sided
-    f.material     = _last_face.material
-    f.smooth_lit = _last_face.smooth_lit
-    f.lit = _last_face.lit
-    f.solid = _last_face.solid
-    f.static_lit = _last_face.static_lit
-  _last_face = f
-  return f
+	global _last_face
+	
+	f = soya.Face(None, vertices)
+	if _last_face:
+		f.double_sided = _last_face.double_sided
+		f.material     = _last_face.material
+		f.smooth_lit = _last_face.smooth_lit
+		f.lit = _last_face.lit
+		f.solid = _last_face.solid
+		f.static_lit = _last_face.static_lit
+	_last_face = f
+	return f
 
 soya.Triangle = lambda : _Gone([ImmatureVertex(), ImmatureVertex(), ImmatureVertex()])
 soya.Quad     = lambda : _Gone([ImmatureVertex(), ImmatureVertex(), ImmatureVertex(), ImmatureVertex()])
@@ -242,12 +244,12 @@ custom.register_values("shapify_args", ["None", """("tree", {})""", """("cell-sh
 #custom.register_values("shapify_args", ["None", """("tree", {"min_node_content":0, "min_node_radius":5.0, "min_node_distance":0.0})""", """("morph", {})"""])
 
 editobj.EVAL_ENV.update({
-  "soya"       : soya,
-  "laser"      : laser,
-  "ray"        : ray,
-  "cut"        : facecutter.cut,
-  "check_quads": facecutter.check_quads,
-  })
+	"soya"       : soya,
+	"laser"      : laser,
+	"ray"        : ray,
+	"cut"        : facecutter.cut,
+	"check_quads": facecutter.check_quads,
+	})
 
 # Better Tk look
 _tk = Tkinter.Tk(className = 'EditObj')
@@ -263,48 +265,48 @@ _tk.option_add("*Entry.relief", "flat")
 CURRENT = None
 
 def edit_material(self, window):
-  if not soya.inited: soya.init("Soya Editor")
-  
-  ed = soya.editor.material.MaterialEditor(self, window)
-  
-  def on_activate(event = None):
-    global CURRENT
-    
-    if CURRENT: CURRENT.deactivate()
-    ed.activate()
-    CURRENT = ed
-    
-  window.bind("<FocusIn>" , on_activate)
+	if not soya.inited: soya.init("Soya Editor")
+	
+	ed = soya.editor.material.MaterialEditor(self, window)
+	
+	def on_activate(event = None):
+		global CURRENT
+		
+		if CURRENT: CURRENT.deactivate()
+		ed.activate()
+		CURRENT = ed
+		
+	window.bind("<FocusIn>" , on_activate)
 
 def edit_world(self, window):
-  if not self.parent:
-    if not soya.inited: soya.init("Soya Editor")
-    
-    ed = soya.editor.world.WorldEditor(self, window)
-    
-    def on_activate(event = None):
-      global CURRENT
-      
-      if CURRENT: CURRENT.deactivate()
-      ed.activate()
-      CURRENT = ed
-      
-    window.bind("<FocusIn>" , on_activate)
+	if not self.parent:
+		if not soya.inited: soya.init("Soya Editor")
+		
+		ed = soya.editor.world.WorldEditor(self, window)
+		
+		def on_activate(event = None):
+			global CURRENT
+			
+			if CURRENT: CURRENT.deactivate()
+			ed.activate()
+			CURRENT = ed
+			
+		window.bind("<FocusIn>" , on_activate)
 
 custom.register_on_edit(edit_material, soya.Material)
 custom.register_on_edit(edit_world,    soya.World)
 
 
 def _subedit(self, window):
-  if hasattr(CURRENT, "select_handles_for"): CURRENT.select_handles_for(self)
-  
+	if hasattr(CURRENT, "select_handles_for"): CURRENT.select_handles_for(self)
+	
 def _subedit_face(self, window):
-  if hasattr(CURRENT, "select_handles_for"):
-    for vertex in self: CURRENT.select_handles_for(vertex)
-    
+	if hasattr(CURRENT, "select_handles_for"):
+		for vertex in self: CURRENT.select_handles_for(vertex)
+		
 def _editchildren(self, visible):
-  if hasattr(CURRENT, "children_edited"): CURRENT.children_edited(self, visible)
-  
+	if hasattr(CURRENT, "children_edited"): CURRENT.children_edited(self, visible)
+	
 custom.register_on_edit            (_subedit,      soya.CoordSyst)
 custom.register_on_edit            (_subedit,      soya.Vertex)
 custom.register_on_edit            (_subedit_face, soya.Face)

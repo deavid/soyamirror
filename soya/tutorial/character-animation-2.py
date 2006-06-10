@@ -1,3 +1,5 @@
+# -*- indent-tabs-mode: t -*-
+
 # Soya 3D tutorial
 # Copyright (C) 2001-2002 Jean-Baptiste LAMY
 #
@@ -44,7 +46,7 @@ sorcerer_shape = soya.Cal3dShape.get("balazar")
 # The Cal3D volume is now added in the sorcerer world.
 
 sorcerer = soya.World(scene)
-sorcerer.rotate_lateral(-120.0)
+sorcerer.rotate_y(-120.0)
 sorcerer_volume = soya.Cal3dVolume(sorcerer, sorcerer_shape)
 sorcerer_volume.animate_blend_cycle("marche")
 
@@ -62,7 +64,7 @@ sorcerer_volume.attach_to_bone(right_hand, "mainD")
 
 right_hand_item = soya.Volume(right_hand)
 right_hand_item = soya.Volume(right_hand, soya.Shape.get("sword"))
-right_hand_item.rotate_incline(180.0)
+right_hand_item.rotate_z(180.0)
 right_hand_item.set_xyz(0.05, 0.1, 0.0)
 
 # By using right_hand_item.set_shape(...), you can easily replace the sword with an axe

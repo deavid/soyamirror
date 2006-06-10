@@ -1,3 +1,5 @@
+# -*- indent-tabs-mode: t -*-
+
 # Soya 3D tutorial
 # Copyright (C) 2001-2004 Jean-Baptiste LAMY
 #
@@ -52,15 +54,15 @@ solid_cube_world.shapifier = soya.SolidShapifier()
 
 empty_cube = soya.Volume(scene, empty_cube_world.shapify())
 empty_cube.x = -1.0
-empty_cube.rotate_lateral (45.0)
-empty_cube.rotate_vertical(45.0)
+empty_cube.rotate_y(45.0)
+empty_cube.rotate_x(45.0)
 
 # Creates a volume using the solid shape cube
 
 solid_cube = soya.Volume(scene, solid_cube_world.shapify())
 solid_cube.x =  1.0
-solid_cube.rotate_lateral (45.0)
-solid_cube.rotate_vertical(45.0)
+solid_cube.rotate_y(45.0)
+solid_cube.rotate_x(45.0)
 
 
 # Creates a light.

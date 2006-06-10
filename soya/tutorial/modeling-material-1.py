@@ -1,3 +1,5 @@
+# -*- indent-tabs-mode: t -*-
+
 # Soya 3D tutorial
 # Copyright (C) 2001-2004 Jean-Baptiste LAMY
 #
@@ -85,13 +87,13 @@ cube_world = soya.cube.Cube(None, material)
 # See the timemanagement-* lesson series for more info.
 
 class RotatingVolume(soya.Volume):
-  def advance_time(self, proportion):
-    self.rotate_lateral(2.0 * proportion)
+	def advance_time(self, proportion):
+		self.rotate_y(2.0 * proportion)
 
 # Create a rotating volume in the scene, using the cube shape.
 
 cube = RotatingVolume(scene, cube_world.shapify())
-cube.rotate_vertical(30.0)
+cube.rotate_x(30.0)
 
 # Creates a light.
 

@@ -1,3 +1,5 @@
+# -*- indent-tabs-mode: t -*-
+
 HAVE_OPENGL = 1
 OPENGL_INCDIR = ''
 OPENGL_LIB = 'GL'

@@ -1,3 +1,5 @@
+# -*- indent-tabs-mode: t -*-
+
 #!/usr/bin/env python
 
 import sys, os
@@ -16,10 +18,10 @@ scene = soya.World()
 sword_model = soya.Shape.get("sword")
 sword = soya.Volume(scene, sword_model)
 sword.x = 1
-sword.rotate_lateral(90.)
+sword.rotate_y(90.)
 
 # one line rotation :)
-sword.advance_time = lambda p: sword.rotate_lateral(5.*p)
+sword.advance_time = lambda p: sword.rotate_y(5.*p)
 
 light = soya.Light(scene)
 light.set_xyz( .5, 0., 2.)

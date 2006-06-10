@@ -1,3 +1,5 @@
+# -*- indent-tabs-mode: t -*-
+
 # Soya 3D tutorial
 # Copyright (C) 2001-2004 Jean-Baptiste LAMY
 #
@@ -64,7 +66,7 @@ sorcerer = soya.Cal3dVolume(scene, sorcerer_shape)
 
 # Rotates Balazar the sorcerer
 
-sorcerer.rotate_lateral(-120.0)
+sorcerer.rotate_y(-120.0)
 
 # Starts playing the animation called "marche" in cycle ("marche" is the French for walk).
 

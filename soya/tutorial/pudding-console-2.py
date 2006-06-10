@@ -1,3 +1,5 @@
+# -*- indent-tabs-mode: t -*-
+
 #!/usr/bin/env python
 
 """ a complete python console in soya """
@@ -42,10 +44,10 @@ root.on_resize()
 
 
 class Idler(soya.Idler):
-  def begin_round(self):
-    soya.Idler.begin_round(self)
+	def begin_round(self):
+		soya.Idler.begin_round(self)
 
-    pudding.process_event()
+		pudding.process_event()
 
 pudding.idler.Idler(scene).idle()
 

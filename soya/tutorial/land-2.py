@@ -1,3 +1,5 @@
+# -*- indent-tabs-mode: t -*-
+
 # Soya 3D tutorial
 # Copyright (C) 2004      Jean-Baptiste 'Jiba'  LAMY
 # Copyright (C) 2001-2002 Bertrand 'blam!' LAMY
@@ -50,8 +52,8 @@ land = soya.Land(scene, land_size, land_size)
 #  - Land.set_vertex_option(i, j, hidden, invisible, non_solid, force_presence)
 
 for i in range(land_size):
-  for j in range(land_size):
-    land.set_height(i, j, random.random())
+	for j in range(land_size):
+		land.set_height(i, j, random.random())
 
 # Multiplies all the heights by 4
 
@@ -65,35 +67,35 @@ light.set_xyz(0.0, 15.0, 0.0)
 # Add a camera and a loop to render
 
 class MovableCamera(soya.Camera):
-  def __init__(self, parent):
-    soya.Camera.__init__(self, parent)
-    
-    self.speed = soya.Vector(self)
-    self.rotation_lateral_speed  = 0.0
-    self.rotation_vertical_speed = 0.0
-    
-  def begin_round(self):
-    soya.Camera.begin_round(self)
-    
-    for event in soya.process_event():
-      if event[0] == soya.sdlconst.KEYDOWN:
-        if   event[1] == soya.sdlconst.K_UP:     self.speed.z = -1.0
-        elif event[1] == soya.sdlconst.K_DOWN:   self.speed.z =  1.0
-        elif event[1] == soya.sdlconst.K_LEFT:   self.rotation_lateral_speed =  10.0
-        elif event[1] == soya.sdlconst.K_RIGHT:  self.rotation_lateral_speed = -10.0
-        elif event[1] == soya.sdlconst.K_q:      soya.IDLER.stop()
-        elif event[1] == soya.sdlconst.K_ESCAPE: soya.IDLER.stop()
-      if event[0] == soya.sdlconst.KEYUP:
-        if   event[1] == soya.sdlconst.K_UP:     self.speed.z = 0.0
-        elif event[1] == soya.sdlconst.K_DOWN:   self.speed.z = 0.0
-        elif event[1] == soya.sdlconst.K_LEFT:   self.rotation_lateral_speed = 0.0
-        elif event[1] == soya.sdlconst.K_RIGHT:  self.rotation_lateral_speed = 0.0
-        
-  def advance_time(self, proportion):
-    self.add_mul_vector(proportion, self.speed)
-    self.turn_lateral (self.rotation_lateral_speed  * proportion)
-    self.turn_vertical(self.rotation_vertical_speed * proportion)
-    
+	def __init__(self, parent):
+		soya.Camera.__init__(self, parent)
+		
+		self.speed = soya.Vector(self)
+		self.rotation_y_speed = 0.0
+		self.rotation_x_speed = 0.0
+		
+	def begin_round(self):
+		soya.Camera.begin_round(self)
+		
+		for event in soya.process_event():
+			if event[0] == soya.sdlconst.KEYDOWN:
+				if   event[1] == soya.sdlconst.K_UP:     self.speed.z = -1.0
+				elif event[1] == soya.sdlconst.K_DOWN:   self.speed.z =  1.0
+				elif event[1] == soya.sdlconst.K_LEFT:   self.rotation_y_speed =  10.0
+				elif event[1] == soya.sdlconst.K_RIGHT:  self.rotation_y_speed = -10.0
+				elif event[1] == soya.sdlconst.K_q:      soya.IDLER.stop()
+				elif event[1] == soya.sdlconst.K_ESCAPE: soya.IDLER.stop()
+			if event[0] == soya.sdlconst.KEYUP:
+				if   event[1] == soya.sdlconst.K_UP:     self.speed.z = 0.0
+				elif event[1] == soya.sdlconst.K_DOWN:   self.speed.z = 0.0
+				elif event[1] == soya.sdlconst.K_LEFT:   self.rotation_y_speed = 0.0
+				elif event[1] == soya.sdlconst.K_RIGHT:  self.rotation_y_speed = 0.0
+				
+	def advance_time(self, proportion):
+		self.add_mul_vector(proportion, self.speed)
+		self.turn_y(self.rotation_y_speed * proportion)
+		self.turn_x(self.rotation_x_speed * proportion)
+		
 
 camera = MovableCamera(scene)
 camera.set_xyz(16.0, 6.0, 0.0)

@@ -1,3 +1,5 @@
+# -*- indent-tabs-mode: t -*-
+
 # Soya 3D tutorial
 # Copyright (C) 2005 Jean-Baptiste LAMY
 #
@@ -42,13 +44,13 @@ c1.z = 12
 # If you want to use multiple cameras, you must inhibits this by overriding Camera.resize.
 
 class FixedViewportCamera(soya.Camera):
-  def __init__(self, parent, left, top, width, height):
-    soya.Camera.__init__(self, parent)
-    
-    self.set_viewport(left, top, width, height)
-    
-  def resize(self, left, top, width, height):
-    pass
+	def __init__(self, parent, left, top, width, height):
+		soya.Camera.__init__(self, parent)
+		
+		self.set_viewport(left, top, width, height)
+		
+	def resize(self, left, top, width, height):
+		pass
 
 
 # Create a FixedViewportCamera in w2, and put this second rendering in the upper right

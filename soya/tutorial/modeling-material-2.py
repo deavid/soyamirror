@@ -1,3 +1,5 @@
+# -*- indent-tabs-mode: t -*-
+
 # Soya 3D tutorial
 # Copyright (C) 2001-2004 Jean-Baptiste LAMY
 #
@@ -67,30 +69,30 @@ pyramid_world = soya.World()
 # attributes of the vertex.
 
 soya.Face(pyramid_world, [soya.Vertex(pyramid_world,  0.5, -0.5,  0.5, 0.0, 0.0),
-                          soya.Vertex(pyramid_world, -0.5, -0.5,  0.5, 0.0, 1.0),
-                          soya.Vertex(pyramid_world, -0.5, -0.5, -0.5, 1.0, 1.0),
-                          soya.Vertex(pyramid_world,  0.5, -0.5, -0.5, 1.0, 0.0),
-                          ], material)
+													soya.Vertex(pyramid_world, -0.5, -0.5,  0.5, 0.0, 1.0),
+													soya.Vertex(pyramid_world, -0.5, -0.5, -0.5, 1.0, 1.0),
+													soya.Vertex(pyramid_world,  0.5, -0.5, -0.5, 1.0, 0.0),
+													], material)
 
 soya.Face(pyramid_world, [soya.Vertex(pyramid_world, -0.5, -0.5,  0.5, 0.0, 1.0),
-                          soya.Vertex(pyramid_world,  0.5, -0.5,  0.5, 0.0, 0.0),
-                          soya.Vertex(pyramid_world,  0.0,  0.5,  0.0, 1.0, 0.0),
-                          ], material)
+													soya.Vertex(pyramid_world,  0.5, -0.5,  0.5, 0.0, 0.0),
+													soya.Vertex(pyramid_world,  0.0,  0.5,  0.0, 1.0, 0.0),
+													], material)
 
 soya.Face(pyramid_world, [soya.Vertex(pyramid_world,  0.5, -0.5, -0.5, 1.0, 0.0),
-                          soya.Vertex(pyramid_world, -0.5, -0.5, -0.5, 1.0, 1.0),
-                          soya.Vertex(pyramid_world,  0.0,  0.5,  0.0, 0.0, 1.0),
-                          ], material)
+													soya.Vertex(pyramid_world, -0.5, -0.5, -0.5, 1.0, 1.0),
+													soya.Vertex(pyramid_world,  0.0,  0.5,  0.0, 0.0, 1.0),
+													], material)
 
 soya.Face(pyramid_world, [soya.Vertex(pyramid_world,  0.5, -0.5,  0.5, 0.0, 0.0),
-                          soya.Vertex(pyramid_world,  0.5, -0.5, -0.5, 1.0, 0.0),
-                          soya.Vertex(pyramid_world,  0.0,  0.5,  0.0, 0.0, 1.0),
-                          ], material)
+													soya.Vertex(pyramid_world,  0.5, -0.5, -0.5, 1.0, 0.0),
+													soya.Vertex(pyramid_world,  0.0,  0.5,  0.0, 0.0, 1.0),
+													], material)
 
 soya.Face(pyramid_world, [soya.Vertex(pyramid_world, -0.5, -0.5, -0.5, 1.0, 1.0),
-                          soya.Vertex(pyramid_world, -0.5, -0.5,  0.5, 0.0, 1.0),
-                          soya.Vertex(pyramid_world,  0.0,  0.5,  0.0, 1.0, 0.0),
-                          ], material)
+													soya.Vertex(pyramid_world, -0.5, -0.5,  0.5, 0.0, 1.0),
+													soya.Vertex(pyramid_world,  0.0,  0.5,  0.0, 1.0, 0.0),
+													], material)
 
 # Creates a cube.
 # soya.cube generates texture coordinates automatically.
@@ -101,21 +103,20 @@ cube_world = soya.cube.Cube(None, material)
 # See the timemanagement-* lesson series for more info.
 
 class RotatingVolume(soya.Volume):
-  def advance_time(self, proportion):
-    pass
-    #self.rotate_lateral(2.0 * proportion)
+	def advance_time(self, proportion):
+		self.rotate_y(2.0 * proportion)
 
 # Create a rotating volume in the scene, using the cube shape.
 
 cube = RotatingVolume(scene, cube_world.shapify())
 cube.x = -1.0
-cube.rotate_vertical(30.0)
+cube.rotate_x(30.0)
 
 # Create a rotating volume in the scene, using the pyramid shape.
 
 pyramid = RotatingVolume(scene, pyramid_world.shapify())
 pyramid.x = 1.0
-pyramid.rotate_vertical(30.0)
+pyramid.rotate_x(30.0)
 
 # Creates a light.
 

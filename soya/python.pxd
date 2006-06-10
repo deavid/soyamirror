@@ -1,3 +1,5 @@
+# -*- indent-tabs-mode: t -*-
+
 # Soya 3D
 # Copyright (C) 2003 Jean-Baptiste LAMY -- jiba@tuxfamily.org
 #
@@ -16,13 +18,13 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 cdef extern from "Python.h":
-  char*  PyString_AS_STRING(object string)
-  object PyString_FromString(char* raw)
-  object PyString_FromStringAndSize(char* raw, int length)
-  object PyTuple_GET_ITEM(object, int)
-  double PyFloat_AS_DOUBLE(object)
-  
-  void   PyErr_CheckSignals()
-  
-  int    len "PyObject_Length" (object o) except -1
+	char*  PyString_AS_STRING(object string)
+	object PyString_FromString(char* raw)
+	object PyString_FromStringAndSize(char* raw, int length)
+	object PyTuple_GET_ITEM(object, int)
+	double PyFloat_AS_DOUBLE(object)
+	
+	void   PyErr_CheckSignals()
+	
+	int    len "PyObject_Length" (object o) except -1
 

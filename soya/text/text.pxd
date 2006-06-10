@@ -1,3 +1,5 @@
+# -*- indent-tabs-mode: t -*-
+
 # Soya 3D
 # Copyright (C) 2004 Jean-Baptiste LAMY -- jiba@tuxfamily.org
 #
@@ -20,25 +22,25 @@
 
 
 cdef class Glyph:
-  cdef readonly float _pixels_x1, _pixels_y1, _pixels_x2, _pixels_y2, width, height, y, x
-  cdef readonly unichar
+	cdef readonly float _pixels_x1, _pixels_y1, _pixels_x2, _pixels_y2, width, height, y, x
+	cdef readonly unichar
 
-  
+	
 cdef class Font:
-  cdef FT_Face      _face
-  cdef readonly     filename
-  cdef int          _width, _height
-  cdef              _glyphs
-  
-  cdef GLubyte*     _pixels
-  cdef int          _current_x, _current_y
-  cdef readonly int _current_height, _pixels_height
-  cdef int          _rendering
-  cdef GLuint       _tex_id
-  
-  cdef Glyph _get_glyph(self, char_)
-  cdef _gen_glyph(self, char_, int code)
-  cdef void _sizeup_pixel(self, int height)
-  cdef void _init(self)
-    
-  
+	cdef FT_Face      _face
+	cdef readonly     filename
+	cdef int          _width, _height
+	cdef              _glyphs
+	
+	cdef GLubyte*     _pixels
+	cdef int          _current_x, _current_y
+	cdef readonly int _current_height, _pixels_height
+	cdef int          _rendering
+	cdef GLuint       _tex_id
+	
+	cdef Glyph _get_glyph(self, char_)
+	cdef _gen_glyph(self, char_, int code)
+	cdef void _sizeup_pixel(self, int height)
+	cdef void _init(self)
+		
+	

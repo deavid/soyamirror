@@ -1,236 +1,238 @@
+# -*- indent-tabs-mode: t -*-
+
 #, land.x, land.y, land.z Geom objects
 
 # GeomSphere
 cdef class GeomSphere(GeomObject):
-    """Sphere geometry.
+		"""Sphere geometry.
 
-    This class represents a sphere centered at the origin.
+		This class represents a sphere centered at the origin.
 
-    Constructor::
-    
-      GeomSphere(space=None, radius=1.0)
-    """
+		Constructor::
+		
+			GeomSphere(space=None, radius=1.0)
+		"""
 
-    def __new__(self, _soya._World parent=None, SpaceBase space=None, radius=1.0, *args, **kw):
-        cdef dSpaceID sid
+		def __new__(self, _soya._World parent=None, SpaceBase space=None, radius=1.0, *args, **kw):
+				cdef dSpaceID sid
 
-        if space is not None:
-            sid = space.sid
-        else:
-            sid = NULL
+				if space is not None:
+						sid = space.sid
+				else:
+						sid = NULL
 
-        self.gid = dCreateSphere(sid, radius)
-        
-    def placeable(self):
-        return True
+				self.gid = dCreateSphere(sid, radius)
+				
+		def placeable(self):
+				return True
 
-    property radius:
-        def __set__(self, dReal radius):
-            dGeomSphereSetRadius(self.gid, radius)
+		property radius:
+				def __set__(self, dReal radius):
+						dGeomSphereSetRadius(self.gid, radius)
 
-        def __get__(self):
-            return dGeomSphereGetRadius(self.gid)
+				def __get__(self):
+						return dGeomSphereGetRadius(self.gid)
 
-    cdef float _point_depth(self, float x, float y, float z):
-        """pointDepth(p) -> float
+		cdef float _point_depth(self, float x, float y, float z):
+				"""pointDepth(p) -> float
 
-        Return the depth of the point p in the sphere. Points inside
-        the geom will have positive depth, points outside it will have
-        negative depth, and points on the surface will have zero
-        depth.
+				Return the depth of the point p in the sphere. Points inside
+				the geom will have positive depth, points outside it will have
+				negative depth, and points on the surface will have zero
+				depth.
 
-        @param p: Point
-        @type p: 3-sequence of floats
-        """
-        return dGeomSpherePointDepth(self.gid, x, y, z)
+				@param p: Point
+				@type p: 3-sequence of floats
+				"""
+				return dGeomSpherePointDepth(self.gid, x, y, z)
 
-                
+								
 # GeomBox
 cdef class GeomBox(GeomObject):
-    """Box geometry.
+		"""Box geometry.
 
-    This class represents a box centered at the origin.
+		This class represents a box centered at the origin.
 
-    Constructor::
-    
-      GeomBox(space=None, lengths=(1.0, 1.0, 1.0))
-    """
+		Constructor::
+		
+			GeomBox(space=None, lengths=(1.0, 1.0, 1.0))
+		"""
 
-    def __new__(self, _soya._World parent=None, SpaceBase space=None, lengths=(1.0, 1.0, 1.0), *args, **kw):
-        cdef dSpaceID sid
-        
-        if space is not None:
-            sid = space.sid
-        else:
-            sid = NULL
+		def __new__(self, _soya._World parent=None, SpaceBase space=None, lengths=(1.0, 1.0, 1.0), *args, **kw):
+				cdef dSpaceID sid
+				
+				if space is not None:
+						sid = space.sid
+				else:
+						sid = NULL
 
-        self.gid = dCreateBox(sid, lengths[0],lengths[1],lengths[2])
+				self.gid = dCreateBox(sid, lengths[0],lengths[1],lengths[2])
 
-    def placeable(self):
-        return True
+		def placeable(self):
+				return True
 
-    def setLengths(self, lengths):
-        dGeomBoxSetLengths(self.gid, lengths[0], lengths[1], lengths[2])
+		def setLengths(self, lengths):
+				dGeomBoxSetLengths(self.gid, lengths[0], lengths[1], lengths[2])
 
-    def getLengths(self):
-        cdef dVector3 res
-        dGeomBoxGetLengths(self.gid, res)
-        return (res[0], res[1], res[2])
+		def getLengths(self):
+				cdef dVector3 res
+				dGeomBoxGetLengths(self.gid, res)
+				return (res[0], res[1], res[2])
 
-    cdef float _point_depth(self, float x, float y, float z):
-        """pointDepth(p) -> float
+		cdef float _point_depth(self, float x, float y, float z):
+				"""pointDepth(p) -> float
 
-        Return the depth of the point p in the box. Points inside the
-        geom will have positive depth, points outside it will have
-        negative depth, and points on the surface will have zero
-        depth.
+				Return the depth of the point p in the box. Points inside the
+				geom will have positive depth, points outside it will have
+				negative depth, and points on the surface will have zero
+				depth.
 
-        @param p: Point
-        @type p: 3-sequence of floats
-        """
-        return dGeomBoxPointDepth(self.gid, x, y, z)
+				@param p: Point
+				@type p: 3-sequence of floats
+				"""
+				return dGeomBoxPointDepth(self.gid, x, y, z)
 
 
 # GeomPlane
 cdef class GeomPlane(GeomObject):
-    """Plane geometry.
+		"""Plane geometry.
 
-    This class represents an infinite plane. The plane equation is:
-    n.x*x + n.y*y + n.z*z = dist
+		This class represents an infinite plane. The plane equation is:
+		n.x*x + n.y*y + n.z*z = dist
 
-    This object can't be attached to a body.
-    If you call getBody() on this object it always returns ode.environment.
+		This object can't be attached to a body.
+		If you call getBody() on this object it always returns ode.environment.
 
-    Constructor::
-    
-      GeomPlane(space=None, normal=(0,0,1), dist=0)
+		Constructor::
+		
+			GeomPlane(space=None, normal=(0,0,1), dist=0)
 
-    """
+		"""
 
-    def __new__(self, _soya._World parent=None, SpaceBase space=None, normal=(0,0,1), dist=0, *args, **kw):
-        cdef dSpaceID sid
-        
-        if space is not None:
-            sid = space.sid
-        else:
-            sid = NULL
+		def __new__(self, _soya._World parent=None, SpaceBase space=None, normal=(0,0,1), dist=0, *args, **kw):
+				cdef dSpaceID sid
+				
+				if space is not None:
+						sid = space.sid
+				else:
+						sid = NULL
 
-        self.gid = dCreatePlane(sid, normal[0], normal[1], normal[2], dist)
+				self.gid = dCreatePlane(sid, normal[0], normal[1], normal[2], dist)
 
-    property params:
-        def __set__(self, params):
-            normal = params[0]
-            dGeomPlaneSetParams(self.gid, normal[0], normal[1], normal[2], params[1])
+		property params:
+				def __set__(self, params):
+						normal = params[0]
+						dGeomPlaneSetParams(self.gid, normal[0], normal[1], normal[2], params[1])
 
-        def __get__(self):
-            cdef dVector4 res
-            dGeomPlaneGetParams(self.gid, res)
-            return ((res[0], res[1], res[2]), res[3])
+				def __get__(self):
+						cdef dVector4 res
+						dGeomPlaneGetParams(self.gid, res)
+						return ((res[0], res[1], res[2]), res[3])
 
-    cdef float _point_depth(self, float x, float y, float z):
-        """pointDepth(p) -> float
+		cdef float _point_depth(self, float x, float y, float z):
+				"""pointDepth(p) -> float
 
-        Return the depth of the point p in the plane. Points inside the
-        geom will have positive depth, points outside it will have
-        negative depth, and points on the surface will have zero
-        depth.
+				Return the depth of the point p in the plane. Points inside the
+				geom will have positive depth, points outside it will have
+				negative depth, and points on the surface will have zero
+				depth.
 
-        @param p: Point
-        @type p: 3-sequence of floats
-        """
-        return dGeomPlanePointDepth(self.gid, x, y, z)
+				@param p: Point
+				@type p: 3-sequence of floats
+				"""
+				return dGeomPlanePointDepth(self.gid, x, y, z)
 
 
 # GeomCCylinder
 cdef class GeomCCylinder(GeomObject):
-    """Capped cylinder geometry.
+		"""Capped cylinder geometry.
 
-    This class represents a capped cylinder aligned along the local Z axis
-    and centered at the origin.
+		This class represents a capped cylinder aligned along the local Z axis
+		and centered at the origin.
 
-    Constructor::
-    
-      GeomCCylinder(space=None, radius=0.5, length=1.0)
+		Constructor::
+		
+			GeomCCylinder(space=None, radius=0.5, length=1.0)
 
-    The length parameter does not include the caps.
-    """
+		The length parameter does not include the caps.
+		"""
 
-    def __new__(self, _soya._World parent=None, SpaceBase space=None, radius=0.5, length=1.0, *args, **kw):
-        cdef dSpaceID sid
-        
-        if space is not None:
-            sid = space.sid
-        else:
-            sid = NULL
+		def __new__(self, _soya._World parent=None, SpaceBase space=None, radius=0.5, length=1.0, *args, **kw):
+				cdef dSpaceID sid
+				
+				if space is not None:
+						sid = space.sid
+				else:
+						sid = NULL
 
-        self.gid = dCreateCCylinder(sid, radius, length)
+				self.gid = dCreateCCylinder(sid, radius, length)
 
-    def placeable(self):
-        return True
+		def placeable(self):
+				return True
 
-    property params:
-        def __set__(self, params):
-            dGeomCCylinderSetParams(self.gid, params[0], params[1])
+		property params:
+				def __set__(self, params):
+						dGeomCCylinderSetParams(self.gid, params[0], params[1])
 
-        def __get__(self):
-            cdef dReal radius, length
-            dGeomCCylinderGetParams(self.gid, &radius, &length)
-            return (radius, length)
+				def __get__(self):
+						cdef dReal radius, length
+						dGeomCCylinderGetParams(self.gid, &radius, &length)
+						return (radius, length)
 
-    cdef float _point_depth(self, float x, float y, float z):
-        """pointDepth(p) -> float
+		cdef float _point_depth(self, float x, float y, float z):
+				"""pointDepth(p) -> float
 
-        Return the depth of the point p in the cylinder. Points inside the
-        geom will have positive depth, points outside it will have
-        negative depth, and points on the surface will have zero
-        depth.
+				Return the depth of the point p in the cylinder. Points inside the
+				geom will have positive depth, points outside it will have
+				negative depth, and points on the surface will have zero
+				depth.
 
-        @param p: Point
-        @type p: 3-sequence of floats
-        """
-        return dGeomCCylinderPointDepth(self.gid, x, y, z)
+				@param p: Point
+				@type p: 3-sequence of floats
+				"""
+				return dGeomCCylinderPointDepth(self.gid, x, y, z)
 
 
 # GeomRay
 cdef class GeomRay(GeomObject):
-    """Ray object.
+		"""Ray object.
 
-    A ray is different from all the other geom classes in that it does
-    not represent a solid object. It is an infinitely thin line that
-    starts from the geom's position and extends in the direction of
-    the geom's local Z-axis.
+		A ray is different from all the other geom classes in that it does
+		not represent a solid object. It is an infinitely thin line that
+		starts from the geom's position and extends in the direction of
+		the geom's local Z-axis.
 
-    Constructor::
-    
-      GeomRay(space=None, rlen=1.0)
-    
-    """
+		Constructor::
+		
+			GeomRay(space=None, rlen=1.0)
+		
+		"""
 
-    def __new__(self, _soya._World parent=None, SpaceBase space=None, rlen=1.0, *args, **kw):
-        cdef dSpaceID sid
-        
-        if space is not None:
-            sid = space.sid
-        else:
-            sid = NULL
+		def __new__(self, _soya._World parent=None, SpaceBase space=None, rlen=1.0, *args, **kw):
+				cdef dSpaceID sid
+				
+				if space is not None:
+						sid = space.sid
+				else:
+						sid = NULL
 
-        self.gid = dCreateRay(sid, rlen)
+				self.gid = dCreateRay(sid, rlen)
 
-    property length:
-        def __set__(self, rlen):
-            dGeomRaySetLength(self.gid, rlen)
+		property length:
+				def __set__(self, rlen):
+						dGeomRaySetLength(self.gid, rlen)
 
-        def __get__(self):
-            return dGeomRayGetLength(self.gid)
+				def __get__(self):
+						return dGeomRayGetLength(self.gid)
 
-    def set(self, p, u):
-        dGeomRaySet(self.gid, p[0],p[1],p[2], u[0],u[1],u[2])
+		def set(self, p, u):
+				dGeomRaySet(self.gid, p[0],p[1],p[2], u[0],u[1],u[2])
 
-    def get(self):
-        cdef dVector3 start
-        cdef dVector3 dir
-        dGeomRayGet(self.gid, start, dir)
-        return ((start[0],start[1],start[2]), (dir[0],dir[1],dir[2]))
+		def get(self):
+				cdef dVector3 start
+				cdef dVector3 dir
+				dGeomRayGet(self.gid, start, dir)
+				return ((start[0],start[1],start[2]), (dir[0],dir[1],dir[2]))
 
 
 ## GeomTransform

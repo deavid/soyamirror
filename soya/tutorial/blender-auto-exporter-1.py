@@ -1,3 +1,5 @@
+# -*- indent-tabs-mode: t -*-
+
 # Soya 3D tutorial
 # Copyright (C) 2004 Jean-Baptiste LAMY
 #
@@ -93,15 +95,15 @@ knife_model2 = soya.Shape.get("knife@with_sword_material")
 # Creates a rotating volume class.
 
 class RotatingVolume(soya.Volume):
-  def advance_time(self, proportion):
-    soya.Volume.advance_time(self, proportion)
-    self.rotate_lateral(proportion * 5.0)
+	def advance_time(self, proportion):
+		soya.Volume.advance_time(self, proportion)
+		self.rotate_y(proportion * 5.0)
 
 
 knife    = RotatingVolume(scene, knife_model )
 knife.x  = -1
 
-knife2 = RotatingVolume(scene, knife_model2)
+knife2   = RotatingVolume(scene, knife_model2)
 knife2.x = 1
 
 # Creates a light.

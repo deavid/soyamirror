@@ -1,3 +1,5 @@
+# -*- indent-tabs-mode: t -*-
+
 # Soya 3D tutorial
 # Copyright (C) 2001-2004 Jean-Baptiste LAMY
 #
@@ -63,18 +65,18 @@ fountain = particle.FlagFirework(scene, nb_particles=4, nb_sub_particles=10)
 # i dont think you can beat looking at the source file model/particle.pyx
 # for understanding how to do this 
 class MyParticleSystem(particle.Smoke):
-  def __init__(self,parent):
-    particle.Particles.__init__(self,parent,nb_max_particles=50)
-    self.set_colors((1.0, 1.0, 1.0, 1.0), (1.0, 0.0, 0.0,0.5),(1.0,1.0,0.,0.5),(0.5,0.5,0.5,0.5),(0.,0.,0.,0.5))
-    self.set_sizes ((0.19, 0.19), (0.35, 0.35))
-    self.auto_generate_particle=1
+	def __init__(self,parent):
+		particle.Particles.__init__(self,parent,nb_max_particles=50)
+		self.set_colors((1.0, 1.0, 1.0, 1.0), (1.0, 0.0, 0.0,0.5),(1.0,1.0,0.,0.5),(0.5,0.5,0.5,0.5),(0.,0.,0.,0.5))
+		self.set_sizes ((0.19, 0.19), (0.35, 0.35))
+		self.auto_generate_particle=1
 
-  def generate(self, index):
-    sx = (random()- 0.5) * .2
-    sy = (random())
-    sz = (random() - 0.5) * .2
-    l = (0.2 * (1.0 + random())) / sqrt(sx * sx + sy * sy + sz * sz) * 0.5
-    self.set_particle(index, random()*.5, sx * l, sy * l, sz * l, 0.,0.,0.)
+	def generate(self, index):
+		sx = (random()- 0.5) * .2
+		sy = (random())
+		sz = (random() - 0.5) * .2
+		l = (0.2 * (1.0 + random())) / sqrt(sx * sx + sy * sy + sz * sz) * 0.5
+		self.set_particle(index, random()*.5, sx * l, sy * l, sz * l, 0.,0.,0.)
 
 #particles=MyParticleSystem(scene)
 
@@ -91,13 +93,13 @@ soya.set_root_widget(camera)
 
 # make an idler that stops on any keystroke
 class Idler(soya.Idler):
-  def begin_round(self):
-    soya.Idler.begin_round(self)
+	def begin_round(self):
+		soya.Idler.begin_round(self)
 
-    # wait for any keystoke to quit
-    for e in soya.process_event():
-      if e[0]==sdlconst.KEYDOWN and e[1]!=0:
-        self.stop()        
+		# wait for any keystoke to quit
+		for e in soya.process_event():
+			if e[0]==sdlconst.KEYDOWN and e[1]!=0:
+				self.stop()        
 
 Idler(scene).idle()
 

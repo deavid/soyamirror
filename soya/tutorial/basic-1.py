@@ -1,3 +1,5 @@
+# -*- indent-tabs-mode: t -*-
+
 # Soya 3D tutorial
 # Copyright (C) 2001-2004 Jean-Baptiste LAMY
 #
@@ -74,9 +76,6 @@ sword_model = soya.Shape.get("sword")
 # The second argument of the Volume constructor is the shape : our sword model.
 
 sword = soya.Volume(scene, sword_model)
-#sword = soya.World.get("sword")
-#scene.add(sword)
-#sword.advance_time = lambda p: sword.rotate_lateral(2.0)
 
 # The default position is 0.0, 0.0, 0.0
 # To view it better, we moves the sword to the right.
@@ -86,7 +85,7 @@ sword.x = 1.0
 # Rotates the sword on the Y axis, of 60.0 degrees.
 # (in Soya, all angles are in degrees).
 
-sword.rotate_lateral(90.0)
+sword.rotate_y(90.0)
 
 # Creates a light in the scene (same convention: the first argument of the
 # constructor is the parent) and moves it to (1.5, 2.0, 0.2).

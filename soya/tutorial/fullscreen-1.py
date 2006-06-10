@@ -1,3 +1,5 @@
+# -*- indent-tabs-mode: t -*-
+
 # Soya 3D tutorial
 # Copyright (C) 2001-2004 Jean-Baptiste LAMY
 #
@@ -40,64 +42,64 @@ scene = soya.World()
 
 
 class CaterpillarHead(soya.Volume):
-  def __init__(self, parent):
-    soya.Volume.__init__(self, parent, soya.Shape.get("caterpillar_head"))
-    self.speed                  = soya.Vector(self, 0.0, 0.0, 0.0)
-    self.rotation_lateral_speed = 0.0
-    
-  def begin_round(self):
-    soya.Volume.begin_round(self)
-    
-    for event in soya.process_event():
-      if event[0] == soya.sdlconst.KEYDOWN:
-        if   event[1] == soya.sdlconst.K_UP:     self.speed.z = -0.2
-        elif event[1] == soya.sdlconst.K_DOWN:   self.speed.z =  0.1
-        
-        elif event[1] == soya.sdlconst.K_LEFT:   self.rotation_lateral_speed =  10.0
-        elif event[1] == soya.sdlconst.K_RIGHT:  self.rotation_lateral_speed = -10.0
-        elif event[1] == soya.sdlconst.K_q:      soya.IDLER.stop()
-        elif event[1] == soya.sdlconst.K_ESCAPE: soya.IDLER.stop()
-      
-      if event[0] == soya.sdlconst.KEYUP:
-        if   event[1] == soya.sdlconst.K_UP:     self.speed.z = 0.0
-        elif event[1] == soya.sdlconst.K_DOWN:   self.speed.z = 0.0
-        elif event[1] == soya.sdlconst.K_LEFT:   self.rotation_lateral_speed = 0.0
-        elif event[1] == soya.sdlconst.K_RIGHT:  self.rotation_lateral_speed = 0.0
-    
-    self.rotate_lateral(self.rotation_lateral_speed)
-    
-  def advance_time(self, proportion):
-    soya.Volume.advance_time(self, proportion)
-    self.add_mul_vector(proportion, self.speed)
+	def __init__(self, parent):
+		soya.Volume.__init__(self, parent, soya.Shape.get("caterpillar_head"))
+		self.speed                  = soya.Vector(self, 0.0, 0.0, 0.0)
+		self.rotation_y_speed = 0.0
+		
+	def begin_round(self):
+		soya.Volume.begin_round(self)
+		
+		for event in soya.process_event():
+			if event[0] == soya.sdlconst.KEYDOWN:
+				if   event[1] == soya.sdlconst.K_UP:     self.speed.z = -0.2
+				elif event[1] == soya.sdlconst.K_DOWN:   self.speed.z =  0.1
+				
+				elif event[1] == soya.sdlconst.K_LEFT:   self.rotation_y_speed =  10.0
+				elif event[1] == soya.sdlconst.K_RIGHT:  self.rotation_y_speed = -10.0
+				elif event[1] == soya.sdlconst.K_q:      soya.IDLER.stop()
+				elif event[1] == soya.sdlconst.K_ESCAPE: soya.IDLER.stop()
+			
+			if event[0] == soya.sdlconst.KEYUP:
+				if   event[1] == soya.sdlconst.K_UP:     self.speed.z = 0.0
+				elif event[1] == soya.sdlconst.K_DOWN:   self.speed.z = 0.0
+				elif event[1] == soya.sdlconst.K_LEFT:   self.rotation_y_speed = 0.0
+				elif event[1] == soya.sdlconst.K_RIGHT:  self.rotation_y_speed = 0.0
+		
+		self.rotate_y(self.rotation_y_speed)
+		
+	def advance_time(self, proportion):
+		soya.Volume.advance_time(self, proportion)
+		self.add_mul_vector(proportion, self.speed)
 
 
 class CaterpillarPiece(soya.Volume):
-  def __init__(self, parent, previous):
-    soya.Volume.__init__(self, parent, soya.Shape.get("caterpillar"))
-    self.previous = previous
-    self.speed = soya.Vector(self, 0.0, 0.0, -0.2)
-    
-  def begin_round(self):
-    soya.Volume.begin_round(self)
-    self.look_at(self.previous)
-    if self.distance_to(self.previous) < 1.5: self.speed.z =  0.0
-    else:                                     self.speed.z = -0.2
-    
-  def advance_time(self, proportion):
-    soya.Volume.advance_time(self, proportion)
-    self.add_mul_vector(proportion, self.speed)
-    
+	def __init__(self, parent, previous):
+		soya.Volume.__init__(self, parent, soya.Shape.get("caterpillar"))
+		self.previous = previous
+		self.speed = soya.Vector(self, 0.0, 0.0, -0.2)
+		
+	def begin_round(self):
+		soya.Volume.begin_round(self)
+		self.look_at(self.previous)
+		if self.distance_to(self.previous) < 1.5: self.speed.z =  0.0
+		else:                                     self.speed.z = -0.2
+		
+	def advance_time(self, proportion):
+		soya.Volume.advance_time(self, proportion)
+		self.add_mul_vector(proportion, self.speed)
+		
 
 # Creates a caterpillar head and 10 caterpillar piece of body.
 
 caterpillar_head = CaterpillarHead(scene)
-caterpillar_head.rotate_lateral(90.0)
+caterpillar_head.rotate_y(90.0)
 
 previous_caterpillar_piece = caterpillar_head
 for i in range(10):
-  previous_caterpillar_piece = CaterpillarPiece(scene, previous_caterpillar_piece)
-  previous_caterpillar_piece.x = i + 1
-  
+	previous_caterpillar_piece = CaterpillarPiece(scene, previous_caterpillar_piece)
+	previous_caterpillar_piece.x = i + 1
+	
 # Creates a light.
 
 light = soya.Light(scene)

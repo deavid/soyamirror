@@ -1,3 +1,5 @@
+# -*- indent-tabs-mode: t -*-
+
 # Soya 3D
 # Copyright (C) 2003-2004 Jean-Baptiste LAMY -- jiba@tuxfamily.org
 #
@@ -764,111 +766,111 @@ GL_DOT3_RGBA = c_opengl.GL_DOT3_RGBA
 GL_CLAMP_TO_BORDER = c_opengl.GL_CLAMP_TO_BORDER
 
 def glClearColor(float arg1, float arg2, float arg3, float arg4):
-  c_opengl.glClearColor(arg1, arg2, arg3, arg4)
+	c_opengl.glClearColor(arg1, arg2, arg3, arg4)
 
 def glPointSize(float arg):
-  c_opengl.glPointSize(arg)
-  
+	c_opengl.glPointSize(arg)
+	
 def glLineWidth(float arg):
-  c_opengl.glLineWidth(arg)
-  
+	c_opengl.glLineWidth(arg)
+	
 def glEnable(int arg):
-  c_opengl.glEnable(arg)
-  
+	c_opengl.glEnable(arg)
+	
 def glDisable(int arg):
-  c_opengl.glDisable(arg)
-  
+	c_opengl.glDisable(arg)
+	
 def glLightModeli(int arg1, int arg2):
-  c_opengl.glLightModeli(arg1, arg2)
-    
+	c_opengl.glLightModeli(arg1, arg2)
+		
 def glBegin(int arg):
-  c_opengl.glBegin(arg)
-    
+	c_opengl.glBegin(arg)
+		
 def glEnd():
-  c_opengl.glEnd()
-    
+	c_opengl.glEnd()
+		
 def glVertex2i(int x, int y):
-  c_opengl.glVertex2i(x, y)
-    
+	c_opengl.glVertex2i(x, y)
+		
 def glVertex2f(float x, float y):
-  c_opengl.glVertex2f(x, y)
-    
+	c_opengl.glVertex2f(x, y)
+		
 def glVertex3f(float x, float y, float z):
-  c_opengl.glVertex3f(x, y, z)
+	c_opengl.glVertex3f(x, y, z)
 
 def glNormal3f(float x, float y, float z):
-  c_opengl.glNormal3f(x, y, z)
+	c_opengl.glNormal3f(x, y, z)
 
 def glColor4f(float r, float g, float b, float a):
-  c_opengl.glColor4f(r, g, b, a)
+	c_opengl.glColor4f(r, g, b, a)
 
 def glTexCoord2f(float u, float v):
-  c_opengl.glTexCoord2f(u, v)
+	c_opengl.glTexCoord2f(u, v)
 
 def glDeleteList(int id):
-  c_opengl.glDeleteLists(id, 1)
-  
+	c_opengl.glDeleteLists(id, 1)
+	
 def glGenList():
-  return c_opengl.glGenLists(1)
+	return c_opengl.glGenLists(1)
 
 def glGenLists(int nb):
-  return c_opengl.glGenLists(nb)
+	return c_opengl.glGenLists(nb)
 
 def glNewList(int list_id, int mode = GL_COMPILE):
-  c_opengl.glNewList(list_id, mode)
+	c_opengl.glNewList(list_id, mode)
 
 def glEndList():
-  c_opengl.glEndList()
+	c_opengl.glEndList()
 
 def glCallList(int list_id):
-  c_opengl.glCallList(list_id)
+	c_opengl.glCallList(list_id)
 
 def glRotatef(float angle,float x,float y,float z):
-  c_opengl.glRotatef(angle,x,y,z)
+	c_opengl.glRotatef(angle,x,y,z)
 
 def glPushMatrix():
-  c_opengl.glPushMatrix()
+	c_opengl.glPushMatrix()
 
 def glPopMatrix():
-  c_opengl.glPopMatrix()
+	c_opengl.glPopMatrix()
 
 def glTranslatef(float x,float y,float z):
-  c_opengl.glTranslatef(x,y,z)
+	c_opengl.glTranslatef(x,y,z)
 
 def glTranslated(float x,float y,float z):
-  c_opengl.glTranslated(x,y,z)
+	c_opengl.glTranslated(x,y,z)
 
 def glScalef(float x,float y,float z):
-  c_opengl.glScalef(x,y,z)
+	c_opengl.glScalef(x,y,z)
 
 def glGenTextures(int n):
-  cdef unsigned int ret
-  c_opengl.glGenTextures(n,&ret)
+	cdef unsigned int ret
+	c_opengl.glGenTextures(n,&ret)
 
-  return ret
+	return ret
  
 def glBindTexture(int target, unsigned int texture):
-  c_opengl.glBindTexture(target,texture)
+	c_opengl.glBindTexture(target,texture)
 
 def glPixelStorei(int pname, int param):
-  c_opengl.glPixelStorei(pname,param)
+	c_opengl.glPixelStorei(pname,param)
 
 def glLoadIdentity():
-  c_opengl.glLoadIdentity()
+	c_opengl.glLoadIdentity()
 
 def glAccum(int value, float coef):
-  c_opengl.glAccum(value, coef)
+	c_opengl.glAccum(value, coef)
 
 def glMatrixMode(int mode):
-  c_opengl.glMatrixMode(mode)
-  
+	c_opengl.glMatrixMode(mode)
+	
 def glMultMatrix(float mode):
-  c_opengl.glMatrixMode(mode)
-  
+	c_opengl.glMatrixMode(mode)
+	
 def glTexParameteri(int target, int param, int value):
-  c_opengl.glTexParameteri(target, param, value)
+	c_opengl.glTexParameteri(target, param, value)
 
 def glPolygonOffset(float factor, float units):
-  c_opengl.glPolygonOffset(factor, units)
+	c_opengl.glPolygonOffset(factor, units)
 
 

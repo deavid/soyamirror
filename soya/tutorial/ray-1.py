@@ -1,3 +1,5 @@
+# -*- indent-tabs-mode: t -*-
+
 # Soya 3D tutorial
 # Copyright (C) 2001-2004 Jean-Baptiste LAMY
 #
@@ -63,27 +65,27 @@ soya.cursor_set_visible(0)
 
 
 def begin_round():
-  # Processes the events
-  
-  # soya.cursor.coalesce_motion_event() removes all mouse motion events, except
-  # the last one -- we use it for speed gain, since many mouse motion event
-  # often occur at the same time.
-  
-  for event in soya.process_event():
-    if event[0] == soya.sdlconst.MOUSEMOTION:
-      
-      # For mouse motion event, rotate the laser (quite) toward the mouse.
-      # The formulas are empirical; see soya.cursor for a better algorithm
-      # if you want to translate mouse positions into 3D coordinates.
-      
-      mouse = soya.Point(
-        scene,
-        (float(event[1]) / camera.get_screen_width () - 0.5) *  2.0,
-        (float(event[2]) / camera.get_screen_height() - 0.5) * -4.0,
-        (float(event[2]) / camera.get_screen_height() - 0.5) * -1.0 + 0.25,
-        )
-      sword.look_at(mouse)
-        
+	# Processes the events
+	
+	# soya.cursor.coalesce_motion_event() removes all mouse motion events, except
+	# the last one -- we use it for speed gain, since many mouse motion event
+	# often occur at the same time.
+	
+	for event in soya.process_event():
+		if event[0] == soya.sdlconst.MOUSEMOTION:
+			
+			# For mouse motion event, rotate the laser (quite) toward the mouse.
+			# The formulas are empirical; see soya.cursor for a better algorithm
+			# if you want to translate mouse positions into 3D coordinates.
+			
+			mouse = soya.Point(
+				scene,
+				(float(event[1]) / camera.get_screen_width () - 0.5) *  2.0,
+				(float(event[2]) / camera.get_screen_height() - 0.5) * -4.0,
+				(float(event[2]) / camera.get_screen_height() - 0.5) * -1.0 + 0.25,
+				)
+			sword.look_at(mouse)
+				
 sword.begin_round = begin_round
 
 # Main loop

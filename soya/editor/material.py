@@ -1,3 +1,5 @@
+# -*- indent-tabs-mode: t -*-
+
 # Soya 3D
 # Copyright (C) 2001-2002 Jean-Baptiste LAMY
 #
@@ -20,47 +22,47 @@ import soya, soya.cube as cube
 
 
 class MaterialEditor:
-  def __init__(self, material, dialog):
-    self.active = 0
-    self.dialog = dialog
-    
-    self.material = material
-    
-    self.scene  = soya.World()
-    self.camera = soya.Camera(self.scene)
-    soya.set_root_widget(self.camera)
-    
-    soya.Light(self.scene).set_xyz(0.2, 2.0, 0.2)
-    
-    #self.cube = cube.Cube(self.scene, material)
-    cube_world = cube.Cube(None, material)
-    self.cube = soya.Volume(self.scene, cube_world.shapify())
-    self.cube.set_xyz(0.0, 0.0, -2.0)
-    self.cube.rotate_vertical(30.0)
-    
-  def rotate(self):
-    if self.active:
-      self.cube.rotate_lateral(5.0)
-      self.render()
-      
-      events = soya.process_event()
-      
-      self.cancel = self.dialog.after(50, self.rotate)
-      
-  def render(self):
-    if self.active: soya.render()
-      
-  def activate(self, event = None):
-    if not self.active:
-      self.active = 1
-      soya.set_root_widget(self.camera)
-      self.render()
-      
-      self.cancel = self.dialog.after(50, self.rotate)
-      
-  def deactivate(self, event = None):
-    if self.active:
-      self.active = 0
-      
-      self.dialog.after_cancel(self.cancel)
-      
+	def __init__(self, material, dialog):
+		self.active = 0
+		self.dialog = dialog
+		
+		self.material = material
+		
+		self.scene  = soya.World()
+		self.camera = soya.Camera(self.scene)
+		soya.set_root_widget(self.camera)
+		
+		soya.Light(self.scene).set_xyz(0.2, 2.0, 0.2)
+		
+		#self.cube = cube.Cube(self.scene, material)
+		cube_world = cube.Cube(None, material)
+		self.cube = soya.Volume(self.scene, cube_world.shapify())
+		self.cube.set_xyz(0.0, 0.0, -2.0)
+		self.cube.rotate_x(30.0)
+		
+	def rotate(self):
+		if self.active:
+			self.cube.rotate_y(5.0)
+			self.render()
+			
+			events = soya.process_event()
+			
+			self.cancel = self.dialog.after(50, self.rotate)
+			
+	def render(self):
+		if self.active: soya.render()
+			
+	def activate(self, event = None):
+		if not self.active:
+			self.active = 1
+			soya.set_root_widget(self.camera)
+			self.render()
+			
+			self.cancel = self.dialog.after(50, self.rotate)
+			
+	def deactivate(self, event = None):
+		if self.active:
+			self.active = 0
+			
+			self.dialog.after_cancel(self.cancel)
+			

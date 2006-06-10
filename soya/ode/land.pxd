@@ -1,3 +1,5 @@
+# -*- indent-tabs-mode: t -*-
+
 # Soya 3D
 # Copyright (C) 2004 Jean-Baptiste LAMY -- jiba@tuxfamily.org
 #
@@ -19,21 +21,21 @@
 ctypedef dReal dGetDepthFn(dGeomID g, dReal x, dReal y, dReal z)
 
 cdef class _Land(_soya._Land):
-    cdef dGeomID gid
-    cdef object space
+		cdef dGeomID gid
+		cdef object space
 
-    cdef void _get_aabb(self, dReal aabb[6])
-    cdef int _collide_edge(self, _soya.GLfloat *A, _soya.GLfloat *B,
-                           _soya.GLfloat *AB, _soya.GLfloat *normalA,
-                           _soya.GLfloat *normalB, dGeomID o1, dGeomID o2, 
-                           int max_contacts, int flags, dContactGeom *contact, 
-                           dGetDepthFn *GetDepth)
-    cdef int _collide_cell(self, int x, int z, dGeomID o1, 
-                           dGeomID o2, int max_contacts, int flags, 
-                           dContactGeom *contact, int skip,
-                           dGetDepthFn *GetDepth)
-    cdef int _collide(self, dGeomID o1, dGeomID o2, int flags,
-                      dContactGeom *contact, int skip, 
-                      dGetDepthFn *GetDepth)
-    
+		cdef void _get_aabb(self, dReal aabb[6])
+		cdef int _collide_edge(self, _soya.GLfloat *A, _soya.GLfloat *B,
+													 _soya.GLfloat *AB, _soya.GLfloat *normalA,
+													 _soya.GLfloat *normalB, dGeomID o1, dGeomID o2, 
+													 int max_contacts, int flags, dContactGeom *contact, 
+													 dGetDepthFn *GetDepth)
+		cdef int _collide_cell(self, int x, int z, dGeomID o1, 
+													 dGeomID o2, int max_contacts, int flags, 
+													 dContactGeom *contact, int skip,
+													 dGetDepthFn *GetDepth)
+		cdef int _collide(self, dGeomID o1, dGeomID o2, int flags,
+											dContactGeom *contact, int skip, 
+											dGetDepthFn *GetDepth)
+		
 

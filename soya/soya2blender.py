@@ -1,3 +1,5 @@
+# -*- indent-tabs-mode: t -*-
+
 #!BPY
 """
 Name: 'Soya2Blender'
@@ -28,40 +30,40 @@ import Blender
 
 
 def import_soya_model(model):
-  scene = soya.World()
-  scene.add(model)
-  model.rotate_vertical(90.0)
-  
-  mesh = Blender.NMesh.New(model.filename or "")
-  
-  for i in model.recursive():
-    print i
-    
-    if isinstance(i, soya.Face):
-      vertices = []
-      for v in i.vertices:
-        p = v % scene
-        vertex = Blender.NMesh.Vert(p.x, p.y, p.z)
-        mesh.verts.append(vertex)
-        vertices.append(vertex)
-      face = Blender.NMesh.Face(vertices)
-      for j in range(len(i.vertices)):
-        face.uv.append((i.vertices[j].tex_x, 1.0 - i.vertices[j].tex_y))
-        
-      if i.smooth_lit:   face.smooth = 1
-      if i.double_sided: face.mode |= Blender.NMesh.FaceModes.TWOSIDE
-      # XXX TODO vertex color
-      
-      if i.material.texture:
-        face.image = Blender.Image.Load(i.material.texture.filename)
-        
-      mesh.faces.append(face)
-      print face
-      
-  #obj = Blender.Object.New("Mesh")
-  #obj.link(mesh)
-  #Blender.Scene.getCurrent().link(obj)
-  Blender.NMesh.PutRaw(mesh)
+	scene = soya.World()
+	scene.add(model)
+	model.rotate_x(90.0)
+	
+	mesh = Blender.NMesh.New(model.filename or "")
+	
+	for i in model.recursive():
+		print i
+		
+		if isinstance(i, soya.Face):
+			vertices = []
+			for v in i.vertices:
+				p = v % scene
+				vertex = Blender.NMesh.Vert(p.x, p.y, p.z)
+				mesh.verts.append(vertex)
+				vertices.append(vertex)
+			face = Blender.NMesh.Face(vertices)
+			for j in range(len(i.vertices)):
+				face.uv.append((i.vertices[j].tex_x, 1.0 - i.vertices[j].tex_y))
+				
+			if i.smooth_lit:   face.smooth = 1
+			if i.double_sided: face.mode |= Blender.NMesh.FaceModes.TWOSIDE
+			# XXX TODO vertex color
+			
+			if i.material.texture:
+				face.image = Blender.Image.Load(i.material.texture.filename)
+				
+			mesh.faces.append(face)
+			print face
+			
+	#obj = Blender.Object.New("Mesh")
+	#obj.link(mesh)
+	#Blender.Scene.getCurrent().link(obj)
+	Blender.NMesh.PutRaw(mesh)
 
 
 soya.path.append("/home/jiba/src/balazar")

@@ -1,3 +1,5 @@
+# -*- indent-tabs-mode: t -*-
+
 import soya
 import soya.pudding as pudding
 

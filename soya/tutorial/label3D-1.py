@@ -1,3 +1,5 @@
+# -*- indent-tabs-mode: t -*-
+
 #! /usr/bin/python -O
 
 # Copyright (C) 2003-2006 Jean-Baptiste LAMY
@@ -39,14 +41,14 @@ soya.path.append(os.path.join(HERE, "data"))
 
 
 class Level(soya.World):
-  """A game level.
+	"""A game level.
 Level is a subclass of soya.World."""
 
 
 class Action:
-  """An action that the character can do."""
-  def __init__(self, action):
-    self.action = action
+	"""An action that the character can do."""
+	def __init__(self, action):
+		self.action = action
 
 # The available actions
 ACTION_WAIT          = 0
@@ -62,200 +64,200 @@ ACTION_JUMP          = 9
 
 
 class KeyboardController:
-  """A controller is an object that gives orders to a character.
+	"""A controller is an object that gives orders to a character.
 Here, we define a keyboard based controller, but there may be mouse-based or IA-based
 controllers.
 Notice that the unique method is called "next", which allows to use Python generator
 as controller."""
-  def __init__(self):
-    self.left_key_down = self.right_key_down = self.up_key_down = self.down_key_down = 0
-    
-  def next(self):
-    """Returns the next action"""
-    jump = 0
-    
-    for event in soya.process_event():
-      if   event[0] == sdlconst.KEYDOWN:
-        if   (event[1] == sdlconst.K_q) or (event[1] == sdlconst.K_ESCAPE):
-          sys.exit() # Quit the game
-          
-        elif event[1] == sdlconst.K_LSHIFT:
-          # Shift key is for jumping
-          # Contrary to other action, jump is only performed once, at the beginning of
-          # the jump.
-          jump = 1
-          
-        elif event[1] == sdlconst.K_LEFT:  self.left_key_down  = 1
-        elif event[1] == sdlconst.K_RIGHT: self.right_key_down = 1
-        elif event[1] == sdlconst.K_UP:    self.up_key_down    = 1
-        elif event[1] == sdlconst.K_DOWN:  self.down_key_down  = 1
-        
-      elif event[0] == sdlconst.KEYUP:
-        if   event[1] == sdlconst.K_LEFT:  self.left_key_down  = 0
-        elif event[1] == sdlconst.K_RIGHT: self.right_key_down = 0
-        elif event[1] == sdlconst.K_UP:    self.up_key_down    = 0
-        elif event[1] == sdlconst.K_DOWN:  self.down_key_down  = 0
-    
-    if jump: return Action(ACTION_JUMP)
-    
-    # People saying that Python doesn't have switch/select case are wrong...
-    # Remember this if you are coding a fighting game !
-    return Action({
-      (0, 0, 1, 0) : ACTION_ADVANCE,
-      (1, 0, 1, 0) : ACTION_ADVANCE_LEFT,
-      (0, 1, 1, 0) : ACTION_ADVANCE_RIGHT,
-      (1, 0, 0, 0) : ACTION_TURN_LEFT,
-      (0, 1, 0, 0) : ACTION_TURN_RIGHT,
-      (0, 0, 0, 1) : ACTION_GO_BACK,
-      (1, 0, 0, 1) : ACTION_GO_BACK_LEFT,
-      (0, 1, 0, 1) : ACTION_GO_BACK_RIGHT,
-      }.get((self.left_key_down, self.right_key_down, self.up_key_down, self.down_key_down), ACTION_WAIT))
+	def __init__(self):
+		self.left_key_down = self.right_key_down = self.up_key_down = self.down_key_down = 0
+		
+	def next(self):
+		"""Returns the next action"""
+		jump = 0
+		
+		for event in soya.process_event():
+			if   event[0] == sdlconst.KEYDOWN:
+				if   (event[1] == sdlconst.K_q) or (event[1] == sdlconst.K_ESCAPE):
+					sys.exit() # Quit the game
+					
+				elif event[1] == sdlconst.K_LSHIFT:
+					# Shift key is for jumping
+					# Contrary to other action, jump is only performed once, at the beginning of
+					# the jump.
+					jump = 1
+					
+				elif event[1] == sdlconst.K_LEFT:  self.left_key_down  = 1
+				elif event[1] == sdlconst.K_RIGHT: self.right_key_down = 1
+				elif event[1] == sdlconst.K_UP:    self.up_key_down    = 1
+				elif event[1] == sdlconst.K_DOWN:  self.down_key_down  = 1
+				
+			elif event[0] == sdlconst.KEYUP:
+				if   event[1] == sdlconst.K_LEFT:  self.left_key_down  = 0
+				elif event[1] == sdlconst.K_RIGHT: self.right_key_down = 0
+				elif event[1] == sdlconst.K_UP:    self.up_key_down    = 0
+				elif event[1] == sdlconst.K_DOWN:  self.down_key_down  = 0
+		
+		if jump: return Action(ACTION_JUMP)
+		
+		# People saying that Python doesn't have switch/select case are wrong...
+		# Remember this if you are coding a fighting game !
+		return Action({
+			(0, 0, 1, 0) : ACTION_ADVANCE,
+			(1, 0, 1, 0) : ACTION_ADVANCE_LEFT,
+			(0, 1, 1, 0) : ACTION_ADVANCE_RIGHT,
+			(1, 0, 0, 0) : ACTION_TURN_LEFT,
+			(0, 1, 0, 0) : ACTION_TURN_RIGHT,
+			(0, 0, 0, 1) : ACTION_GO_BACK,
+			(1, 0, 0, 1) : ACTION_GO_BACK_LEFT,
+			(0, 1, 0, 1) : ACTION_GO_BACK_RIGHT,
+			}.get((self.left_key_down, self.right_key_down, self.up_key_down, self.down_key_down), ACTION_WAIT))
 
 
 class Character(soya.World):
-  """A character in the game."""
-  def __init__(self, parent, controller):
-    soya.World.__init__(self, parent)
+	"""A character in the game."""
+	def __init__(self, parent, controller):
+		soya.World.__init__(self, parent)
 
-    # Loads a Cal3D shape (=model)
-    balazar = soya.Cal3dShape.get("balazar")
-    
-    # Creates a Cal3D volume displaying the "balazar" shape
-    # (NB Balazar is the name of a wizard).
-    self.perso = soya.Cal3dVolume(self, balazar)
-    
-    # Starts playing the idling animation in loop
-    self.perso.animate_blend_cycle("attente")
-    
-    # The current animation
-    self.current_animation = "attente"
-    
-    # Disable raypicking on the character itself !!!
-    self.solid = 0
-    
-    self.controller     = controller
-    self.speed          = soya.Vector(self)
-    self.rotation_speed = 0.0
-    
-    # We need radius * sqrt(2)/2 < max speed (here, 0.35)
-    self.radius         = 0.5
-    self.radius_y       = 1.0
-    self.center         = soya.Point(self, 0.0, self.radius_y, 0.0)
-    
-    self.left   = soya.Vector(self, -1.0,  0.0,  0.0)
-    self.right  = soya.Vector(self,  1.0,  0.0,  0.0)
-    self.down   = soya.Vector(self,  0.0, -1.0,  0.0)
-    self.up     = soya.Vector(self,  0.0,  1.0,  0.0)
-    self.front  = soya.Vector(self,  0.0,  0.0, -1.0)
-    self.back   = soya.Vector(self,  0.0,  0.0,  1.0)
+		# Loads a Cal3D shape (=model)
+		balazar = soya.Cal3dShape.get("balazar")
+		
+		# Creates a Cal3D volume displaying the "balazar" shape
+		# (NB Balazar is the name of a wizard).
+		self.perso = soya.Cal3dVolume(self, balazar)
+		
+		# Starts playing the idling animation in loop
+		self.perso.animate_blend_cycle("attente")
+		
+		# The current animation
+		self.current_animation = "attente"
+		
+		# Disable raypicking on the character itself !!!
+		self.solid = 0
+		
+		self.controller     = controller
+		self.speed          = soya.Vector(self)
+		self.rotation_speed = 0.0
+		
+		# We need radius * sqrt(2)/2 < max speed (here, 0.35)
+		self.radius         = 0.5
+		self.radius_y       = 1.0
+		self.center         = soya.Point(self, 0.0, self.radius_y, 0.0)
+		
+		self.left   = soya.Vector(self, -1.0,  0.0,  0.0)
+		self.right  = soya.Vector(self,  1.0,  0.0,  0.0)
+		self.down   = soya.Vector(self,  0.0, -1.0,  0.0)
+		self.up     = soya.Vector(self,  0.0,  1.0,  0.0)
+		self.front  = soya.Vector(self,  0.0,  0.0, -1.0)
+		self.back   = soya.Vector(self,  0.0,  0.0,  1.0)
 
-    # True is the character is jumping, i.e. speed.y > 0.0
-    self.jumping = 0
-    
-    self.label = soya.label3d.Label3D(self, "Jiba")
-    self.label.set_xyz(0.0, 3.0, 0.0)
-    self.label.lit = 0
-    
-  def play_animation(self, animation):
-    if self.current_animation != animation:
-      # Stops previous animation
-      self.perso.animate_clear_cycle(self.current_animation, 0.2)
-      
-      # Starts the new one
-      self.perso.animate_blend_cycle(animation, 1.0, 0.2)
-      
-      self.current_animation = animation
-      
-  def begin_round(self):
-    self.begin_action(self.controller.next())
-    soya.World.begin_round(self)
-    
-  def begin_action(self, action):
-    # Reset
-    self.speed.x = self.speed.z = self.rotation_speed = 0.0
-    
-    # If the haracter is jumping, we don't want to reset speed.y to 0.0 !!!
-    if (not self.jumping) and self.speed.y > 0.0: self.speed.y = 0.0
-    
-    animation = "attente"
-    
-    # Determine the character rotation
-    if   action.action in (ACTION_TURN_LEFT, ACTION_ADVANCE_LEFT, ACTION_GO_BACK_LEFT):
-      self.rotation_speed = 4.0
-      animation = "tourneG"
-    elif action.action in (ACTION_TURN_RIGHT, ACTION_ADVANCE_RIGHT, ACTION_GO_BACK_RIGHT):
-      self.rotation_speed = -4.0
-      animation = "tourneD"
-      
-    # Determine the character speed
-    if   action.action in (ACTION_ADVANCE, ACTION_ADVANCE_LEFT, ACTION_ADVANCE_RIGHT):
-      self.speed.z = -0.25
-      animation = "marche"
-    elif action.action in (ACTION_GO_BACK, ACTION_GO_BACK_LEFT, ACTION_GO_BACK_RIGHT):
-      self.speed.z = 0.06
-      animation = "recule"
-      
-    new_center = self.center + self.speed
-    context = scene.RaypickContext(new_center, max(self.radius, 0.1 + self.radius_y))
-    
-    # Gets the ground, and check if the character is falling
-    r = context.raypick(new_center, self.down, 0.1 + self.radius_y, 1, 1)
+		# True is the character is jumping, i.e. speed.y > 0.0
+		self.jumping = 0
+		
+		self.label = soya.label3d.Label3D(self, "Jiba")
+		self.label.set_xyz(0.0, 3.0, 0.0)
+		self.label.lit = 0
+		
+	def play_animation(self, animation):
+		if self.current_animation != animation:
+			# Stops previous animation
+			self.perso.animate_clear_cycle(self.current_animation, 0.2)
+			
+			# Starts the new one
+			self.perso.animate_blend_cycle(animation, 1.0, 0.2)
+			
+			self.current_animation = animation
+			
+	def begin_round(self):
+		self.begin_action(self.controller.next())
+		soya.World.begin_round(self)
+		
+	def begin_action(self, action):
+		# Reset
+		self.speed.x = self.speed.z = self.rotation_speed = 0.0
+		
+		# If the haracter is jumping, we don't want to reset speed.y to 0.0 !!!
+		if (not self.jumping) and self.speed.y > 0.0: self.speed.y = 0.0
+		
+		animation = "attente"
+		
+		# Determine the character rotation
+		if   action.action in (ACTION_TURN_LEFT, ACTION_ADVANCE_LEFT, ACTION_GO_BACK_LEFT):
+			self.rotation_speed = 4.0
+			animation = "tourneG"
+		elif action.action in (ACTION_TURN_RIGHT, ACTION_ADVANCE_RIGHT, ACTION_GO_BACK_RIGHT):
+			self.rotation_speed = -4.0
+			animation = "tourneD"
+			
+		# Determine the character speed
+		if   action.action in (ACTION_ADVANCE, ACTION_ADVANCE_LEFT, ACTION_ADVANCE_RIGHT):
+			self.speed.z = -0.25
+			animation = "marche"
+		elif action.action in (ACTION_GO_BACK, ACTION_GO_BACK_LEFT, ACTION_GO_BACK_RIGHT):
+			self.speed.z = 0.06
+			animation = "recule"
+			
+		new_center = self.center + self.speed
+		context = scene.RaypickContext(new_center, max(self.radius, 0.1 + self.radius_y))
+		
+		# Gets the ground, and check if the character is falling
+		r = context.raypick(new_center, self.down, 0.1 + self.radius_y, 1, 1)
 
-    if r and not self.jumping:
-      # Puts the character on the ground
-      # If the character is jumping, we do not put him on the ground !
-      ground, ground_normal = r
-      ground.convert_to(self)
-      self.speed.y = ground.y
-      
-      # Jumping is only possible if we are on ground
-      if action.action == ACTION_JUMP:
-        self.jumping = 1
-        self.speed.y = 0.5
-        
-    else:
-      # No ground => start falling
-      # Test the fall with the pit behind the second house
-      self.speed.y = max(self.speed.y - 0.02, -0.25)
-      animation = "chute"
-      
-      # If the vertical speed is negative, the jump is over
-      if self.speed.y < 0.0: self.jumping = 0
-      
-    new_center = self.center + self.speed
-    
-    # The movement (defined by the speed vector) may be impossible if the character
-    # would encounter a wall.
-    
-    for vec in (self.left, self.right, self.front, self.back, self.up):
-      r = context.raypick(new_center, vec, self.radius, 1, 1)
-      if r:
-        # The ray encounters a wall => the character cannot perform the planned movement.
-        # We compute a correction vector, and add it to the speed vector, as well as to
-        # new_center (for the following raypicks ; remember that
-        # new_center = self.center + self.speed, so if speed has changed, we must update
-        # it).
-        
-        collision, wall_normal = r
-        hypo = vec.length() * self.radius - (new_center >> collision).length()
-        correction = wall_normal * hypo
-        
-        # Theorical formula, but more complex and identical result
-        #angle = (180.0 - vec.angle_to(wall_normal)) / 180.0 * math.pi
-        #correction = wall_normal * hypo * math.cos(angle)
-        
-        self.speed.add_vector(correction)
-        new_center.add_vector(correction)
-        
-    self.play_animation(animation)
-      
-  def advance_time(self, proportion):
-    soya.World.advance_time(self, proportion)
-    
-    self.add_mul_vector(proportion, self.speed)
-    self.rotate_lateral(proportion * self.rotation_speed)
+		if r and not self.jumping:
+			# Puts the character on the ground
+			# If the character is jumping, we do not put him on the ground !
+			ground, ground_normal = r
+			ground.convert_to(self)
+			self.speed.y = ground.y
+			
+			# Jumping is only possible if we are on ground
+			if action.action == ACTION_JUMP:
+				self.jumping = 1
+				self.speed.y = 0.5
+				
+		else:
+			# No ground => start falling
+			# Test the fall with the pit behind the second house
+			self.speed.y = max(self.speed.y - 0.02, -0.25)
+			animation = "chute"
+			
+			# If the vertical speed is negative, the jump is over
+			if self.speed.y < 0.0: self.jumping = 0
+			
+		new_center = self.center + self.speed
+		
+		# The movement (defined by the speed vector) may be impossible if the character
+		# would encounter a wall.
+		
+		for vec in (self.left, self.right, self.front, self.back, self.up):
+			r = context.raypick(new_center, vec, self.radius, 1, 1)
+			if r:
+				# The ray encounters a wall => the character cannot perform the planned movement.
+				# We compute a correction vector, and add it to the speed vector, as well as to
+				# new_center (for the following raypicks ; remember that
+				# new_center = self.center + self.speed, so if speed has changed, we must update
+				# it).
+				
+				collision, wall_normal = r
+				hypo = vec.length() * self.radius - (new_center >> collision).length()
+				correction = wall_normal * hypo
+				
+				# Theorical formula, but more complex and identical result
+				#angle = (180.0 - vec.angle_to(wall_normal)) / 180.0 * math.pi
+				#correction = wall_normal * hypo * math.cos(angle)
+				
+				self.speed.add_vector(correction)
+				new_center.add_vector(correction)
+				
+		self.play_animation(animation)
+			
+	def advance_time(self, proportion):
+		soya.World.advance_time(self, proportion)
+		
+		self.add_mul_vector(proportion, self.speed)
+		self.rotate_y(proportion * self.rotation_speed)
 
-    
+		
 # Create the scene (a world with no parent)
 scene = soya.World()
 

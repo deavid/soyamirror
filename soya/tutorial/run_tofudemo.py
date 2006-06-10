@@ -1,3 +1,5 @@
+# -*- indent-tabs-mode: t -*-
+
 #! /usr/bin/python -O
 
 # Game Skeleton
@@ -31,49 +33,49 @@ from tofudemo import *
 # Print usage
 
 if (not sys.argv[1:]) or ("--help" in sys.argv):
-  print """run_tofudemo.py -- Launch Soya Tofu Demo
+	print """run_tofudemo.py -- Launch Soya Tofu Demo
 Usages :
 
-  python run_demo.py --single <login> [<password>]
+	python run_demo.py --single <login> [<password>]
 Starts a single player game
 
-  python run_demo.py --server
+	python run_demo.py --server
 Starts the server
 
-  python run_demo.py --client <host> <login> [<password>]
+	python run_demo.py --client <host> <login> [<password>]
 Starts a client and connect to server <host> with login <login>
 and password <password>. If login doesn't exist, a new player is
 created.
 """
 
 else:
-  
-  # Creates and run an Idler
-  # To enable Tofu, we must use soya.tofu4soya.Idler; this special Idler combine
-  # soya.Idler and tofu.Idler in a single one.
-  
-  soya.tofu4soya.Idler(scene)
-  
-  
-  # Lauch a single player game, a server or a client.
-  # For both client and single player game, we initialize Soya. For server, we DON'T
-  # initialize Soya, in order to not show the 3D rendering window.
-  # Calling serve_forever will start the idler.
-  
-  if   sys.argv[1] == "--single":
-    soya.init()
-    
-    import tofu.single
-    tofu.single.serve_forever()
-    
-  elif sys.argv[1] == "--server":
-    import tofu.server
-    tofu.server.serve_forever()
-    
-  elif sys.argv[1] == "--client":
-    soya.init()
-    
-    import tofu.client
-    hostname = sys.argv[2]
-    tofu.client.serve_forever(hostname)
-    
+	
+	# Creates and run an Idler
+	# To enable Tofu, we must use soya.tofu4soya.Idler; this special Idler combine
+	# soya.Idler and tofu.Idler in a single one.
+	
+	soya.tofu4soya.Idler(scene)
+	
+	
+	# Lauch a single player game, a server or a client.
+	# For both client and single player game, we initialize Soya. For server, we DON'T
+	# initialize Soya, in order to not show the 3D rendering window.
+	# Calling serve_forever will start the idler.
+	
+	if   sys.argv[1] == "--single":
+		soya.init()
+		
+		import tofu.single
+		tofu.single.serve_forever()
+		
+	elif sys.argv[1] == "--server":
+		import tofu.server
+		tofu.server.serve_forever()
+		
+	elif sys.argv[1] == "--client":
+		soya.init()
+		
+		import tofu.client
+		hostname = sys.argv[2]
+		tofu.client.serve_forever(hostname)
+		

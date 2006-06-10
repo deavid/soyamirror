@@ -1,3 +1,5 @@
+# -*- indent-tabs-mode: t -*-
+
 # Soya 3D
 # Copyright (C) 2003 Jean-Baptiste LAMY -- jiba@tuxfamily.org
 #
@@ -16,20 +18,20 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 cdef class Position(_CObj):
-  cdef CoordSyst _parent
-  cdef void _into(self, CoordSyst coordsyst, float* result)
-  cdef void _out(self, float* result)
+	cdef CoordSyst _parent
+	cdef void _into(self, CoordSyst coordsyst, float* result)
+	cdef void _out(self, float* result)
 
 
 cdef class _Point(Position):
-  cdef float _matrix[3]
-  cdef void _into(self, CoordSyst coordsyst, float* result)
-  cdef void _out(self, float* result)
-  cdef __getcstate__(self)
-  cdef void __setcstate__(self, object cstate)
+	cdef float _matrix[3]
+	cdef void _into(self, CoordSyst coordsyst, float* result)
+	cdef void _out(self, float* result)
+	cdef __getcstate__(self)
+	cdef void __setcstate__(self, object cstate)
 
 
 cdef class _Vector(_Point):
-  cdef void _into(self, CoordSyst coordsyst, float* result)
-  cdef void _out(self, float* result)
+	cdef void _into(self, CoordSyst coordsyst, float* result)
+	cdef void _out(self, float* result)
 

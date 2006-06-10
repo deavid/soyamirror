@@ -1,3 +1,5 @@
+# -*- indent-tabs-mode: t -*-
+
 # Soya 3D tutorial
 # Copyright (C) 2001-2004 Jean-Baptiste LAMY
 #
@@ -66,18 +68,18 @@ sword_shape = sword.shapify()
 # Create a rotating volume class, and a rotating volume.
 
 class RotatingVolume(soya.Volume):
-  def __init__(self, parent = None, shape = None):
-    soya.Volume.__init__(self, parent, shape)
-    
-  def advance_time(self, proportion):
-    soya.Volume.advance_time(self, proportion)
-    
-    self.rotate_lateral(proportion * 2.0)
-      
-      
+	def __init__(self, parent = None, shape = None):
+		soya.Volume.__init__(self, parent, shape)
+		
+	def advance_time(self, proportion):
+		soya.Volume.advance_time(self, proportion)
+		
+		self.rotate_y(proportion * 2.0)
+			
+			
 volume = RotatingVolume(scene, sword_shape)
 volume.set_xyz(1.0, -1.0, 0.0)
-volume.rotate_vertical(90.0)
+volume.rotate_x(90.0)
 
 # Creates a wall, to receive the shadow.
 # Notice that the wall can be any object (including e.g. a landscape,...) : receiving
@@ -85,11 +87,11 @@ volume.rotate_vertical(90.0)
 
 wall_model = soya.World()
 wall_face = soya.Face(wall_model, [
-  soya.Vertex(wall_model, 0.0, -5.0, -5.0),
-  soya.Vertex(wall_model, 0.0, -5.0,  5.0),
-  soya.Vertex(wall_model, 0.0,  5.0,  5.0),
-  soya.Vertex(wall_model, 0.0,  5.0, -5.0),
-  ])
+	soya.Vertex(wall_model, 0.0, -5.0, -5.0),
+	soya.Vertex(wall_model, 0.0, -5.0,  5.0),
+	soya.Vertex(wall_model, 0.0,  5.0,  5.0),
+	soya.Vertex(wall_model, 0.0,  5.0, -5.0),
+	])
 wall_face.double_sided = 1
 wall = soya.Volume(scene, wall_model.shapify())
 wall.set_xyz(-1.0, 0.0, 0.0)

@@ -1,3 +1,5 @@
+# -*- indent-tabs-mode: t -*-
+
 # Soya 3D
 # Copyright (C) 2004 Jean-Baptiste LAMY -- jiba@tuxfamily.org
 #
@@ -17,20 +19,20 @@
 
 
 cdef class _Cal3dVolume(CoordSyst):
-  cdef _Cal3dShape _shape
-  cdef             _attached_meshes, _attached_coordsysts
-  cdef CalModel*   _model
-  cdef float       _delta_time
-  cdef float*      _face_planes, *_vertex_coords, *_vertex_normals
-  cdef int         _face_plane_ok, _vertex_ok
-  
-  cdef __getcstate__(self)
-  cdef void __setcstate__(self, cstate)
-  cdef void _build_submeshes(self)
-  cdef void _build_face_planes(self)
-  cdef void _attach_all(self)
-  cdef void _batch(self, CoordSyst coordsyst)
-  cdef int _shadow(self, CoordSyst coordsyst, _Light light)
-  cdef void _raypick(self, RaypickData data, CoordSyst parent)
-  cdef int _raypick_b(self, RaypickData data, CoordSyst parent)
-      
+	cdef _Cal3dShape _shape
+	cdef             _attached_meshes, _attached_coordsysts
+	cdef CalModel*   _model
+	cdef float       _delta_time
+	cdef float*      _face_planes, *_vertex_coords, *_vertex_normals
+	cdef int         _face_plane_ok, _vertex_ok
+	
+	cdef __getcstate__(self)
+	cdef void __setcstate__(self, cstate)
+	cdef void _build_submeshes(self)
+	cdef void _build_face_planes(self)
+	cdef void _attach_all(self)
+	cdef void _batch(self, CoordSyst coordsyst)
+	cdef int _shadow(self, CoordSyst coordsyst, _Light light)
+	cdef void _raypick(self, RaypickData data, CoordSyst parent)
+	cdef int _raypick_b(self, RaypickData data, CoordSyst parent)
+			

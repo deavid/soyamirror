@@ -1,3 +1,5 @@
+# -*- indent-tabs-mode: t -*-
+
 #!/usr/bin/env python
 
 import os, sys
@@ -21,14 +23,14 @@ soya.set_root_widget(pudding.core.RootWidget())
 soya.root_widget.add_child(camera)
 
 elimg = svgelements.ElementImage(soya.root_widget,
-                                 left=0, top=0, width=0, height=0,
-                                 manager=e_man, image='console')
+																 left=0, top=0, width=0, height=0,
+																 manager=e_man, image='console')
 elimg.on_resize()
 
 svgelements.ElementImage(soya.root_widget,
-                         left=0, top=elimg.height, width=0, height=0,
-                         manager=e_man, image='info')
+												 left=0, top=elimg.height, width=0, height=0,
+												 manager=e_man, image='info')
 
 pudding.idler.Idler(scene).idle()
 
-  
+	

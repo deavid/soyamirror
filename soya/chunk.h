@@ -36,6 +36,7 @@ typedef struct {
 
 Chunk*    chunk_new         (void);
 void      chunk_dealloc     (Chunk*);
+int       chunk_check_error (void);
 int       chunk_register    (Chunk*, int size);
 int       chunk_add         (Chunk*, void*, int size);
 int       chunk_add_char    (Chunk*, char);

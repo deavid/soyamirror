@@ -1,3 +1,5 @@
+# -*- indent-tabs-mode: t -*-
+
 # Soya 3D tutorial
 # Copyright (C) 2004 Jean-Baptiste LAMY
 #
@@ -49,7 +51,7 @@ cube_world = soya.cube.Cube(material = material)
 # This is done by setting the face's double_sided attribute to 1.
 
 for face in cube_world.children:
-  face.double_sided = 1
+	face.double_sided = 1
 
 # Compile the cube model.
 
@@ -59,15 +61,15 @@ cube_shape = cube_world.shapify()
 
 cube1 = soya.Volume(scene, cube_shape)
 cube1.set_xyz(-0.3, 0.3, 0.0)
-cube1.rotate_lateral(30.0)
+cube1.rotate_y(30.0)
 
 cube2 = soya.Volume(scene, cube_shape)
 cube2.set_xyz(0.0, 0.0, -1.5)
-cube2.rotate_lateral(30.0)
+cube2.rotate_y(30.0)
 
 cube3 = soya.Volume(scene, cube_shape)
 cube3.set_xyz(0.6, -0.4, 0.5)
-cube3.rotate_lateral(30.0)
+cube3.rotate_y(30.0)
 
 # Creates a light.
 

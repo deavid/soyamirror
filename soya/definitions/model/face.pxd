@@ -1,3 +1,5 @@
+# -*- indent-tabs-mode: t -*-
+
 # Soya 3D
 # Copyright (C) 2003-2004 Jean-Baptiste LAMY -- jiba@tuxfamily.org
 #
@@ -16,29 +18,29 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 cdef class _Vertex(_Point):
-  cdef float   _tex_x, _tex_y
-  cdef         _diffuse, _emissive
-  cdef _Face   _face
-  cdef _Vector _normal
-  
-  cdef __getcstate__(self)
-  cdef void __setcstate__(self, object cstate)
-  cdef void _render(self, CoordSyst coord_syst)
-  cdef float _angle_at(self)
+	cdef float   _tex_x, _tex_y
+	cdef         _diffuse, _emissive
+	cdef _Face   _face
+	cdef _Vector _normal
+	
+	cdef __getcstate__(self)
+	cdef void __setcstate__(self, object cstate)
+	cdef void _render(self, CoordSyst coord_syst)
+	cdef float _angle_at(self)
 
 
 cdef class _Face(CoordSyst):
-  cdef object     _vertices
-  cdef _Material  _material
-  cdef _Vector    _normal
-  
-  cdef __getcstate__(self)
-  cdef void __setcstate__(self, object cstate)
-  cdef void _compute_normal(self)
-  cdef void _batch(self, CoordSyst coord_syst)
-  cdef void _render(self, CoordSyst coord_syst)
-  cdef void _get_box(self, float* box, float* matrix)
-  cdef void _raypick(self, RaypickData data, CoordSyst parent)
-  cdef int _raypick_b(self, RaypickData data, CoordSyst parent)
-  cdef void _collect_raypickables(self, Chunk* items, float* rsphere, float* sphere)
+	cdef object     _vertices
+	cdef _Material  _material
+	cdef _Vector    _normal
+	
+	cdef __getcstate__(self)
+	cdef void __setcstate__(self, object cstate)
+	cdef void _compute_normal(self)
+	cdef void _batch(self, CoordSyst coord_syst)
+	cdef void _render(self, CoordSyst coord_syst)
+	cdef void _get_box(self, float* box, float* matrix)
+	cdef void _raypick(self, RaypickData data, CoordSyst parent)
+	cdef int _raypick_b(self, RaypickData data, CoordSyst parent)
+	cdef void _collect_raypickables(self, Chunk* items, float* rsphere, float* sphere)
 

@@ -1,3 +1,5 @@
+# -*- indent-tabs-mode: t -*-
+
 #!/usr/bin/env python
 
 import sys, os
@@ -16,10 +18,10 @@ scene = soya.World()
 sword_model = soya.Shape.get("sword")
 sword = soya.Volume(scene, sword_model)
 sword.x = 1
-sword.rotate_lateral(90.)
+sword.rotate_y(90.)
 
 # one line rotation :)
-sword.advance_time = lambda p: sword.rotate_lateral(5.*p)
+sword.advance_time = lambda p: sword.rotate_y(5.*p)
 
 light = soya.Light(scene)
 light.set_xyz( .5, 0., 2.)
@@ -28,26 +30,26 @@ camera = soya.Camera(scene)
 camera.z = 3.
 
 class PuddingVolume(pudding.core.Control):
-  def __set_left__(self, left):
-    pudding.core.Control.__set_left__(self, left)
-    self.move_shape()
-    
-  def __set_top__(self, top):
-    pudding.core.Control.__set_top(self, top)
-    self.move_shape()
-  
-  def __init__(self, *args, **kwargs):
-    pudding.core.Control.__init__(self, *args, **kwargs)
-    self.shape = soya.Volume(scene, sword_model)
-    self.shape.rotate_lateral(90) 
-    self.shape.scale(.5, .5, .5)
-    self.move_shape()
+	def __set_left__(self, left):
+		pudding.core.Control.__set_left__(self, left)
+		self.move_shape()
+		
+	def __set_top__(self, top):
+		pudding.core.Control.__set_top(self, top)
+		self.move_shape()
+	
+	def __init__(self, *args, **kwargs):
+		pudding.core.Control.__init__(self, *args, **kwargs)
+		self.shape = soya.Volume(scene, sword_model)
+		self.shape.rotate_y(90) 
+		self.shape.scale(.5, .5, .5)
+		self.move_shape()
 
-  def on_resize(self):
-    self.move_shape()
+	def on_resize(self):
+		self.move_shape()
 
-  def move_shape(self):
-    self.shape.move(camera.coord2d_to_3d(self.left, self.top))
+	def move_shape(self):
+		self.shape.move(camera.coord2d_to_3d(self.left, self.top))
 
 w = pudding.core.RootWidget(width = 1024,height = 768)
 

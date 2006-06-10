@@ -1,3 +1,5 @@
+# -*- indent-tabs-mode: t -*-
+
 # Each geom object has to insert itself into the global dictionary
 # _geom_c2py_lut (key:address - value:Python object).
 # This lookup table is used in the near callback to translate the C
@@ -14,10 +16,10 @@
 # # C pointers into Python objects (this is used in the near callback).
 
 cdef class GeomObject:
-    cdef dGeomID gid
-    cdef object space
-    cdef object body
-    cdef object attribs
+		cdef dGeomID gid
+		cdef object space
+		cdef object body
+		cdef object attribs
 
 
 

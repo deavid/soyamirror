@@ -1,3 +1,5 @@
+# -*- indent-tabs-mode: t -*-
+
 # Soya 3D tutorial
 # Copyright (C) 2001-2002 Jean-Baptiste LAMY
 #
@@ -81,7 +83,7 @@ sorcerer = soya.Cal3dVolume(scene, sorcerer_shape)
 
 # Rotates Balazar the sorcerer
 
-sorcerer.rotate_lateral(-120.0)
+sorcerer.rotate_y(-120.0)
 
 # Starts playing the animation called "marche" in cycle ("marche" is the French for walk).
 
@@ -94,11 +96,11 @@ sorcerer.animate_blend_cycle("marche")
 
 wall_model = soya.World()
 wall_face = soya.Face(wall_model, [
-  soya.Vertex(wall_model, -5.0, 0.0, -5.0),
-  soya.Vertex(wall_model, -5.0, 0.0,  5.0),
-  soya.Vertex(wall_model,  5.0, 0.0,  5.0),
-  soya.Vertex(wall_model,  5.0, 0.0, -5.0),
-  ])
+	soya.Vertex(wall_model, -5.0, 0.0, -5.0),
+	soya.Vertex(wall_model, -5.0, 0.0,  5.0),
+	soya.Vertex(wall_model,  5.0, 0.0,  5.0),
+	soya.Vertex(wall_model,  5.0, 0.0, -5.0),
+	])
 wall_face.double_sided = 1
 wall = soya.Volume(scene, wall_model.shapify())
 wall.set_xyz(-1.0, 0.0, 0.0)

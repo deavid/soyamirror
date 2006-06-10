@@ -1,3 +1,5 @@
+# -*- indent-tabs-mode: t -*-
+
 # Soya 3D
 # Copyright (C) 2003-2004 Jean-Baptiste LAMY -- jiba@tuxfamily.org
 #
@@ -16,23 +18,23 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 
-  
+	
 cdef class _World(_Volume):
-  cdef readonly         children
-  cdef _Atmosphere      _atmosphere
-  cdef public           _filename
-  cdef Shapifier        _shapifier
-  
-  cdef __getcstate__(self)
-  cdef void __setcstate__(self, object cstate)
-  cdef _World _get_root(self)
-  cdef void _invalidate(self)
-  cdef void _batch(self, CoordSyst coordsyst)
-  cdef int _shadow(self, CoordSyst coordsyst, _Light light)
-  cdef void _raypick(self, RaypickData raypick_data, CoordSyst raypickable)
-  cdef int _raypick_b(self, RaypickData raypick_data, CoordSyst raypickable)
-  cdef int _contains(self, _CObj obj)
-  cdef void _get_box(self, float* box, float* matrix)
-  cdef void _search_all(self, predicat, result)
-  cdef void _collect_raypickables(self, Chunk* items, float* rsphere, float* sphere)
+	cdef readonly         children
+	cdef _Atmosphere      _atmosphere
+	cdef public           _filename
+	cdef Shapifier        _shapifier
+	
+	cdef __getcstate__(self)
+	cdef void __setcstate__(self, object cstate)
+	cdef _World _get_root(self)
+	cdef void _invalidate(self)
+	cdef void _batch(self, CoordSyst coordsyst)
+	cdef int _shadow(self, CoordSyst coordsyst, _Light light)
+	cdef void _raypick(self, RaypickData raypick_data, CoordSyst raypickable)
+	cdef int _raypick_b(self, RaypickData raypick_data, CoordSyst raypickable)
+	cdef int _contains(self, _CObj obj)
+	cdef void _get_box(self, float* box, float* matrix)
+	cdef void _search_all(self, predicat, result)
+	cdef void _collect_raypickables(self, Chunk* items, float* rsphere, float* sphere)
 

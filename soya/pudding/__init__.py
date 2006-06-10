@@ -1,3 +1,5 @@
+# -*- indent-tabs-mode: t -*-
+
 """
 Main pudding module
 
@@ -56,55 +58,55 @@ ANCHOR_ALL    =  ANCHOR_LEFT | ANCHOR_TOP | ANCHOR_RIGHT | ANCHOR_BOTTOM
 
 
 def init(style = None):
-  """ Intialise \\module{soya.pudding}. \\var{style} should be a subclass of 
-  \\class{soya.pudding.style.Style} 
-  """
+	""" Intialise \\module{soya.pudding}. \\var{style} should be a subclass of 
+	\\class{soya.pudding.style.Style} 
+	"""
 
-  global STYLE
+	global STYLE
 
-  print "* Soya Pudding * Version: %s" % __version__
-  
-  STYLE = style or Style()
+	print "* Soya Pudding * Version: %s" % __version__
+	
+	STYLE = style or Style()
 
-  # lets just turn this on whatever
-  # using text inputs without unicode is really painfull unless you care about
-  # using A-Z 
-  soya.set_use_unicode(1)
+	# lets just turn this on whatever
+	# using text inputs without unicode is really painfull unless you care about
+	# using A-Z 
+	soya.set_use_unicode(1)
 
 
 def process_event():
-  """ This gets the event list from soya and filters it for any events handled 
-  by widgets. It returns an array with the events that have not been used. 
-  If you use the \class{soya.pudding.idler.Idler} then this function is called in 
-  \\method{idler.begin_round} and the events unprocessed put in 
-  \\var{idler.events.} 
-  """
+	""" This gets the event list from soya and filters it for any events handled 
+	by widgets. It returns an array with the events that have not been used. 
+	If you use the \class{soya.pudding.idler.Idler} then this function is called in 
+	\\method{idler.begin_round} and the events unprocessed put in 
+	\\var{idler.events.} 
+	"""
 
-  events = soya.process_event()
+	events = soya.process_event()
 
-  unused_events = []
+	unused_events = []
 
-  for event in events: 
-    if not soya.root_widget.process_event(event):
-      unused_events.append(event)
+	for event in events: 
+		if not soya.root_widget.process_event(event):
+			unused_events.append(event)
 
-  return unused_events 
+	return unused_events 
 
 
 class PuddingError(Exception):
-  """ A \\module{soya.pudding} exception """
+	""" A \\module{soya.pudding} exception """
 
-  def __init__(self, msg):
-    Exception.__init__(self)
-    self.msg = msg
+	def __init__(self, msg):
+		Exception.__init__(self)
+		self.msg = msg
 
-  def __str__(self):
-    print "[soya.pudding] %s" % self.msg
+	def __str__(self):
+		print "[soya.pudding] %s" % self.msg
 
 
 class ConstantError(PuddingError):
-  """ Error using a \\module{soya.pudding} constant """
-  pass
+	""" Error using a \\module{soya.pudding} constant """
+	pass
 
 
 from soya.pudding import core, container, control, idler

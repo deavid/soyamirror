@@ -1,3 +1,5 @@
+# -*- indent-tabs-mode: t -*-
+
 # Soya 3D tutorial
 # Copyright (C) 2001-2004 Jean-Baptiste LAMY
 #
@@ -56,7 +58,7 @@ pyramid1 = soya.Volume(scene, pyramid_model)
 # Moves and rotates the pyramid (for a better view)
 
 pyramid1.x = -0.7
-pyramid1.rotate_lateral(60.0)
+pyramid1.rotate_y(60.0)
 
 # Creates a second pyramid. Contrary to World, Shape model can be displayed several
 # time at different position.
@@ -64,7 +66,7 @@ pyramid1.rotate_lateral(60.0)
 
 pyramid2 = soya.Volume(scene, pyramid_model)
 pyramid2.x = 0.8
-pyramid2.rotate_lateral(45.0)
+pyramid2.rotate_y(45.0)
 
 # Creates a light.
 

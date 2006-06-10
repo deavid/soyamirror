@@ -1,3 +1,5 @@
+# -*- indent-tabs-mode: t -*-
+
 # Soya 3D tutorial
 # Copyright (C) 2004 Jean-Baptiste LAMY
 #
@@ -56,79 +58,79 @@ scene = soya.World()
 # DragDropWorld is a world that allows to dragdrop its content with the mouse.
 
 class DragDropWorld(soya.World):
-  def __init__(self, parent):
-    soya.World.__init__(self, parent)
-    
-    # The object we are currently dragdroping (None => no dragdrop).
-    
-    self.dragdroping = None
-    
-    # The impact point
-    
-    self.impact = None
-    
-    
-  def begin_round(self):
-    soya.World.begin_round(self)
-    
-    # Processes the events
-    
-    for event in soya.process_event():
-      
-      # Mouse down initiates the dragdrop.
-      
-      if   event[0] == soya.sdlconst.MOUSEBUTTONDOWN:
-        
-        # The event give us the 2D mouse coordinates in pixel. The camera.coord2d_to_3d
-        # convert these 2D pixel coordinates into a soy.Point object.
-        
-        mouse = camera.coord2d_to_3d(event[2], event[3])
-        
-        # Performs a raypicking, starting at the camera and going toward the mouse.
-        # The vector_to method returns the vector between 2 positions.
-        # This raypicking grabs anything that is under the mouse. Raypicking returns
-        # None if nothing is encountered, or a (impact, normal) tuple, where impact is the
-        # position of the impact and normal is the normal vector at this position.
-        # The object encountered is impact.parent ; here, we don't need the normal.
-        
-        result = self.raypick(camera, camera.vector_to(mouse))
-        if result:
-          self.impact, normal = result
-          self.dragdroping = self.impact.parent
-          
-          # Converts impact into the camera coordinate system, in order to get its Z value.
-          # camera.coord2d_to_3d cannot choose a Z value for you, so you need to pass it
-          # as a third argument (it defaults to -1.0). Then, we computes the old mouse
-          # position, which has the same Z value than impact.
-          
-          self.impact.convert_to(camera)
-          self.old_mouse = camera.coord2d_to_3d(event[2], event[3], self.impact.z)
-          
-          
-      # Mouse up ends the dragdrop.
-      
-      elif event[0] == soya.sdlconst.MOUSEBUTTONUP:
-        self.dragdroping = None
-        
-        
-      # Mouse motion moves the dragdroping object, if there is one.
-      
-      elif event[0] == soya.sdlconst.MOUSEMOTION:
-        if self.dragdroping:
-          
-          # Computes the new mouse position, at the same Z value than impact.
-          
-          new_mouse = camera.coord2d_to_3d(event[1], event[2], self.impact.z)
-          
-          # Translates dragdroping by a vector starting at old_mouse and ending at
-          # new_mouse.
-          
-          self.dragdroping.add_vector(self.old_mouse.vector_to(new_mouse))
-          
-          # Store the current mouse position.
-          
-          self.old_mouse = new_mouse
-          
+	def __init__(self, parent):
+		soya.World.__init__(self, parent)
+		
+		# The object we are currently dragdroping (None => no dragdrop).
+		
+		self.dragdroping = None
+		
+		# The impact point
+		
+		self.impact = None
+		
+		
+	def begin_round(self):
+		soya.World.begin_round(self)
+		
+		# Processes the events
+		
+		for event in soya.process_event():
+			
+			# Mouse down initiates the dragdrop.
+			
+			if   event[0] == soya.sdlconst.MOUSEBUTTONDOWN:
+				
+				# The event give us the 2D mouse coordinates in pixel. The camera.coord2d_to_3d
+				# convert these 2D pixel coordinates into a soy.Point object.
+				
+				mouse = camera.coord2d_to_3d(event[2], event[3])
+				
+				# Performs a raypicking, starting at the camera and going toward the mouse.
+				# The vector_to method returns the vector between 2 positions.
+				# This raypicking grabs anything that is under the mouse. Raypicking returns
+				# None if nothing is encountered, or a (impact, normal) tuple, where impact is the
+				# position of the impact and normal is the normal vector at this position.
+				# The object encountered is impact.parent ; here, we don't need the normal.
+				
+				result = self.raypick(camera, camera.vector_to(mouse))
+				if result:
+					self.impact, normal = result
+					self.dragdroping = self.impact.parent
+					
+					# Converts impact into the camera coordinate system, in order to get its Z value.
+					# camera.coord2d_to_3d cannot choose a Z value for you, so you need to pass it
+					# as a third argument (it defaults to -1.0). Then, we computes the old mouse
+					# position, which has the same Z value than impact.
+					
+					self.impact.convert_to(camera)
+					self.old_mouse = camera.coord2d_to_3d(event[2], event[3], self.impact.z)
+					
+					
+			# Mouse up ends the dragdrop.
+			
+			elif event[0] == soya.sdlconst.MOUSEBUTTONUP:
+				self.dragdroping = None
+				
+				
+			# Mouse motion moves the dragdroping object, if there is one.
+			
+			elif event[0] == soya.sdlconst.MOUSEMOTION:
+				if self.dragdroping:
+					
+					# Computes the new mouse position, at the same Z value than impact.
+					
+					new_mouse = camera.coord2d_to_3d(event[1], event[2], self.impact.z)
+					
+					# Translates dragdroping by a vector starting at old_mouse and ending at
+					# new_mouse.
+					
+					self.dragdroping.add_vector(self.old_mouse.vector_to(new_mouse))
+					
+					# Store the current mouse position.
+					
+					self.old_mouse = new_mouse
+					
 
 # Creates a dragdrop world.
 

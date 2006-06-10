@@ -1,3 +1,5 @@
+# -*- indent-tabs-mode: t -*-
+
 # Soya 3D tutorial
 # Copyright (C) 2005 Jean-Baptiste LAMY
 #
@@ -61,13 +63,13 @@ sound.set_volume(1000000000000000000000000.0)
 
 import math
 class MovingVolume(soya.Volume):
-  def __init__(self, parent, shape):
-    soya.Volume.__init__(self, parent, shape)
-    self.angle = 3.0
-    
-  def advance_time(self, proportion):
-    self.angle += 0.04 * proportion
-    self.set_xyz(100.0 * math.cos(self.angle), 0.0, 100.0 * math.sin(self.angle))
+	def __init__(self, parent, shape):
+		soya.Volume.__init__(self, parent, shape)
+		self.angle = 3.0
+		
+	def advance_time(self, proportion):
+		self.angle += 0.04 * proportion
+		self.set_xyz(100.0 * math.cos(self.angle), 0.0, 100.0 * math.sin(self.angle))
 
 cube = MovingVolume(scene, cube.Cube().shapify())
 

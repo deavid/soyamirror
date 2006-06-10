@@ -1,3 +1,5 @@
+# -*- indent-tabs-mode: t -*-
+
 # Soya 3D tutorial
 # Copyright (C) 2004 Jean-Baptiste LAMY
 #
@@ -56,7 +58,7 @@ faceted_ball_world = soya.sphere.Sphere()
 # For each face in the faceted ball's children, we set its smooth_lit attributes to 0.
 
 for face in faceted_ball_world.children:
-  face.smooth_lit = 0
+	face.smooth_lit = 0
 
 # Compiles sphere_world and faceted_ball_world into Shape.
 # Creates a sphere Volume in the scene, using the compilation of sphere_word as Shape.

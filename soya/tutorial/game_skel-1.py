@@ -1,3 +1,5 @@
+# -*- indent-tabs-mode: t -*-
+
 #! /usr/bin/python -O
 
 # Game Skeleton
@@ -33,84 +35,84 @@ HERE = os.path.dirname(sys.argv[0])
 soya.path.append(os.path.join(HERE, "data"))
 
 class Level(soya.World):
-  """A game level.
+	"""A game level.
 Level is a subclass of soya.World.
 According to the game you are working on, you'll probably want to add
 attributes and methods to the level class."""
 
 def create_level():
-  """This function creates and saves the game skeleton demo level."""
-  
-  # Create a level object
-  level = Level()
-  
-  # Separates static and non static parts
-  # This will speed up network games, since only the non static part will be
-  # sent on the network
-  level_static = soya.World(level)
-  
-  # Load 3 materials (= textures) for files ./materials{grass|ground|snow}.data
-  grass  = soya.Material.get("grass")
-  ground = soya.Material.get("ground")
-  snow   = soya.Material.get("snow")
-  
-  # Creates a landscape, from the heighmap "./images/map.png"
-  # The landscape is in the static part (=level_static), because it won't change along the game.
-  land = soya.Land(level_static)
-  land.y = -35.0
-  land.from_image(soya.Image.get("map.png"))
-  
-  # Sets how high is the landscape
-  land.multiply_height(50.0)
-  
-  # These values are trade of between quality and speed
-  land.scale_factor = 1.5
-  land.texture_factor = 1.0
-  
-  # Set the texture on the landscape, according to the height
-  # (i.e. height 0.0 to 15.0 are textured with grass, ...)
-  land.set_material_layer(grass,   0.0,  15.0)
-  land.set_material_layer(ground, 15.0,  25.0)
-  land.set_material_layer(snow,   25.0,  50.0)
-  
-  # Loads the shape "./shapes/ferme.data"
-  # This model has been created in Blender
-  house = soya.Shape.get("ferme")
+	"""This function creates and saves the game skeleton demo level."""
+	
+	# Create a level object
+	level = Level()
+	
+	# Separates static and non static parts
+	# This will speed up network games, since only the non static part will be
+	# sent on the network
+	level_static = soya.World(level)
+	
+	# Load 3 materials (= textures) for files ./materials{grass|ground|snow}.data
+	grass  = soya.Material.get("grass")
+	ground = soya.Material.get("ground")
+	snow   = soya.Material.get("snow")
+	
+	# Creates a landscape, from the heighmap "./images/map.png"
+	# The landscape is in the static part (=level_static), because it won't change along the game.
+	land = soya.Land(level_static)
+	land.y = -35.0
+	land.from_image(soya.Image.get("map.png"))
+	
+	# Sets how high is the landscape
+	land.multiply_height(50.0)
+	
+	# These values are trade of between quality and speed
+	land.scale_factor = 1.5
+	land.texture_factor = 1.0
+	
+	# Set the texture on the landscape, according to the height
+	# (i.e. height 0.0 to 15.0 are textured with grass, ...)
+	land.set_material_layer(grass,   0.0,  15.0)
+	land.set_material_layer(ground, 15.0,  25.0)
+	land.set_material_layer(snow,   25.0,  50.0)
+	
+	# Loads the shape "./shapes/ferme.data"
+	# This model has been created in Blender
+	house = soya.Shape.get("ferme")
 
-  # Adds 2 houses in the level
-  house1 = soya.Volume(level_static, house)
-  house1.set_xyz(250.0, -7.2, 182.0)
-  
-  house2 = soya.Volume(level_static, house)
-  house2.set_xyz(216.0, -11.25, 200.0)
-  house2.rotate_lateral(100.0) # degrees
-  
-  # Creates a light in the level, similar to a sun (=a directional light)
-  sun = soya.Light(level_static)
-  sun.directional = 1
-  sun.diffuse = (1.0, 0.8, 0.4, 1.0)
-  sun.rotate_vertical(-45.0)
-  
-  # Creates a sky atmosphere, with fog
-  atmosphere = soya.SkyAtmosphere()
-  atmosphere.ambient = (0.3, 0.3, 0.4, 1.0)
-  atmosphere.fog = 1
-  atmosphere.fog_type  = 0
-  atmosphere.fog_start = 40.0
-  atmosphere.fog_end   = 50.0
-  atmosphere.fog_color = atmosphere.bg_color = (0.2, 0.5, 0.7, 1.0)
-  atmosphere.skyplane  = 1
-  atmosphere.sky_color = (1.5, 1.0, 0.8, 1.0)
-  
-  # Set the atmosphere to the level
-  level.atmosphere = atmosphere
-  
-  # Save the level as "./worlds/level_demo.data" (remember, levels are subclasses of worlds)
-  level_static.filename = level.name = "level_demo_static"
-  level_static.save()
-  level.filename = level.name = "level_demo"
-  level.save()
-  
+	# Adds 2 houses in the level
+	house1 = soya.Volume(level_static, house)
+	house1.set_xyz(250.0, -7.2, 182.0)
+	
+	house2 = soya.Volume(level_static, house)
+	house2.set_xyz(216.0, -11.25, 200.0)
+	house2.rotate_y(100.0) # degrees
+	
+	# Creates a light in the level, similar to a sun (=a directional light)
+	sun = soya.Light(level_static)
+	sun.directional = 1
+	sun.diffuse = (1.0, 0.8, 0.4, 1.0)
+	sun.rotate_x(-45.0)
+	
+	# Creates a sky atmosphere, with fog
+	atmosphere = soya.SkyAtmosphere()
+	atmosphere.ambient = (0.3, 0.3, 0.4, 1.0)
+	atmosphere.fog = 1
+	atmosphere.fog_type  = 0
+	atmosphere.fog_start = 40.0
+	atmosphere.fog_end   = 50.0
+	atmosphere.fog_color = atmosphere.bg_color = (0.2, 0.5, 0.7, 1.0)
+	atmosphere.skyplane  = 1
+	atmosphere.sky_color = (1.5, 1.0, 0.8, 1.0)
+	
+	# Set the atmosphere to the level
+	level.atmosphere = atmosphere
+	
+	# Save the level as "./worlds/level_demo.data" (remember, levels are subclasses of worlds)
+	level_static.filename = level.name = "level_demo_static"
+	level_static.save()
+	level.filename = level.name = "level_demo"
+	level.save()
+	
 
 # Now we just display the level
 

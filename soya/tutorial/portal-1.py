@@ -1,3 +1,5 @@
+# -*- indent-tabs-mode: t -*-
+
 # Soya 3D tutorial 
 # Copyright (C) 2004      Jean-Baptiste 'Jiba'  LAMY
 # Copyright (C) 2001-2003 Bertrand      'blam!' LAMY
@@ -94,7 +96,7 @@ portal1.scale(4.0, 4.0, 1.0)
 # Create a portal that link world 2 to world 1
 
 portal2 = soya.Portal(w2)
-portal2.rotate_lateral(180.0)
+portal2.rotate_y(180.0)
 portal2.beyond = w1
 portal2.scale(4.0, 4.0, 1.0)
 portal2.set_xyz(0.0, 0.0, 5.0)
@@ -128,51 +130,51 @@ portal2.set_xyz(0.0, 0.0, 5.0)
 #                           /
 
 class MovableCamera(soya.Camera):
-  def __init__(self, parent):
-    soya.Camera.__init__(self, parent)
-    
-    self.speed = soya.Vector(self)
-    self.rotation_lateral_speed  = 0.0
-    self.rotation_vertical_speed = 0.0
-    
-  def begin_round(self):
-    soya.Camera.begin_round(self)
-    
-    for event in soya.process_event():
-      if event[0] == soya.sdlconst.KEYDOWN:
-        if   event[1] == soya.sdlconst.K_UP:     self.speed.z = -1.0
-        elif event[1] == soya.sdlconst.K_DOWN:   self.speed.z =  1.0
-        elif event[1] == soya.sdlconst.K_LEFT:   self.rotation_lateral_speed =  10.0
-        elif event[1] == soya.sdlconst.K_RIGHT:  self.rotation_lateral_speed = -10.0
-        elif event[1] == soya.sdlconst.K_q:      soya.IDLER.stop()
-        elif event[1] == soya.sdlconst.K_ESCAPE: soya.IDLER.stop()
-      if event[0] == soya.sdlconst.KEYUP:
-        if   event[1] == soya.sdlconst.K_UP:     self.speed.z = 0.0
-        elif event[1] == soya.sdlconst.K_DOWN:   self.speed.z = 0.0
-        elif event[1] == soya.sdlconst.K_LEFT:   self.rotation_lateral_speed = 0.0
-        elif event[1] == soya.sdlconst.K_RIGHT:  self.rotation_lateral_speed = 0.0
-    
-    # Checks if the camera has passed through a portal.
-    # First, collects all portals in the camera's root world.
-    # the World.search_all method take a predicat (a one argument callable), and
-    # returns a list of all items (recursively) in the world that satisfy the predicat.
-    
-    portals = camera.to_render.search_all(lambda item: isinstance(item, soya.Portal))
-    
-    # Then for each portal, checks if the camera has pass through it, and if so,
-    # transfers the camera in the world beyond the portal.
-    # The has_passed_through method takes two argument : the old position of the object
-    # and the new one or (as here) the speed vector.
-    
-    for portal in portals:
-      if portal.has_passed_through(self, self.speed):
-        print "pass !", self.position(), self.speed
-        portal.pass_through(camera)
-        
-  def advance_time(self, proportion):
-    self.add_mul_vector(proportion, self.speed)
-    self.turn_lateral (self.rotation_lateral_speed  * proportion)
-    self.turn_vertical(self.rotation_vertical_speed * proportion)
+	def __init__(self, parent):
+		soya.Camera.__init__(self, parent)
+		
+		self.speed = soya.Vector(self)
+		self.rotation_y_speed = 0.0
+		self.rotation_x_speed = 0.0
+		
+	def begin_round(self):
+		soya.Camera.begin_round(self)
+		
+		for event in soya.process_event():
+			if event[0] == soya.sdlconst.KEYDOWN:
+				if   event[1] == soya.sdlconst.K_UP:     self.speed.z = -1.0
+				elif event[1] == soya.sdlconst.K_DOWN:   self.speed.z =  1.0
+				elif event[1] == soya.sdlconst.K_LEFT:   self.rotation_y_speed =  10.0
+				elif event[1] == soya.sdlconst.K_RIGHT:  self.rotation_y_speed = -10.0
+				elif event[1] == soya.sdlconst.K_q:      soya.IDLER.stop()
+				elif event[1] == soya.sdlconst.K_ESCAPE: soya.IDLER.stop()
+			if event[0] == soya.sdlconst.KEYUP:
+				if   event[1] == soya.sdlconst.K_UP:     self.speed.z = 0.0
+				elif event[1] == soya.sdlconst.K_DOWN:   self.speed.z = 0.0
+				elif event[1] == soya.sdlconst.K_LEFT:   self.rotation_y_speed = 0.0
+				elif event[1] == soya.sdlconst.K_RIGHT:  self.rotation_y_speed = 0.0
+		
+		# Checks if the camera has passed through a portal.
+		# First, collects all portals in the camera's root world.
+		# the World.search_all method take a predicat (a one argument callable), and
+		# returns a list of all items (recursively) in the world that satisfy the predicat.
+		
+		portals = camera.to_render.search_all(lambda item: isinstance(item, soya.Portal))
+		
+		# Then for each portal, checks if the camera has pass through it, and if so,
+		# transfers the camera in the world beyond the portal.
+		# The has_passed_through method takes two argument : the old position of the object
+		# and the new one or (as here) the speed vector.
+		
+		for portal in portals:
+			if portal.has_passed_through(self, self.speed):
+				print "pass !", self.position(), self.speed
+				portal.pass_through(camera)
+				
+	def advance_time(self, proportion):
+		self.add_mul_vector(proportion, self.speed)
+		self.turn_y(self.rotation_y_speed * proportion)
+		self.turn_x(self.rotation_x_speed * proportion)
 
 
 # Creates a movable camera, that render the world 1 only (to_render attribute)

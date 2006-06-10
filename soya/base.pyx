@@ -1,3 +1,5 @@
+# -*- indent-tabs-mode: t -*-
+
 # Soya 3D
 # Copyright (C) 2003-2004 Jean-Baptiste LAMY -- jiba@tuxfamily.org
 #
@@ -156,7 +158,7 @@ VERSION = "0.10.5"
 
 cdef float LIGHT_NULL_ATTENUATION
 LIGHT_NULL_ATTENUATION = 0.05
-  
+	
 #cdef enum:
 #  COORDSYS_INVALID             = 0
 #  COORDSYS_ROOT_VALID          = 1 << 0
@@ -171,7 +173,7 @@ LIGHT_NULL_ATTENUATION = 0.05
 #cdef enum:
 #  PACK_OPTIONS         = FACE_TRIANGLE | FACE_QUAD | FACE_ALPHA | FACE_DOUBLE_SIDED | FACE_NON_LIT
 #  DISPLAY_LIST_OPTIONS = FACE_TRIANGLE | FACE_QUAD | FACE_ALPHA | FACE_DOUBLE_SIDED | FACE_NON_LIT
-  
+	
 #cdef enum:
 #  SHAPE_DIFFUSES         = 1 << 5
 #  SHAPE_EMISSIVES        = 1 << 6
@@ -190,7 +192,7 @@ LIGHT_NULL_ATTENUATION = 0.05
 #  SHAPE_STATIC_SHADOW    = 1 << 22
 #  SHAPE_STATIC_LIT       = 1 << 23
 #  SHAPE_SIMPLE_NEIGHBORS = 1 << 24 # Neighbors take face angle into account, but simple neighbors don't
-  
+	
 #cdef enum:
 #  TEXT_ALIGN_LEFT   = 0
 #  TEXT_ALIGN_CENTER = 1
@@ -289,7 +291,7 @@ cdef Renderer renderer
 cdef int MAX_LIGHTS, MAX_CLIP_PLANES, MAX_TEXTURES, MAX_TEXTURE_SIZE
 
 def get_max_texture_size():
-  return MAX_TEXTURE_SIZE
+	return MAX_TEXTURE_SIZE
 
 cdef int            SHADOW_DISPLAY_LIST
 cdef GLUtesselator* SHADOW_TESS
@@ -300,78 +302,85 @@ white[0] = white[1] = white[2] = white[3] = 1.0
 
 cdef _Material _DEFAULT_MATERIAL
 def _set_default_material(_Material material):
-  global _DEFAULT_MATERIAL
-  _DEFAULT_MATERIAL = material
+	global _DEFAULT_MATERIAL
+	_DEFAULT_MATERIAL = material
 
 
 cdef _Material _SHADER_DEFAULT_MATERIAL
 def _set_shader_default_material(_Material material):
-  global _SHADER_DEFAULT_MATERIAL
-  _SHADER_DEFAULT_MATERIAL = material
+	global _SHADER_DEFAULT_MATERIAL
+	_SHADER_DEFAULT_MATERIAL = material
 
 
 # Misc
 cdef char* dup(char* data, int size):
-  cdef char* buffer
-  buffer = <char*> malloc(size)
-  memcpy(buffer, data, size)
-  return buffer
+	cdef char* buffer
+	buffer = <char*> malloc(size)
+	memcpy(buffer, data, size)
+	return buffer
 
+
+class ChunkError(MemoryError):
+	pass
+
+def _chunk_check_error():
+	if chunk_check_error():
+		raise ChunkError
 
 
 def _reconstructor(clazz):
-  cdef _CObj obj
-  obj = clazz.__new__(clazz)
-  return obj
+	cdef _CObj obj
+	obj = clazz.__new__(clazz)
+	return obj
 
 cdef class _CObj:
-  cdef __getcstate__(self):
-    pass
-  
-  cdef void __setcstate__(self, cstate):
-    pass
-  
-  def __getstate__(self):
-    if getattr(self, "__dict__", 0): return self.__getcstate__(), self.__dict__
-    else:                            return self.__getcstate__(),
-    
-  def __setstate__(self, state):
-    self.__setcstate__(state[0])
-    if len(state) > 1: self.__dict__ = state[1]
-    
-  def __reduce__(self):
-    return _reconstructor, (self.__class__,), self.__getstate__()
-    
-  def __deepcopy__(self, memo):
-    cdef _CObj clone
-    
-    import copy
-    clone = memo[id(self)] = self.__class__.__new__(self.__class__)
-    
-    state = self.__getstate__()
-    state_clone = copy.deepcopy(state, memo)
-    clone.__setstate__(state_clone)
-    
-    return clone
+	cdef __getcstate__(self):
+		pass
+	
+	cdef void __setcstate__(self, cstate):
+		pass
+	
+	def __getstate__(self):
+		if getattr(self, "__dict__", 0): return self.__getcstate__(), self.__dict__
+		else:                            return self.__getcstate__(),
+		
+	def __setstate__(self, state):
+		self.__setcstate__(state[0])
+		if len(state) > 1: self.__dict__ = state[1]
+		
+	def __reduce__(self):
+		return _reconstructor, (self.__class__,), self.__getstate__()
+		
+	def __deepcopy__(self, memo):
+		cdef _CObj clone
+		
+		import copy
+		clone = memo[id(self)] = self.__class__.__new__(self.__class__)
+		
+		state = self.__getstate__()
+		state_clone = copy.deepcopy(state, memo)
+		clone.__setstate__(state_clone)
+		
+		return clone
 
 
 cdef chunk_to_string(Chunk* chunk):
-  return PyString_FromStringAndSize(<char*> chunk.content, chunk.nb)
+	return PyString_FromStringAndSize(<char*> chunk.content, chunk.nb)
 
 cdef drop_chunk_to_string(Chunk* chunk):
-  cdef string
-  string = PyString_FromStringAndSize(<char*> chunk.content, chunk.nb)
-  drop_chunk(chunk)
-  return string
+	cdef string
+	string = PyString_FromStringAndSize(<char*> chunk.content, chunk.nb)
+	drop_chunk(chunk)
+	return string
 
 cdef Chunk* string_to_chunk(string):
-  cdef Chunk* chunk
-  cdef int    length
-  length = len(string)
-  chunk  = get_chunk()
-  chunk_register(chunk, length)
-  memcpy(chunk.content, PyString_AS_STRING(string), length)
-  chunk.nb = 0
-  return chunk
+	cdef Chunk* chunk
+	cdef int    length
+	length = len(string)
+	chunk  = get_chunk()
+	chunk_register(chunk, length)
+	memcpy(chunk.content, PyString_AS_STRING(string), length)
+	chunk.nb = 0
+	return chunk
 
 

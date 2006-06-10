@@ -1,3 +1,5 @@
+# -*- indent-tabs-mode: t -*-
+
 # Soya 3D tutorial
 # Copyright (C) 2004 Thomas Paviot
 #
@@ -45,19 +47,19 @@ cube_world=soya.cube.Cube()
 
 # Sets the material to each face
 for face in faceted_ball_world.children:
-  face.smooth_lit=0
-  face.material=material
+	face.smooth_lit=0
+	face.material=material
 for face in ball_world.children:
-  face.smooth_lit=1
-  face.material=material
+	face.smooth_lit=1
+	face.material=material
 for face in cube_world.children:
-  face.smooth_lit=0
-  face.material=material
-  
+	face.smooth_lit=0
+	face.material=material
+	
 class RotatingVolume(soya.Volume):
-  def advance_time(self, proportion):
-    self.rotate_lateral(2.0 * proportion)
-    
+	def advance_time(self, proportion):
+		self.rotate_y(2.0 * proportion)
+		
 
 ball         = RotatingVolume(scene, ball_world        .shapify())
 cube         = RotatingVolume(scene, cube_world        .shapify())

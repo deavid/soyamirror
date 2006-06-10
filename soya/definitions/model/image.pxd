@@ -1,3 +1,5 @@
+# -*- indent-tabs-mode: t -*-
+
 # Soya 3D
 # Copyright (C) 2003-2004 Jean-Baptiste LAMY -- jiba@tuxfamily.org
 #
@@ -16,14 +18,14 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 cdef class _Image(_CObj):
-  cdef readonly int nb_color, width, height
-  cdef GLubyte* _pixels
-  cdef public  _filename
-  
-  cdef __getcstate__(self)
-  cdef void __setcstate__(self, object cstate)
-  cdef int check_for_gl(self)
-  cdef GLuint typ(self)
-  cdef GLuint internal_format(self)
+	cdef readonly int nb_color, width, height
+	cdef GLubyte* _pixels
+	cdef public  _filename
+	
+	cdef __getcstate__(self)
+	cdef void __setcstate__(self, object cstate)
+	cdef int check_for_gl(self)
+	cdef GLuint typ(self)
+	cdef GLuint internal_format(self)
 
 

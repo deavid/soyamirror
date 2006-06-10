@@ -1,3 +1,5 @@
+# -*- indent-tabs-mode: t -*-
+
 #!/usr/bin/env python
 
 import sys, os, PIL.Image
@@ -20,7 +22,7 @@ w = pudding.core.RootWidget(width = 640,height = 480)
 
 # note that the image dimensions are 312 x 132!
 pil_logo = PIL.Image.open(os.path.join(os.path.dirname(__file__),
-                                       'data/images/oomad.png'))
+																			 'data/images/oomad.png'))
 logo = pudding.ext.slicingimage.SlicingImage(w, pil_logo, left=100, top=100)
 
 w.add_child(camera)

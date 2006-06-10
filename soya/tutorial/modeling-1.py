@@ -1,3 +1,5 @@
+# -*- indent-tabs-mode: t -*-
+
 # Soya 3D tutorial
 # Copyright (C) 2001-2004 Jean-Baptiste LAMY
 #
@@ -69,10 +71,10 @@ pyramid = soya.World(scene)
 # by setting the "double_sided" attribute to 1.
 
 soya.Face(pyramid, [soya.Vertex(pyramid,  0.5, -0.5,  0.5),
-                    soya.Vertex(pyramid, -0.5, -0.5,  0.5),
-                    soya.Vertex(pyramid, -0.5, -0.5, -0.5),
-                    soya.Vertex(pyramid,  0.5, -0.5, -0.5),
-                    ])
+										soya.Vertex(pyramid, -0.5, -0.5,  0.5),
+										soya.Vertex(pyramid, -0.5, -0.5, -0.5),
+										soya.Vertex(pyramid,  0.5, -0.5, -0.5),
+										])
 
 # Similarly, creates the 4 triangles.
 # Here, we create different vertices ; you can also use the same vertex when 2 vertices
@@ -80,24 +82,24 @@ soya.Face(pyramid, [soya.Vertex(pyramid,  0.5, -0.5,  0.5),
 # in performance).
 
 soya.Face(pyramid, [soya.Vertex(pyramid, -0.5, -0.5,  0.5),
-                    soya.Vertex(pyramid,  0.5, -0.5,  0.5),
-                    soya.Vertex(pyramid,  0.0,  0.5,  0.0),
-                    ])
+										soya.Vertex(pyramid,  0.5, -0.5,  0.5),
+										soya.Vertex(pyramid,  0.0,  0.5,  0.0),
+										])
 
 soya.Face(pyramid, [soya.Vertex(pyramid,  0.5, -0.5, -0.5),
-                    soya.Vertex(pyramid, -0.5, -0.5, -0.5),
-                    soya.Vertex(pyramid,  0.0,  0.5,  0.0),
-                    ])
+										soya.Vertex(pyramid, -0.5, -0.5, -0.5),
+										soya.Vertex(pyramid,  0.0,  0.5,  0.0),
+										])
 
 soya.Face(pyramid, [soya.Vertex(pyramid,  0.5, -0.5,  0.5),
-                    soya.Vertex(pyramid,  0.5, -0.5, -0.5),
-                    soya.Vertex(pyramid,  0.0,  0.5,  0.0),
-                    ])
+										soya.Vertex(pyramid,  0.5, -0.5, -0.5),
+										soya.Vertex(pyramid,  0.0,  0.5,  0.0),
+										])
 
 soya.Face(pyramid, [soya.Vertex(pyramid, -0.5, -0.5, -0.5),
-                    soya.Vertex(pyramid, -0.5, -0.5,  0.5),
-                    soya.Vertex(pyramid,  0.0,  0.5,  0.0),
-                    ])
+										soya.Vertex(pyramid, -0.5, -0.5,  0.5),
+										soya.Vertex(pyramid,  0.0,  0.5,  0.0),
+										])
 
 # Saves the pyramid.
 # First we set the filename attribute, and then call the save method.
@@ -112,7 +114,7 @@ pyramid.save()
 # Notice that we have saved the pyramid BEFORE the rotation, since we don't want
 # to save the rotation.
 
-pyramid.rotate_lateral(60.0)
+pyramid.rotate_y(60.0)
 
 # Creates a light.
 

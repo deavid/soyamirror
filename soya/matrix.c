@@ -749,7 +749,7 @@ void point4_by_matrix (GLfloat p[4], GLfloat m[19]) {
   p[3] = w;
 }
 
-void point_rotate_lateral (GLfloat p[3], GLfloat angle) {
+void point_rotate_y (GLfloat p[3], GLfloat angle) {
   GLfloat old_1;
   GLfloat old_2;
   GLfloat co = cos (angle);
@@ -761,7 +761,7 @@ void point_rotate_lateral (GLfloat p[3], GLfloat angle) {
   p[2] = old_2 * co + old_1 * si;
 }
 
-void point_rotate_vertical (GLfloat p[3], GLfloat angle) {
+void point_rotate_x (GLfloat p[3], GLfloat angle) {
   GLfloat old_1;
   GLfloat old_2;
   GLfloat co = cos (angle);
@@ -773,7 +773,7 @@ void point_rotate_vertical (GLfloat p[3], GLfloat angle) {
   p[2] = old_2 * co + old_1 * si;
 }
 
-void point_rotate_incline (GLfloat p[3], GLfloat angle) {
+void point_rotate_z (GLfloat p[3], GLfloat angle) {
   GLfloat old_1;
   GLfloat old_2;
   GLfloat co = cos (angle);
@@ -885,13 +885,13 @@ void matrix_scale(GLfloat m[19], GLfloat x, GLfloat y, GLfloat z) {
   m[18] *= z;
 }
 
-void matrix_turn_lateral (GLfloat m[19], GLfloat angle) {
+void matrix_turn_y (GLfloat m[19], GLfloat angle) {
   GLfloat c; GLfloat s;
   GLfloat m0; GLfloat m1; GLfloat m2; 
   /* rotate along Y axis of the matrix */
   /* Following code is equivalent (with simplifications!) to:
    *   matrix_set_identity (b);
-   *   matrix_rotate_lateral (b, angle);
+   *   matrix_rotate_y (b, angle);
    *   multiply_matrix (r, m, b);
    */
   c = cos (angle);
@@ -907,13 +907,13 @@ void matrix_turn_lateral (GLfloat m[19], GLfloat angle) {
   m[10] = s * m2 + c * m[10];
 }
 
-void matrix_turn_vertical (GLfloat m[19], GLfloat angle) {
+void matrix_turn_x (GLfloat m[19], GLfloat angle) {
   GLfloat c; GLfloat s;
   GLfloat m4; GLfloat m5; GLfloat m6; 
   /* rotate along X axis of the matrix */
   /* Following code is equivalent (with simplifications!) to:
    *   matrix_set_identity (b);
-   *   matrix_rotate_vertical (b, angle);
+   *   matrix_rotate_x (b, angle);
    *   multiply_matrix (r, m, b);
    */
   c = cos (angle);
@@ -929,13 +929,13 @@ void matrix_turn_vertical (GLfloat m[19], GLfloat angle) {
   m[10] = - s * m6 + c * m[10];
 }
 
-void matrix_turn_incline (GLfloat m[19], GLfloat angle) {
+void matrix_turn_z (GLfloat m[19], GLfloat angle) {
   GLfloat c; GLfloat s;
   GLfloat m0; GLfloat m1; GLfloat m2;
   /* rotate along Z axis of the matrix */
   /* Following code is equivalent (with simplifications!) to:
    *   matrix_set_identity (b);
-   *   matrix_rotate_incline (b, angle);
+   *   matrix_rotate_z (b, angle);
    *   multiply_matrix (r, m, b);
    */
   c = cos (angle);
@@ -1045,7 +1045,7 @@ void matrix_rotate_axe (GLfloat m[19], GLfloat angle, GLfloat x, GLfloat y, GLfl
   m[10] = ox * f7 + oy * f8 + oz * f9;
 }
 
-void matrix_rotate_lateral (GLfloat m[19], GLfloat angle) {
+void matrix_rotate_y (GLfloat m[19], GLfloat angle) {
   GLfloat c; GLfloat s;
   GLfloat m0; GLfloat m4; GLfloat m8;
   /* rotate along Y axis of parent with matrix origin */
@@ -1066,7 +1066,7 @@ void matrix_rotate_lateral (GLfloat m[19], GLfloat angle) {
    */
 }
 
-void matrix_rotate_vertical (GLfloat m[19], GLfloat angle) {
+void matrix_rotate_x (GLfloat m[19], GLfloat angle) {
   GLfloat c; GLfloat s;
   GLfloat m1; GLfloat m5; GLfloat m9;
   /* rotate along X axis of parent with matrix origin */
@@ -1087,7 +1087,7 @@ void matrix_rotate_vertical (GLfloat m[19], GLfloat angle) {
    */
 }
 
-void matrix_rotate_incline (GLfloat m[19], GLfloat angle) {
+void matrix_rotate_z (GLfloat m[19], GLfloat angle) {
   GLfloat c; GLfloat s; 
   GLfloat m0; GLfloat m4; GLfloat m8;
   /* rotate along Z axis of parent with matrix origin */

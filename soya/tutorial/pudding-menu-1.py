@@ -1,3 +1,5 @@
+# -*- indent-tabs-mode: t -*-
+
 #!/usr/bin/env python
 
 """
@@ -22,10 +24,10 @@ sword_model = soya.Shape.get("sword")
 sword = soya.Volume(scene, sword_model)
 sword.y = -1
 sword.x = -1.5
-sword.rotate_vertical(90.)
+sword.rotate_x(90.)
 
 # one line animation :)
-sword.advance_time = lambda p: sword.rotate_lateral(5.*p)
+sword.advance_time = lambda p: sword.rotate_y(5.*p)
 
 light = soya.Light(scene)
 light.set_xyz( .5, 0., 2.)
@@ -37,40 +39,40 @@ camera.z = 3.
 # when it gets focus and calls a function when its clicked
 
 class MenuOption(pudding.control.Label):
-  def __init__(self, label, function ):
-    pudding.control.Label.__init__(self, label = label)
+	def __init__(self, label, function ):
+		pudding.control.Label.__init__(self, label = label)
 
-    self.function = function
+		self.function = function
 
-    self.color1 = (1., 1., 1., 1.)
-    self.color2 = (1., 0., 0., 1.)
+		self.color1 = (1., 1., 1., 1.)
+		self.color2 = (1., 0., 0., 1.)
 
-  def on_focus(self):
-    self.color = self.color2
+	def on_focus(self):
+		self.color = self.color2
 
-  def on_loose_focus(self):
-    self.color = self.color1
+	def on_loose_focus(self):
+		self.color = self.color1
 
-  def on_mouse_up(self, button, x, y):
-    print "click on %s" % self.label
+	def on_mouse_up(self, button, x, y):
+		print "click on %s" % self.label
 
-    self.function()
+		self.function()
 
-    # we must return True here to stop even propgation
-    return True
+		# we must return True here to stop even propgation
+		return True
 
 # some pretend menu functions 
 
 def go_game():
-  print "starting game..."
+	print "starting game..."
 
 def go_menu():
-  print "starting menu..."
+	print "starting menu..."
 
 def go_quit():
-  print "quitting..."
+	print "quitting..."
 
-  sys.exit()
+	sys.exit()
 
 w = pudding.core.RootWidget(width = 640,height = 480)
 

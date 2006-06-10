@@ -213,4 +213,6 @@
   * Full support for cerealizer (i.e. save(), load() and get() can use
     cerealizer, see set_file_format)
   * Idler.return_value is now readable (ease hacking the Idler :-)
-
+  * Bugfixes:
+    * Several bugfixes on shadows, cellshading outlines on Cal3D model
+      and raypicking on Cal3D model

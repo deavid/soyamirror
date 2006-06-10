@@ -42,12 +42,26 @@
  * CHUNK *
  *=======*/
 
-void killme(void) {
+/*
+void on_error(void) {
 #if defined(_WIN32) || defined(WIN32)
   sleep(*(int *)NULL); // really equivalent to the Unix code ???
 #else
   kill(0, SIGSEGV);
 #endif
+}
+*/
+
+int chunk_error = 0;
+void on_error(void) {
+  chunk_error = 1;
+}
+
+int chunk_check_error(void) {
+  int error;
+  error = chunk_error;
+  chunk_error = 0;
+  return error;
 }
 
 Chunk* chunk_new (void) {
@@ -60,7 +74,8 @@ Chunk* chunk_new (void) {
   }
   else {
     printf("error in chunk_new !\n");
-    killme();
+    on_error();
+    return NULL;
   }
   return chunk;
 }
@@ -80,7 +95,8 @@ static int chunk_size_up (Chunk* chunk, int size) {
   tmp = (void*) realloc (chunk->content, chunk->max);
   if (tmp == NULL) {
     printf("error in chunk_size_up !\n");
-    killme();
+    on_error();
+    return 1;
   }
   chunk->content = tmp;
   return 0;
@@ -92,7 +108,8 @@ int chunk_register (Chunk* chunk, int size) {
     r = chunk_size_up (chunk, size);
     if (r < 0) {
       printf("error in chunk_register !\n");
-      killme();
+      on_error();
+      return 0;
     }
   }
   i = chunk->nb;
@@ -106,7 +123,8 @@ int chunk_add (Chunk* chunk, void* ptr, int size) {
     r = chunk_size_up (chunk, size);
     if (r < 0) {
       printf("error in chunk_add !\n");
-      killme();
+      on_error();
+      return 1;
     }
   }
   memcpy (chunk->content + chunk->nb, ptr, size);
@@ -120,7 +138,8 @@ int chunk_add_char (Chunk* chunk, char c) {
     r = chunk_size_up (chunk, sizeof (char));
     if (r < 0) {
       printf("error in chunk_add_char !\n");
-      killme();
+      on_error();
+      return 1;
     }
   }
   *((char*) (chunk->content + chunk->nb)) = c;
@@ -134,7 +153,8 @@ int chunk_add_int (Chunk* chunk, int i) {
     r = chunk_size_up (chunk, sizeof (int));
     if (r < 0) {
       printf("error in chunk_add_int !\n");
-      killme();
+      on_error();
+      return 1;
     }
   }
   *((int*) (chunk->content + chunk->nb)) = i;
@@ -148,7 +168,8 @@ int chunk_add_float (Chunk* chunk, float f) {
     r = chunk_size_up (chunk, sizeof (float));
     if (r < 0) {
       printf("error in chunk_add_float !\n");
-      killme();
+      on_error();
+      return 1;
     }
   }
   *((float*) (chunk->content + chunk->nb)) = f;
@@ -162,7 +183,8 @@ int chunk_add_double (Chunk* chunk, double f) {
     r = chunk_size_up (chunk, sizeof (double));
     if (r < 0) {
       printf("error in chunk_add_double !\n");
-      killme();
+      on_error();
+      return 1;
     }
   }
   *((double*) (chunk->content + chunk->nb)) = f;
@@ -176,7 +198,8 @@ int chunk_add_ptr (Chunk* chunk, void* ptr) {
     r = chunk_size_up (chunk, sizeof (void*));
     if (r < 0) {
       printf("error in chunk_add_ptr !\n");
-      killme();
+      on_error();
+      return 1;
     }
   }
   *((void**) (chunk->content + chunk->nb)) = ptr;
@@ -191,7 +214,8 @@ int chunk_get (Chunk* chunk, void* ptr, int size) {
     return 0;
   }
   printf("error in chunk_get !\n");
-  killme();
+  on_error();
+  return 1;
 }
 
 char chunk_get_char (Chunk* chunk) {
@@ -202,7 +226,8 @@ char chunk_get_char (Chunk* chunk) {
   }
   else {
     printf("error in chunk_get_char !\n");
-    killme();
+    on_error();
+    return 0;
   }
   return c;
 }
@@ -215,7 +240,8 @@ int chunk_get_int (Chunk* chunk) {
   }
   else {
     printf("error in chunk_get_int !\n");
-    killme();
+    on_error();
+    return 0;
   }
   return i;
 }
@@ -228,7 +254,8 @@ float chunk_get_float (Chunk* chunk) {
   }
   else {
     printf("error in chunk_get_float !\n");
-    killme();
+    on_error();
+    return 0.0;
   }
   return f;
 }
@@ -241,7 +268,8 @@ void* chunk_get_ptr (Chunk* chunk) {
   }
   else {
     printf("error in chunk_get_ptr !\n");
-    killme();
+    on_error();
+    return NULL;
   }
   return ptr;
 }
@@ -291,7 +319,8 @@ int chunk_add_chars_endian_safe(Chunk* chunk, char* ptr, int nb) {
     r = chunk_size_up (chunk, nb);
     if (r < 0) {
       printf("error in chunk_add_chars_endian_safe !\n");
-      killme();
+      on_error();
+      return 1;
     }
   }
   memcpy (chunk->content + chunk->nb, ptr, nb);
@@ -302,12 +331,13 @@ int chunk_add_chars_endian_safe(Chunk* chunk, char* ptr, int nb) {
 int chunk_get_chars_endian_safe(Chunk* chunk, char* result, int nb) {
   nb *=  sizeof(char);
   if ((chunk->nb + nb) <= chunk->max) {
-	memcpy (result, chunk->content + chunk->nb, nb);
-	chunk->nb += nb;
-	return 0;
+    memcpy (result, chunk->content + chunk->nb, nb);
+    chunk->nb += nb;
+    return 0;
   }
   printf("error in chunk_get_chars_endian_safe !\n");
-  killme();
+  on_error();
+  return 1;
 }
 
 
@@ -320,7 +350,8 @@ int chunk_add_ints_endian_safe(Chunk* chunk, int* ptr, int nb) {
     r = chunk_size_up (chunk, (nb * size));
     if (r < 0) {
       printf("error in chunk_add_ints_endian_safe !\n");
-      killme();
+      on_error();
+      return 1;
     }
   }
   dest = (int*) (chunk->content + chunk->nb);
@@ -343,7 +374,8 @@ int chunk_get_ints_endian_safe(Chunk* chunk, int* result, int nb) {
     return 0;
   }
   printf("error in chunk_get_ints_endian_safe !\n");
-  killme();
+  on_error();
+  return 1;
 }
 
 
@@ -356,7 +388,8 @@ int chunk_add_floats_endian_safe(Chunk* chunk, float* ptr, int nb) {
     r = chunk_size_up (chunk, (nb * size));
     if (r < 0) {
       printf("error in chunk_add_floats_endian_safe !\n");
-      killme();
+      on_error();
+      return 1;
     }
   }
   
@@ -380,7 +413,8 @@ int chunk_get_floats_endian_safe(Chunk* chunk, float* result, int nb) {
     return 0;
   }
   printf("error in chunk_get_floats_endian_safe !\n");
-  killme();
+  on_error();
+  return 1;
 }
 
 

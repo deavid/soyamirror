@@ -1,3 +1,5 @@
+# -*- indent-tabs-mode: t -*-
+
 # Soya 3D
 # Copyright (C) 2001-2002 Jean-Baptiste LAMY -- jiba@tuxfamily.org
 #
@@ -34,60 +36,60 @@ from soya.opengl import *
 
 
 class Laser(PythonCoordSyst):
-  def __init__(self, parent = None, color = (1.0, 0.0, 0.0, 1.0), reflect = 0):
-    PythonCoordSyst.__init__(self, parent)
-    
-    self.color   = color
-    self.reflect = reflect
-    self.points  = []
-    
-  def batch(self):
-    if self.color[3] < 1.0: return 2, self, None
-    else:                   return 1, self, None
-    
-  def render(self):
-    DEFAULT_MATERIAL.activate()
-    glDisable(GL_TEXTURE_2D)
-    glDisable(GL_LIGHTING)
-    
-    glColor4f(*self.color)
-    glBegin(GL_LINES)
-    glVertex3f(0.0, 0.0, 0.0)
-    
-    self.points = []
-    
-    i     = 0
-    pos   = self.position()
-    direc = Vector(self, 0.0, 0.0, -1.0)
+	def __init__(self, parent = None, color = (1.0, 0.0, 0.0, 1.0), reflect = 0):
+		PythonCoordSyst.__init__(self, parent)
+		
+		self.color   = color
+		self.reflect = reflect
+		self.points  = []
+		
+	def batch(self):
+		if self.color[3] < 1.0: return 2, self, None
+		else:                   return 1, self, None
+		
+	def render(self):
+		DEFAULT_MATERIAL.activate()
+		glDisable(GL_TEXTURE_2D)
+		glDisable(GL_LIGHTING)
+		
+		glColor4f(*self.color)
+		glBegin(GL_LINES)
+		glVertex3f(0.0, 0.0, 0.0)
+		
+		self.points = []
+		
+		i     = 0
+		pos   = self.position()
+		direc = Vector(self, 0.0, 0.0, -1.0)
 
-    raypicker = self.get_root()
-    while direc and (i < 50):
-      i = i + 1
+		raypicker = self.get_root()
+		while direc and (i < 50):
+			i = i + 1
 
-      impact = raypicker.raypick(pos, direc, -1.0)
-      if not impact:
-        pos   = pos + (direc * 32000.0)
-        direc = None
-      else:
-        pos = impact[0]
-        
-        if self.reflect:
-          normal = impact[1] % self
-          normal.normalize() # changing coordsys can alterate normal size
-          normal.set_length(-2.0 * direc.dot_product(normal))
-          direc = normal + direc
-          
-        else: direc = None
-        
-      glVertex3f(*self.transform_point(pos.x, pos.y, pos.z, pos.parent))
-      if direc: glVertex3f(*self.transform_point(pos.x, pos.y, pos.z, pos.parent))
-      
-      self.points.append(pos)
-      
-      
-    glEnd()
-    
-    glEnable(GL_LIGHTING)
-    glEnable(GL_TEXTURE_2D)
-    
+			impact = raypicker.raypick(pos, direc, -1.0)
+			if not impact:
+				pos   = pos + (direc * 32000.0)
+				direc = None
+			else:
+				pos = impact[0]
+				
+				if self.reflect:
+					normal = impact[1] % self
+					normal.normalize() # changing coordsys can alterate normal size
+					normal.set_length(-2.0 * direc.dot_product(normal))
+					direc = normal + direc
+					
+				else: direc = None
+				
+			glVertex3f(*self.transform_point(pos.x, pos.y, pos.z, pos.parent))
+			if direc: glVertex3f(*self.transform_point(pos.x, pos.y, pos.z, pos.parent))
+			
+			self.points.append(pos)
+			
+			
+		glEnd()
+		
+		glEnable(GL_LIGHTING)
+		glEnable(GL_TEXTURE_2D)
+		
 
