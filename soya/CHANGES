@@ -207,12 +207,17 @@
 * May 2005 : Soya3D 0.10.5
   * Bugfix on Cal3D support: a bug in Pyrex 0.9.4.1 (not present in
     older version) was causing a segfault bug in
-    Cal3DVolume.detach_from_bone().
+    Cal3DVolume.detach_from_bone()
 
 * June 2006 : Soya3D 0.11
   * Full support for cerealizer (i.e. save(), load() and get() can use
-    cerealizer, see set_file_format)
+    cerealizer, see set_file_format and basic-savingfile-* and
+    basic-loadingfile-* tutorials)
   * Idler.return_value is now readable (ease hacking the Idler :-)
+  * rotate/turn_lateral/vertical/incline become rotate/turn_x/y/z
+    (the old names are still their and I don't really consider them as
+    "deprecated")
+  * Sources now use tab instead of space for indenting
   * Bugfixes:
     * Several bugfixes on shadows, cellshading outlines on Cal3D model
       and raypicking on Cal3D model
