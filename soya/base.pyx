@@ -73,7 +73,7 @@ cdef class _TravelingCamera(_Camera)
 Image = Material = Shape = SimpleShape = SolidShape = TreeShape =  CellShadingShape = Point = Vector = Camera = Light = Volume = World = Cal3dVolume = Cal3dShape = Portal = WaterCube = Face = Atmosphere = Particles = None
 
 # Constants and structs
-VERSION = "0.10.5"
+VERSION = "0.11"
 
 #cdef enum:
 #  QUALITY_LOW    = 0

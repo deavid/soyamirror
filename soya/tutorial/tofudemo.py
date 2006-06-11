@@ -26,6 +26,9 @@
 # Tofu also save players automatically, so if you play, then disconnect, and then connect
 # again, you'll restart at the same position you were when you disconnected.
 
+# WARNING! Tofu and Tofu4Soya are still in very alpha and unstable stage. The API
+# as well as the implementation may change radically.
+
 # To run it:
 # 1 - Execute tofudemo_create_level.py, in order to create and save the level
 #     (this script is very similar to game_skel-1.py)
@@ -39,7 +42,7 @@ import sys, os, os.path, math
 import soya
 import soya.widget as widget
 import soya.sdlconst as sdlconst
-import tofu, tofu.pickle_sec, soya.tofu4soya
+import tofu, soya.tofu4soya
 
 # Tofu provide some base classes that you must extend.
 # To use Tofu with Soya, soya.tofu4soya provides these base classes with already Soya-ish
@@ -195,10 +198,12 @@ class KeyboardController(soya.tofu4soya.LocalController):
 				(1, 0, 0, 1) : ACTION_GO_BACK_LEFT,
 				(0, 1, 0, 1) : ACTION_GO_BACK_RIGHT,
 				}.get((self.left_key_down, self.right_key_down, self.up_key_down, self.down_key_down), ACTION_WAIT)
-
+			
 		if action != self.current_action:
 			self.current_action = action
 			self.mobile.doer.do_action(Action(action))
+		else:
+			self.mobile.doer.do_action(None)
 			
 # A mobile is anything that can move and evolve in a level. This include player characters
 # but also computer-controlled objects (also named bots).
@@ -261,7 +266,6 @@ class Character(soya.tofu4soya.Mobile):
 	# It must return the new State of the Mobile, after the action is executed.
 	
 	def do_action(self, action):
-		
 		# Create a new State for self. By default, the state is at the same position,
 		# orientation and scaling that self.
 		
@@ -272,7 +276,9 @@ class Character(soya.tofu4soya.Mobile):
 		
 		if action:
 			self.current_action = action.action
-			
+
+			# May reduce the lag.
+			state.droppable = 0
 			
 		if   self.current_action in (ACTION_TURN_LEFT, ACTION_ADVANCE_LEFT, ACTION_GO_BACK_LEFT):
 			state.rotate_y( 4.0)
@@ -348,7 +354,7 @@ class Character(soya.tofu4soya.Mobile):
 				state.add_vector(correction)
 
 		# Returns the resulting state.
-		
+
 		self.doer.action_done(state)
 	
 	# set_state is called when the mobile's state change, due to the execution of an
@@ -385,7 +391,6 @@ class Character(soya.tofu4soya.Mobile):
 		traveling.distance = 5.0
 		tofu.GAME_INTERFACE.camera.add_traveling(traveling)
 		tofu.GAME_INTERFACE.camera.zap()
-		
 
 # GameInterface is the interface of the game.
 
@@ -441,24 +446,12 @@ tofu.enable_cerealizer(0, 1)
 # Make our classes safe for Cerealizer
 
 import cerealizer, soya.cerealizer4soya
-cerealizer.register_class(Action)
-cerealizer.register_class(State)
-cerealizer.register_class(KeyboardController)
-cerealizer.register_class(Character)
-cerealizer.register_class(Level)
+cerealizer.register(Action)
+cerealizer.register(State)
+cerealizer.register(KeyboardController)
+cerealizer.register(Character)
+cerealizer.register(Level)
 
-
-
-# To use Jelly (buggy :-( )
-# soya.tofu4soya.allow_jelly()
-# tofu.allow_jelly()
-# tofu.allow_jelly(
-#   Action,
-#   Character,
-#   KeyboardController,
-#   Level,
-#   State,
-#   )
 
 
 # For security reason, there is a maximum to the size of the transmitted serialized
@@ -467,9 +460,6 @@ cerealizer.register_class(Level)
 
 #import tofu.client
 #tofu.client.MAX_LENGTH = 1000000
-
-
-# This function makes all Soya pickleable classes safe for pickle_sec.
 
 
 if __name__ == "__main__":

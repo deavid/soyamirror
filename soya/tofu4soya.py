@@ -147,10 +147,14 @@ class Mobile(soya.World, tofu.Mobile):
 Set the current state of the Mobile. Default implementation take care of position,
 rotation and scaling."""
 		
-		self.state1 = self.state2
+		# Which one should be chosen? It seems that the second one give a smoother animation.
+		
+		#self.state1 = self.state2
+		self.state1 = state.__class__(self)
+		
 		self.state2 = state
 		self.interpolate_factor = 0.0
-
+		
 		# Old code, without interpolation
 		#x, y, z = self.x, self.y, self.z
 		#self.matrix = state.matrix
@@ -161,9 +165,6 @@ rotation and scaling."""
 		"""Mobile.advance_time(proportion)
 
 This default implementation take care of position, rotation and scaling."""
-		
-		#if self.__class__.__name__ == "Balazar": print self.position()
-		
 		soya.World.advance_time(self, proportion)
 		
 		self.interpolate_factor += self.doer.STATE_FACTOR * proportion
@@ -175,13 +176,7 @@ This default implementation take care of position, rotation and scaling."""
 
 		y2 = (soya.Vector(self, 0.0, 1.0, 0.0) % self.parent).y
 
-#     if abs(y1 - y2) > 0.5:
-#       print "inversion ???"
-#       print y1, y2
-#       print self.state1.matrix
-#       print self.state2.matrix
-#       print self.interpolate_factor
-			
+
 		# Old code, without interpolation
 		#self.add_mul_vector(proportion, self.current_move)
 		
@@ -214,63 +209,3 @@ Notice that states which have state.is_crucial() == True are never dropped."""
 set_dropped_state_ratio(10)
 
 
-
-
-
-def make_safe_for_pickle_sec():
-	"""make_safe_for_pickle_sec()
-
-Registers all pickleable Soya classes as safe for Tofu (see module tofu.pickle_sec)."""
-	import tofu.pickle_sec
-
-	tofu.pickle_sec.safe_classes(
-		"soya._loader",
-		"soya._getter",
-		"soya._soya._reconstructor",
-		"soya.Vertex",
-		"soya.World",
-		"soya.NoBackgroundAtmosphere",
-		"soya.FixTraveling",
-		"_soya.PythonCoordSyst",
-		"_soya.FlagSubFire",
-		"_soya.Position",
-		"_soya._CObj",
-		"_soya.Shapifier",
-		"soya.SimpleShape",
-		"soya.Material",
-		"soya.CylinderSprite",
-		"_soya.Traveling",
-		"soya.Light",
-		"soya.TravelingCamera",
-		"soya.Vector",
-		"_soya.Smoke",
-		"_soya.CellShadingShapifier",
-		"soya.Point",
-		"soya.Image",
-		"soya.CellShadingShape",
-		"soya.Shape",
-		"_soya.FlagFirework",
-		"_soya.Fountain",
-		"soya.SkyAtmosphere",
-		"soya.Portal",
-		"soya.Land",
-		"_soya.CoordSyst",
-		"soya.Face",
-		"soya.Atmosphere",
-		"_soya.TreeShapifier",
-		"soya.TreeShape",
-		"_soya.SimpleShapifier",
-		"soya.Particles",
-		"soya.Sprite",
-		"soya.Bonus",
-		"soya.Cal3dShape",
-		"soya.Cal3dVolume",
-		"soya.Volume",
-		"soya.SavedInAPath",
-		"_soya.RaypickContext",
-		"soya.ThirdPersonTraveling",
-		"soya.cursor.Cursor",
-		"soya.laser.Laser",
-		"soya.ray.Ray",
-		"soya.ray.HalfRay",
-	)

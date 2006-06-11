@@ -177,7 +177,7 @@
     * Raypicking was not working if the root scene was not located
       in (0.0, 0.0, 0.0)
       
-* February 2005 : Soya3D 0.10.2
+* February 2006 : Soya3D 0.10.2
   * Added interpolation support (see tuto state-1)
   * soya.tofu4soya now use interpolation for remotely controlled
     mobiles
@@ -200,11 +200,11 @@
 
 (no Soya3D 0.10.3, dead before its birth)
 
-* April 2005 : Soya3D 0.10.4
+* April 2006 : Soya3D 0.10.4
   * Bugfix on ODE support: the .c files have been re-generated from
     the .pyx files
 
-* May 2005 : Soya3D 0.10.5
+* May 2006 : Soya3D 0.10.5
   * Bugfix on Cal3D support: a bug in Pyrex 0.9.4.1 (not present in
     older version) was causing a segfault bug in
     Cal3DVolume.detach_from_bone()
@@ -222,3 +222,6 @@
   * Bugfixes:
     * Several bugfixes on shadows, cellshading outlines on Cal3D model
       and raypicking on Cal3D model
+    * tofudemo tutorial was broken. It now works, although the
+      interpolation feature add some lag. Tofu and Tofu4Soya are still
+      in an unstable stage and may change radically.
