@@ -35,7 +35,7 @@ import cerealizer
 # Import the module that defines the RotatingVolume class. Cerealizer or Pickle saves the
 # object data, but NOT the source or executable code of their class.
 #
-# Here, we use "exec" since the file "basic-savingfile-cerealizer-1.py" is not a valid
+# Here, we use "execfile" since the file "basic-savingfile-cerealizer-1.py" is not a valid
 # Python module name, due to the "-" character in it.
 # However, you should normally use something like:
 #
