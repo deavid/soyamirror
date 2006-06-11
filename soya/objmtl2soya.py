@@ -160,14 +160,14 @@ Imports a "{name}.obj" file (from the "obj" directory) and converts it into a So
 	return soya.Shape.get(Name)
 
 def main():
-		"""Imports the .obj file given as arg 1 and saves the created world to the 
-		file given as arg 2. Does not add the .data extension. Put this in
-		your worlds directory or shapify it."""
-		infilename = sys.argv[1]
-		outfilename = sys.argv[2]
-
-		world = loadObj(infilename)
-		world.save(outfilename)
-
+	"""Imports the .obj file given as arg 1 and saves the created world to the 
+file given as arg 2. Does not add the .data extension. Put this in
+your worlds directory or shapify it."""
+	infilename = sys.argv[1]
+	outfilename = sys.argv[2]
+	
+	world = loadObj(infilename)
+	world.save(outfilename)
+	
 if __name__ == '__main__':
-		main()
+	main()

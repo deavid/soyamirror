@@ -73,22 +73,22 @@ meshes=[] #array of meshes
 mat_index=0
 
 class Mesh:        
-				
-				def __init__(self):
+	
+	def __init__(self):
 		self.world=soya.World()
 		self.verts=[]
 		self.faces=[]
 		self.materials=[]
-								self.name=""
-
-				
+		self.name=""
+		
+		
 class Material(soya.Material):
-				def __init__(self):
-						self.name=""
-
-				def setName(self,name):
-						self.name=name
-						
+	def __init__(self):
+		self.name=""
+		
+		def setName(self,name):
+			self.name=name
+			
 class chunk:
 	ID=0
 	length=0
@@ -107,17 +107,17 @@ class chunk:
 
 
 def read_chunk(file, chunk):
-		temp_data=file.read(struct.calcsize(chunk.binary_format))
-		data=struct.unpack(chunk.binary_format, temp_data)
-		chunk.ID=data[0]
-		chunk.length=data[1]
-		#update the bytes read function
-		chunk.bytes_read=6
+	temp_data=file.read(struct.calcsize(chunk.binary_format))
+	data=struct.unpack(chunk.binary_format, temp_data)
+	chunk.ID=data[0]
+	chunk.length=data[1]
+	#update the bytes read function
+	chunk.bytes_read=6
 
 def read_string(file):
 	s=""
 	index=0
-
+	
 	temp_data=file.read(struct.calcsize("c"))
 	data=struct.unpack("c", temp_data)
 	s=s+(data[0])
@@ -175,7 +175,7 @@ def process_next_object_chunk(file, previous_chunk, mesh):
 				face.double_sided=1
 				mesh.faces.append(face)
 			
-								elif (new_chunk.ID==OBJECT_MATERIAL):			
+		elif (new_chunk.ID==OBJECT_MATERIAL):			
 			material_name=""
 			material_name=str(read_string(file))
 			new_chunk.bytes_read+=(len(material_name)+1)
@@ -189,16 +189,14 @@ def process_next_object_chunk(file, previous_chunk, mesh):
 					else:						
 						material_found=1						
 						for mat_counter in range(0,len(materials)):							
-																												if materials[mat_counter].name==material_name:
-								
+							if materials[mat_counter].name==material_name:
 								mat_index=mat_counter
-								
-																								break
-						
+								break
+							
 				else:
 					material_found=0
 					
-												
+					
 			if(material_found==1):
 				#read the number of faces using this material
 				temp_data=file.read(struct.calcsize("H"))
@@ -301,7 +299,7 @@ def process_next_material_chunk(file, previous_chunk, mat):
 			texture_name=""
 			texture_name=str(read_string(file))
 			texture_f=os.path.join(soya.path[0],'images',texture_name)
-						mat.texture = soya.open_image(texture_f)#name)
+			mat.texture = soya.open_image(texture_f)#name)
 			new_chunk.bytes_read+=(len(texture_name)+1)
 
 		else:			
@@ -365,7 +363,7 @@ def process_next_chunk(file, previous_chunk):
 			
 			material=Material()#soya.Material()#Material.New()
 			process_next_material_chunk(file, new_chunk, material)
-												materials.append(material)
+			materials.append(material)
 		else: #(new_chunk.ID!=VERSION or new_chunk.ID!=OBJECTINFO or new_chunk.ID!=OBJECT or new_chunk.ID!=MATERIAL):
 			#print "skipping to end of this chunk"
 			buffer_size=new_chunk.length-new_chunk.bytes_read
@@ -390,13 +388,13 @@ def load_3ds (filename):
 	process_next_chunk(file, current_chunk)
 
 	file.close()
-				if len(meshes)==1:            
-						return meshes[0].world
-				else:            
-						_3ds_world=soya.World()
-						for elem in meshes:
-								_3ds_world.add(elem.world)
-						return _3ds_world
+	if len(meshes)==1:            
+		return meshes[0].world
+	else:            
+		_3ds_world=soya.World()
+		for elem in meshes:
+			_3ds_world.add(elem.world)
+		return _3ds_world
 		
 def makeWorld(Name):
 	data_f=os.path.join(soya.path[0],'worlds',Name+'.data')
@@ -430,18 +428,18 @@ Imports a "{name}.3ds" file (from the "3ds" directory) and converts it into a So
 
 
 if __name__=="__main__":     
-		soya.path.append(os.path.join(os.path.dirname(sys.argv[0])))    
-		try:
-				_3ds_file=sys.argv[1]
-				world=getObj(_3ds_file)
-		except:
-				print "Usage:\npython 3ds2soya.py yourfile\nWithout .3ds extension"
-				sys.exit()
-		camera=soya.Camera(world)
-		camera.set_xyz(0.0, 0.0, 3.0)
-		light = soya.Light(world)
-		light.set_xyz(0.5, 1.0, 2.0)
-		soya.set_root_widget(camera)    
-		soya.init()
-		soya.Idler(world).idle()
+	soya.path.append(os.path.join(os.path.dirname(sys.argv[0])))    
+	try:
+		_3ds_file=sys.argv[1]
+		world=getObj(_3ds_file)
+	except:
+		print "Usage:\npython 3ds2soya.py yourfile\nWithout .3ds extension"
+		sys.exit()
+	camera=soya.Camera(world)
+	camera.set_xyz(0.0, 0.0, 3.0)
+	light = soya.Light(world)
+	light.set_xyz(0.5, 1.0, 2.0)
+	soya.set_root_widget(camera)    
+	soya.init()
+	soya.Idler(world).idle()
 
