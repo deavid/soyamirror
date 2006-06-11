@@ -487,12 +487,6 @@ Attributes are (see also CoordSyst for inherited attributes):
 
  - shape : the Shape (a Shape object, defaults to None).
 """
-	rotate_lateral  = _soya._Volume.rotate_y
-	rotate_vertical = _soya._Volume.rotate_x
-	rotate_incline  = _soya._Volume.rotate_z
-	turn_lateral    = _soya._Volume.turn_y
-	turn_vertical   = _soya._Volume.turn_x
-	turn_incline    = _soya._Volume.turn_z
 
 def do_cmd(cmd):
 	print "* Soya * Running '%s'..." % cmd
@@ -595,12 +589,6 @@ Attributes are (see also CoordSyst for inherited attributes):
  - angle : if angle < 180.0, the light is a spotlight.
  - exponent : modify how the spotlight's light is spread.
 """
-	rotate_lateral  = _soya._Light.rotate_y
-	rotate_vertical = _soya._Light.rotate_x
-	rotate_incline  = _soya._Light.rotate_z
-	turn_lateral    = _soya._Light.turn_y
-	turn_vertical   = _soya._Light.turn_x
-	turn_incline    = _soya._Light.turn_z
 
 class Camera(_soya._Camera):
 	"""Camera
@@ -625,12 +613,6 @@ Attributes are (see also CoordSyst and Widget for inherited attributes):
 
  - partial : XXX ???. probably DEPRECATED by NoBackgroundAtmosphere.
 """
-	rotate_lateral  = _soya._Camera.rotate_y
-	rotate_vertical = _soya._Camera.rotate_x
-	rotate_incline  = _soya._Camera.rotate_z
-	turn_lateral    = _soya._Camera.turn_y
-	turn_vertical   = _soya._Camera.turn_x
-	turn_incline    = _soya._Camera.turn_z
 
 class Face(_soya._Face):
 	"""Face
@@ -747,12 +729,6 @@ Attributes are :
 	 Both defaults to 0.5.
 
  - lit: if true (default), lighting affects the sprite, and if false, it doesn't."""
-	rotate_lateral  = _soya._Sprite.rotate_y
-	rotate_vertical = _soya._Sprite.rotate_x
-	rotate_incline  = _soya._Sprite.rotate_z
-	turn_lateral    = _soya._Sprite.turn_y
-	turn_vertical   = _soya._Sprite.turn_x
-	turn_incline    = _soya._Sprite.turn_z
 
 class CylinderSprite(_soya._CylinderSprite, Sprite):
 	"""CylinderSprite
@@ -760,36 +736,14 @@ class CylinderSprite(_soya._CylinderSprite, Sprite):
 A special kind of Sprite, that points toward the camera only in X and Z dimension, but
 not Y. This is usefull e.g. for lightening spell effects, for which using a normal Sprite
 would give a poor rendering if seen from top."""
-	rotate_lateral  = _soya._CylinderSprite.rotate_y
-	rotate_vertical = _soya._CylinderSprite.rotate_x
-	rotate_incline  = _soya._CylinderSprite.rotate_z
-	turn_lateral    = _soya._CylinderSprite.turn_y
-	turn_vertical   = _soya._CylinderSprite.turn_x
-	turn_incline    = _soya._CylinderSprite.turn_z
 
 class Particles(_soya._Particles):
-	rotate_lateral  = _soya._Particles.rotate_y
-	rotate_vertical = _soya._Particles.rotate_x
-	rotate_incline  = _soya._Particles.rotate_z
-	turn_lateral    = _soya._Particles.turn_y
-	turn_vertical   = _soya._Particles.turn_x
-	turn_incline    = _soya._Particles.turn_z
+	pass
 
 class Bonus(_soya._Bonus):
-	rotate_lateral  = _soya._Bonus.rotate_y
-	rotate_vertical = _soya._Bonus.rotate_x
-	rotate_incline  = _soya._Bonus.rotate_z
-	turn_lateral    = _soya._Bonus.turn_y
-	turn_vertical   = _soya._Bonus.turn_x
-	turn_incline    = _soya._Bonus.turn_z
+	pass
 
 class Portal(_soya._Portal):
-	rotate_lateral  = _soya._Portal.rotate_y
-	rotate_vertical = _soya._Portal.rotate_x
-	rotate_incline  = _soya._Portal.rotate_z
-	turn_lateral    = _soya._Portal.turn_y
-	turn_vertical   = _soya._Portal.turn_x
-	turn_incline    = _soya._Portal.turn_z
 	
 	# Implement in Python due to the lambda
 	def pass_through(self, coordsyst):
@@ -812,20 +766,10 @@ to another makes it plays twice)."""
 		
 		
 class Land(_soya._Land):
-	rotate_lateral  = _soya._Land.rotate_y
-	rotate_vertical = _soya._Land.rotate_x
-	rotate_incline  = _soya._Land.rotate_z
-	turn_lateral    = _soya._Land.turn_y
-	turn_vertical   = _soya._Land.turn_x
-	turn_incline    = _soya._Land.turn_z
+	pass
 
 class TravelingCamera(_soya._TravelingCamera):
-	rotate_lateral  = _soya._TravelingCamera.rotate_y
-	rotate_vertical = _soya._TravelingCamera.rotate_x
-	rotate_incline  = _soya._TravelingCamera.rotate_z
-	turn_lateral    = _soya._TravelingCamera.turn_y
-	turn_vertical   = _soya._TravelingCamera.turn_x
-	turn_incline    = _soya._TravelingCamera.turn_z
+	pass
 
 class ThirdPersonTraveling(_soya._ThirdPersonTraveling):
 	pass
@@ -834,12 +778,7 @@ class FixTraveling(_soya._FixTraveling):
 	pass
 
 class Cal3dVolume(_soya._Cal3dVolume):
-	rotate_lateral  = _soya._Cal3dVolume.rotate_y
-	rotate_vertical = _soya._Cal3dVolume.rotate_x
-	rotate_incline  = _soya._Cal3dVolume.rotate_z
-	turn_lateral    = _soya._Cal3dVolume.turn_y
-	turn_vertical   = _soya._Cal3dVolume.turn_x
-	turn_incline    = _soya._Cal3dVolume.turn_z
+	pass
 
 class Cal3dShape(Shape, _soya._Cal3dShape):
 	def load(klass, filename):

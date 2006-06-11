@@ -594,6 +594,27 @@ Rotate about the *local* Z axis, in degrees."""
 		matrix_turn_z(self._matrix, to_radians(angle))
 		self._invalidate()
 	
+	def turn_lateral(self, float angle):
+		"""CoordSyst.turn_lateral(angle)
+
+Same as turn_y."""
+		matrix_turn_y(self._matrix, to_radians(angle))
+		self._invalidate()
+	
+	def turn_vertical(self, float angle):
+		"""CoordSyst.turn_vertical(angle)
+
+Same as turn_x."""
+		matrix_turn_x(self._matrix, to_radians(angle))
+		self._invalidate()
+	
+	def turn_incline(self, float angle):
+		"""CoordSyst.turn_incline(angle)
+
+Same as turn_z."""
+		matrix_turn_z(self._matrix, to_radians(angle))
+		self._invalidate()
+	
 	def rotate_y(self, float angle):
 		"""CoordSyst.rotate_y(angle)
 		
@@ -618,6 +639,27 @@ spins like a car's tire."""
 Rotate about the *parent's* Z axis, in degrees.
 e.g., If you are facing positive-Y with head to positive-Z, it
 spins like a spinning top."""
+		matrix_rotate_z(self._matrix, to_radians(angle))
+		self._invalidate()
+	
+	def rotate_lateral(self, float angle):
+		"""CoordSyst.rotate_lateral(angle)
+		
+Same as rotate_y."""
+		matrix_rotate_y(self._matrix, to_radians(angle))
+		self._invalidate()
+	
+	def rotate_vertical(self, float angle):
+		"""CoordSyst.rotate_vertical(angle)
+
+Same as rotate_x."""
+		matrix_rotate_x(self._matrix, to_radians(angle))
+		self._invalidate()
+	
+	def rotate_incline(self, float angle):
+		"""CoordSyst.rotate_incline(angle)
+
+Same as rotate_z."""
 		matrix_rotate_z(self._matrix, to_radians(angle))
 		self._invalidate()
 	

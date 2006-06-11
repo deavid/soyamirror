@@ -37,15 +37,15 @@ sys.argv.extend(["--template", "MANIFEST_tuto.in", "--manifest", "MANIFEST_tuto"
 
 setup(
 	name         = "SoyaTutorial",
-	version      = "0.10.2",
+	version      = "0.11",
 	license      = "GPL",
-	description  = "A practical high-level object-oriented 3D engine for Python.",
-	long_description  = """A practical high-level object-oriented 3D engine for Python.
+	description  = "Tutorial for Soya, a practical high-level object-oriented 3D engine for Python.",
+	long_description  = """Tutorial for Soya, a practical high-level object-oriented 3D engine for Python.
 Soya is designed with game in mind. It includes heightmaps, particles systems, animation support,...""",
 	keywords     = "3D engine openGL python",
 	author       = "Jiba (LAMY Jean-Baptiste), Blam (LAMY Bertrand), LunacyMaze (GHISLAIN Mary)",
 	author_email = "jiba@tuxfamily.org",
-	url          = "http://gna.org/projects/soya/",
+	url          = "http://home.gna.org/oomadness/en/soya/index.html",
 	classifiers  = [
 	"Topic :: Multimedia :: Graphics :: 3D Rendering",
 	"Topic :: Software Development :: Libraries :: Python Modules",

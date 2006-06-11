@@ -34,7 +34,6 @@ INCDIR = [
 	"/usr/include/cal3d",
 	"/usr/local/include/cal3d",
 	"/sw/include", # For Mac OS X
-	"/home/cubicool/local/include"
 	]
 LIBDIR = [
 	"ode-0.5/lib",
@@ -42,7 +41,6 @@ LIBDIR = [
 	"/usr/local/lib",
 	"/usr/X11R6/lib",
 	"/sw/lib/", # For Mac OS X
-	"/home/cubicool/local/lib"
 	]
 
 
@@ -195,7 +193,7 @@ else:
 
 setup(
 	name         = "Soya",
-	version      = "0.11",
+	version      = "0.11.1",
 	license      = "GPL",
 	description  = "A practical high-level object-oriented 3D engine for Python.",
 	long_description  = """A practical high-level object-oriented 3D engine for Python.
