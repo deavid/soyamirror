@@ -35,6 +35,10 @@ All data are stored in files on the server. tofu.path is the list of directory w
 these files are located; by default the list is empty by you must add your own data
 directory in it.
 
+For tranfering object through network and for saving them locally, Tofu can use either
+cPickle or Cerealizer. As cPickle is not secure, you SHOULD NOT use it for network
+transfer though.
+
 The tofu module has the following global variables:
  - IDLER: the current Idler
  - NOTIFIER: the current Notifier (for internal purpose)
@@ -83,7 +87,7 @@ Bot         | RemoteController | LocalController  | RemoteController
             | RemoteDoer       | LocalDoer        | RemoteDoer
 
 
-* peer-to-peer multiplayer game (not yet implemented)
+* peer-to-peer multiplayer game (NOT YET IMPLEMENTED)
 
             |client A          | client B
 ------------|------------------|------------------
@@ -97,16 +101,20 @@ Bot         | LocalController  | RemoteController
             | LocalDoer        | RemoteDoer
 """
 
-import os.path, time, sets, weakref, struct
+import os.path, time, weakref, struct
 import twisted.internet.selectreactor
 from bisect import insort
-from twisted.spread.jelly  import Jellyable
+
+import cerealizer
+
+try: set
+except: from sets import Set as set
 
 __all__ = ["init", "Notifier", "GameInterface", "Idler", "Unique", "SavedInAPath", "Player", "Level", "Action", "State", "Mobile", "LocalController", "RemoteController", "LocalDoer", "RemoteDoer"]
 
 path = []
 
-VERSION = "0.4"
+VERSION = "0.5"
 
 CODE_LOGIN_PLAYER  = ">"
 CODE_LOGOUT_PLAYER = "<"
@@ -252,21 +260,6 @@ Level.set_active(), so you shouldn't care about it."""
 class _Base(object):
   pass
 
-# Uncomment this for Jelly support
-
-# class _Base(Jellyable, object):
-#   def getStateFor(self, jellier):
-#     if hasattr(self, "__getstate__"): return self.__getstate__()
-#     return self.__dict__
-  
-#   def _unjellyable_factory(clazz, state):
-#     o = clazz.__new__(clazz)
-#     if hasattr(o, "__setstate__"): o.__setstate__(state)
-#     else:                          o.__dict__ = state
-#     return o
-#   _unjellyable_factory = classmethod(_unjellyable_factory)
-  
-
 
 def _getterbyuid(klass, filename): return klass.getbyuid(filename)
 
@@ -370,6 +363,7 @@ be returned."""
     """SavedInAPath.load(filename) -> SavedInAPath
 
 This class method loads a SavedInAPath object from its file."""
+    if ".." in filename: raise ValueError("Cannot have .. in filename (security reason)!")
     filename = filename.replace("/", os.sep)
     for p in path:
       file = os.path.join(p, klass.DIRNAME, filename + ".data")
@@ -459,16 +453,6 @@ Serialize the object."""
       return (_getter, (self.__class__, self.filename))
     return object.__reduce_ex__(self, i)
 
-  def getStateFor(self, jellier):
-    if (not _SAVING is self) and self._filename: # self is saved in another file, save filename only
-      return self._filename
-    return super(SavedInAPath, self).getStateFor(jellier)
-  
-  def _unjellyable_factory(clazz, state):
-    if isinstance(state, basestring): return clazz.get (state)
-    return super(SavedInAPath, clazz)._unjellyable_factory(state)
-  _unjellyable_factory = classmethod(_unjellyable_factory)
-  
   
 class Player(SavedInAPath):
   """Player
@@ -543,7 +527,7 @@ store some data on the client side. Default implementation ignore them."""
     for mobile in self.mobiles:
       mobile.send_control_to(self)
       
-    for level in sets.Set([mobile.level for mobile in self.mobiles]):
+    for level in set([mobile.level for mobile in self.mobiles]):
       notifier.notify_enter_level(level)
       
   def logout(self, save = 1):
@@ -975,128 +959,75 @@ Tofu base classes."""
   YourState          = state_class
   # Currently, Level and Mobile are not needed.
 
-
-
+  #if (not local_serializer) or (not network_serializer): raise StandardError("You must define serializer before calling init(). See enable_pickle() and enable_cerealizer().")
+    
+    
 local_serializer   = None
 network_serializer = None
 
 def enable_pickle(local, network):
   """enable_pickle(local, network)
 
-Use the cPickle serialization module for LOCAL and/or NETWORK serialization."""
+Use the cPickle serialization module for LOCAL and/or NETWORK serialization.
+Set LOCAL to 1 to use cPickle for local serialization (else use 0).
+Set NETWORK to 1 to use cPickle for remote serialization (else use 0) -- CAUTION! cPickle by
+itself is not sure!
+IF YOU USE CPICKLE OVER NETWORK, YOU ASSUME YOU TRUST THE REMOTE COMPUTER!
+
+E.g. to use cPickle for local file only, do:
+  enable_pickle(1, 0)
+"""
   import cPickle as pickle
   global local_serializer, network_serializer
   if local  : local_serializer   = pickle
   if network: network_serializer = pickle
   
-def enable_pickle_sec(local, network):
-  """enable_pickle_sec(local, network)
-
-Use the tofu.pickle_sec serialization module for LOCAL and/or NETWORK serialization.
-See tofu.pickle_sec."""
-  import tofu.pickle_sec
-  tofu.pickle_sec.safe_classes(
-    "tofu._getter",
-    "tofu.RemoteController",
-    "tofu.Mobile",
-    "tofu.State",
-    "tofu.RemoteDoer",
-    "tofu.SavedInAPath",
-    "tofu.Unique",
-    "tofu.Idler",
-    "tofu.Action",
-    "tofu.LocalController",
-    "tofu.LocalDoer",
-    "tofu.Player",
-    )
-  global local_serializer, network_serializer
-  if local  : local_serializer   = tofu.pickle_sec
-  if network: network_serializer = tofu.pickle_sec
-  
-
-def enable_jelly(local, network):
-  """enable_jelly(local, network)
-
-Use the Jelly serialization module (from Twisted) for LOCAL and/or NETWORK serialization."""
-  from twisted.spread.jelly  import Jellyable, jelly, unjelly
-  from twisted.spread.banana import encode, decode
-  
-  make_jellyable(
-    RemoteController,
-    Mobile,
-    State,
-    RemoteDoer,
-    SavedInAPath,
-    Unique,
-    Level,
-    Action,
-    LocalController,
-    LocalDoer,
-    )
-  
-  class JellyInterface(object):
-    def dump (self, obj, file, protocol = 0, bin = 0): file.write(encode(jelly(obj)))
-    def dumps(self, obj, protocol = 0, bin = 0): return encode(jelly(obj))
-    def load (self, f   ): return unjelly(decode(f.read()))
-    def loads(self, data): return unjelly(decode(data))
-  interface = JellyInterface()
-  
-  global local_serializer, network_serializer
-  if local  : local_serializer   = interface
-  if network: network_serializer = interface
-
-def make_jellyable(*classes):
-  from twisted.spread.jelly  import setUnjellyableFactoryForClass
-  for clazz in classes:
-    setUnjellyableFactoryForClass("%s.%s" % (clazz.__module__, clazz.__name__), clazz._unjellyable_factory)
-
 
 def enable_cerealizer(local, network):
   """enable_cerealizer(local, network)
 
-Use the Cerealizer serialization module for LOCAL and/or NETWORK serialization."""
-  import cerealizer
-  
-  class SavedInAPathHandler(cerealizer.ObjHandler):
-    def collect(self, obj, dumper):
-      if (not _SAVING is obj) and obj._filename: # self is saved in another file, save filename only
-        return cerealizer.Handler.collect(self, obj, dumper)
-      else: return cerealizer.ObjHandler.collect(self, obj, dumper)
+Use the Cerealizer serialization module for LOCAL and/or NETWORK serialization.
+Set LOCAL to 1 to use Cerealizer for local serialization (else use 0).
+Set NETWORK to 1 to use Cerealizer for remote serialization (else use 0).
 
-    def dump_obj(self, obj, dumper, s):
-      cerealizer.ObjHandler.dump_obj(self, obj, dumper, s)
-      if (not _SAVING is obj) and obj._filename: # self is saved in another file, save filename only
-        dumper.dump_ref(obj._filename, s)
-      else: dumper.dump_ref("", s)
-        
-    def dump_data(self, obj, dumper, s):
-      if (not _SAVING is obj) and obj._filename: # self is saved in another file, save filename only
-        return cerealizer.Handler.dump_data(self, obj, dumper, s)
-      else: cerealizer.ObjHandler.dump_data(self, obj, dumper, s)
-      
-    def undump_obj(self, classname, dumper, s):
-      filename = dumper.undump_ref(s)
-      if filename: return self.Class.get(filename)
-      return cerealizer.ObjHandler.undump_obj(self, classname, dumper, s)
-    
-    def undump_data(self, obj, dumper, s):
-      if not getattr(obj, "_filename", 0): # else, has been get'ed
-        cerealizer.ObjHandler.undump_data(self, obj, dumper, s)
-        
-  Level .Handler = SavedInAPathHandler
-  Player.Handler = SavedInAPathHandler
-  cerealizer.register(Mobile)
+E.g. to use Cerealizer for both local file and network transfer, do:
+  enable_cerealizer(1, 1)
+and to use Cerealizer for only for network transfer, do:
+  enable_cerealizer(0, 1)
+"""
   cerealizer.register(LocalController)
   cerealizer.register(LocalDoer)
   cerealizer.register(RemoteController)
   cerealizer.register(RemoteDoer)
-  cerealizer.register(State)
-  cerealizer.register(Action)
-  cerealizer.register(Level)
-  cerealizer.register(Player)
   
   global local_serializer, network_serializer
   if local  : local_serializer   = cerealizer
   if network: network_serializer = cerealizer
 
 
+# Cerealizer Handler for SavedInAPath and subclass.
+class SavedInAPathHandler(cerealizer.ObjHandler):
+  def collect(self, obj, dumper):
+    if (not _SAVING is obj) and obj._filename: # self is saved in another file, save filename only
+      return cerealizer.Handler.collect(self, obj, dumper)
+    else: return cerealizer.ObjHandler.collect(self, obj, dumper)
+
+  def dump_obj(self, obj, dumper, s):
+    cerealizer.ObjHandler.dump_obj(self, obj, dumper, s)
+    if (not _SAVING is obj) and obj._filename: # self is saved in another file, save filename only
+      dumper.dump_ref(obj._filename, s)
+    else: dumper.dump_ref("", s)
+
+  def dump_data(self, obj, dumper, s):
+    if (not _SAVING is obj) and obj._filename: # self is saved in another file, save filename only
+      return cerealizer.Handler.dump_data(self, obj, dumper, s)
+    else: cerealizer.ObjHandler.dump_data(self, obj, dumper, s)
+
+  def undump_obj(self, dumper, s):
+    filename = dumper.undump_ref(s)
+    if filename: return self.Class.get(filename)
+    return cerealizer.ObjHandler.undump_obj(self, dumper, s)
+
+  def undump_data(self, obj, dumper, s):
+    if not getattr(obj, "_filename", 0): # else, has been get'ed
+      cerealizer.ObjHandler.undump_data(self, obj, dumper, s)

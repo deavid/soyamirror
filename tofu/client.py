@@ -30,9 +30,11 @@ from twisted.python.failure import Failure
 import twisted.internet.selectreactor
 #reactor = twisted.internet.selectreactor.SelectReactor()
 
-import sys, sets, struct
-
+import sys, struct
 import tofu
+
+try: set
+except: from sets import Set as set
 
 class ClientServerError(StandardError): pass
 
@@ -51,7 +53,7 @@ WAITERS = {}
 class Waiter(object):
   def __init__(self, callback = lambda *args: None):
     self.callback         = callback
-    self.uniques          = sets.Set([])
+    self.uniques          = set([])
     self.nb_waited_unique = 0
     
   def wait_for(self, uid, ask_for_it = 1):

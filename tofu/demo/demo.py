@@ -21,7 +21,7 @@
 
 
 import sys, random, Tkinter
-import tofu, tofu.pickle_sec
+import tofu
 
 
 # Tofu provide some base classes that you must extend, and finally you call
@@ -433,26 +433,34 @@ class GameInterface(tofu.GameInterface, Tkinter.Toplevel):
 
 # Tofu uses serialization to transfert object from server to client and vice-versa, and
 # to store level and player data in local file.
-# Tofu can use 4 different protocol: cPickle, tofu.pickle_sec (a cPickle with a limited
-# list of classes), Cerealizer, Jelly (from Twisted). You can also use different protocols
-# for local file and network.
+# Tofu can use 2 different protocol: cPickle and Cerealizer. You can also use different
+# protocols for local file and network.
 
 # Some concerns about these protocols :
 #  - cPickle is not safe for network and must not be used for that !!!
-#  - tofu.pickle_sec, Cerealizer and Jelly require that you register the classes that are
-#    safe
-#  - Jelly has trouble with C-defined types (including e.g. Soya objects)
+#  - Cerealizer require that you register the classes that are safe
 
 
-# My advice is to use cPickle for local file (faster), and Cerealizer for network.
+# My advice is to use Cerealizer for network (since it's safe) and either Cerealizer or cPickle
+# for local file.
+# If you are using Soya, you should use cPickle for local file, however i'm planning to use
+# Cerealizer as default in Soya soon.
+#
 # To each protocol corresponds a function like :
 #     tofu.enable_<protocol>(enable_for_local, enable_for_network)
 
-tofu.enable_pickle    (1, 0)
-tofu.enable_cerealizer(0, 1)
+# For Cerealizer + cPickle:
+#
+#tofu.enable_pickle    (1, 0)
+#tofu.enable_cerealizer(0, 1)
+
+# For Cerealizer:
+#
+tofu.enable_cerealizer(1, 1)
 
 
 # Registers our classes as safe for Cerealizer
+# Level and Player class MUST be registred using the tofu.SavedInAPathHandler Cerealizer handler.
 
 import cerealizer
 cerealizer.register(Action)
@@ -460,42 +468,8 @@ cerealizer.register(State)
 cerealizer.register(Mobile)
 cerealizer.register(Bot)
 cerealizer.register(PlayerCharacter)
-cerealizer.register(Level)
-cerealizer.register(Player)
-
-
-
-# To use cPickle:
-
-# tofu.enable_pickle(1, 1)
-
-
-# To use tofu.pickle_sec:
-
-# tofu.enable_pickle_sec(1, 1)
-# tofu.pickle_sec.safe_classes(
-#   "demo.Action",
-#   "demo.Bot",
-#   "demo.Level",
-#   "demo.Mobile",
-#   "demo.PlayerCharacter",
-#   "demo.State",
-#   "demo.Player",
-#   )
-
-
-# To use Jelly:
-
-# tofu.enable_jelly(1, 1)
-# tofu.make_jellyable(
-#   Action,
-#   Bot,
-#   Level,
-#   Mobile,
-#   PlayerCharacter,
-#   State,
-#   Player,
-#   )
+cerealizer.register(Level , tofu.SavedInAPathHandler(Level ))
+cerealizer.register(Player, tofu.SavedInAPathHandler(Player))
 
 
 # Inits Tofu with our classes.

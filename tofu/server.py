@@ -26,10 +26,8 @@ from twisted.internet.protocol import DatagramProtocol, Protocol, Factory
 from twisted.protocols.basic import LineReceiver, NetstringReceiver
 from twisted.internet import reactor
 
-import sys, struct, sets
-
+import sys, struct
 import tofu
-
 
 class UDP(DatagramProtocol):
   def datagramReceived(self, data, (host, port)):

@@ -27,7 +27,6 @@ and then call serve_forever().
 
 import tofu
 
-
 class Notifier(tofu.Notifier):
   def __init__(self):
     tofu.Notifier.__init__(self)

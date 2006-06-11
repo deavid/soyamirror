@@ -20,7 +20,7 @@
 import os.path, sys, distutils.core
 
 distutils.core.setup(name         = "Tofu",
-                     version      = "0.4",
+                     version      = "0.5",
                      license      = "GPL",
                      description  = "A practical high-level network game engine",
                      long_description = """Tofu is a practical high-level network game engine,
