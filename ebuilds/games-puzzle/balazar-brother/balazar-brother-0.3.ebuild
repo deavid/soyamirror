@@ -5,7 +5,7 @@ inherit distutils
 
 DESCRIPTION="A 3D puzzle game feturing the Balazar Brothers"
 HOMEPAGE="http://home.gna.org/oomadness/en/balazar_brother/"
-SRC_URI="http://download.gna.org/balazar/BalazarBrother-${PV}.tar.bz2"
+SRC_URI="http://download.gna.org/balazar/BalazarBrothers-${PV}.tar.bz2"
 
 LICENSE="GPL-2"
 SLOT="0"
