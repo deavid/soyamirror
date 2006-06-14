@@ -17,6 +17,6 @@ DEPEND="media-libs/openal
 	>=dev-python/pyopenal-0.1.6
 	dev-python/pyogg
 	dev-python/pyvorbis
-	dev-python/soya
-	dev-python/tofu
-	dev-python/cerealizer"
+	>=dev-python/soya-0.11.2
+	>=dev-python/tofu-0.5
+	>=dev-python/cerealizer-0.4"
