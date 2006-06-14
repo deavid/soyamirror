@@ -11,7 +11,7 @@ LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="x86 ppc"
 IUSE=""
-S="${WORKDIR}/BalazarBrother-${PV}"
+S="${WORKDIR}/BalazarBrothers-${PV}"
 
 DEPEND="media-libs/openal
 	>=dev-python/pyopenal-0.1.6
