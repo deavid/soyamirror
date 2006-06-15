@@ -73,5 +73,6 @@ cdef class _SimpleShape(_Shape):
 	cdef void _render_quad(self, ShapeFace* face)
 	cdef void _render_vertex(self, int index, int face_option)
 	cdef int _shadow(self, CoordSyst coord_syst, _Light light)
+	cdef int _build_shadow(self, CoordSyst coord_syst, _Light light, int camera_inside_shadow, int displaylist)
 	cdef void _get_box(self, float* box, float* matrix)
 

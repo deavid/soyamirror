@@ -234,6 +234,9 @@ Gets the height of the rendering screen, in pixel."""
 		r = self._root_matrix()
 		
 		# simplified computation (for the processor, not for comprehension ;)
+		# should be equivalent to:
+		#matrix_invert(self._render_matrix, self._root_matrix())
+		
 		p = self._render_matrix
 		p[ 0] = m[0]
 		p[ 4] = m[4]

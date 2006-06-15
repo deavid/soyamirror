@@ -193,16 +193,17 @@ else:
 
 setup(
 	name         = "Soya",
-	version      = "0.11.1",
+	version      = "0.11.2",
 	license      = "GPL",
 	description  = "A practical high-level object-oriented 3D engine for Python.",
 	long_description  = """A practical high-level object-oriented 3D engine for Python.
 Soya is designed with game in mind. It includes heightmaps, particles systems, animation support,...""",
 	keywords     = "3D engine openGL python",
-	author       = "Jiba (LAMY Jean-Baptiste), Blam (LAMY Bertrand), LunacyMaze (GHISLAIN Mary)",
+	author       = "Jiba (LAMY Jean-Baptiste)",
 	author_email = "jiba@tuxfamily.org",
 	url          = "http://home.gna.org/oomadness/en/soya/index.html",
 	classifiers  = [
+  "Topic :: Games/Entertainment",
 	"Topic :: Multimedia :: Graphics :: 3D Rendering",
 	"Topic :: Software Development :: Libraries :: Python Modules",
 	"Programming Language :: Python",

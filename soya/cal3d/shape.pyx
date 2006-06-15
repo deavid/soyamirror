@@ -1012,80 +1012,222 @@ cdef class _Cal3dShape(_Shape):
 			glCallList (SHADOW_DISPLAY_LIST)
 
 
-
-
-		# Debug hack
-#     glStencilMask(0)
-#     glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE)
-#     glColor4f(0.0, 1.0, 0.0, 0.5)
-#     glDisable(GL_CULL_FACE)
-#     glEnable(GL_DEPTH_TEST)
-#     glDisable(GL_STENCIL_TEST)
-
-#     glBegin(GL_QUADS)
-#     for i from 0 <= i < submesh._nb_faces:
-#       if (self._option & CAL3D_DOUBLE_SIDED) or (facesides[i] == FACE_LIGHT_BACK):
-#         for k from 0 <= k < 3:
-#           neighbor_face = submesh._face_neighbors[3 * i + k]
-
-#           #if (neighbor_face != -1) and (facesides[neighbor_face] == FACE_LIGHT_FRONT):
-#           #if (neighbor_face == -1) or (facesides[neighbor_face] == FACE_LIGHT_FRONT):
-#           if (neighbor_face == -1) or (facesides[neighbor_face] != facesides[i]):
-#             if facesides[i] == FACE_LIGHT_BACK:
-#               p1 = k 
-#               if k < 2: p2 = k + 1
-#               else:     p2 = 0
-#             else: # Trace in reverse order
-#               if k < 2: p1 = k + 1
-#               else:     p1 = 0
-#               p2 = k
-							
-#             coord_ptr = coords + 3 * submesh._faces[3 * i + p1]
-#             glVertex3fv(coord_ptr)
-						
-#             # push coord far away
-#             if light._w == 0.0: # Directional light
-#               glVertex3f(coord_ptr[0] + b * light._data[0], coord_ptr[1] + b * light._data[1], coord_ptr[2] + b * light._data[2])
-#             else:
-#               coord[0] = coord_ptr[0] - light._data[0]
-#               coord[1] = coord_ptr[1] - light._data[1]
-#               coord[2] = coord_ptr[2] - light._data[2]
-#               vector_normalize(coord)
-#               glVertex3f(coord_ptr[0] + b * coord[0], coord_ptr[1] + b * coord[1], coord_ptr[2] + b * coord[2])
-
-#             coord_ptr = coords + 3 * submesh._faces[3 * i + p2]
-
-#             # push coord far away
-#             if light._w == 0.0: # Directional light
-#               glVertex3f(coord_ptr[0] + b * light._data[0], coord_ptr[1] + b * light._data[1], coord_ptr[2] + b * light._data[2])
-#             else:
-#               coord[0] = coord_ptr[0] - light._data[0]
-#               coord[1] = coord_ptr[1] - light._data[1]
-#               coord[2] = coord_ptr[2] - light._data[2]
-#               vector_normalize(coord)
-#               glVertex3f(coord_ptr[0] + b * coord[0], coord_ptr[1] + b * coord[1], coord_ptr[2] + b * coord[2])
-
-#             glVertex3fv(coord_ptr)
-
-
-#     glEnd    ()
-
-#     glEnable(GL_CULL_FACE)
-#     glEnable(GL_DEPTH_TEST)
-#     glStencilMask (0xFFFFFFFF)
-#     glColorMask   (GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE)
-#     glEnable(GL_STENCIL_TEST)
-
-
-
-
-
-
-
-
-
 		return 1
+	
+	
+	
+	
+	cdef void _raypick(self, RaypickData data, CoordSyst raypickable):
+		cdef _Cal3dVolume  volume
+		volume = <_Cal3dVolume> raypickable
+		
+		if volume._vertex_ok     <= 0: volume._build_vertices(1)
+		if volume._face_plane_ok <= 0: volume._build_face_planes()
+		
+		cdef float*        raydata, *ptrf, *plane
+		cdef float         z, root_z
+		cdef int           i, j, r
+		cdef _Cal3dSubMesh submesh
+		
+		# XXX take into account the ray length ? e.g., if ray_length == 1.0, sphere_radius = 1.0 and (ray_origin >> self).length() > 2.0, no collision can occur
+		raydata = volume._raypick_data(data)
+		if (self._sphere[3] > 0.0) and (sphere_raypick(raydata, self._sphere) == 0): return
+		
+		i = 0
+		plane  = volume._face_planes
+		ptrf   = volume._vertex_coords
+		for submesh in self._submeshes:
+			if volume._attached_meshes[submesh._mesh]:
+				for j from 0 <= j < submesh._nb_faces:
+					r = triangle_raypick(raydata, ptrf + 3 * submesh._faces[3 * j], ptrf + 3 * submesh._faces[3 * j + 1], ptrf + 3 * submesh._faces[3 * j + 2], plane + 4 * j, data.option, &z)
+					
+					if r != 0:
+						root_z = volume._distance_out(z)
+						if (data.result_coordsyst is None) or (fabs(root_z) < fabs(data.root_result)):
+							data.result      = z
+							data.root_result = root_z
+							data.result_coordsyst = volume
+							if   r == RAYPICK_DIRECT: memcpy(data.normal, plane + 4 * j, 3 * sizeof(float))
+							elif r == RAYPICK_INDIRECT:
+								if self._option & CAL3D_DOUBLE_SIDED:
+									data.normal[0] = -(plane + 4 * j)[0]
+									data.normal[1] = -(plane + 4 * j)[1]
+									data.normal[2] = -(plane + 4 * j)[2]
+								else: memcpy(data.normal, plane + 4 * j, 3 * sizeof(float))
+							vector_normalize(data.normal)
+							
+			i = i + 1
+			ptrf  = ptrf  + submesh._nb_vertices * 3
+			plane = plane + submesh._nb_faces    * 4
+	
+	cdef int _raypick_b(self, RaypickData data, CoordSyst raypickable):
+		cdef float*        raydata, *ptrf, *plane
+		cdef float         z
+		cdef int           i, j
+		cdef _Cal3dSubMesh submesh
+		cdef _Cal3dVolume  volume
+		volume = <_Cal3dVolume> raypickable
+		
+		if volume._vertex_ok <= 0: volume._build_vertices(1)
+		
+		# XXX take into account the ray length ? e.g., if ray_length == 1.0, sphere_radius = 1.0 and (ray_origin >> self).length() > 2.0, no collision can occur
+		raydata = volume._raypick_data(data)
+		if (self._sphere[3] > 0.0) and (sphere_raypick(raydata, self._sphere) == 0): return 0
+		
+		i = 0
+		plane  = volume._face_planes
+		ptrf   = volume._vertex_coords
+		for submesh in self._submeshes:
+			if volume._attached_meshes[submesh._mesh]:
+				for j from 0 <= j < submesh._nb_faces:
+					if triangle_raypick(raydata, ptrf + 3 * submesh._faces[3 * j], ptrf + 3 * submesh._faces[3 * j + 1], ptrf + 3 * submesh._faces[3 * j + 2], plane + 4 * j, data.option, &z) != 0: return 1
+					
+		return 0
+	
+	cdef void _collect_raypickables(self, Chunk* items, float* rsphere, float* sphere, CoordSyst parent):
+		if (self._sphere[3] < 0.0) or (sphere_distance_sphere(sphere, self._sphere) < 0.0):
+			chunk_add_ptr(items, <void*> parent)
 
 
 
+
+
+
+
+cdef class _ModelInstanceData:
+	def __init__(self, _Volume volume, _Cal3dShape shape):
+		pass
+	
+	cdef void _attach(self, _Cal3dShape shape, mesh_names): pass
+	cdef void _detach(self, _Cal3dShape shape, mesh_names): pass
+	cdef void _attach_all(self): pass
+	cdef int _is_attached(self, mesh_name): pass
+	cdef void _attach_to_bone(self, CoordSyst coordsyst, bone_name): pass
+	cdef void _detach_from_bone(self, CoordSyst coordsyst): pass
+	cdef void _advance_time(self, float proportion): pass
+	cdef void _begin_round(self): pass
+	
+
+cdef class _AnimatedModelInstanceData(_ModelInstanceData):
+	cdef             _attached_meshes, _attached_coordsysts
+	cdef CalModel*   _model
+	cdef float       _delta_time
+	cdef float*      _face_planes, *_vertex_coords, *_vertex_normals
+	cdef int         _face_plane_ok, _vertex_ok
+	
+	def __init__(self, _Volume volume, _Cal3dShape shape, attached_meshes = None):
+		self._model = CalModel_New(shape._core_model)
+		if self._model == NULL:
+			print "error CalModel_Create", CalError_GetLastErrorDescription()
+			raise RuntimeError("CalModel_Create failed: %s" % CalError_GetLastErrorDescription())
+		
+		self._attached_meshes     = []
+		self._attached_coordsysts = []
+		nb = CalCoreModel_GetCoreMeshCount(shape._core_model)
+		for i from 0 <= i < nb: self._attached_meshes.append(0)
+		if not attached_meshes is None: self.attach(*attached_meshes)
+		else:                           self._attach_all()
+		
+	def __dealloc__(self):
+		CalModel_Delete (self._model)
+		if self._vertex_coords  != NULL: free(self._vertex_coords)
+		if self._vertex_normals != NULL: free(self._vertex_normals)
+		if self._face_planes    != NULL: free(self._face_planes)
+		
+	cdef void _build_submeshes(self):
+		if not(self._shape._option & CAL3D_INITED): self._shape._build_submeshes()
+		
+		if self._vertex_coords  != NULL: free(self._vertex_coords)
+		if self._vertex_normals != NULL: free(self._vertex_normals)
+		if self._face_planes    != NULL: free(self._face_planes)
+		
+		self._vertex_coords  = <GLfloat*> malloc(self._shape._nb_vertices * 3 * sizeof(GLfloat))
+		self._vertex_normals = <GLfloat*> malloc(self._shape._nb_vertices * 3 * sizeof(GLfloat))
+		self._face_planes    = <GLfloat*> malloc(self._shape._nb_faces    * 4 * sizeof(GLfloat))
+		
+	cdef void _build_face_planes(self, _Volume volume, _Cal3dShape shape):
+		cdef float*        ptrf, *plane
+		cdef int           i, j
+		cdef _Cal3dSubMesh submesh
+		
+		if self._vertex_ok <= 0: self._build_vertices(1)
+			
+		plane = self._face_planes
+		
+		i = 0
+		ptrf   = self._vertex_coords
+		for submesh in shape._submeshes:
+			if self._attached_meshes[submesh._mesh]:
+				for j from 0 <= j < submesh._nb_faces:
+					face_plane(plane + 4 * j, ptrf + 3 * submesh._faces[3 * j], ptrf + 3 * submesh._faces[3 * j + 1], ptrf + 3 * submesh._faces[3 * j + 2])
+					# XXX normalize here (with plane_vector_normalize) or keep normalization in _raypick ?
+					
+			i = i + 1
+			ptrf  = ptrf  + submesh._nb_vertices * 3
+			plane = plane + submesh._nb_faces    * 4
+			
+		self._face_plane_ok = 1
+
+	cdef void _attach(self, _Cal3dShape shape, mesh_names):
+		cdef int i
+		if self._model != NULL:
+			for mesh_name in mesh_names:
+				i = shape.meshes[mesh_name]
+				if self._attached_meshes[i] == 0:
+					if CalModel_AttachMesh(self._model, i) == 0:
+						print "erreur CalModel_AttachMesh", CalError_GetLastErrorDescription()
+						raise RuntimeError("CalModel_AttachMesh failed: %s" % CalError_GetLastErrorDescription())
+					
+					self._attached_meshes[i] = 1
+			self._build_submeshes()
+		
+	cdef void _detach(self, _Cal3dShape shape, mesh_names):
+		cdef int i
+		if self._model != NULL:
+			for mesh_name in mesh_names:
+				i = shape.meshes[mesh_name]
+				if self._attached_meshes[i] == 1:
+					if CalModel_DetachMesh(self._model, i) == 0:
+						print "erreur CalModel_DetachMesh", CalError_GetLastErrorDescription()
+						raise RuntimeError("CalModel_DetachMesh failed: %s" % CalError_GetLastErrorDescription())
+					self._attached_meshes[i] = 0
+			self._build_submeshes()
+			
+	cdef void _attach_all(self):
+		cdef int i
+		if self._model != NULL:
+			for i from 0 <= i < len(self._attached_meshes):
+				if self._attached_meshes[i] == 0:
+					if CalModel_AttachMesh(self._model, i) == 0:
+						print "erreur CalModel_AttachMesh", CalError_GetLastErrorDescription()
+						raise RuntimeError("CalModel_AttachMesh failed: %s" % CalError_GetLastErrorDescription())
+					self._attached_meshes[i] = 1
+			self._build_submeshes()
+			
+	cdef int _is_attached(self, mesh_name):
+		return self._attached_meshes[self._shape.meshes[mesh_name]]
+		
+	cdef void _attach_to_bone(self, CoordSyst coordsyst, bone_name):
+		cdef int i
+		i = CalCoreSkeleton_GetCoreBoneId(CalCoreModel_GetCoreSkeleton(self._shape._core_model), bone_name)
+		if i == -1: raise ValueError("No bone named %s !" % bone_name)
+		self._attached_coordsysts.append((coordsyst, i))
+		
+	cdef void _detach_from_bone(self, CoordSyst coordsyst):
+		cdef int i
+		for i from 0 <= i < len(self._attached_coordsysts):
+			if self._attached_coordsysts[i][0] is coordsyst:
+				del self.attached_coordsysts[i]
+				break
+
+	cdef void _advance_time(self, float proportion):
+		import soya # XXX optimizable! probably slow!
+		self._delta_time = self._delta_time + proportion * soya.IDLER.round_duration
+		
+
+	cdef void _begin_round(self):
+		self._vertex_ok     = self._vertex_ok     - 1
+		self._face_plane_ok = self._face_plane_ok - 1
+		
+		if self._vertex_ok <= 0: self._build_vertices(0)
 

@@ -423,6 +423,12 @@ The returned RaypickContext has raypick and raypick_b method similar to the Worl
 		"""World.begin_round()
 
 Called (by the idler) when a new round begins; default implementation calls all children's begin_round."""
+		if (self._option & COORDSYS_NON_AUTO_STATIC) == 0:
+			if self._auto_static_count == 0:
+				if not (self._option & COORDSYS_STATIC): self._go_static()
+			else:
+				self._auto_static_count = self._auto_static_count - 1
+				
 		cdef CoordSyst child
 		for child in self.children: child.begin_round()
 		

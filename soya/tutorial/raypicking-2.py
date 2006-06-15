@@ -18,7 +18,7 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 
-# raypicking-2: Drag-dropable 3D objects
+# raypicking-2: Drag-droppable 3D objects
 
 # In this lesson, you'll learn how to use raypicking to grab the object under the mouse.
 

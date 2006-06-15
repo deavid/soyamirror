@@ -73,7 +73,7 @@ cdef class _TravelingCamera(_Camera)
 Image = Material = Shape = SimpleShape = SolidShape = TreeShape =  CellShadingShape = Point = Vector = Camera = Light = Volume = World = Cal3dVolume = Cal3dShape = Portal = WaterCube = Face = Atmosphere = Particles = None
 
 # Constants and structs
-VERSION = "0.11.1"
+VERSION = "0.11.2"
 
 #cdef enum:
 #  QUALITY_LOW    = 0
@@ -163,6 +163,8 @@ LIGHT_NULL_ATTENUATION = 0.05
 #  COORDSYS_INVALID             = 0
 #  COORDSYS_ROOT_VALID          = 1 << 0
 #  COORDSYS_INVERTED_ROOT_VALID = 1 << 1
+#  COORDSYS_STATIC              = 1 << 19
+#  COORDSYS_NON_AUTO_STATIC     = 1 << 20
 
 #cdef enum:
 #  RENDERER_STATE_OPAQUE     = 0

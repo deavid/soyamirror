@@ -141,6 +141,8 @@ cdef enum:
 	COORDSYS_INVALID             = 0
 	COORDSYS_ROOT_VALID          = 1 << 0
 	COORDSYS_INVERTED_ROOT_VALID = 1 << 1
+	COORDSYS_STATIC              = 1 << 19
+	COORDSYS_NON_AUTO_STATIC     = 1 << 20
 
 cdef enum:
 	RENDERER_STATE_OPAQUE     = 0

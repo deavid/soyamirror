@@ -100,8 +100,9 @@ as controller."""
 			(0, 1, 0, 1) : ACTION_GO_BACK_RIGHT,
 			}.get((self.left_key_down, self.right_key_down, self.up_key_down, self.down_key_down), ACTION_WAIT))
 
-
+	print "foo"
 class Character(soya.World):
+	print "foo"
 	"""A character in the game."""
 	def __init__(self, parent, controller):
 		soya.World.__init__(self, parent)

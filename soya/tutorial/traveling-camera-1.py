@@ -18,11 +18,9 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 
-# basic-5: Event management : a keyboard-controlled caterpillar
+# traveling-camera-1: Traveling camera : a keyboard-controlled caterpillar, followed by the camera!
 
 # In this lesson, our caterpillar will obey you !
-# You'll learn how to use SDL events with Soya.
-# Use the cursor arrows to control the caterpillar.
 
 
 # Import the Soya module.
@@ -38,14 +36,21 @@ soya.path.append(os.path.join(os.path.dirname(sys.argv[0]), "data"))
 scene = soya.World()
 
 
-# The CaterpillarHead class is very similar to the CaterpillarHead class of the previous
-# lesson.
+# The CaterpillarHead class is very similar to the CaterpillarHead class of the basic-*
+# lessons.
 
 class CaterpillarHead(soya.Volume):
 	def __init__(self, parent):
 		soya.Volume.__init__(self, parent, soya.Shape.get("caterpillar_head"))
 		self.speed                  = soya.Vector(self, 0.0, 0.0, 0.0)
 		self.rotation_y_speed = 0.0
+		
+		# VERY IMPORTANT!
+		#
+		# The TravelingCamera use raypicking for determining through what the camera can go or not.
+		# We thus have to DISABLE raypicking on the caterpillar itself!
+		# This can be done by setting the caterpillar's solid attribute to 0.
+		
 		self.solid = 0
 		
 	def begin_round(self):
@@ -78,6 +83,11 @@ class CaterpillarPiece(soya.Volume):
 		soya.Volume.__init__(self, parent, soya.Shape.get("caterpillar"))
 		self.previous = previous
 		self.speed = soya.Vector(self, 0.0, 0.0, -0.2)
+		
+		# VERY IMPORTANT!
+		#
+		# See above.
+		
 		self.solid = 0
 		
 	def begin_round(self):
@@ -109,12 +119,7 @@ light.set_xyz(2.0, 5.0, 0.0)
 camera = soya.TravelingCamera(scene)
 
 traveling = soya.ThirdPersonTraveling(caterpillar_head)
-#traveling = soya.ThirdPersonTraveling(soya.Point(caterpillar_head, 0.0, 1.0, 0.0))
 traveling.distance = 15.0
-#traveling.smooth_move     = 1
-traveling.smooth_rotation = 0
-#traveling.direction = soya.Vector(camera, 0.0, 1.0, 2.0)
-#traveling.incline_as = None
 
 camera.add_traveling(traveling)
 camera.speed = 0.3

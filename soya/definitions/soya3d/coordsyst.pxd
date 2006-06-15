@@ -9,6 +9,7 @@ cdef class CoordSyst(Position):
 	cdef int _validity
 	cdef int __raypick_data
 	cdef int _option
+	cdef int _auto_static_count
 
 	cdef __getcstate__(self)
 	cdef void __setcstate__(self, cstate)
@@ -28,6 +29,8 @@ cdef class CoordSyst(Position):
 	cdef _World _get_root(self)
 	cdef void _get_box(self, float* box, float* matrix)
 	cdef void _get_sphere(self, float* sphere)
+	cdef void _go_static(self)
+	cdef void _go_not_static(self)
 	
  
 cdef class PythonCoordSyst(CoordSyst):

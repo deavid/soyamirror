@@ -959,17 +959,72 @@ and if the angle between their 2 faces is < ANGLE."""
 
 
 
-
-
 	cdef int _shadow(self, CoordSyst coord_syst, _Light light):
 		if not(self._option & SHAPE_SHADOW): return 0
 		
-		cdef Frustum*     frustum
+		cdef int      displaylist
+		cdef Frustum* frustum
+		cdef float    coord[4]
+		cdef float    cone[9]
+		cdef float    b
+		
+		b = renderer.current_camera._back
+		light._cast_into(coord_syst)
+		if light._w == 0.0: # Directional light
+			cone_from_sphere_and_vector(cone, self._sphere, light._data, b)
+		else:
+			if cone_from_sphere_and_origin(cone, self._sphere, light._data, b) == 0: return 0
+			
+		frustum = renderer._frustum(coord_syst)
+		coord[0] = 0.5 * (frustum.points[0] + frustum.points[6])
+		coord[1] = 0.5 * (frustum.points[1] + frustum.points[7])
+		coord[2] = 0.5 * (frustum.points[2] + frustum.points[8])
+		coord[3] = point_distance_to(coord, frustum.points)
+		
+		if (coord_syst._option & COORDSYS_STATIC) and (light._option & COORDSYS_STATIC):
+			
+			if sphere_is_in_cone(coord, cone): # The camera is inside the shadow, special case
+				return self._build_shadow(coord_syst, light, 1, SHADOW_DISPLAY_LIST)
+			
+			else:
+				displaylist = light._static_shadow_displaylists.get(coord_syst, -1)
+				if displaylist == -1:
+					displaylist = light._static_shadow_displaylists[coord_syst] = glGenLists(1)
+					
+					#glNewList(displaylist, GL_COMPILE_AND_EXECUTE)
+					self._build_shadow(coord_syst, light, 0, displaylist)
+					#glEndList()
+					
+				else:
+					glStencilFunc(GL_ALWAYS, 1, 0xFFFFFFFF)
+					glFrontFace  (GL_CW)
+					glStencilOp  (GL_KEEP, GL_KEEP, GL_INCR)
+					glLoadMatrixf(coord_syst._render_matrix)
+					glCallList   (displaylist)
+					
+					glFrontFace  (GL_CCW)
+					glStencilOp  (GL_KEEP, GL_KEEP, GL_DECR)
+					glCallList   (displaylist)
+					
+			return 1
+			
+		else:
+			displaylist = light._static_shadow_displaylists.get(coord_syst, -1)
+			if displaylist != -1:
+				del light._static_shadow_displaylists[coord_syst]
+				
+			return self._build_shadow(coord_syst, light, sphere_is_in_cone(coord, cone), SHADOW_DISPLAY_LIST)
+		
+			
+	cdef int _build_shadow(self, CoordSyst coord_syst, _Light light, int camera_inside_shadow, int displaylist):
+		if not(self._option & SHAPE_SHADOW): return 0
+		
+		#cdef Frustum*     frustum
 		cdef ShapeFace*   face, *neighbor_face
 		cdef float*       coord_ptr, *normal
 		cdef double*      coord_ptrd
 		cdef float        coord[4]
-		cdef float        cone[9]
+		#cdef float        cone[9]
 		cdef float        b
 		cdef int          nbv, i, j, k, p1, p2, nb_inter, nb_segment
 		cdef int*         neighbors
@@ -985,9 +1040,9 @@ and if the angle between their 2 faces is < ANGLE."""
 		
 		# Tag all faces front or back, for the given light
 		
-		light._cast_into(coord_syst)
+		#light._cast_into(coord_syst)
 		if light._w == 0.0: # Directional light
-			cone_from_sphere_and_vector(cone, self._sphere, light._data, b)
+			#cone_from_sphere_and_vector(cone, self._sphere, light._data, b)
 			for i from 0 <= i < self._nb_faces:
 				face = self._faces + i
 				if self._option & SHAPE_VERTEX_OPTIONS:
@@ -1003,7 +1058,7 @@ and if the angle between their 2 faces is < ANGLE."""
 					face.option = (face.option & ~FACE_LIGHT_BACK ) | FACE_LIGHT_FRONT
 					
 		else:
-			if cone_from_sphere_and_origin(cone, self._sphere, light._data, b) == 0: return 0
+			#if cone_from_sphere_and_origin(cone, self._sphere, light._data, b) == 0: return 0
 			for i from 0 <= i < self._nb_faces:
 				face = self._faces + i
 				if self._option & SHAPE_VERTEX_OPTIONS:
@@ -1024,15 +1079,16 @@ and if the angle between their 2 faces is < ANGLE."""
 		glFrontFace  (GL_CW)
 		glStencilOp  (GL_KEEP, GL_KEEP, GL_INCR)
 		glLoadMatrixf(coord_syst._render_matrix)
-		glNewList    (SHADOW_DISPLAY_LIST, GL_COMPILE_AND_EXECUTE)
+		glNewList    (displaylist, GL_COMPILE_AND_EXECUTE)
 		
 		# test if camera is inside the shadow
-		frustum = renderer._frustum(coord_syst)
-		coord[0] = 0.5 * (frustum.points[0] + frustum.points[6])
-		coord[1] = 0.5 * (frustum.points[1] + frustum.points[7])
-		coord[2] = 0.5 * (frustum.points[2] + frustum.points[8])
-		coord[3] = point_distance_to(coord, frustum.points)
-		if sphere_is_in_cone(coord, cone):
+		#frustum = renderer._frustum(coord_syst)
+		#coord[0] = 0.5 * (frustum.points[0] + frustum.points[6])
+		#coord[1] = 0.5 * (frustum.points[1] + frustum.points[7])
+		#coord[2] = 0.5 * (frustum.points[2] + frustum.points[8])
+		#coord[3] = point_distance_to(coord, frustum.points)
+		#if sphere_is_in_cone(coord, cone):
+		if camera_inside_shadow == 1:
 			# camera is inside the shadow => special case 
 			# we must draw the intersection of the shadow volume with the camera front plane
 			
@@ -1119,7 +1175,7 @@ and if the angle between their 2 faces is < ANGLE."""
 					v2[1] = fp2[1] - light._data[1]
 					v2[2] = fp2[2] - light._data[2]
 					vector_normalize(v2)
-
+					
 				
 				point_by_matrix(fp1, coord_syst._root_matrix())
 				point_by_matrix(fp1, renderer.current_camera._inverted_root_matrix())
@@ -1175,8 +1231,8 @@ and if the angle between their 2 faces is < ANGLE."""
 			# draw shadow volume 2nd step
 			glFrontFace(GL_CCW)
 			glStencilOp(GL_KEEP, GL_KEEP, GL_DECR)
-			glCallList (SHADOW_DISPLAY_LIST)
-		 
+			glCallList (displaylist)
+			
 			
 			# Cleaning
 			
@@ -1259,7 +1315,7 @@ and if the angle between their 2 faces is < ANGLE."""
 			# draw shadow volume 2nd step
 			glFrontFace(GL_CCW)
 			glStencilOp(GL_KEEP, GL_KEEP, GL_DECR)
-			glCallList (SHADOW_DISPLAY_LIST)
+			glCallList (displaylist)
 			
 			
 			

@@ -349,74 +349,23 @@ It also resets the cycle animation time : i.e. cycles will restart from their be
 	cdef int _shadow(self, CoordSyst coordsyst, _Light light):
 		if not self._shape is None: return self._shape._shadow(self, light)
 		return 0
-
-
-
-	cdef void _raypick(self, RaypickData data, CoordSyst parent):
+	
+	cdef void _raypick(self, RaypickData raypick_data, CoordSyst raypickable):
 		if (self._shape is None) or (self._option & NON_SOLID): return
-		if self._vertex_ok     <= 0: self._build_vertices(1)
-		if self._face_plane_ok <= 0: self._build_face_planes()
+		self._shape._raypick(raypick_data, self)
 		
-		cdef float*        raydata, *ptrf, *plane
-		cdef float         z, root_z
-		cdef int           i, j, r
-		cdef _Cal3dSubMesh submesh
-		
-		# XXX take into account the ray length ? e.g., if ray_length == 1.0, sphere_radius = 1.0 and (ray_origin >> self).length() > 2.0, no collision can occur
-		raydata = self._raypick_data(data)
-		if (self._shape._sphere[3] > 0.0) and (sphere_raypick(raydata, self._shape._sphere) == 0): return
-		
-		i = 0
-		plane  = self._face_planes
-		ptrf   = self._vertex_coords
-		for submesh in self._shape._submeshes:
-			if self._attached_meshes[submesh._mesh]:
-				for j from 0 <= j < submesh._nb_faces:
-					r = triangle_raypick(raydata, ptrf + 3 * submesh._faces[3 * j], ptrf + 3 * submesh._faces[3 * j + 1], ptrf + 3 * submesh._faces[3 * j + 2], plane + 4 * j, data.option, &z)
-					
-					if r != 0:
-						root_z = self._distance_out(z)
-						if (data.result_coordsyst is None) or (fabs(root_z) < fabs(data.root_result)):
-							data.result      = z
-							data.root_result = root_z
-							data.result_coordsyst = self
-							if   r == RAYPICK_DIRECT: memcpy(data.normal, plane + 4 * j, 3 * sizeof(float))
-							elif r == RAYPICK_INDIRECT:
-								if self._shape._option & CAL3D_DOUBLE_SIDED:
-									data.normal[0] = -(plane + 4 * j)[0]
-									data.normal[1] = -(plane + 4 * j)[1]
-									data.normal[2] = -(plane + 4 * j)[2]
-								else: memcpy(data.normal, plane + 4 * j, 3 * sizeof(float))
-							vector_normalize(data.normal)
-							
-			i = i + 1
-			ptrf  = ptrf  + submesh._nb_vertices * 3
-			plane = plane + submesh._nb_faces    * 4
-			
-	cdef int _raypick_b(self, RaypickData data, CoordSyst parent):
+	cdef int _raypick_b(self, RaypickData raypick_data, CoordSyst raypickable):
 		if (self._shape is None) or (self._option & NON_SOLID): return 0
-		cdef float*        raydata, *ptrf, *plane
-		cdef float         z
-		cdef int           i, j
-		cdef _Cal3dSubMesh submesh
-		
-		if self._vertex_ok <= 0: self._build_vertices(1)
-		
-		# XXX take into account the ray length ? e.g., if ray_length == 1.0, sphere_radius = 1.0 and (ray_origin >> self).length() > 2.0, no collision can occur
-		raydata = parent._raypick_data(data)
-		if (self._shape._sphere[3] > 0.0) and (sphere_raypick(raydata, self._shape._sphere) == 0): return 0
-		
-		i = 0
-		plane  = self._face_planes
-		ptrf   = self._vertex_coords
-		for submesh in self._shape._submeshes:
-			if self._attached_meshes[submesh._mesh]:
-				for j from 0 <= j < submesh._nb_faces:
-					if triangle_raypick(raydata, ptrf + 3 * submesh._faces[3 * j], ptrf + 3 * submesh._faces[3 * j + 1], ptrf + 3 * submesh._faces[3 * j + 2], plane + 4 * j, data.option, &z) != 0: return 1
-					
-		return 0
+		return self._shape._raypick_b(raypick_data, self)
 	
 	cdef void _collect_raypickables(self, Chunk* items, float* rsphere, float* sphere):
-		if (self._shape._sphere[3] < 0.0) or (sphere_distance_sphere(sphere, self._shape._sphere) < 0.0):
-			chunk_add_ptr(items, <void*> self)
-			
+		if self._option & NON_SOLID: return
+		
+		cdef float* matrix
+		cdef float  s[4]
+		# transform sphere to my coordsys
+		# XXX avoid using self._inverted_root_matrix() -- use rather the parent's result (=sphere ?) (faster)
+		matrix = self._inverted_root_matrix()
+		point_by_matrix_copy(s, rsphere, matrix)
+		s[3] = length_by_matrix(rsphere[3], matrix)
+		if not self._shape is None: self._shape._collect_raypickables(items, rsphere, s, self)

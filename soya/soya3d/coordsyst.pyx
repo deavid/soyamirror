@@ -79,9 +79,11 @@ cdef class CoordSyst(Position):
 	#cdef int _validity
 	#cdef int __raypick_data
 	#cdef int _option
+	#cdef int _auto_static_count
 	
 	def __new__(self, *args, **kargs):
-		self.__raypick_data = -1
+		self.__raypick_data     = -1
+		self._auto_static_count = 3
 		
 	def __init__(self, _World parent = None):
 		"""CoordSyst(PARENT)
@@ -147,7 +149,9 @@ Creates a new CoordSyst in the World PARENT."""
 Called when the CoordSyst is added into NEW_PARENT, or removed from its previous parent
 (in this case, NEW_PARENT is None)."""
 		self._parent = new_parent
-		
+		if not(self._option & COORDSYS_NON_AUTO_STATIC) and (self._option & COORDSYS_STATIC):
+			self._go_not_static()
+			
 	cdef void _get_sphere(self, float* sphere):
 		sphere[0] = sphere[1] = sphere[2] = sphere[3] = 0.0
 		
@@ -238,8 +242,12 @@ the given dimensions."""
 		"""CoordSyst.begin_round()
 
 Called (by the Idler) when a new round begins; default implementation does nothing."""
-		pass
-		
+		if (self._option & COORDSYS_NON_AUTO_STATIC) == 0:
+			if self._auto_static_count == 0:
+				if not (self._option & COORDSYS_STATIC): self._go_static()
+			else:
+				self._auto_static_count = self._auto_static_count - 1
+				
 	def end_round(self):
 		"""CoordSyst.end_round()
 
@@ -273,9 +281,35 @@ PROPORTION is the proportion of the current round's time that has passed (1.0 fo
 			if x: self._option = self._option & ~NON_SOLID
 			else: self._option = self._option |  NON_SOLID
 			
+	property static:
+		def __get__(self):
+			return self._option & COORDSYS_STATIC
+		def __set__(self, int x):
+			#if x: self._option = self._option |  COORDSYS_STATIC
+			#else: self._option = self._option & ~COORDSYS_STATIC
+			if       (self._option & COORDSYS_STATIC) and not x: self._go_not_static()
+			elif not (self._option & COORDSYS_STATIC) and     x: self._go_static()
+			
+	property auto_static:
+		def __get__(self):
+			return not(self._option & COORDSYS_NON_AUTO_STATIC)
+		def __set__(self, int x):
+			if x: self._option = self._option & ~COORDSYS_NON_AUTO_STATIC
+			else: self._option = self._option |  COORDSYS_NON_AUTO_STATIC
+
+	cdef void _go_static(self):
+		self._option = self._option |  COORDSYS_STATIC
+		
+	cdef void _go_not_static(self):
+		self._option = self._option & ~COORDSYS_STATIC
+		self._auto_static_count = 3
+		
 	cdef void _invalidate(self):
 		self._validity = COORDSYS_INVALID
-		
+		if not(self._option & COORDSYS_NON_AUTO_STATIC) and (self._option & COORDSYS_STATIC):
+			self._go_not_static()
+			
+			
 	property x:
 		def __get__(self):
 			return self._matrix[12]

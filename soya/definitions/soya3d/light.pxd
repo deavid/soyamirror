@@ -7,6 +7,7 @@ cdef class _Light(CoordSyst):
 	cdef float _data[3] # used by cell-shading and shadow
 	cdef readonly int _id
 	cdef int _gl_id_enabled
+	cdef _static_shadow_displaylists
 	
 	cdef __getcstate__(self)
 	

@@ -21,6 +21,8 @@ cdef object LIGHTS, LAST_LIGHTS
 LIGHTS      = []
 LAST_LIGHTS = []
 
+import weakref
+
 cdef class _Light(CoordSyst):
 	#cdef public float radius, angle, exponent
 	#cdef float _w, _constant, _linear, _quadratic
@@ -29,11 +31,18 @@ cdef class _Light(CoordSyst):
 	#cdef readonly int _id
 	#cdef int _gl_id_enabled
 	##cdef int _used
+	#cdef _static_shadow_displaylists
 	
 	def __new__(self, *args, **kargs):
-		self.__raypick_data = -1
-		self._id            = -1
-		
+		self.__raypick_data              = -1
+		self._id                         = -1
+		self._static_shadow_displaylists = weakref.WeakKeyDictionary()
+
+	def __dealloc__(self):
+		cdef int displaylist
+		for displaylist in self._static_shadow_displaylists.values():
+			glDeleteLists(displaylist, 1)
+			
 	def __init__(self, _World parent = None):
 		CoordSyst.__init__(self, parent)
 		self._w          = 1.0
@@ -93,6 +102,10 @@ cdef class _Light(CoordSyst):
 		chunk_get_floats_endian_safe(chunk,  self._colors, 16)
 		drop_chunk(chunk)
 		
+		if self._option & LIGHT_STATIC:
+			self._option = self._option & ~LIGHT_STATIC
+			self._option = self._option |  COORDSYS_STATIC
+		
 	property directional:
 		def __get__(self):
 			return self._w == 0.0
@@ -134,13 +147,6 @@ cdef class _Light(CoordSyst):
 		def __set__(self, int x):
 			if x: self._option = self._option |  LIGHT_TOP_LEVEL
 			else: self._option = self._option & ~LIGHT_TOP_LEVEL
-			
-	property static:
-		def __get__(self):
-			return (self._option & LIGHT_STATIC) != 0
-		def __set__(self, int x):
-			if x: self._option = self._option |  LIGHT_STATIC
-			else: self._option = self._option & ~LIGHT_STATIC
 			
 	property ambient:
 		def __get__(self):
@@ -362,7 +368,7 @@ shape (Soya assume the effect of static lights was already taken into account at
 shape computation time)."""
 	cdef _Light light
 	for light in LIGHTS:
-		if (not light is None) and (light._gl_id_enabled == 1) and (light._option & LIGHT_STATIC):
+		if (not light is None) and (light._gl_id_enabled == 1) and (light._option & COORDSYS_STATIC):
 			glDisable(GL_LIGHT0 + light._id)
 			light._gl_id_enabled = 0
 			
@@ -372,7 +378,7 @@ object (Soya assume the effect of static lights was already taken into account a
 shape computation time)."""
 	cdef _Light light
 	for light in LIGHTS:
-		if (not light is None) and (light._gl_id_enabled == 0) and (light._option & LIGHT_STATIC):
+		if (not light is None) and (light._gl_id_enabled == 0) and (light._option & COORDSYS_STATIC):
 			glEnable(GL_LIGHT0 + light._id)
 			light._gl_id_enabled = 1
 			
