@@ -9,8 +9,8 @@
 The interface of the Cerealizer module is similar to Pickle, and it supports
 __getstate__, __setstate__, __getinitargs__ and __getnewargs__.
 
-Cerealizer supports int, float, bool, complex, string, unicode, tuple, list, set, frozenset, dict,
-old-style and new-style class instances. C-defined types are supported but saving the C-side
+Cerealizer supports int, long, float, bool, complex, string, unicode, tuple, list, set, frozenset,
+dict, old-style and new-style class instances. C-defined types are supported but saving the C-side
 data may require to write e.g. a specific Handler or a __getstate__ and __setstate__ pair.
 Objects with __slots__ are supported too.
 
@@ -105,6 +105,7 @@ REFERENCES (<reference to XXX> above)
 In Cerealizer a reference can be either a reference to another object beign serialized in the
 same file, or a raw value (e.g. an integer).
  - an int              is saved by e.g. 'i187\\n'
+ - a  long             is saved by e.g. 'l10000000000\\n'
  - a  float            is saved by e.g. 'f1.07\\n'
  - a  bool             is saved by      'b0' or 'b1'
  - a  string           is saved by e.g. 's5\\nascii' (where 5 is the number of characters)
@@ -114,7 +115,7 @@ same file, or a raw value (e.g. an integer).
 """
 
 __alls__ = ["load", "dump", "loads", "dumps", "freeze_configuration", "register"]
-VERSION = "0.3"
+VERSION = "0.5"
 
 import logging
 logger = logging.getLogger("cerealizer")
@@ -160,7 +161,7 @@ class Dumper(object):
     for i in range(nb):
       classname = s.readline()
       handler = _HANDLERS.get(classname)
-      if not handler: raise NonCerealizableObjectError("Object of class/type '%s' cannot be de-cerealized! Use cerealizer.register to extend Cerealizer support to other classes." % classname)
+      if not handler: raise NonCerealizableObjectError("Object of class/type '%s' cannot be de-cerealized! Use cerealizer.register to extend Cerealizer support to other classes." % classname[:-1])
       self.id2obj[i] = handler.undump_obj(self, s)
     for obj in self.id2obj: _HANDLERS_[obj.__class__].undump_data(obj, self, s)
     
@@ -477,7 +478,7 @@ _configurable = 1
 _HANDLERS  = {}
 _HANDLERS_ = {}
 def register(Class, handler = None, classname = ""):
-  """register(Class, handler = None)
+  """register(Class, handler = None, classname = "")
 
 Registers CLASS as a serializable and secure class.
 By calling register, YOU HAVE TO ASSUME THAT THE FOLLOWING METHODS ARE SECURE:
@@ -491,7 +492,10 @@ By calling register, YOU HAVE TO ASSUME THAT THE FOLLOWING METHODS ARE SECURE:
 HANDLER is the Cerealizer Handler object that handles serialization and deserialization for Class.
 If not given, Cerealizer create an instance of ObjHandler, which is suitable for old-style and
 new_style Python class, and also C-defined types (although if it has some C-side data, you may
-have to write a custom Handler or a __getstate__ and __setstate__ pair)."""
+have to write a custom Handler or a __getstate__ and __setstate__ pair).
+
+CLASSNAME is the classname used in Cerealizer files. It defaults to the full classname (module.class)
+but you may choose something shorter -- as long as there is no risk of name clash."""
   if not _configurable: raise StandardError("Cannot register new classes after freeze_configuration has been called!")
   if "\n" in classname: raise ValueError("CLASSNAME cannot have \\n (Cerealizer automatically add a trailing \\n for performance reason)!")
   if not handler:
@@ -501,7 +505,7 @@ have to write a custom Handler or a __getstate__ and __setstate__ pair)."""
     else:                                   handler = ObjHandler        (Class, classname)
   if _HANDLERS_.has_key(Class): raise ValueError("Class %s has already been registred!" % Class)
   if not isinstance(handler, RefHandler):
-    if _HANDLERS .has_key(handler.classname): raise ValueError("A class has already been registred under the name %s!" % handler.classname)
+    if _HANDLERS .has_key(handler.classname): raise ValueError("A class has already been registred under the name %s!" % handler.classname[:-1])
     _HANDLERS [handler.classname] = handler
     if handler.__class__ is ObjHandler:
       logger.info("Registring class %s as '%s'" % (Class, handler.classname[:-1]))
@@ -513,6 +517,25 @@ have to write a custom Handler or a __getstate__ and __setstate__ pair)."""
   _HANDLERS_[Class] = handler
 
 register_class = register # For backward compatibility
+
+def register_alias(Class, alias):
+  """register_alias(Class, alias)
+
+Registers ALIAS as an alias classname for CLASS.
+Usefull for keeping backward compatibility in files: e.g. if you have renamed OldClass to
+NewClass, just do:
+
+    cerealizer.register_alias(NewClass, "OldClass")
+
+and you'll be able to open old files containing OldClass serialized."""
+  handler = _HANDLERS_.get(Class)
+  if not handler:
+    raise ValueError("Cannot register alias '%s' to Class %s: the class is not yet registred!" % (alias, Class))
+  if _HANDLERS.has_key(alias):
+    raise ValueError("Cannot register alias '%s' to Class %s: another class is already registred under the alias name!" % (alias, Class))
+  logger.info("Registring alias '%s' for %s" % (alias, Class))
+  _HANDLERS[alias + "\n"] = handler
+
 
 def freeze_configuration():
   """freeze_configuration()

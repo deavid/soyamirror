@@ -219,6 +219,26 @@ class TestBasicType(unittest.TestCase):
     o2 = Obj12(o)
     self.loads_dumps_and_compare(o2)
     
+  def test_alias1(self):
+    class OldObj(object):
+      def __init__(self):
+        self.x    = 1
+        self.name = "jiba"
+    cerealizer.register(OldObj)
+    o = OldObj()
+    s = cerealizer.dumps(o)
+    
+    reload(cerealizer)
+    class NewObj(object):
+      def __init__(self):
+        self.x    = 2
+        self.name = "jiba2"
+    cerealizer.register(NewObj)
+    cerealizer.register_alias(NewObj, "__main__.OldObj")
+    o = cerealizer.loads(s)
+    assert o.__class__ is NewObj
+    assert o.x    == 1
+    assert o.name == "jiba"
     
     
     

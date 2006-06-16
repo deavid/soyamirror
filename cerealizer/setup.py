@@ -9,7 +9,7 @@
 import os.path, sys, distutils.core
 
 distutils.core.setup(name         = "Cerealizer",
-                     version      = "0.3",
+                     version      = "0.5",
                      license      = "Python licence",
                      description  = "A secure pickle-like module",
                      long_description = """A secure pickle-like module.
