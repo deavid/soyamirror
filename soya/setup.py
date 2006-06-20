@@ -47,6 +47,9 @@ LIBDIR = [
 import os, os.path, sys, glob, distutils.core, distutils.sysconfig
 from distutils.core import setup, Extension
 
+BUILDING = ("build" in sys.argv[1:]) and not ("--help" in sys.argv[1:])
+SDISTING = ("sdist" in sys.argv[1:]) and not ("--help" in sys.argv[1:])
+
 try:
 	from Pyrex.Distutils import build_ext
 	HAVE_PYREX = 1
@@ -92,7 +95,7 @@ def do(command):
 		
 		
 if USE_ODE:
-	if "build" in sys.argv:
+	if BUILDING:
 		if "--dont-build-ode" in sys.argv: sys.argv.remove("--dont-build-ode")
 		elif os.path.exists(os.path.join(ODE_DIR, "lib", "libode.a")):
 			# XXX Works only for Linux / Unix
@@ -104,7 +107,7 @@ if USE_ODE:
 			do("cd %s ; make" % ODE_DIR)
 			print "ODE and OPCODE built successfully !"
 			
-	elif "sdist" in sys.argv:
+	elif SDISTING:
 		# Clean ODE, to remove configuration files and binaries
 		do("cd %s ; make clean" % ODE_DIR)
 	
