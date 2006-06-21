@@ -61,6 +61,9 @@ Interesting attributes:
 	#cdef public   int    running
 	#cdef public   int    will_render
 	#cdef double          _time, _time_since_last_round
+	#cdef          double _last_fps_computation_time
+	#cdef          int    _nb_frame
+	
 	
 	property scenes:
 		def __get__(self):
@@ -88,13 +91,6 @@ Creates a new idler for scenes SCENE1, SCENE2,...."""
 		
 		import soya
 		soya.IDLER = self
-		
-	def start(self):
-		"""Idler.start()
-
-Starts idling with a new thread (see Idler.idle() if you don't want to create a new thread)."""
-		import thread
-		thread.start_new_thread(self.idle, ())
 		
 	def stop(self, value = None):
 		"""Idler.stop(VALUE = None)
@@ -162,7 +158,53 @@ Starts idling with the current thread. This method never finishes, until you cal
 			last_fps_computation_time = current
 
 		return self._return_value
-	
+
+	def update(self):
+		"""Idler.update()
+
+"""
+		import time
+		
+		cdef double current, delta, spent_time
+		
+		current = time.time()
+		
+		if self._last_fps_computation_time == 0.0: # First call
+			self._time                      = current
+			self._time_since_last_round     = 0.0
+			self._last_fps_computation_time = current
+			self.begin_round()
+			
+		delta      = current - self._time
+		self._time = current
+		
+		while self._time_since_last_round + delta > self.round_duration: # Start a new frame
+			spent_time = self.round_duration - self._time_since_last_round
+			
+			self.advance_time(spent_time / self.round_duration) # Complete the previous round
+			self.end_round()                                    # Ends the previous round
+			self.begin_round()                                  # Prepare the following round
+			
+			if self._next_round_tasks:
+				for task in self._next_round_tasks: task()
+				self._next_round_tasks = []
+				
+			delta = delta - spent_time
+			self._time_since_last_round = 0
+			
+		self.will_render = 1
+		self.advance_time(delta / self.round_duration) # start the current round
+		self.will_render = 0
+		self._time_since_last_round = self._time_since_last_round + delta
+		
+		self.render()
+		self._nb_frame = self._nb_frame + 1
+		
+		if self._nb_frame == 80:
+			self.fps = 80 / (current - self._last_fps_computation_time)
+			self._last_fps_computation_time = current
+			self._nb_frame = 0
+			
 	def begin_round(self):
 		"""Idler.begin_round()
 

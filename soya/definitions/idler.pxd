@@ -25,4 +25,6 @@ cdef class Idler:
 	cdef public   int    running
 	cdef public   int    will_render
 	cdef double          _time, _time_since_last_round
-		
+	cdef          double _last_fps_computation_time
+	cdef          int    _nb_frame
+
