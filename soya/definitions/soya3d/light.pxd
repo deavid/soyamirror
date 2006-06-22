@@ -1,8 +1,8 @@
 # -*- indent-tabs-mode: t -*-
 
 cdef class _Light(CoordSyst):
-	cdef public float radius, angle, exponent
-	cdef float _w, _constant, _linear, _quadratic
+	cdef public float radius
+	cdef float _w, _constant, _linear, _quadratic, _angle, _exponent
 	cdef float _colors[16] # ambient + diffuse + specular + shadow colors
 	cdef float _data[3] # used by cell-shading and shadow
 	cdef readonly int _id
