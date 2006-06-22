@@ -393,8 +393,8 @@ def matrix_invert(m):
 	return r
 
 def matrix_rotate_x(angle):
-	cos = math.cos(angle)
-	sin = math.sin(angle)
+	cos = math.cos(math.radians(angle))
+	sin = math.sin(math.radians(angle))
 	return [
 		[1.0,  0.0, 0.0, 0.0],
 		[0.0,  cos, sin, 0.0],
@@ -403,8 +403,8 @@ def matrix_rotate_x(angle):
 		]
 
 def matrix_rotate_y(angle):
-	cos = math.cos(angle)
-	sin = math.sin(angle)
+	cos = math.cos(math.radians(angle))
+	sin = math.sin(math.radians(angle))
 	return [
 		[cos, 0.0, -sin, 0.0],
 		[0.0, 1.0,  0.0, 0.0],
@@ -413,8 +413,8 @@ def matrix_rotate_y(angle):
 		]
 
 def matrix_rotate_z(angle):
-	cos = math.cos(angle)
-	sin = math.sin(angle)
+	cos = math.cos(math.radians(angle))
+	sin = math.sin(math.radians(angle))
 	return [
 		[ cos, sin, 0.0, 0.0],
 		[-sin, cos, 0.0, 0.0],
@@ -429,8 +429,8 @@ def matrix_rotate(axis, angle):
 	vx2 = vx * vx
 	vy2 = vy * vy
 	vz2 = vz * vz
-	cos = math.cos(angle)
-	sin = math.sin(angle)
+	cos = math.cos(math.radians(angle))
+	sin = math.sin(math.radians(angle))
 	co1 = 1.0 - cos
 	return [
 		[vx2 * co1 + cos,          vx * vy * co1 + vz * sin, vz * vx * co1 - vy * sin, 0.0],
@@ -505,7 +505,7 @@ def blender_bone2matrix(head, tail, roll):
 	if vector_dotproduct(axis, axis) > 0.0000000000001:
 		axis    = vector_normalize(axis)
 		theta   = math.acos(vector_dotproduct(target, nor))
-		bMatrix = matrix_rotate(axis, theta)
+		bMatrix = matrix_rotate(axis, math.degrees(theta))
 		
 	else:
 		if vector_dotproduct(target, nor) > 0.0: updown =  1.0
@@ -1000,7 +1000,7 @@ def export(filename):
 	
 	if EXPORT_FOR_SOYA:
 		global BASE_MATRIX
-		BASE_MATRIX = matrix_rotate_x(-math.pi / 2.0)
+		BASE_MATRIX = matrix_rotate_x(-90.0)
 		
 	# Get the scene
 	scene = Blender.Scene.getCurrent()
