@@ -24,6 +24,8 @@ cdef class _Shape(_CObj)
 cdef class _SimpleShape(_Shape)
 cdef class _CellShadingShape(_SimpleShape)
 cdef class _TreeShape(_SimpleShape)
+cdef class _ModelData(_CObj)
+cdef class _AnimatedModelData(_ModelData)
 cdef class Position(_CObj)
 cdef class _Point(Position)
 cdef class _Vector(_Point)
@@ -34,12 +36,11 @@ cdef class _Light(CoordSyst)
 cdef class _Volume(CoordSyst)
 cdef class _World(_Volume)
 cdef class _Face(CoordSyst)
-cdef class _Cal3dVolume(CoordSyst)
+#cdef class _Cal3dVolume(CoordSyst)
 cdef class _Cal3dShape(_Shape)
 cdef class _Sprite(CoordSyst)
 cdef class _Portal(CoordSyst)
 cdef class _Land(CoordSyst)
-cdef class _WaterCube(CoordSyst)
 cdef class _Atmosphere(_CObj)
 cdef class Renderer
 cdef class Context
@@ -115,6 +116,7 @@ cdef enum:
 	LIGHT_NO_SHADOW       = 1 << 9
 	LIGHT_SHADOW_COLOR    = 1 << 10
 	LIGHT_STATIC          = 1 << 11
+	LIGHT_INVALID         = 1 << 6
 	CAMERA_PARTIAL        = 1 << 5
 	CAMERA_ORTHO          = 1 << 6
 	FACE2_LIT             = 1 << 12 # FACE2_* constants are for soya.Face 
@@ -221,6 +223,25 @@ cdef enum:
 
 
 ctypedef struct Frustum:
+## Frustum
+## points :
+## 15-------12
+## |\       /|
+## | \     / |
+## |  3---0  |
+## |  |   |  |
+## |  6---9  |
+## | /     \ |
+## |/       \|
+## 18-------21
+## 
+## plane[ 0] : front plane
+## plane[ 4] : top plane
+## plane[ 8] : bottom plane
+## plane[12] : right plane
+## plane[16] : left plane
+## plane[20] : back plane
+## plane normals are oriented toward the exterior of the frustum
 	float position[3]  # camera position (x,y,z)
 	float points  [24] # points : (x,y,z) * 8
 	float planes  [24] # planes equation : (a,b,c,d) * 6

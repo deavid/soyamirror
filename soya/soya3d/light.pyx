@@ -24,8 +24,8 @@ LAST_LIGHTS = []
 import weakref
 
 cdef class _Light(CoordSyst):
-	#cdef public float radius, angle, exponent
-	#cdef float _w, _constant, _linear, _quadratic
+	#cdef public float radius
+	#cdef float _w, _constant, _linear, _quadratic, _angle, _exponent
 	#cdef float _colors[16] # ambient + diffuse + specular + shadow colors
 	#cdef float _data[3] # used by cell-shading and shadow
 	#cdef readonly int _id
@@ -47,7 +47,7 @@ cdef class _Light(CoordSyst):
 		CoordSyst.__init__(self, parent)
 		self._w          = 1.0
 		self._constant   = 1.0
-		self.angle       = 180.0
+		self._angle      = 180.0
 		self._colors[ 0] = 0.0 # ambient color
 		self._colors[ 1] = 0.0 # ambient color
 		self._colors[ 2] = 0.0 # ambient color
@@ -68,15 +68,13 @@ cdef class _Light(CoordSyst):
 		self.radius      = -1.0
 		
 	cdef __getcstate__(self):
-		#return struct.pack("<iffffffffffffffffffffffffffffffffffffffffff", self._option, self._matrix[0], self._matrix[1], self._matrix[2], self._matrix[3], self._matrix[4], self._matrix[5], self._matrix[6], self._matrix[7], self._matrix[8], self._matrix[9], self._matrix[10], self._matrix[11], self._matrix[12], self._matrix[13], self._matrix[14], self._matrix[15], self._matrix[16], self._matrix[17], self._matrix[18], self.radius, self.angle, self.exponent, self.linear, self.constant, self.quadratic, self._w, self._colors[0], self._colors[1], self._colors[2], self._colors[3], self._colors[4], self._colors[5], self._colors[6], self._colors[7], self._colors[8], self._colors[9], self._colors[10], self._colors[11], self._colors[12], self._colors[13], self._colors[14], self._colors[15])
-		
 		cdef Chunk* chunk
 		chunk = get_chunk()
 		chunk_add_int_endian_safe   (chunk, self._option)
 		chunk_add_floats_endian_safe(chunk, self._matrix, 19)
 		chunk_add_float_endian_safe (chunk, self.radius)
-		chunk_add_float_endian_safe (chunk, self.angle)
-		chunk_add_float_endian_safe (chunk, self.exponent)
+		chunk_add_float_endian_safe (chunk, self._angle)
+		chunk_add_float_endian_safe (chunk, self._exponent)
 		chunk_add_float_endian_safe (chunk, self._linear)
 		chunk_add_float_endian_safe (chunk, self._constant)
 		chunk_add_float_endian_safe (chunk, self._quadratic)
@@ -86,15 +84,13 @@ cdef class _Light(CoordSyst):
 	
 	cdef void __setcstate__(self, cstate):
 		self._validity = COORDSYS_INVALID
-		#self._option, self._matrix[0], self._matrix[1], self._matrix[2], self._matrix[3], self._matrix[4], self._matrix[5], self._matrix[6], self._matrix[7], self._matrix[8], self._matrix[9], self._matrix[10], self._matrix[11], self._matrix[12], self._matrix[13], self._matrix[14], self._matrix[15], self._matrix[16], self._matrix[17], self._matrix[18], self.radius, self.angle, self.exponent, self.linear, self.constant, self.quadratic, self._w, self._colors[0], self._colors[1], self._colors[2], self._colors[3], self._colors[4], self._colors[5], self._colors[6], self._colors[7], self._colors[8], self._colors[9], self._colors[10], self._colors[11], self._colors[12], self._colors[13], self._colors[14], self._colors[15] = struct.unpack("<iffffffffffffffffffffffffffffffffffffffffff", cstate)
-		
 		cdef Chunk* chunk
 		chunk = string_to_chunk(cstate)
 		chunk_get_int_endian_safe   (chunk, &self._option)
 		chunk_get_floats_endian_safe(chunk,  self._matrix, 19)
 		chunk_get_float_endian_safe (chunk, &self.radius)
-		chunk_get_float_endian_safe (chunk, &self.angle)
-		chunk_get_float_endian_safe (chunk, &self.exponent)
+		chunk_get_float_endian_safe (chunk, &self._angle)
+		chunk_get_float_endian_safe (chunk, &self._exponent)
 		chunk_get_float_endian_safe (chunk, &self._linear)
 		chunk_get_float_endian_safe (chunk, &self._constant)
 		chunk_get_float_endian_safe (chunk, &self._quadratic)
@@ -106,6 +102,20 @@ cdef class _Light(CoordSyst):
 			self._option = self._option & ~LIGHT_STATIC
 			self._option = self._option |  COORDSYS_STATIC
 		
+	property angle:
+		def __get__(self):
+			return self._angle
+		def __set__(self, float x):
+			self._angle = x
+			self._option = self._option | LIGHT_INVALID
+			
+	property exponent:
+		def __get__(self):
+			return self._exponent
+		def __set__(self, float x):
+			self._exponent = x
+			self._option = self._option | LIGHT_INVALID
+			
 	property directional:
 		def __get__(self):
 			return self._w == 0.0
@@ -119,6 +129,7 @@ cdef class _Light(CoordSyst):
 		def __set__(self, float x):
 			self._constant = x
 			self._compute_radius()
+			self._option = self._option | LIGHT_INVALID
 			
 	property linear:
 		def __get__(self):
@@ -126,6 +137,7 @@ cdef class _Light(CoordSyst):
 		def __set__(self, float x):
 			self._linear = x
 			self._compute_radius()
+			self._option = self._option | LIGHT_INVALID
 			
 	property quadratic:
 		def __get__(self):
@@ -133,6 +145,7 @@ cdef class _Light(CoordSyst):
 		def __set__(self, float x):
 			self._quadratic = x
 			self._compute_radius()
+			self._option = self._option | LIGHT_INVALID
 			
 	property cast_shadow:
 		def __get__(self):
@@ -153,18 +166,21 @@ cdef class _Light(CoordSyst):
 			return self._colors[0], self._colors[1], self._colors[2], self._colors[3]
 		def __set__(self, color):
 			self._colors[0], self._colors[1], self._colors[2], self._colors[3] = color
+			self._option = self._option | LIGHT_INVALID
 			
 	property diffuse:
 		def __get__(self):
 			return self._colors[4], self._colors[5], self._colors[6], self._colors[7]
 		def __set__(self, color):
 			self._colors[4], self._colors[5], self._colors[6], self._colors[7] = color
+			self._option = self._option | LIGHT_INVALID
 			
 	property specular:
 		def __get__(self):
 			return self._colors[8], self._colors[9], self._colors[10], self._colors[11]
 		def __set__(self, color):
 			self._colors[8], self._colors[9], self._colors[10], self._colors[11] = color
+			self._option = self._option | LIGHT_INVALID
 			
 	property shadow_color:
 		def __get__(self):
@@ -207,7 +223,7 @@ cdef class _Light(CoordSyst):
 	cdef float _spotlight_at(self, float position[3]):
 		cdef float v[3], w[3]
 		cdef float m
-		if (fabs(self.angle - 180.0) < EPSILON) or (self._w == 0.0):
+		if (fabs(self._angle - 180.0) < EPSILON) or (self._w == 0.0):
 			return 1.0 # point or directional light
 		v[0] = position[0] - self._matrix[12]
 		v[1] = position[1] - self._matrix[13]
@@ -217,8 +233,8 @@ cdef class _Light(CoordSyst):
 		w[2] = -self._matrix[10]
 		m = vector_dot_product(v, w)
 		if m < 0.0: m = 0.0
-		if m <= cos(self.angle): return 0.0 # position is out of cone
-		else: return pow(m, self.exponent)
+		if m <= cos(self._angle): return 0.0 # position is out of cone
+		else: return pow(m, self._exponent)
 		
 	cdef float _attenuation_at(self, float position[3]):
 		cdef float d
@@ -311,20 +327,22 @@ cdef class _Light(CoordSyst):
 					print "Too many lights!"
 					#raise ValueError("Too many lights!")
 					return
-
+				
 			id = GL_LIGHT0 + self._id
 
-			if not self is LAST_LIGHTS[self._id]:
+			if (self._option & LIGHT_INVALID) or (not self is LAST_LIGHTS[self._id]):
+				self._option = self._option & ~LIGHT_INVALID
 				LAST_LIGHTS[self._id] = self
-				glLightf (id, GL_SPOT_EXPONENT,         self.exponent)
-				glLightf (id, GL_SPOT_CUTOFF,           self.angle)
+				
+				glLightf (id, GL_SPOT_EXPONENT,         self._exponent)
+				glLightf (id, GL_SPOT_CUTOFF,           self._angle)
 				glLightfv(id, GL_AMBIENT,               self._colors)
 				glLightfv(id, GL_DIFFUSE,               self._colors + 4)
 				glLightfv(id, GL_SPECULAR,              self._colors + 8)
 				glLightf (id, GL_CONSTANT_ATTENUATION,  self._constant)
 				glLightf (id, GL_LINEAR_ATTENUATION,    self._linear)
 				glLightf (id, GL_QUADRATIC_ATTENUATION, self._quadratic)
-
+				
 			if self._w == 0.0:
 				p[0] = p[1] = 0.0
 				p[2] = 1.0 # XXX should be -1, but works only with 1...???
