@@ -33,12 +33,14 @@ INCDIR = [
 	"/usr/local/include/freetype2",
 	"/usr/include/cal3d",
 	"/usr/local/include/cal3d",
-	"/sw/include", # For Mac OS X
+	"/sw/include", # For Mac OS X "fink"
+    "/opt/local/include", # For Mac OS X "darwin port"
 	]
 LIBDIR = [
 	"ode-0.5/lib",
 	"/usr/lib",
 	"/usr/local/lib",
+	"/opt/local/lib", # For Mac OS X "darwin port"
 	"/usr/X11R6/lib",
 	"/sw/lib/", # For Mac OS X
 	]
