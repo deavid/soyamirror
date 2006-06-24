@@ -45,7 +45,7 @@ import cerealizer
 # has no importance, since the 'module part' (=before the "if __name__ == "__main__") is
 # the same in the two tutorial.
 
-execfile(os.path.join(os.path.dirname(sys.argv[0]), "basic-savingfile-pickle-1.py"))
+execfile(os.path.join(os.path.dirname(sys.argv[0]), "basic-savingfile-cerealizer-1.py"))
 
 
 # Inits Soya and sets the data directory.

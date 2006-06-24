@@ -46,7 +46,7 @@ class RotatingVolume(soya.Volume):
 # The rest of the file is executed ONLY if this file is run as a script.
 # This allows to import this file as a module, for defining the RotatingVolume class.
 
-if __name__ == "__main__":
+if sys.argv[0].endswith("basic-savingfile-pickle-1.py"):
 	# Inits Soya and sets the data directory.
 	
 	soya.init()
