@@ -17,6 +17,8 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
+include "c.pxd"
+include "python.pxd"
 include "c_opengl.pxd"
 include "sdl.pxd"
 
@@ -47,7 +49,6 @@ include "definitions/model/tree.pxd"
 include "definitions/model/sprite.pxd"
 include "definitions/model/particle.pxd"
 include "definitions/model/land.pxd"
-include "definitions/model/watercube.pxd"
 include "definitions/model/shapifier.pxd"
 
 include "cal3d/cal3d.pxd"
@@ -56,3 +57,5 @@ include "cal3d/volume.pxd"
 
 include "text/freetype.pxd"
 include "text/text.pxd"
+
+include "config.pxd"
