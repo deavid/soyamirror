@@ -66,8 +66,7 @@ cdef void dump_info():
 *   - maximum number of lights        : %s
 *   - maximum number of clip planes   : %s
 *   - maximum number of texture units : %s
-*   - maximum texture size            : %s pixels
-""" % (
+*   - maximum texture size            : %s pixels""" % (
 		VERSION,
 		PyString_FromString(<char*> glGetString(GL_VERSION)),
 		PyString_FromString(<char*> glGetString(GL_RENDERER)),
@@ -253,8 +252,10 @@ def set_video(int width, int height, int fullscreen, int resizable):
 	if resizable == 1:    flags = flags | SDL_RESIZABLE
 	if info.hw_available: flags = flags | SDL_HWSURFACE
 	else:                 flags = flags | SDL_SWSURFACE
-	if info.blit_hw :     flags = flags | SDL_HWACCEL
+# Useless (see http://www.devolution.com/pipermail/sdl/2004-September/064784.html)
+#	if info.blit_hw :     flags = flags | SDL_HWACCEL
 	stencil = 16
+	
 	while stencil > 1:
 		SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, stencil)
 		# Set the video mode
@@ -313,22 +314,29 @@ cdef void init_video(char* title, int width, int height, int fullscreen, int res
 	if title != NULL: SDL_WM_SetCaption(title, NULL)
 
 
-def init(title = "Soya 3D", int width = 640, int height = 480, int fullscreen = 0, int resizeable = 1, int create_surface = 1):
-	"""init(title = "Soya 3D", width = 640, height = 480, fullscreen = 0, resizeable = 1, create_surface = 1)
+def init(title = "Soya 3D", int width = 640, int height = 480, int fullscreen = 0, int resizeable = 1, int create_surface = 1, int sound = 0, sound_device = "'( ( devices '( native esd sdl alsa arts null ) ) )", int sound_frequency = 44100, float sound_reference_distance = 1.0, float sound_doppler_factor = 0.01):
+	"""init(title = "Soya 3D", width = 640, height = 480, fullscreen = 0, resizeable = 1, create_surface = 1, sound = 0, sound_device = "'( ( devices '( native esd sdl alsa arts null ) ) )", sound_frequency = 44100, sound_reference_distance = 1.0, sound_doppler_factor = 0.01)
 
 Inits Soya 3D and display the 3D view.
 
 TITLE is the title of the window.
 WIDTH and HEIGHT the dimensions of the 3D view.
 FULLSCREEN is true for fullscreen and false for windowed mode.
-RESIZEABLE is true for a resizeable window."""
+RESIZEABLE is true for a resizeable window.
+
+Set SOUND to true to initialize 3D sound support (default to false for backward compatibility)
+The following arguments are meaningful only if SOUND is true:
+SOUND_DEVICE is the OpenAL device names, the default value should be nice.
+SOUND_FREQUENCY is the sound frequency.
+SOUND_REFERENCE_DISTANCE is the reference distance for sound attenuation.
+SOUND_DOPPLER_FACTOR can be used to increase or decrease the Doppler effect."""
+
 	if not(renderer.engine_option & INITED):
 		base_init()
 		if create_surface:
 			init_video(title, width, height, fullscreen, resizeable)
 		init_joysticks()
 		init_gl()
-		#init_advanced_opengl()
 		glewInit()
 		
 		SDL_UNICODE=0
@@ -342,9 +350,14 @@ RESIZEABLE is true for a resizeable window."""
 		
 		import soya
 		soya.inited = 1
-		
+
 	dump_info()
 	
+	if sound:
+		_init_sound(sound_device, sound_frequency, sound_reference_distance, sound_doppler_factor)
+		
+	print
+		
 def quit():
 	import soya
 	if soya.inited:
