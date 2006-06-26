@@ -21,8 +21,13 @@
 
 
 # Modify the following if needed :
-USE_ODE = True     # use ODE
-#USE_ODE = False
+USE_ODE = 1     # use ODE
+#USE_ODE = 0
+
+USE_OPENAL = 1     # use OpenAL
+#USE_OPENAL = 0
+
+	
 
 INCDIR = [
 	"ode-0.5/include",
@@ -49,8 +54,12 @@ LIBDIR = [
 import os, os.path, sys, glob, distutils.core, distutils.sysconfig
 from distutils.core import setup, Extension
 
+HERE = os.path.dirname(sys.argv[0])
+ODE_DIR = os.path.join(HERE, "ode-0.5")
+
 BUILDING = ("build" in sys.argv[1:]) and not ("--help" in sys.argv[1:])
 SDISTING = ("sdist" in sys.argv[1:]) and not ("--help" in sys.argv[1:])
+
 
 try:
 	from Pyrex.Distutils import build_ext
@@ -58,25 +67,45 @@ try:
 except:
 	HAVE_PYREX = 0
 
-HERE = os.path.dirname(sys.argv[0])
-ODE_DIR = os.path.join(HERE, "ode-0.5")
-
 endian = sys.byteorder
 if endian == "big":
 	DEFINES = [("SOYA_BIG_ENDIAN", endian)]
 else:
 	DEFINES = []
 
-from config import *
+#from config import *
 
 if sys.platform[:3] == "win":
-	LIBS = ["m", "glew32", "SDL", "SDL_mixer", "freetype", "cal3d", "stdc++"]
+	#LIBS = ["m", "glew32", "SDL", "SDL_mixer", "freetype", "cal3d", "stdc++"]
+	LIBS = ["m", "glew32", "SDL", "freetype", "cal3d", "stdc++"]
 else:
 	#LIBS = ["m", "GLEW", "GL", "GLU", "SDL", "SDL_mixer", "freetype", "cal3d", "stdc++"]
 	LIBS = ["m", "GLEW", "SDL", "freetype", "cal3d", "stdc++"]
 
 SOYA_PYREX_SOURCES  = ["_soya.pyx", "matrix.c", "chunk.c" ]
 SOYA_C_SOURCES      = ["_soya.c"  , "matrix.c", "chunk.c" ]
+
+
+# Generate config.pxd and config.pyx
+if BUILDING:
+	CONFIG_PXD_FILE = open(os.path.join(HERE,"config.pxd"), "w")
+	CONFIG_PXD_FILE.write("""# Machine-generated file, DO NOT EDIT!
+
+""")
+	CONFIG_PYX_FILE = open(os.path.join(HERE,"config.pyx"), "w")
+	CONFIG_PYX_FILE.write("""# Machine-generated file, DO NOT EDIT!
+
+""")
+	if USE_OPENAL:
+		print "Sound support (with OpenAL) enabled..."
+		LIBS.append("openal")
+		CONFIG_PXD_FILE.write("""include "sound/al.pxd"\n""")
+		CONFIG_PYX_FILE.write("""include "sound/sound.pyx"\n""")
+	else:
+		print "Sound support (with OpenAL) disabled..."
+		CONFIG_PYX_FILE.write("""include "sound/nosound.pyx"\n""")
+
+
 
 # Taken from Twisted ; thanks to Christopher Armstrong :
 #   make sure data files are installed in twisted package
@@ -153,7 +182,7 @@ if HAVE_PYREX:
 					Extension("soya._ode", ["_ode.pyx", "matrix.c"],
 							include_dirs=INCDIR, library_dirs=LIBDIR,
 							libraries=LIBS + ["ode","stdc++"], define_macros=DEFINES,
-							extra_compile_args = ["-w", "-O0"], # with GCC ; disable (Pyrex-dependant) warning
+							extra_compile_args = ["-w"], # with GCC ; disable (Pyrex-dependant) warning
 			))
 	
 else:
@@ -192,13 +221,16 @@ else:
 					Extension("soya._ode", ["_ode.c", "matrix.c"],
 							include_dirs=INCDIR, library_dirs=LIBDIR,
 							libraries=LIBS + ["ode","stdc++"], define_macros=DEFINES,
-							extra_compile_args = ["-w", "-O0"], # with GCC ; disable (Pyrex-dependant) warning
+							extra_compile_args = ["-w"], # with GCC ; disable (Pyrex-dependant) warning
 			))
-	
+
+if BUILDING:
+	CONFIG_PXD_FILE.close()
+	CONFIG_PYX_FILE.close()
 
 setup(
 	name         = "Soya",
-	version      = "0.11.2",
+	version      = "0.12rc1",
 	license      = "GPL",
 	description  = "A practical high-level object-oriented 3D engine for Python.",
 	long_description  = """A practical high-level object-oriented 3D engine for Python.
