@@ -67,6 +67,7 @@ cerealizer.register_class(soya.Vector)
 cerealizer.register_class(soya.Point)
 cerealizer.register_class(soya.Image, SavedInAPathHandler(soya.Image))
 cerealizer.register_class(soya.CellShadingShape, SavedInAPathHandler(soya.CellShadingShape))
+cerealizer.register_class(soya._soya._AnimatedModelData)
 cerealizer.register_class(soya.Shape, SavedInAPathHandler(soya.Shape))
 cerealizer.register_class(soya.SkyAtmosphere)
 cerealizer.register_class(soya.Portal)
@@ -104,6 +105,14 @@ cerealizer.register_class(_soya.FlagSubFire)
 #cerealizer.register_class(_soya.Shapifier)
 #cerealizer.register_class(_soya._CObj)
 
+if hasattr(soya, "Sound"):
+	# Has sound / OpenAL support
+	cerealizer.register_class(soya.WAVSound, SavedInAPathHandler(soya.WAVSound))
+	cerealizer.register_class(soya.OGGVorbisSound, SavedInAPathHandler(soya.OGGVorbisSound))
+	cerealizer.register_class(soya.SoundPlayer)
+	
+# Aliases for backward compatibility
+cerealizer.register_alias(soya.Volume, "soya.Cal3dVolume")
 
 if __name__ == "__main__": # Testing stuff
 	class W(soya.World):
