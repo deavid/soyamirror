@@ -119,6 +119,10 @@ cdef enum:
 	LIGHT_INVALID         = 1 << 6
 	CAMERA_PARTIAL        = 1 << 5
 	CAMERA_ORTHO          = 1 << 6
+	CAMERA_NO_LISTENER    = 1 << 7
+	SOUND_PLAY_IN_3D      = 1 << 6
+	SOUND_AUTO_REMOVE     = 1 << 7
+	SOUND_LOOP            = 1 << 8
 	FACE2_LIT             = 1 << 12 # FACE2_* constants are for soya.Face 
 	FACE2_SMOOTH_LIT      = 1 << 13 # FACE_* are for the ShapeFace structure used by shapes
 	FACE2_STATIC_LIT      = 1 << 14 # They have equivalent meanings, but are not used for
@@ -258,5 +262,4 @@ ctypedef _Pack Pack
 cdef class _CObj:
 	cdef __getcstate__(self)
 	cdef void __setcstate__(self, cstate)
-
 
