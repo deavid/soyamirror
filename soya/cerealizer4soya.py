@@ -112,7 +112,7 @@ if hasattr(soya, "Sound"):
 	cerealizer.register_class(soya.SoundPlayer)
 	
 # Aliases for backward compatibility
-cerealizer.register_alias(soya.Volume, "soya.Cal3dVolume")
+#cerealizer.register_alias(soya.Volume, "soya.Cal3dVolume")
 
 if __name__ == "__main__": # Testing stuff
 	class W(soya.World):
