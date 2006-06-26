@@ -17,6 +17,7 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
+
 cdef class _Camera(CoordSyst):
 	#cdef _World   _to_render
 	#cdef float    _front, _back, _fov
@@ -125,6 +126,13 @@ cdef class _Camera(CoordSyst):
 			self._viewport[3] = x
 			self._init_frustum()
 
+	property listen_sound:
+		def __get__(self):
+			return not self._option & CAMERA_NO_LISTENER
+		def __set__(self, int x):
+			if x: self._option = self._option & ~CAMERA_NO_LISTENER
+			else: self._option = self._option |  CAMERA_NO_LISTENER
+			
 	def set_viewport(self, int left, int top, int width, int height):
 		"""Camera.set_viewport(LEFT, TOP, WIDTH, HEIGHT)
 
@@ -364,7 +372,6 @@ creation of a new object and prefer reuse an existant one (for speed purpose).""
 										 z,
 										 )
 		else:
-			# XXX 1.15 should be replaced by a FOV-dependent value (but which formula ???)
 			k = tan(to_radians(self._fov) / 2.0)
 			result.set_xyz(
 										 ((-float(x) / self._viewport[2]) + 0.5) * self._viewport[2] / self._viewport[3] * 2.0 * k * z,
@@ -396,6 +403,10 @@ Converts a 3D Position into 2D screen coordinates X, Y in pixel."""
 	def widget_advance_time(self, proportion): pass
 	def widget_end_round(self): pass
 	
+	def advance_time(self, float proportion):
+		if not self._option & CAMERA_NO_LISTENER:
+			_update_sound_listener_position(self, proportion)
+			
 	def is_in_frustum(self, CoordSyst coordsyst):
 		cdef CoordSyst child
 		cdef float sphere[4]
