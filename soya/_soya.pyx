@@ -1,7 +1,7 @@
 # -*- indent-tabs-mode: t -*-
 
 # Soya 3D
-# Copyright (C) 2003 Jean-Baptiste LAMY -- jiba@tuxfamily.org
+# Copyright (C) 2006 Jean-Baptiste LAMY -- jiba@tuxfamily.org
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -18,10 +18,6 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 # Import base C lib
-include "c.pxd"
-include "python.pxd"
-#include "c_opengl.pxd"
-#include "sdl.pxd"
 
 # Still in C :-(
 #include "chunk.pxd"
@@ -59,16 +55,16 @@ include "model/tree.pyx"
 include "model/sprite.pyx"
 include "model/particle.pyx"
 include "model/land.pyx"
-include "model/watercube.pyx"
 include "model/shapifier.pyx"
 
 # Cal3D stuff
-#include "cal3d/cal3d.pxd"
 include "cal3d/shape.pyx"
 include "cal3d/volume.pyx"
 
 # Text stuff
-#include "text/freetype.pxd"
 include "text/text.pyx"
+
+# Optional modules
+include "config.pyx"
 
 #include "shader/shader.pyx"
