@@ -38,6 +38,9 @@ _soya = sys.modules["soya._soya"]
 # For file compatibility
 sys.modules["soyapyrex"] = _soya
 
+# Other oddity... cPickle seems to like it ;-)
+sys.modules["_soya"    ] = _soya
+
 
 dumps = pickle.dumps
 loadss = [pickle.loads]
@@ -49,11 +52,13 @@ except ImportError: pass
 def loads(s):
 	try:
 		for loads_func in loadss:
-			if   (loads_func.__module__ == "cerealizer") and s.startswith("cereal"): return loads_func(s)
+			if loads_func.__module__ == "cerealizer":
+				import soya.cerealizer4soya
+				if s.startswith("cereal"): return loads_func(s)
 			else:
 				try: return loads_func(s)
 				except:
-					pass
+					sys.excepthook(*sys.exc_info())
 	finally:
 		_soya._chunk_check_error()
 	raise ValueError("Cannot read file / data!")
@@ -248,7 +253,7 @@ location."""
 		if (not _SAVING is self) and self._filename: # self is saved in another file, save filename only
 			return (_getter, (self.__class__, self.filename)) # can be shared
 		return _CObj.__reduce_ex__(self, arg)
-		
+	
 	def __reduce__(self):
 		if (not _SAVING is self) and self._filename: # self is saved in another file, save filename only
 			return (_getter, (self.__class__, self.filename)) # can be shared
@@ -780,6 +785,9 @@ class FixTraveling(_soya._FixTraveling):
 class Cal3dVolume(_soya._Cal3dVolume):
 	pass
 
+#Cal3dVolume = Volume
+
+
 class Cal3dShape(Shape, _soya._Cal3dShape):
 	def load(klass, filename):
 		if ".." in filename: raise ValueError("Cannot have .. in filename (security reason)!", filename)
@@ -800,6 +808,89 @@ class Cal3dShape(Shape, _soya._Cal3dShape):
 		return parse_cal3d_cfg_file(file)
 	load = classmethod(load)
 
+if hasattr(_soya, "_Sound"):
+	# Has sound / OpenAL support
+
+	class Sound(SavedInAPath, _soya._Sound):
+		"""Sound
+
+	A sound.
+
+	Use soya.Sound.get("filename.wav") for loading a sound from your data directory.
+
+	Interesting attributes:
+		- stereo: 1 if the sound is stereo, 0 otherwise.
+	"""
+
+		DIRNAME = "sounds"
+		_alls = weakref.WeakValueDictionary()
+
+		def save(klass, filename = None): raise NotImplementedError("Soya cannot save sound.")
+
+		def load(klass, filename):
+
+			if ".." in filename: raise ValueError("Cannot have .. in filename (security reason)!", filename)
+			filename = filename.replace("/", os.sep)
+			for p in path:
+				file = os.path.join(p, klass.DIRNAME, filename)
+				if os.path.exists(file):
+					if   file.endswith(".wav"): sound = WAVSound(file)
+					elif file.endswith(".ogg"): sound = OGGVorbisSound(file)
+					else: raise ValueError("Unsupported sound file format: %s!" % file)
+					sound._filename = filename
+					return sound
+			raise ValueError("No %s named %s" % (klass.__name__, filename))
+		load = classmethod(load)
+
+
+	class WAVSound(_soya._WAVSound, Sound):
+		"""WAVSound
+
+	A sound in WAV format.
+
+	Use soya.Sound.get("filename.wav") for loading a sound from your data directory,
+	or soya.WAVSound("/full/filename.wav") for loading a sound from any directory."""
+
+	class OGGVorbisSound(_soya._OGGVorbisSound, Sound):
+		"""OGGVorbisSound
+
+	A sound in OGG Vorbis format.
+
+	Use soya.Sound.get("filename.ogg") for loading a sound from your data directory,
+	or soya.OGGVorbisSound("/full/filename.ogg") for loading a sound from any directory."""
+
+
+	class SoundPlayer(_soya._SoundPlayer):
+		"""SoundPlayer
+
+	A SoundPlayer is a 3D object that play a sound.
+
+	Interesting attributes:
+		- sound      : the sound currently played (read-only)
+		- loop       : if true, the sound restarts from the beginning when it ends; default is false
+		- auto_remove: if true (default), the SoundPlayer is automatically removed when the sound ends (excepted in cases of looping!)
+		- gain       : the volume (default 1.0)
+		- play_in_3D : if true, the sound is played as a 3D sound; if false, as a 2D sound. Notice that OpenAL cannot play stereo sound in 3D.
+
+	Constructor is SoundPlayer(parent = None, sound = None, loop = 0, play_in_3D = 1, gain = 1.0, auto_remove = 1)
+
+	The SoundPlayer.ended method is called when the sound ends, and can be overriden if needed.
+
+	To stop
+
+	"""
+
+		def ended(self):
+			"""SoundPlayer.ended()
+
+	This method is called when the sound is over. It is NOT called if looping.
+
+	The default implementation removes the SoundPlayer, if SoundPlayer.auto_remove is true."""
+			# Implemented in Python because of the lambda
+			if self.auto_remove:
+				IDLER.next_round_tasks.append(lambda: self.parent.remove(self))
+		
+
 _soya.Image            = Image
 _soya.Material         = Material
 _soya.Shape            = Shape
@@ -819,7 +910,6 @@ _soya.Face             = Face
 _soya.Atmosphere       = Atmosphere
 _soya.Portal           = Portal
 _soya.Land             = Land
-_soya.WaterCube        = WaterCube
 _soya.Particles        = Particles
 
 DEFAULT_MATERIAL = Material()
