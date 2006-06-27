@@ -1,0 +1,21 @@
+\section{Module: \module{pudding.idler} -- a simple replacement idler for soya}
+\declaremodule{standard}{pudding.idler}
+\subsection{Classes}
+\begin{classdesc*}{Idler}
+Inherits:
+\class{Idler}
+
+Simple replacement for the soya.Idler that calls pudding.process\_event
+in begin\_round and places all unhandled events into idler.events.
+
+\begin{methoddesc}{begin_round}{self}
+call pudding.process event and put all events in self.events so the 
+"game" can handle other events
+\end{methoddesc}
+
+\begin{methoddesc}{idle}{self}
+resize all widgets and start the idler
+\end{methoddesc}
+
+\end{classdesc*}
+

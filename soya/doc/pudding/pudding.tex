@@ -1,0 +1,184 @@
+\documentclass{howto}
+
+\title{Pudding ( a widget system for Soya )}
+\input{version}
+
+\author{Dunk Fordyce, dunk@dunkfordyce.co.uk}
+
+\begin{document}
+\maketitle
+\ifhtml
+\chapter*{Front Matter\label{front}}
+\fi
+
+\begin{abstract}
+\noindent
+This document describes how to use Pudding with Soya. Pudding is a
+replacement widget system for Soya's current widget system. 
+\end{abstract}
+
+\tableofcontents
+
+\section{What is Pudding?}
+
+Pudding is a widget system primarily for Soya, it could however 
+with some tweaking be used for orther libraries such as pyopengl.
+
+\subsection{Why Pudding?}
+
+Pudding was started as a replacement to Soya's current widget module.
+The current module, while usefull, is hard to extend.
+
+There are several other opengl UI libraries available but all have
+theyre problems or would be complicated to use with soya. 
+
+Pudding has been designed to allow components to be created from a 
+core set of base classes. This allows the developer to create any
+sort of widget, either, virtually from scratch or from a higher level.
+
+\subsection{Some cake to have and eat}
+Here is a minimal example of using pudding for the impatient:
+
+\begin{verbatim}
+import soya
+import pudding
+
+soya.path.append('data')
+
+soya.init()
+pudding.init()
+
+scene = soya.World()
+
+sword_model = soya.Shape.get("sword")
+sword = soya.Volume(scene, sword_model)
+sword.x = 1
+sword.rotate_lateral(90.)
+
+light = soya.Light(scene)
+light.set_xyz( .5, 0., 2.)
+
+camera = soya.Camera(scene)
+camera.z = 3.
+
+soya.set_root_widget(pudding.core.RootWidget())
+soya.root_widget.add_child(camera)
+
+button_bar = pudding.container.HorizontalContainer(soya.root_widget, 
+                              left = 10, width= 164, height = 64)
+button_bar.set_pos_bottom_right(bottom = 10)
+button_bar.anchors = pudding.ANCHOR_BOTTOM
+
+button1 = button_bar.add_child( pudding.control.Button(label = 'Button1'), 
+                                pudding.EXPAND_BOTH)
+button2 = button_bar.add_child( pudding.control.Button(label = 'Button2'), 
+                                pudding.EXPAND_BOTH)
+
+logo = pudding.control.Logo(soya.root_widget, 'mylogo.png')
+
+pudding.idler.Idler(scene).idle()
+
+\end{verbatim}
+
+\section{Software Requirements}
+
+You need to have the following software installed:
+
+\begin{itemize}
+  \item  Python 2.3 \url{http://python.org}
+  \item  Soya ( and all relevant dependancies ) \url{http://oomadness.tuxfamily.org/en/soya/index.html}
+\end{itemize}
+
+Optional software includes:
+\begin{itemize}
+  \item ElementTree \url{http://effbot.org/zone/element-index.htm}
+  \item pycairo \url{http://cairographics.org}
+\end{itemize}
+
+\section{Pudding Basics}
+
+This section will introduce the basics of \module{pudding}.
+
+\subsection{Initializing \module{pudding}}
+
+Using pudding is as simple as adding two extra statements to your Soya application.
+
+\begin{verbatim}
+import soya
+import pudding
+
+soya.init()
+pudding.init()
+\end{verbatim}
+
+You are now ready to create a \module{pudding} root widget to add components to. 
+
+\subsection{The \class{RootWidget} class}
+
+To use pudding you \emph{must} use \class{pudding.core.RootWidget}.
+
+\begin{verbatim}
+# ... initialize soya and pudding
+
+soya.set_root_widget(pudding.core.RootWidget())
+\end{verbatim}
+
+To add your camera to the root widget use:
+
+\begin{verbatim}
+# ... initialize soya and pudding
+
+scene = soya.World()
+camera = soya.Camera(scene)
+
+soya.set_root_widget(pudding.core.RootWidget())
+
+soya.root_widget.add_child(camera)
+
+\end{verbatim}
+
+\subsection{Hello World!}
+
+The infamous hello world script with pudding:
+
+\begin{verbatim}
+import soya
+import pudding
+
+soya.init()
+pudding.init()
+
+scene = soya.World()
+
+camera = soya.Camera(scene)
+
+soya.set_root_widget(pudding.core.RootWidget())
+soya.root_widget.add_child(camera)
+
+text = pudding.control.SimpleLabel(soya.root_widget, label = "Hello World!")
+
+pudding.idler.Idler(scene).idle()
+\end{verbatim}
+
+\input{reference}
+
+%\section{This is an Appendix}
+
+%To create an appendix in a Python HOWTO document, use markup like
+%this:
+
+%\begin{verbatim}
+%\appendix
+
+%\section{This is an Appendix}
+
+%To create an appendix in a Python HOWTO document, ....
+
+
+%\section{This is another}
+
+%Just add another \section{}, but don't say \appendix again.
+%\end{verbatim}
+
+
+\end{document}

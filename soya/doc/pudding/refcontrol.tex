@@ -1,0 +1,284 @@
+\section{Module: \module{pudding.control} -- most basic widget for pudding}
+\declaremodule{standard}{pudding.control}
+\subsection{Classes}
+\begin{classdesc*}{Button}
+Inherits:
+\class{Box}
+\class{Control}
+\class{Base}
+\class{InputControl}
+
+A simple button widget. The label is a child SimpleLabel widget.
+Note the on\_click method provided
+
+\begin{memberdesc}{label}
+label on the button
+\end{memberdesc}
+
+\begin{methoddesc}{on_click}{self}
+event triggered when the button is "clicked" either by the mouse or the 
+keyboard
+\end{methoddesc}
+
+\begin{methoddesc}{on_mouse_up}{self, x, y, button}
+use the mouse up event handler to implement the on\_click handler
+\end{methoddesc}
+
+\begin{methoddesc}{on_resize}{self}
+use the resize event to move and resize the buttons child label
+\end{methoddesc}
+
+\begin{methoddesc}{render_self}{self}
+render the box with current settings
+\end{methoddesc}
+
+\end{classdesc*}
+
+\begin{classdesc*}{Console}
+Inherits:
+\class{VerticalContainer}
+\class{Container}
+\class{Control}
+\class{Base}
+
+A simple console style widget
+
+\begin{methoddesc}{on_focus}{self}
+automatically give focus to the input when the console gets focus
+\end{methoddesc}
+
+\begin{methoddesc}{on_key_press}{self, key, mods}
+allow scrolling thru the buffer
+\end{methoddesc}
+
+\begin{methoddesc}{on_loose_focus}{self}
+automatically give focus to the input when the console gets focus
+\end{methoddesc}
+
+\begin{methoddesc}{on_resize}{self}
+update child controls
+\end{methoddesc}
+
+\begin{methoddesc}{on_return}{self}
+send all input to the output and clear the input ready for more
+\end{methoddesc}
+
+\end{classdesc*}
+
+\begin{classdesc*}{Image}
+Inherits:
+\class{Control}
+\class{Base}
+
+A simple image control
+
+\begin{memberdesc}{material}
+
+\end{memberdesc}
+
+\begin{memberdesc}{rotation}
+
+\end{memberdesc}
+
+\begin{memberdesc}{shade}
+
+\end{memberdesc}
+
+\begin{methoddesc}{render_self}{self}
+render the image to screen
+\end{methoddesc}
+
+\end{classdesc*}
+
+\begin{classdesc*}{Input}
+Inherits:
+\class{Box}
+\class{Control}
+\class{Base}
+\class{InputControl}
+
+Simple input box using a child SimpleLabel widget. 
+Note the on\_value\_changed method
+
+\begin{memberdesc}{cursor}
+text used as a cursor. defaults to '_'
+\end{memberdesc}
+
+\begin{memberdesc}{prompt}
+static text used as a prompt
+\end{memberdesc}
+
+\begin{memberdesc}{value}
+the text in the input box
+\end{memberdesc}
+
+\begin{methoddesc}{clear}{self}
+clear the value of the input
+\end{methoddesc}
+
+\begin{methoddesc}{on_focus}{self}
+append the cursor sybol when focus is gained
+\end{methoddesc}
+
+\begin{methoddesc}{on_key_down}{self, key, mods}
+process and key strokes and add them to the current value
+\end{methoddesc}
+
+\begin{methoddesc}{on_loose_focus}{self}
+remove the cursor symbol when the focus is lost
+\end{methoddesc}
+
+\begin{methoddesc}{on_resize}{self}
+set the position and size of our child label
+\end{methoddesc}
+
+\begin{methoddesc}{on_return}{self}
+event triggered when the return key is pressed
+\end{methoddesc}
+
+\begin{methoddesc}{on_value_changed}{self}
+event triggered when the value is changed by the user
+\end{methoddesc}
+
+\begin{methoddesc}{set_height_to_font}{self}
+set the height of the input control to the height of the font
+\end{methoddesc}
+
+\end{classdesc*}
+
+\begin{classdesc*}{Label}
+Inherits:
+\class{SimpleLabel}
+\class{Control}
+\class{Base}
+\class{InputControl}
+
+Label with events. Created using SimpleLabel and InputControl with 
+multiple inheritance
+
+\begin{datadesc}{MAXLEN}
+\end{datadesc}
+\begin{methoddesc}{process_event}{self, event}
+let InputControl class deal with events
+\end{methoddesc}
+
+\end{classdesc*}
+
+\begin{classdesc*}{Logo}
+Inherits:
+\class{Image}
+\class{Control}
+\class{Base}
+
+Class to display an image in the bottom right corner, usefull for logo's
+
+\end{classdesc*}
+
+\begin{classdesc*}{Panel}
+Inherits:
+\class{Box}
+\class{Control}
+\class{Base}
+\class{InputControl}
+
+A simple window/panel control with a title. modify the style
+class to change the way this is draw
+
+\begin{memberdesc}{label}
+
+\end{memberdesc}
+
+\begin{methoddesc}{process_event}{self, event}
+default event handling
+\end{methoddesc}
+
+\begin{methoddesc}{render_self}{self}
+render the box with current settings
+\end{methoddesc}
+
+\end{classdesc*}
+
+\begin{classdesc*}{PrePostLabel}
+Inherits:
+\class{SimpleLabel}
+\class{Control}
+\class{Base}
+
+A label with static pre/post -fix
+
+\begin{datadesc}{MAXLEN}
+\end{datadesc}
+\begin{memberdesc}{post}
+
+\end{memberdesc}
+
+\begin{memberdesc}{pre}
+
+\end{memberdesc}
+
+\begin{methoddesc}{set_display_text}{self, text}
+set the display text with the pre and post strings
+\end{methoddesc}
+
+\end{classdesc*}
+
+\begin{classdesc*}{SimpleLabel}
+Inherits:
+\class{Control}
+\class{Base}
+
+A simple, unresponsive label widget
+
+\begin{datadesc}{MAXLEN}
+\end{datadesc}
+\begin{memberdesc}{autosize}
+should the label automatically adjust its size 
+to accomodate all the text
+\end{memberdesc}
+
+\begin{memberdesc}{clip}
+if there is too much text do we clip the left 
+or right. must be pudding.core.[pudding.CLIP_LEFT | 
+pudding.CLIP_RIGHT]
+\end{memberdesc}
+
+\begin{memberdesc}{color}
+color of the text
+\end{memberdesc}
+
+\begin{memberdesc}{font}
+font used for rendering
+\end{memberdesc}
+
+\begin{memberdesc}{label}
+text displayed
+\end{memberdesc}
+
+\begin{memberdesc}{wrap}
+
+\end{memberdesc}
+
+\begin{methoddesc}{on_resize}{self}
+update position with anchoring and apply wrapping/clipping
+\end{methoddesc}
+
+\begin{methoddesc}{on_set_label}{self}
+event triggered when the label is changed
+\end{methoddesc}
+
+\begin{methoddesc}{render_self}{self}
+draw the text with the current settings
+\end{methoddesc}
+
+\begin{methoddesc}{set_display_text}{self, text}
+get the text we should actually display. usefull if you want to add a
+constant string or perform some processing before the string gets 
+wrapped or clipped or whatever
+\end{methoddesc}
+
+\begin{methoddesc}{update}{self}
+refresh settings based on clip and autoresize etc
+\end{methoddesc}
+
+\end{classdesc*}
+

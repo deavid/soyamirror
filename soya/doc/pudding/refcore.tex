@@ -1,0 +1,252 @@
+\section{Module: \module{pudding.core} -- Core objects for \module{pudding}}
+\declaremodule{standard}{pudding.core}
+\subsection{Classes}
+\begin{classdesc*}{Base}
+Inherits:
+
+The base class for all widgets. Note a Base control doesnt render 
+anything to the screen or it does it in a fashion where position and size 
+are not relevant. For graphical controls subclass \class\{pudding.Control\}
+instead
+
+\begin{memberdesc}{child}
+child object
+\end{memberdesc}
+
+\begin{memberdesc}{parent}
+parent object
+\end{memberdesc}
+
+\begin{methoddesc}{advance_time}{self, proportion}
+soya advance\_time event
+\end{methoddesc}
+
+\begin{methoddesc}{begin_round}{self}
+soya begin\_round event
+\end{methoddesc}
+
+\begin{methoddesc}{end_round}{self}
+soya.end\_round event
+\end{methoddesc}
+
+\begin{methoddesc}{on_init}{self}
+event occurs at the end of initialisation for user processing
+\end{methoddesc}
+
+\begin{methoddesc}{on_set_child}{self, child}
+event triggered when the child attribute is set
+\end{methoddesc}
+
+\begin{methoddesc}{process_event}{self, event}
+process one event. returning False means that the event has not been
+handled and should be passed on to other widgets. returning True means
+that the event has been handled and the event should no longer be 
+propogated
+\end{methoddesc}
+
+\end{classdesc*}
+
+\begin{classdesc*}{Control}
+Inherits:
+\class{Base}
+
+The main graphical base class for all widgets.
+
+\begin{memberdesc}{anchors}
+
+\end{memberdesc}
+
+\begin{memberdesc}{bottom}
+distance from the bottom edge of 
+the screen to the bottom edge of the control
+\end{memberdesc}
+
+\begin{memberdesc}{height}
+height of the control
+\end{memberdesc}
+
+\begin{memberdesc}{left}
+distance from the left edge of 
+the screen to the left edge of the control
+\end{memberdesc}
+
+\begin{memberdesc}{right}
+distance from the right edge of 
+the screen to the right edge of the control
+\end{memberdesc}
+
+\begin{memberdesc}{screen_bottom}
+
+\end{memberdesc}
+
+\begin{memberdesc}{screen_left}
+
+\end{memberdesc}
+
+\begin{memberdesc}{screen_right}
+
+\end{memberdesc}
+
+\begin{memberdesc}{screen_top}
+
+\end{memberdesc}
+
+\begin{memberdesc}{top}
+distrance from the top edge of 
+the screen to the top edge of the control
+\end{memberdesc}
+
+\begin{memberdesc}{visible}
+is the object visible
+\end{memberdesc}
+
+\begin{memberdesc}{width}
+width of the control
+\end{memberdesc}
+
+\begin{methoddesc}{do_anchoring}{self}
+move the control based on anchor flags
+\end{methoddesc}
+
+\begin{methoddesc}{end_render}{self}
+shuts down opengl state
+\end{methoddesc}
+
+\begin{methoddesc}{on_hide}{self}
+event when the control is made invisible
+\end{methoddesc}
+
+\begin{methoddesc}{on_resize}{self}
+event when the control is resized
+\end{methoddesc}
+
+\begin{methoddesc}{on_show}{self}
+event when the control is made visible
+\end{methoddesc}
+
+\begin{methoddesc}{process_event}{self, event}
+process one event. returning False means that the event has not been
+handled and should be passed on to other widgets. returning True means
+that the event has been handled and the event should no longer be 
+propogated.
+\end{methoddesc}
+
+\begin{methoddesc}{render}{self}
+render the whole object. setup and take down opengl, render self and 
+render all children
+\end{methoddesc}
+
+\begin{methoddesc}{render_self}{self}
+renders the current object. ie dont render the children, render self
+\end{methoddesc}
+
+\begin{methoddesc}{resize}{self, left, top, width, height}
+set the position and size of the control
+\end{methoddesc}
+
+\begin{methoddesc}{set_pos_bottom_right}{self, right=None, bottom=None}
+whereas using .right and .bottom effect the width and height of the 
+control this will effect the left and the top
+\end{methoddesc}
+
+\begin{methoddesc}{start_render}{self}
+sets up opengl state
+\end{methoddesc}
+
+\end{classdesc*}
+
+\begin{classdesc*}{InputControl}
+This class should be used with multiple inheritance to create
+some standard events. call InputControl.process\_event(self,event)
+from your widgets process\_event call.
+
+Note the methods on\_mouse*, on\_key\_*, on\_focus and on\_loose\_focus
+
+\begin{memberdesc}{focus}
+
+\end{memberdesc}
+
+\begin{methoddesc}{on_focus}{self}
+event triggered when the control gets focus
+\end{methoddesc}
+
+\begin{methoddesc}{on_key_down}{self, key, mods}
+event triggered when a key is pressed
+\end{methoddesc}
+
+\begin{methoddesc}{on_key_up}{self, key, mods}
+event triggered when a key is released
+\end{methoddesc}
+
+\begin{methoddesc}{on_loose_focus}{self}
+event triggered when the control looses focus
+\end{methoddesc}
+
+\begin{methoddesc}{on_mouse_down}{self, x, y, button}
+event triggered when a mouse button is pressed
+\end{methoddesc}
+
+\begin{methoddesc}{on_mouse_over}{self, x, y, buttons}
+event triggered when the mouse moves over the control
+\end{methoddesc}
+
+\begin{methoddesc}{on_mouse_up}{self, x, y, button}
+event triggered when a mouse button is released
+\end{methoddesc}
+
+\begin{methoddesc}{process_event}{self, event}
+process an individial event and then pass it on the correct event
+handler. if that handler returns True the event is assumed to of been 
+dealt with
+\end{methoddesc}
+
+\begin{methoddesc}{process_mouse_event}{self, event}
+process a mouse event. focus is set if the mouse is over the widget.
+the event handlers on mouse\_* are called from here
+\end{methoddesc}
+
+\end{classdesc*}
+
+\begin{classdesc*}{RootWidget}
+Inherits:
+\class{Container}
+\class{Control}
+\class{Base}
+
+The root widget to be used with \module\{pudding\}.
+
+If your display looks incorrect try resizing the window. If that corrects 
+the display then you need to call root\_widget.on\_resize() at some 
+point before the user gets control.
+
+\begin{methoddesc}{add_child}{self, child}
+Add a child to the root widget. \class\{RootWidget\} also accepts cameras
+as children altho these are stored in .cameras
+\end{methoddesc}
+
+\begin{methoddesc}{on_init}{self}
+Declares self.cameras
+\end{methoddesc}
+
+\begin{methoddesc}{on_resize}{self}
+Resize all cameras and children
+\end{methoddesc}
+
+\begin{methoddesc}{start_render}{self}
+Load the identity matrix for the root widget
+\end{methoddesc}
+
+\begin{methoddesc}{widget_advance_time}{self, proportion}
+Called once or more per round
+\end{methoddesc}
+
+\begin{methoddesc}{widget_begin_round}{self}
+Called at the beginning of every round
+\end{methoddesc}
+
+\begin{methoddesc}{widget_end_round}{self}
+Called at the end of every round
+\end{methoddesc}
+
+\end{classdesc*}
+

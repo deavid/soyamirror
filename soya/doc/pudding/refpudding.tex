@@ -1,0 +1,97 @@
+\section{Module: \module{pudding} -- Main pudding module}
+\declaremodule{standard}{pudding}
+\subsection{Functions}
+\begin{funcdesc}{init}{style=None}
+Intialise \module\{pudding\}. \var\{style\} should be a subclass of 
+\class\{pudding.style.Style\}
+\end{funcdesc}
+
+\begin{funcdesc}{process_event}{}
+This gets the event list from soya and filters it for any events handled 
+by widgets. It returns an array with the events that have not been used. 
+If you use the \class\{pudding.idler.Idler\} then this function is called in 
+\method\{idler.begin\_round\} and the events unprocessed put in 
+\var\{idler.events.\}
+\end{funcdesc}
+
+\subsection{Classes}
+\begin{excdesc}{ConstantError}
+Inherits:
+\class{PuddingError}
+\class{Exception}
+
+Error using a \module\{pudding\} constant
+
+\end{excdesc}
+
+\begin{excdesc}{PuddingError}
+Inherits:
+\class{Exception}
+
+A \module\{pudding\} exception
+
+\end{excdesc}
+
+\subsection{Constants}
+\begin{datadesc}{ALIGN_BOTTOM}
+\end{datadesc}
+\begin{datadesc}{ALIGN_LEFT}
+\end{datadesc}
+\begin{datadesc}{ALIGN_RIGHT}
+\end{datadesc}
+\begin{datadesc}{ALIGN_TOP}
+\end{datadesc}
+\begin{datadesc}{ANCHOR_ALL}
+\end{datadesc}
+\begin{datadesc}{ANCHOR_BOTTOM}
+\end{datadesc}
+\begin{datadesc}{ANCHOR_BOTTOM_LEFT}
+\end{datadesc}
+\begin{datadesc}{ANCHOR_BOTTOM_RIGHT}
+\end{datadesc}
+\begin{datadesc}{ANCHOR_LEFT}
+\end{datadesc}
+\begin{datadesc}{ANCHOR_RIGHT}
+\end{datadesc}
+\begin{datadesc}{ANCHOR_TOP}
+\end{datadesc}
+\begin{datadesc}{ANCHOR_TOP_LEFT}
+\end{datadesc}
+\begin{datadesc}{ANCHOR_TOP_RIGHT}
+\end{datadesc}
+\begin{datadesc}{BOTTOM_LEFT}
+\end{datadesc}
+\begin{datadesc}{BOTTOM_RIGHT}
+\end{datadesc}
+\begin{datadesc}{CENTER_BOTH}
+\end{datadesc}
+\begin{datadesc}{CENTER_HORIZ}
+\end{datadesc}
+\begin{datadesc}{CENTER_VERT}
+\end{datadesc}
+\begin{datadesc}{CLIP_BOTTOM}
+\end{datadesc}
+\begin{datadesc}{CLIP_LEFT}
+\end{datadesc}
+\begin{datadesc}{CLIP_NONE}
+\end{datadesc}
+\begin{datadesc}{CLIP_RIGHT}
+\end{datadesc}
+\begin{datadesc}{CLIP_TOP}
+\end{datadesc}
+\begin{datadesc}{CORNERS}
+\end{datadesc}
+\begin{datadesc}{EXPAND_BOTH}
+\end{datadesc}
+\begin{datadesc}{EXPAND_HORIZ}
+\end{datadesc}
+\begin{datadesc}{EXPAND_NONE}
+\end{datadesc}
+\begin{datadesc}{EXPAND_VERT}
+\end{datadesc}
+\begin{datadesc}{STYLE}
+\end{datadesc}
+\begin{datadesc}{TOP_LEFT}
+\end{datadesc}
+\begin{datadesc}{TOP_RIGHT}
+\end{datadesc}
