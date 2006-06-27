@@ -18,7 +18,7 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 
-cdef extern from "AL/altypes.h":
+cdef extern from "AL/al.h":
 	ctypedef int        		ALenum
 	ctypedef char           ALboolean
 	ctypedef void						ALvoid
@@ -103,8 +103,6 @@ cdef extern from "AL/altypes.h":
 	int AL_EXPONENT_DISTANCE
 	int AL_EXPONENT_DISTANCE_CLAMPED
 	
-	
-cdef extern from "AL/al.h":
 	cdef void alEnable(ALenum capability)
 	cdef void alDisable(ALenum capability)
 	cdef ALboolean alIsEnabled(ALenum capability)
@@ -184,7 +182,8 @@ cdef extern from "AL/al.h":
 #ALUTAPI void ALUTAPIENTRY alutExit( void );
 
 
-cdef extern from "AL/alctypes.h":
+	
+cdef extern from "AL/alc.h":
 	ctypedef char           ALCboolean
 	ctypedef char           ALCchar
 	ctypedef char           ALCbyte
@@ -224,7 +223,6 @@ cdef extern from "AL/alctypes.h":
 	int ALC_CAPTURE_DEFAULT_DEVICE_SPECIFIER
 	int ALC_CAPTURE_SAMPLES
 	
-cdef extern from "AL/alc.h":
 	ctypedef struct ALCcontext:
 		pass
 	
