@@ -47,14 +47,18 @@ sorcerer_shape = soya.Cal3dShape.get("balazar")
 
 sorcerer = soya.World(scene)
 sorcerer.rotate_y(-120.0)
-sorcerer_volume = soya.Cal3dVolume(sorcerer, sorcerer_shape)
-sorcerer_volume.animate_blend_cycle("marche")
+#sorcerer_volume = soya.Cal3dVolume(sorcerer, sorcerer_shape)
+#sorcerer_volume = soya.Volume(sorcerer, sorcerer_shape)
+#sorcerer_volume.animate_blend_cycle("marche")
+sorcerer.shape = sorcerer_shape
+sorcerer.animate_blend_cycle("marche")
 
 # Creates a right hand world in the sorcerer, and attach it to the bone called 'mainD'
 # (French abbrev for 'right hand').
 
 right_hand = soya.World(sorcerer)
-sorcerer_volume.attach_to_bone(right_hand, "mainD")
+#sorcerer_volume.attach_to_bone(right_hand, "mainD")
+sorcerer.attach_to_bone(right_hand, "mainD")
 
 # Creates a right_hand_item Volume, with a sword shape, inside the right hand.
 

@@ -42,11 +42,13 @@ cdef class _World(_Volume):
 		_Volume.__init__(self, parent, shape)
 		
 	cdef __getcstate__(self):
-		#return self._filename, self._parent, self._option, self._matrix[0], self._matrix[1], self._matrix[2], self._matrix[3], self._matrix[4], self._matrix[5], self._matrix[6], self._matrix[7], self._matrix[8], self._matrix[9], self._matrix[10], self._matrix[11], self._matrix[12], self._matrix[13], self._matrix[14], self._matrix[15], self._matrix[16], self._matrix[17], self._matrix[18], self._shape, self.children, self._atmosphere, self._shapify_args
-		return CoordSyst.__getcstate__(self), self._shape, self._filename, self.children, self._atmosphere, self._shapifier
+		return CoordSyst.__getcstate__(self), self._shape, self._filename, self.children, self._atmosphere, self._shapifier, self._data
+	
 	cdef void __setcstate__(self, cstate):
-		#self._filename, self._parent, self._option, self._matrix[0], self._matrix[1], self._matrix[2], self._matrix[3], self._matrix[4], self._matrix[5], self._matrix[6], self._matrix[7], self._matrix[8], self._matrix[9], self._matrix[10], self._matrix[11], self._matrix[12], self._matrix[13], self._matrix[14], self._matrix[15], self._matrix[16], self._matrix[17], self._matrix[18], self._shape, self.children, self._atmosphere, self._shapify_args = cstate
-		cstate2, self._shape, self._filename, self.children, self._atmosphere, self._shapifier = cstate
+		if len(cstate) == 6: # Old format, without _data
+			cstate2, self._shape, self._filename, self.children, self._atmosphere, self._shapifier = cstate
+		else:
+			cstate2, self._shape, self._filename, self.children, self._atmosphere, self._shapifier, self._data = cstate
 		CoordSyst.__setcstate__(self, cstate2)
 		cdef CoordSyst child
 		for child in self.children: child._parent = self
@@ -64,8 +66,8 @@ cdef class _World(_Volume):
 		return root
 	
 	cdef void _invalidate(self):
+		CoordSyst._invalidate(self)
 		cdef CoordSyst child
-		self._validity = COORDSYS_INVALID
 		for child in self.children: child._invalidate()
 		
 	cdef void _batch(self, CoordSyst coordsyst):
@@ -423,12 +425,17 @@ The returned RaypickContext has raypick and raypick_b method similar to the Worl
 		"""World.begin_round()
 
 Called (by the idler) when a new round begins; default implementation calls all children's begin_round."""
+		
+		# XXX copied from CoordSyst.begin_round and Volume.begin_round
+		
 		if (self._option & COORDSYS_NON_AUTO_STATIC) == 0:
 			if self._auto_static_count == 0:
 				if not (self._option & COORDSYS_STATIC): self._go_static()
 			else:
 				self._auto_static_count = self._auto_static_count - 1
 				
+		if self._data: self._data._begin_round()
+		
 		cdef CoordSyst child
 		for child in self.children: child.begin_round()
 		
@@ -445,6 +452,11 @@ Called (by the idler) when a round is finished; default implementation calls all
 Called (by the idler) when a piece of a round is achieved; default implementation calls all children's advance_time.
 PROPORTION is the proportion of the current round's time that has passed (1.0 for an entire round)."""
 		cdef CoordSyst child
+		
+		# XXX copied from Volume.begin_round
+		
+		if self._data: self._data._advance_time(proportion)
+		
 		for child in self.children: child.advance_time(proportion)
 		
 	def shapify(self):

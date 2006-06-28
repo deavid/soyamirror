@@ -25,8 +25,7 @@
 # You may need to stop artsd daemon too (typically for KDE user)
 #
 # The tuto draws a moving cube that play a 3D sound.
-# Notice that the two sound modules soya.openal4soya and soya.sdl_mixer4soya have the
-# same interface.
+# Notice that all Soya sound modules have the same interface.
 
 import os, os.path, sys
 

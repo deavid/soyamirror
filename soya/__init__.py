@@ -782,10 +782,10 @@ class ThirdPersonTraveling(_soya._ThirdPersonTraveling):
 class FixTraveling(_soya._FixTraveling):
 	pass
 
-class Cal3dVolume(_soya._Cal3dVolume):
-	pass
+#class Cal3dVolume(_soya._Cal3dVolume):
+#	pass
 
-#Cal3dVolume = Volume
+Cal3dVolume = Volume
 
 
 class Cal3dShape(Shape, _soya._Cal3dShape):

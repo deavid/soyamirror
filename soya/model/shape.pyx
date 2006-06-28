@@ -23,27 +23,17 @@ cdef class _Shape(_CObj):
 	def __repr__(self):
 		return "<%s %s>" % (self.__class__.__name__, self._filename)
 	
-	cdef void _batch(self, CoordSyst coord_syst):
-		pass
+	cdef void _batch               (self, CoordSyst coord_syst): pass
+	cdef void _render              (self, CoordSyst coord_syst): pass
+	cdef int  _shadow              (self, CoordSyst coord_syst, _Light light): return 0
+	cdef void _get_box             (self, float* box, float* matrix): pass
+	cdef void _raypick             (self, RaypickData raypick_data, CoordSyst raypickable): pass
+	cdef int  _raypick_b           (self, RaypickData raypick_data, CoordSyst raypickable): return 0
+	cdef void _collect_raypickables(self, Chunk* items, float* rsphere, float* sphere, CoordSyst parent): pass
 	
-	cdef void _render(self, CoordSyst coord_syst):
-		pass
-	
-	cdef int _shadow(self, CoordSyst coord_syst, _Light light):
-		return 0
-	
-	cdef void _get_box(self, float* box, float* matrix):
-		pass
-	
-	cdef void _raypick(self, RaypickData raypick_data, CoordSyst raypickable):
-		pass
-	
-	cdef int _raypick_b(self, RaypickData raypick_data, CoordSyst raypickable):
-		return 0
-
-	cdef void _collect_raypickables(self, Chunk* items, float* rsphere, float* sphere, CoordSyst parent):
-		pass
-
+	cdef void _instanced(self, _Volume volume, opt):
+		volume._data = None
+		
 	def __deepcopy__(self, memo):
 		"""Shapes are immutable."""
 		return self
@@ -802,6 +792,8 @@ and if the angle between their 2 faces is < ANGLE."""
 		if self._option & SHAPE_HAS_SPHERE:     free(self._sphere)
 		
 	cdef void _batch(self, CoordSyst coordsyst):
+		if coordsyst._option & HIDDEN: return
+		
 		cdef Frustum* frustum
 		frustum = renderer._frustum(coordsyst)
 		if (self._option & SHAPE_HAS_SPHERE) and (sphere_in_frustum(frustum, self._sphere) == 0): return
@@ -809,7 +801,7 @@ and if the angle between their 2 faces is < ANGLE."""
 		if self._option & SHAPE_DISPLAY_LISTS:
 			if self._display_lists.nb_opaque_list != 0: renderer._batch(renderer.opaque, self, coordsyst, -1)
 			if self._display_lists.nb_alpha_list  != 0: renderer._batch(renderer.alpha , self, coordsyst, -1)
-
+			
 	# Not used by _SimpleShape, but by subclasses (like _TreeShape or _CellShadingShape)
 	cdef void _batch_face(self, ShapeFace* face):
 		# XXX inline this func
@@ -1473,3 +1465,21 @@ cdef void segment_projection_intersect_plane(float* p1, float* v1, float* p2, fl
 	
 	nb[0] = nb_face / 3
 
+cdef class _ModelData(_CObj):
+	def __init__(self, _Volume volume, _Shape shape):
+		pass
+	
+	cdef void _attach(self, mesh_names): raise TypeError("This type of shape doesn't support attach!")
+	cdef void _detach(self, mesh_names): raise TypeError("This type of shape doesn't support detach!")
+	cdef int  _is_attached(self, mesh_name): return 0
+	cdef void _attach_to_bone(self, CoordSyst coordsyst, bone_name): raise TypeError("This type of shape doesn't support attach_to_bone!")
+	cdef void _detach_from_bone(self, CoordSyst coordsyst): raise TypeError("This type of shape doesn't support detach_from_bone!")
+	cdef      _get_attached_meshes    (self): return []
+	cdef      _get_attached_coordsysts(self): return []
+	cdef void _animate_blend_cycle   (self, animation_name, float weight, float fade_in):   raise TypeError("This type of shape doesn't support animation!")
+	cdef void _animate_clear_cycle   (self, animation_name, float fade_out):                raise TypeError("This type of shape doesn't support animation!")
+	cdef void _animate_execute_action(self, animation_name, float fade_in, float fade_out): raise TypeError("This type of shape doesn't support animation!")
+	cdef void _animate_reset(self): pass
+	cdef void _set_lod_level(self, float lod_level): raise TypeError("This type of shape doesn't support LOD!")
+	cdef void _begin_round  (self): pass
+	cdef void _advance_time (self, float proportion): pass

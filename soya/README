@@ -28,8 +28,7 @@ For MacOSX, you also need:
 
 For sound support, you need either:
  - OpenAL (http://openal.org) and PyOpenAL
-   (http://home.gna.org/oomadness/en/pyopenal/index.html), or
- - PySDL_Mixer (http://gna.org/projects/pysdlmixer/)
+   (http://home.gna.org/oomadness/en/pyopenal/index.html)
 
 
 *************************** Installation ***************************

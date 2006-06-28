@@ -53,6 +53,8 @@ cdef class _CellShadingShape(_SimpleShape):
 		for i from 0 <= i < 4: self._outline_color[i] = outline_color[i]
 		
 	cdef void _batch(self, CoordSyst coordsyst):
+		if coordsyst._option & HIDDEN: return
+		
 		if quality == QUALITY_LOW:
 			_SimpleShape._batch(self, coordsyst)
 			return

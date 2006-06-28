@@ -44,7 +44,7 @@ Image = Material = Shape = SimpleShape = SolidShape = TreeShape =  CellShadingSh
 cdef float LIGHT_NULL_ATTENUATION
 LIGHT_NULL_ATTENUATION = 0.05
 	
-VERSION     = "0.11.2"
+VERSION     = "0.12rc1"
 
 BLACK       = (0.0, 0.0, 0.0, 1.0)
 WHITE       = (1.0, 1.0, 1.0, 1.0)
@@ -156,3 +156,7 @@ cdef Chunk* string_to_chunk(string):
 	return chunk
 
 
+# Forward declaration; implmentation is in sound.pyx or nosound.pyx
+
+#cdef void _init_sound(device_names, int frequency, float doppler_factor)
+#cdef void _update_sound_listener_position(CoordSyst ear, float proportion)

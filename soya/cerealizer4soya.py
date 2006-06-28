@@ -67,7 +67,7 @@ cerealizer.register_class(soya.Vector)
 cerealizer.register_class(soya.Point)
 cerealizer.register_class(soya.Image, SavedInAPathHandler(soya.Image))
 cerealizer.register_class(soya.CellShadingShape, SavedInAPathHandler(soya.CellShadingShape))
-#cerealizer.register_class(soya._soya._AnimatedModelData)
+cerealizer.register_class(soya._soya._AnimatedModelData)
 cerealizer.register_class(soya.Shape, SavedInAPathHandler(soya.Shape))
 cerealizer.register_class(soya.SkyAtmosphere)
 cerealizer.register_class(soya.Portal)
@@ -79,7 +79,7 @@ cerealizer.register_class(soya.Particles)
 cerealizer.register_class(soya.Sprite)
 cerealizer.register_class(soya.Bonus)
 cerealizer.register_class(soya.Cal3dShape, SavedInAPathHandler(soya.Cal3dShape))
-cerealizer.register_class(soya.Cal3dVolume)
+#cerealizer.register_class(soya.Cal3dVolume)
 cerealizer.register_class(soya.Volume)
 #cerealizer.register_class(soya.SavedInAPath)
 cerealizer.register_class(soya.ThirdPersonTraveling)
@@ -112,7 +112,7 @@ if hasattr(soya, "Sound"):
 	cerealizer.register_class(soya.SoundPlayer)
 	
 # Aliases for backward compatibility
-#cerealizer.register_alias(soya.Volume, "soya.Cal3dVolume")
+cerealizer.register_alias(soya.Volume, "soya.Cal3dVolume")
 
 if __name__ == "__main__": # Testing stuff
 	class W(soya.World):

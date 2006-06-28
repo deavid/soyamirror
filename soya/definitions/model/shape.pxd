@@ -2,6 +2,7 @@
 
 cdef class _Shape(_CObj):
 	cdef public _filename
+	cdef void _instanced(self, _Volume volume, opt)
 	cdef void _batch(self, CoordSyst coord_syst)
 	cdef void _render(self, CoordSyst coord_syst)
 	cdef int _shadow(self, CoordSyst coord_syst, _Light light)
@@ -75,4 +76,24 @@ cdef class _SimpleShape(_Shape):
 	cdef int _shadow(self, CoordSyst coord_syst, _Light light)
 	cdef int _build_shadow(self, CoordSyst coord_syst, _Light light, int camera_inside_shadow, int displaylist)
 	cdef void _get_box(self, float* box, float* matrix)
+
+
+cdef class _ModelData(_CObj):
+	cdef void _attach(self, mesh_names)
+	cdef void _detach(self, mesh_names)
+	cdef int  _is_attached(self, mesh_name)
+	cdef void _attach_to_bone(self, CoordSyst coordsyst, bone_name)
+	cdef void _detach_from_bone(self, CoordSyst coordsyst)
+	cdef void _advance_time(self, float proportion)
+	cdef void _begin_round(self)
+	cdef      _get_attached_meshes    (self)
+	cdef      _get_attached_coordsysts(self)
+	cdef void _animate_blend_cycle   (self, animation_name, float weight, float fade_in)
+	cdef void _animate_clear_cycle   (self, animation_name, float fade_out)
+	cdef void _animate_execute_action(self, animation_name, float fade_in, float fade_out)
+	cdef void _animate_reset(self)
+	cdef void _set_lod_level(self, float lod_level)
+	cdef void _begin_round  (self)
+	cdef void _advance_time (self, float proportion)
+	
 

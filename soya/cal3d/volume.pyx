@@ -306,46 +306,51 @@ It also resets the cycle animation time : i.e. cycles will restart from their be
 			self._vertex_ok = 1
 			
 			
+# 	cdef void _batch(self, CoordSyst coordsyst):
+# 		cdef int       bone_id
+# 		cdef CalBone*  bone
+# 		cdef CoordSyst csyst
+# 		cdef float*    trans, *quat
+		
+# 		self._frustum_id = -1
+# 		if self._shape is None: return
+		
+# 		CalModel_Update(self._model, self._delta_time)
+# 		self._delta_time = 0.0
+		
+# 		# Updates coordsysts attached to a bone
+# 		for csyst, bone_id in self._attached_coordsysts:
+# 			bone = CalSkeleton_GetBone(CalModel_GetSkeleton(self._model), bone_id)
+# 			quat = CalQuaternion_Get(CalBone_GetRotationAbsolute(bone))
+# 			quat[3] = -quat[3] # Cal3D use indirect frame or what ???
+# 			matrix_from_quaternion(csyst._matrix, quat)
+# 			trans = CalVector_Get(CalBone_GetTranslationAbsolute(bone))
+# 			csyst._matrix[12] = <GLfloat> trans[0]
+# 			csyst._matrix[13] = <GLfloat> trans[1]
+# 			csyst._matrix[14] = <GLfloat> trans[2]
+# 			csyst._invalidate()
+			
+# 		if not self._option & HIDDEN:
+# 			if (self._shape._sphere[3] != -1.0) and (sphere_in_frustum(renderer._frustum(self), self._shape._sphere) == 0): return
+# 			#multiply_matrix(self._render_matrix, renderer.current_camera._render_matrix, self._root_matrix())
+			
+# 			# Ok, we render the Cal3D model ; rendering implies computing vertices
+# 			self._vertex_ok = 1
+# 			multiply_matrix(self._render_matrix, coordsyst._render_matrix, self._matrix)
+# 			if self._shape._option & CAL3D_ALPHA:
+# 				renderer._batch(renderer.alpha, self._shape, self, -1)
+# 			else: 
+# 				renderer._batch(renderer.opaque, self._shape, self, -1)
+				
+# 			# For outline
+# 			if (self._shape._option & CAL3D_CELL_SHADING) and (self._shape._outline_width > 0.0):
+# 				renderer._batch(renderer.secondpass, self._shape, self, -1)
+				
 	cdef void _batch(self, CoordSyst coordsyst):
-		cdef int       bone_id
-		cdef CalBone*  bone
-		cdef CoordSyst csyst
-		cdef float*    trans, *quat
-		
+		multiply_matrix(self._render_matrix, coordsyst._render_matrix, self._matrix)
 		self._frustum_id = -1
-		if self._shape is None: return
+		if not self._shape is None: self._shape._batch(self)
 		
-		CalModel_Update(self._model, self._delta_time)
-		self._delta_time = 0.0
-		
-		# Updates coordsysts attached to a bone
-		for csyst, bone_id in self._attached_coordsysts:
-			bone = CalSkeleton_GetBone(CalModel_GetSkeleton(self._model), bone_id)
-			quat = CalQuaternion_Get(CalBone_GetRotationAbsolute(bone))
-			quat[3] = -quat[3] # Cal3D use indirect frame or what ???
-			matrix_from_quaternion(csyst._matrix, quat)
-			trans = CalVector_Get(CalBone_GetTranslationAbsolute(bone))
-			csyst._matrix[12] = <GLfloat> trans[0]
-			csyst._matrix[13] = <GLfloat> trans[1]
-			csyst._matrix[14] = <GLfloat> trans[2]
-			csyst._invalidate()
-			
-		if not self._option & HIDDEN:
-			if (self._shape._sphere[3] != -1.0) and (sphere_in_frustum(renderer._frustum(self), self._shape._sphere) == 0): return
-			#multiply_matrix(self._render_matrix, renderer.current_camera._render_matrix, self._root_matrix())
-			
-			# Ok, we render the Cal3D model ; rendering implies computing vertices
-			self._vertex_ok = 1
-			multiply_matrix(self._render_matrix, coordsyst._render_matrix, self._matrix)
-			if self._shape._option & CAL3D_ALPHA:
-				renderer._batch(renderer.alpha, self._shape, self, -1)
-			else: 
-				renderer._batch(renderer.opaque, self._shape, self, -1)
-				
-			# For outline
-			if (self._shape._option & CAL3D_CELL_SHADING) and (self._shape._outline_width > 0.0):
-				renderer._batch(renderer.secondpass, self._shape, self, -1)
-				
 	cdef int _shadow(self, CoordSyst coordsyst, _Light light):
 		if not self._shape is None: return self._shape._shadow(self, light)
 		return 0

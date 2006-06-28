@@ -20,7 +20,8 @@
 
 
 cdef class _Volume(CoordSyst):
-	cdef _Shape _shape
+	cdef _Shape     _shape
+	cdef _ModelData _data
 	
 	cdef __getcstate__(self)
 	cdef void __setcstate__(self, object cstate)

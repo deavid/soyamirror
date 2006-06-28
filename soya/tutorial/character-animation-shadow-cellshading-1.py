@@ -79,7 +79,8 @@ sorcerer_shape.set_cellshading()
 
 # Create a sorcerer volume
 
-sorcerer = soya.Cal3dVolume(scene, sorcerer_shape)
+#sorcerer = soya.Cal3dVolume(scene, sorcerer_shape)
+sorcerer = soya.Volume(scene, sorcerer_shape)
 
 # Rotates Balazar the sorcerer
 

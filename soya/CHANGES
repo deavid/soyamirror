@@ -225,3 +225,14 @@
     * tofudemo tutorial was broken. It now works, although the
       interpolation feature add some lag. Tofu and Tofu4Soya are still
       in an unstable stage and may change radically.
+
+* July 2006 : Soya3D 0.12
+  * Static and auto_static: all Soya objects (inheriting from
+    CoordSyst) have now a "static" attribute that can be use to tag
+    them as static for optimizing them, and an "auto_static" attribute
+    (defaulting to true) that allows Soya to automatically determine
+    wether they are static or not
+  * Static shadows: static object's shadows are rendered faster
+  * New method Idler.update, for embedding Soya inside Tk (or other
+    GUI or mainloop) ; Idler.start has been removed since it has never
+    been really working

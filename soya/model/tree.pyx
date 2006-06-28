@@ -303,6 +303,8 @@ cdef class _TreeShape(_SimpleShape):
 			
 			
 	cdef void _batch(self, CoordSyst coordsyst):
+		if coordsyst._option & HIDDEN: return
+		
 		cdef Frustum* frustum
 		frustum = renderer._frustum(coordsyst)
 		#batch_start(coordsyst)

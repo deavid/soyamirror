@@ -62,7 +62,8 @@ print "Available animations:", sorcerer_shape.animations.keys()
 # detachment possibilities (see Volume.__init__, Volume.attach and Volume.detach).
 # It can be used e.g. for dismembering, or changing the weapon of a character.
 
-sorcerer = soya.Cal3dVolume(scene, sorcerer_shape)
+#sorcerer = soya.Cal3dVolume(scene, sorcerer_shape)
+sorcerer = soya.Volume(scene, sorcerer_shape)
 
 # Rotates Balazar the sorcerer
 

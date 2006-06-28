@@ -48,8 +48,8 @@ def find_file_in_path(filename):
 		if os.path.exists(file): return file
 	raise ValueError("Cannot find file named %s in soya.path!" % filename)
 
-def init(camera, nb_channels = 16, freq = 44100):
-	"""init(camera, nb_channels = 16, freq = 44100)
+def init(camera, nb_channels = 16, freq = 44100, size = -16, stereo = 2, buffersize = 1024):
+	"""init(camera, nb_channels = 16, freq = 44100, size = -16, stereo = 2, buffersize = 1024)
 
 Inits OpenAL for Soya. CAMERA will be used to compute the position of the listener ;
 it is not required that it is a Camera, though it is usually one."""
@@ -60,7 +60,7 @@ it is not required that it is a Camera, though it is usually one."""
 	_DIR  .__init__(_CAMERA, 0.0, 0.0,  0.0)
 	if not _INITED:
 		soya.BEFORE_RENDER.append(render)
-		pysdl_mixer.init(freq)
+		pysdl_mixer.init(freq, size, stereo, buffersize)
 		pysdl_mixer.allocate_channels(nb_channels)
 		_CHANNELS = range(nb_channels)
 		_INITED = 1
@@ -132,7 +132,7 @@ class AsyncSource(Source):
 
 
 def play(filename, position = None, speed = None, looping = 0, async = 0, gain = 1.0):
-	"""play(filename, position = None, speed = None, looping = 0, async = 0)
+	"""play(filename, position = None, speed = None, looping = 0, async = 0, gain = 1.0)
 
 Plays sound FILENAME, at the given POSITION and SPEED (for Doppler effect).
 Sound file's data are cached for more efficiency.

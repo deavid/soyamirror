@@ -53,7 +53,7 @@ include "definitions/model/shapifier.pxd"
 
 include "cal3d/cal3d.pxd"
 include "cal3d/shape.pxd"
-include "cal3d/volume.pxd"
+#include "cal3d/volume.pxd"
 
 include "text/freetype.pxd"
 include "text/text.pxd"

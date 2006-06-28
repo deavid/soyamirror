@@ -110,7 +110,7 @@ Creates a new CoordSyst in the World PARENT."""
 		chunk_get_int_endian_safe(chunk, &self._option)
 		chunk_get_floats_endian_safe(chunk, self._matrix, 19)
 		drop_chunk(chunk)
-			
+		
 	cdef void _into(self, CoordSyst coordsyst, float* result):
 		memcpy(result, self._matrix + 12, 12)
 		if (not self._parent is None) and (not coordsyst is None) and (not self._parent is coordsyst):
@@ -151,6 +151,8 @@ Called when the CoordSyst is added into NEW_PARENT, or removed from its previous
 		self._parent = new_parent
 		if not(self._option & COORDSYS_NON_AUTO_STATIC) and (self._option & COORDSYS_STATIC):
 			self._go_not_static()
+		else:
+			self._auto_static_count = 3
 			
 	cdef void _get_sphere(self, float* sphere):
 		sphere[0] = sphere[1] = sphere[2] = sphere[3] = 0.0
@@ -242,6 +244,9 @@ the given dimensions."""
 		"""CoordSyst.begin_round()
 
 Called (by the Idler) when a new round begins; default implementation does nothing."""
+		
+		# XXX copied to Volume.begin_round, World.begin_round
+		
 		if (self._option & COORDSYS_NON_AUTO_STATIC) == 0:
 			if self._auto_static_count == 0:
 				if not (self._option & COORDSYS_STATIC): self._go_static()
@@ -308,6 +313,9 @@ PROPORTION is the proportion of the current round's time that has passed (1.0 fo
 		self._validity = COORDSYS_INVALID
 		if not(self._option & COORDSYS_NON_AUTO_STATIC) and (self._option & COORDSYS_STATIC):
 			self._go_not_static()
+		else:
+			self._auto_static_count = 3
+			
 			
 			
 	property x:

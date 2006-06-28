@@ -59,7 +59,7 @@ include "model/shapifier.pyx"
 
 # Cal3D stuff
 include "cal3d/shape.pyx"
-include "cal3d/volume.pyx"
+#include "cal3d/volume.pyx"
 
 # Text stuff
 include "text/text.pyx"

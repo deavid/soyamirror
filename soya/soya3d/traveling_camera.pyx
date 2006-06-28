@@ -83,6 +83,8 @@ cdef class _TravelingCamera(_Camera):
 		#  self._speed.__imul__(self._speed_value)
 		
 	def advance_time(self, float proportion):
+		_Camera.advance_time(self, proportion)
+		
 		import soya
 		if soya.IDLER.will_render == 0:
 			self._proportion = self._proportion + proportion
