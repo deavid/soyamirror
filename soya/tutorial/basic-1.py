@@ -88,8 +88,6 @@ sword.x = 1.0
 sword.rotate_y(90.0)
 
 
-
-sword.scale(0.5, 0.5, 0.5)
 # Creates a light in the scene (same convention: the first argument of the
 # constructor is the parent) and moves it to (1.5, 2.0, 0.2).
 
