@@ -113,6 +113,7 @@ if hasattr(soya, "Sound"):
 	cerealizer.register_class(soya.SoundPlayer)
 	
 # Aliases for backward compatibility
+cerealizer.register_alias(soya.Body            , "soya.Cal3dVolume")
 cerealizer.register_alias(soya.Body            , "soya.Cal3dBody")
 cerealizer.register_alias(soya.Body            , "soya.Volume")
 cerealizer.register_alias(soya.Model           , "soya.Shape")

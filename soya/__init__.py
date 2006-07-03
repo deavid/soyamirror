@@ -1021,5 +1021,6 @@ Land             = Terrain
 
 Body.set_shape = Body.set_model
 Body.shape     = Body.model
+World.shapify  = World.to_model
 
 
