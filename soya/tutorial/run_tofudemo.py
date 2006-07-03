@@ -50,17 +50,17 @@ created.
 
 else:
 	
-	# Creates and run an Idler
-	# To enable Tofu, we must use soya.tofu4soya.Idler; this special Idler combine
-	# soya.Idler and tofu.Idler in a single one.
+	# Creates and run an MainLoop
+	# To enable Tofu, we must use soya.tofu4soya.MainLoop; this special MainLoop combine
+	# soya.MainLoop and tofu.MainLoop in a single one.
 	
-	soya.tofu4soya.Idler(scene)
+	soya.tofu4soya.MainLoop(scene)
 	
 	
 	# Lauch a single player game, a server or a client.
 	# For both client and single player game, we initialize Soya. For server, we DON'T
 	# initialize Soya, in order to not show the 3D rendering window.
-	# Calling serve_forever will start the idler.
+	# Calling serve_forever will start the main_loop.
 	
 	if   sys.argv[1] == "--single":
 		soya.init()

@@ -287,7 +287,7 @@ cdef class HashSpace(SpaceBase):
 #
 #    This uses a pre-allocated hierarchical grid-based AABB tree to
 #    quickly cull collision checks. It's exceptionally quick for large
-#    amounts of objects in landscape-shaped worlds. The amount of
+#    amounts of objects in terrain-modeld worlds. The amount of
 #    memory used is 4**depth * 32 bytes.
 #
 #    Currently getGeom() is not implemented for the quadtree space.

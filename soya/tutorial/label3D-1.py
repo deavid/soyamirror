@@ -119,12 +119,12 @@ class Character(soya.World):
 	def __init__(self, parent, controller):
 		soya.World.__init__(self, parent)
 
-		# Loads a Cal3D shape (=model)
-		balazar = soya.Cal3dShape.get("balazar")
+		# Loads a Cal3D model (=model)
+		balazar = soya.AnimatedModel.get("balazar")
 		
-		# Creates a Cal3D volume displaying the "balazar" shape
+		# Creates a Cal3D body displaying the "balazar" model
 		# (NB Balazar is the name of a wizard).
-		self.perso = soya.Cal3dVolume(self, balazar)
+		self.perso = soya.Cal3dBody(self, balazar)
 		
 		# Starts playing the idling animation in loop
 		self.perso.animate_blend_cycle("attente")
@@ -282,6 +282,6 @@ soya.set_root_widget(widget.Group())
 soya.root_widget.add(camera)
 soya.root_widget.add(widget.FPSLabel())
 
-# Creates and run an "idler" (=an object that manage time and regulate FPS)
+# Creates and run an "main_loop" (=an object that manage time and regulate FPS)
 # By default, FPS is locked at 40.
-soya.Idler(scene).idle()
+soya.MainLoop(scene).main_loop()

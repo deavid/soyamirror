@@ -49,7 +49,7 @@ w1.atmosphere.fog_start = 10.0
 w1.atmosphere.fog_end = 50.0
 w1.atmosphere.fog = 1
 w1.atmosphere.fog_type = 0
-w1.set_shape(soya.cube.Cube(None, m1).shapify())
+w1.set_model(soya.cube.Cube(None, m1).to_model())
 
 # Create world 2
 # Notice that w2 doesn't have the same atmosphere than w1
@@ -62,7 +62,7 @@ w2.atmosphere.ambient   = (0.5, 0.5, 0.0, 1.0)
 w2.atmosphere.skyplane  = 1
 w2.atmosphere.sky_color = (1.0, 1.0, 0.0, 1.0)
 w2.atmosphere.cloud = soya.Material(soya.Image.get("cloud.png"))
-w2.set_shape(soya.cube.Cube(None, m2).shapify())
+w2.set_model(soya.cube.Cube(None, m2).to_model())
 
 
 # Add a light in world 2.
@@ -146,8 +146,8 @@ class MovableCamera(soya.Camera):
 				elif event[1] == soya.sdlconst.K_DOWN:   self.speed.z =  1.0
 				elif event[1] == soya.sdlconst.K_LEFT:   self.rotation_y_speed =  10.0
 				elif event[1] == soya.sdlconst.K_RIGHT:  self.rotation_y_speed = -10.0
-				elif event[1] == soya.sdlconst.K_q:      soya.IDLER.stop()
-				elif event[1] == soya.sdlconst.K_ESCAPE: soya.IDLER.stop()
+				elif event[1] == soya.sdlconst.K_q:      soya.MAIN_LOOP.stop()
+				elif event[1] == soya.sdlconst.K_ESCAPE: soya.MAIN_LOOP.stop()
 			if event[0] == soya.sdlconst.KEYUP:
 				if   event[1] == soya.sdlconst.K_UP:     self.speed.z = 0.0
 				elif event[1] == soya.sdlconst.K_DOWN:   self.speed.z = 0.0
@@ -192,4 +192,4 @@ label.resize_style = soya.widget.WIDGET_RESIZE_MAXIMIZE
 
 soya.set_root_widget(root)
 
-soya.Idler(scene).idle()
+soya.MainLoop(scene).main_loop()

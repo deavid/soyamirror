@@ -1,6 +1,6 @@
 # -*- indent-tabs-mode: t -*-
 
-#, land.x, land.y, land.z Geom objects
+#, terrain.x, terrain.y, terrain.z Geom objects
 
 # GeomSphere
 cdef class GeomSphere(GeomObject):

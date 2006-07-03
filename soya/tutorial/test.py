@@ -35,11 +35,11 @@ scene = soya.World()
 
 
 
-# Create a volume class that interpolates between two States.
+# Create a body class that interpolates between two States.
 
-class InterpolatingVolume(soya.Cal3dVolume):
-	def __init__(self, parent = None, shape = None):
-		soya.Cal3dVolume.__init__(self, parent, soya.Cal3dShape.get("balazar"))
+class InterpolatingBody(soya.Cal3dBody):
+	def __init__(self, parent = None, model = None):
+		soya.Cal3dBody.__init__(self, parent, soya.AnimatedModel.get("balazar"))
 		
 		# Create two State objects, based on the current position of 'self'.
 		
@@ -49,7 +49,7 @@ class InterpolatingVolume(soya.Cal3dVolume):
 		self.factor = 0.0
 		
 	def advance_time(self, proportion):
-		soya.Cal3dVolume.advance_time(self, proportion)
+		soya.Cal3dBody.advance_time(self, proportion)
 		
 		self.factor += 0.01 * proportion
 		
@@ -63,23 +63,23 @@ class InterpolatingVolume(soya.Cal3dVolume):
 		print 
 
 
-volume = InterpolatingVolume(scene, soya.cube.Cube(None).shapify())
+body = InterpolatingBody(scene, soya.cube.Cube(None).to_model())
 
 # Moves, rotates and scales the States.
 # Notice that States have the Soya's usual positioning method (actually State even inherit
 # from CoordSyst).
 
-#volume.state1.set_xyz(-1.0, -0.5, 0.0)
+#body.state1.set_xyz(-1.0, -0.5, 0.0)
 
-volume.state1.matrix = (-0.99756228923797607, 0.0, -0.069783404469490051, 0.0, 0.0, 1.0, 0.0, 0.0, 0.069783404469490051, 0.0, -0.99756228923797607, 0.0, 0.0, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0)
-volume.state2.matrix = (-0.99756228923797607, 0.0, -0.069783404469490051, 0.0, 0.0, 1.0, 0.0, 0.0, 0.069783404469490051, 0.0, -0.99756228923797607, 0.0, 0.0, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0)
-volume.state2.rotate_y(30.0)
-#volume.state2.matrix = (-1.0, 0.0, -2.3461685486836359e-05, 0.0, 0.0, 1.0, 0.0, 0.0, 2.3461685486836359e-05, 0.0, -1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0)
+body.state1.matrix = (-0.99756228923797607, 0.0, -0.069783404469490051, 0.0, 0.0, 1.0, 0.0, 0.0, 0.069783404469490051, 0.0, -0.99756228923797607, 0.0, 0.0, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0)
+body.state2.matrix = (-0.99756228923797607, 0.0, -0.069783404469490051, 0.0, 0.0, 1.0, 0.0, 0.0, 0.069783404469490051, 0.0, -0.99756228923797607, 0.0, 0.0, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0)
+body.state2.rotate_y(30.0)
+#body.state2.matrix = (-1.0, 0.0, -2.3461685486836359e-05, 0.0, 0.0, 1.0, 0.0, 0.0, 2.3461685486836359e-05, 0.0, -1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0)
 
 
-#volume.state2.set_xyz(1.0, 1.0, -1.0)
-#volume.state2.rotate_y(90.0)
-#volume.state2.scale(3.0, 1.0, 1.0)
+#body.state2.set_xyz(1.0, 1.0, -1.0)
+#body.state2.rotate_y(90.0)
+#body.state2.scale(3.0, 1.0, 1.0)
 
 
 # Adds a light.
@@ -97,7 +97,7 @@ soya.set_root_widget(camera)
 
 # Main loop
 
-soya.Idler(scene).idle()
+soya.MainLoop(scene).main_loop()
 
 
 # TODO / exercice : turn this demo into a puzzle game !

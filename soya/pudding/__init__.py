@@ -77,9 +77,9 @@ def init(style = None):
 def process_event():
 	""" This gets the event list from soya and filters it for any events handled 
 	by widgets. It returns an array with the events that have not been used. 
-	If you use the \class{soya.pudding.idler.Idler} then this function is called in 
-	\\method{idler.begin_round} and the events unprocessed put in 
-	\\var{idler.events.} 
+	If you use the \class{soya.pudding.main_loop.MainLoop} then this function is called in 
+	\\method{main_loop.begin_round} and the events unprocessed put in 
+	\\var{main_loop.events.} 
 	"""
 
 	events = soya.process_event()
@@ -109,5 +109,5 @@ class ConstantError(PuddingError):
 	pass
 
 
-from soya.pudding import core, container, control, idler
+from soya.pudding import core, container, control, main_loop
 

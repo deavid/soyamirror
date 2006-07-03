@@ -20,9 +20,9 @@
 
 # soya-with-tk-1: Using Soya inside Tk mainloop
 
-# In this lesson, we'll embed Soya's Idler inside a Tk mainloop.
+# In this lesson, we'll embed Soya's MainLoop inside a Tk mainloop.
 # Interfacing Soya with other GUI system should be very similar.
-# Notice that, if you have the choice, using the Idler in the "normal way"
+# Notice that, if you have the choice, using the MainLoop in the "normal way"
 # may give a smoother animation.
 
 
@@ -37,9 +37,9 @@ soya.path.append(os.path.join(os.path.dirname(sys.argv[0]), "data"))
 
 scene = soya.World()
 
-# Create a volume displaying a caterpillar head.
+# Create a body displaying a caterpillar head.
 
-head = soya.Volume(scene, soya.Shape.get("caterpillar_head"))
+head = soya.Body(scene, soya.Model.get("caterpillar_head"))
 
 # Creates a light.
 
@@ -58,9 +58,9 @@ soya.set_root_widget(soya.widget.Group())
 soya.root_widget.add(camera)
 soya.root_widget.add(soya.widget.FPSLabel())
 
-# Create the Idler, but DON'T start it (= don't call Idler.idle()).
+# Create the MainLoop, but DON'T start it (= don't call MainLoop.main_loop()).
 
-soya.Idler(scene)
+soya.MainLoop(scene)
 
 
 # Create a Tk window, with a button.
@@ -83,13 +83,13 @@ class Window(Tkinter.Tk):
 	def update_soya(self):
 		
 		# Call again self.update_soya(), in 30 milliseconds.
-		# This should be done BEFORE calling soya.IDLER.update(), since update may consume time!
+		# This should be done BEFORE calling soya.MAIN_LOOP.update(), since update may consume time!
 		
 		self.after(30, self.update_soya)
 		
 		# Update Soya, and render.
 		
-		soya.IDLER.update()
+		soya.MAIN_LOOP.update()
 		
 window = Window()
 

@@ -228,8 +228,8 @@ cdef class _Particles(CoordSyst):
 			
 		if (self._option & PARTICLES_REMOVABLE) and (self._nb_particles == 0):
 			#self.remove()
-			from soya import IDLER
-			IDLER.next_round_tasks.append(self.remove)
+			from soya import MAIN_LOOP
+			MAIN_LOOP.next_round_tasks.append(self.remove)
 			
 	def remove(self):
 		if self._parent: self._parent.remove(self)

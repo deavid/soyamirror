@@ -56,14 +56,14 @@ for face in cube_world.children:
 	face.smooth_lit=0
 	face.material=material
 	
-class RotatingVolume(soya.Volume):
+class RotatingBody(soya.Body):
 	def advance_time(self, proportion):
 		self.rotate_y(2.0 * proportion)
 		
 
-ball         = RotatingVolume(scene, ball_world        .shapify())
-cube         = RotatingVolume(scene, cube_world        .shapify())
-faceted_ball = RotatingVolume(scene, faceted_ball_world.shapify())
+ball         = RotatingBody(scene, ball_world        .to_model())
+cube         = RotatingBody(scene, cube_world        .to_model())
+faceted_ball = RotatingBody(scene, faceted_ball_world.to_model())
 ball.x         = -1
 ball.y         =  1
 cube.x         =  1.2
@@ -82,5 +82,5 @@ camera = soya.Camera(scene)
 camera.set_xyz(0.0, 0.0, 3.5)
 soya.set_root_widget(camera)
 
-soya.Idler(scene).idle()
+soya.MainLoop(scene).main_loop()
 

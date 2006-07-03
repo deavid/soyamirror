@@ -52,7 +52,7 @@ def screenshot(filename = None, int x = 0, int y = 0, int width = 0, int height 
 Take a screenshot of the soya rendering screen, and return it as a PIL image object.
 If given, the image is saved under FILENAME.
 You must have rendered something before (e.g. by calling soya.render, or by running
-an Idler)."""
+an MainLoop)."""
 	import PIL.Image
 	cdef GLubyte* pixels
 	cdef int      size

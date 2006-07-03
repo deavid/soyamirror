@@ -404,6 +404,6 @@ cdef extern from "cal3d_wrapper.h":
 
 cimport soya
 
-cdef class _Cal3dVolume(soya.CoordSyst)
-cdef class _Cal3dShape(soya._Shape)
+cdef class _Cal3dBody(soya.CoordSyst)
+cdef class _AnimatedModel(soya._Model)
 

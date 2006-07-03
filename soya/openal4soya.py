@@ -40,10 +40,10 @@ def find_file_in_path(filename):
 		if os.path.exists(file): return file
 	raise ValueError("Cannot find file named %s in soya.path!" % filename)
 
-def set_volume(volume = 1.0):
-	"""Set the global volume level to VOLUME (a float value between 0.0 and 1.0).
-(though, it seems that setting volume to 0.2 or to 1.0 is quite the same)."""
-	_LISTENER.gain = volume
+def set_body(body = 1.0):
+	"""Set the global body level to BODY (a float value between 0.0 and 1.0).
+(though, it seems that setting body to 0.2 or to 1.0 is quite the same)."""
+	_LISTENER.gain = body
 	
 def init(camera, freq = 44100):
 	"""init(camera, freq = 44100)
@@ -128,7 +128,7 @@ is searched in {soya.path}/sounds/."""
 	source          = Source()
 	source.buffer   = buffer
 	source.looping  = looping
-	source.gain     = gain * 20.0 # This is to keep a similar volume level with soya.sdl_mixer4soya
+	source.gain     = gain * 20.0 # This is to keep a similar body level with soya.sdl_mixer4soya
 	
 	_SOURCES_POS_SPEED.append((source, position, speed))
 	

@@ -18,13 +18,13 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 
-# modeling-2: Shape : displaying two pyramids
+# modeling-2: Model : displaying two pyramids
 
 # The pyramid model we create in the previous lesson was still in a scratchy form :
 # all faces and vertices were python object, and were rendered individually, which
 # implies a performance lost.
 
-# In this lesson we'll see how to "compile" our pyramid model into a Shape,
+# In this lesson we'll see how to "compile" our pyramid model into a Model,
 # and how to use it in the same way we use the sword model in the basic-1.py lesson.
 
 
@@ -41,30 +41,30 @@ scene = soya.World()
 
 # Loads the pyramid model that we have created and saved in the modeling-basic-1.py
 # lesson.
-# We ask Soya for s Shape called "pyramid", though it does not exist ! Remember, we have
-# created a World pyramid, not a Shape. In this case, Shape.get automatically loads the
-# pyramid World, compiles it into a Shape, and saves the Shape in the "./shapes" directory
+# We ask Soya for s Model called "pyramid", though it does not exist ! Remember, we have
+# created a World pyramid, not a Model. In this case, Model.get automatically loads the
+# pyramid World, compiles it into a Model, and saves the Model in the "./models" directory
 # in soya.path[0].
-# Soya Shape compilation behaves like Python compilation of .py files in .pyc : whenever
-# the World file is changed, Shape.get will recompile it automatically.
-# You can also use the World.shapify() to compile a World into a Shape without saving it.
+# Soya Model compilation behaves like Python compilation of .py files in .pyc : whenever
+# the World file is changed, Model.get will recompile it automatically.
+# You can also use the World.to_model() to compile a World into a Model without saving it.
 
-pyramid_model = soya.Shape.get("pyramid")
+pyramid_model = soya.Model.get("pyramid")
 
-# Creates a Volume in the scene, that displays the pyramid.
+# Creates a Body in the scene, that displays the pyramid.
 
-pyramid1 = soya.Volume(scene, pyramid_model)
+pyramid1 = soya.Body(scene, pyramid_model)
 
 # Moves and rotates the pyramid (for a better view)
 
 pyramid1.x = -0.7
 pyramid1.rotate_y(60.0)
 
-# Creates a second pyramid. Contrary to World, Shape model can be displayed several
+# Creates a second pyramid. Contrary to World, Model model can be displayed several
 # time at different position.
-# Soya separates the model part (the Shape) from the position part (the Volume).
+# Soya separates the model part (the Model) from the position part (the Body).
 
-pyramid2 = soya.Volume(scene, pyramid_model)
+pyramid2 = soya.Body(scene, pyramid_model)
 pyramid2.x = 0.8
 pyramid2.rotate_y(45.0)
 
@@ -79,5 +79,5 @@ camera = soya.Camera(scene)
 camera.set_xyz(0.0, -0.6, 2.0)
 soya.set_root_widget(camera)
 
-soya.Idler(scene).idle()
+soya.MainLoop(scene).main_loop()
 

@@ -1,6 +1,6 @@
 # -*- indent-tabs-mode: t -*-
 
-cdef class _CellShadingShape(_SimpleShape):
+cdef class _CellShadingModel(_SimpleModel):
 	cdef _Material _shader
 	cdef float     _outline_color[4]
 	cdef float     _outline_width, _outline_attenuation
@@ -14,8 +14,8 @@ cdef class _CellShadingShape(_SimpleShape):
 	cdef void _prepare_cellshading_shades(self, float* shades, lights)
 	cdef void _prepare_cellshading(self, CoordSyst coordsyst, float* shades)
 	cdef float _vertex_compute_cellshading(self, float* coord, float* normal, lights, float shade)
-	cdef void _render_triangle_cellshading(self, ShapeFace* face, float* shades)
-	cdef void _render_quad_cellshading(self, ShapeFace* face, float* shades)
+	cdef void _render_triangle_cellshading(self, ModelFace* face, float* shades)
+	cdef void _render_quad_cellshading(self, ModelFace* face, float* shades)
 	cdef void _render_vertex_cellshading_smoothlit (self, int index, int face_option, float* shades)
 	cdef void _render_vertex_cellshading(self, int index, int face_option, float* fnormal)
 	

@@ -86,7 +86,7 @@ cdef class _TravelingCamera(_Camera):
 		_Camera.advance_time(self, proportion)
 		
 		import soya
-		if soya.IDLER.will_render == 0:
+		if soya.MAIN_LOOP.will_render == 0:
 			self._proportion = self._proportion + proportion
 			return
 		

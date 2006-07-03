@@ -114,7 +114,7 @@ Vector(character, 0.0, 0.0, -1.0)) to be the front direction.
 		soya.World.__init__(self, parent)
 		
 		# For now, the character is simply a cube.
-		self.set_shape(soya.Shape.get("cube"))
+		self.set_model(soya.Model.get("cube"))
 		
 		# Disable raypicking on the character itself !!!
 		# This is needed for the Tomb-Raider like camera (see below),
@@ -132,7 +132,7 @@ Vector(character, 0.0, 0.0, -1.0)) to be the front direction.
 		self.rotation_speed = 0.0
 		
 	def begin_round(self):
-		"""This method is called by the Idler each time a round starts. Soya manages
+		"""This method is called by the MainLoop each time a round starts. Soya manages
 round of 30ms by default, this means that the character will perform each action
 during 30ms.
 
@@ -177,7 +177,7 @@ PROPORTION is the proportion of the round that has been spent
 (e.g. 1.0 for a full round, 0.5 for a half, ...).
 
 ALL character moves MUST occur in the method, in order to take avantage
-of the Idler time management system and get the best visual effect."""
+of the MainLoop time management system and get the best visual effect."""
 		soya.World.advance_time(self, proportion)
 		
 		self.add_mul_vector(proportion, self.speed)
@@ -210,6 +210,6 @@ soya.root_widget.add(widget.FPSLabel())
 
 #soya.render(); soya.screenshot().resize((320, 240)).save(os.path.join(os.path.dirname(sys.argv[0]), "results", os.path.basename(sys.argv[0])[:-3] + ".jpeg"))
 
-# Creates and run an "idler" (=an object that manage time and regulate FPS)
+# Creates and run an "main_loop" (=an object that manage time and regulate FPS)
 # By default, FPS is locked at 40.
-soya.Idler(scene).idle()
+soya.MainLoop(scene).main_loop()

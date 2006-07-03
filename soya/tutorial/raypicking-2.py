@@ -136,17 +136,17 @@ class DragDropWorld(soya.World):
 
 world = DragDropWorld(scene)
 
-# Adds some volumes with different shapes, at different positions.
+# Adds some bodys with different models, at different positions.
 
 red   = soya.Material(); red  .diffuse = (1.0, 0.0, 0.0, 1.0)
 green = soya.Material(); green.diffuse = (0.0, 1.0, 0.0, 1.0)
 blue  = soya.Material(); blue .diffuse = (0.0, 0.0, 1.0, 1.0)
 
-soya.Volume(world, soya.cube.Cube(None, red  ).shapify()).set_xyz(-1.0, -1.0, 1.0)
-soya.Volume(world, soya.cube.Cube(None, green).shapify()).set_xyz( 0.0, -1.0, 0.0)
-soya.Volume(world, soya.cube.Cube(None, blue ).shapify()).set_xyz( 1.0, -1.0, -1.0)
+soya.Body(world, soya.cube.Cube(None, red  ).to_model()).set_xyz(-1.0, -1.0, 1.0)
+soya.Body(world, soya.cube.Cube(None, green).to_model()).set_xyz( 0.0, -1.0, 0.0)
+soya.Body(world, soya.cube.Cube(None, blue ).to_model()).set_xyz( 1.0, -1.0, -1.0)
 
-soya.Volume(world, soya.sphere.Sphere().shapify()).set_xyz(1.0, 1.0, 0.0)
+soya.Body(world, soya.sphere.Sphere().to_model()).set_xyz(1.0, 1.0, 0.0)
 
 # Adds a light.
 
@@ -163,7 +163,7 @@ soya.set_root_widget(camera)
 
 # Main loop
 
-soya.Idler(scene).idle()
+soya.MainLoop(scene).main_loop()
 
 
 # TODO / exercice : turn this demo into a puzzle game !

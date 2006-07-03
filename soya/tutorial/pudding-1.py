@@ -15,4 +15,4 @@ soya.root_widget.add_child(camera)
 
 text = pudding.control.SimpleLabel(soya.root_widget, label = "Hello World!",  autosize = True)
 
-pudding.idler.Idler(scene).idle()
+pudding.main_loop.MainLoop(scene).main_loop()

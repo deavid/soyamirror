@@ -31,23 +31,25 @@ then call soya.tofu4soya.init() with your classes.
 import twisted.internet.selectreactor
 import soya, tofu
 
-class Idler(soya.Idler):
+class MainLoop(soya.MainLoop):
 	def __init__(self, scene = None):
-		soya.Idler.__init__(self, scene)
-		tofu.IDLER = self
+		soya.MainLoop.__init__(self, scene)
+		tofu.MAIN_LOOP = self
+		tofu.IDLER     = self
 		
 		twisted.internet.selectreactor.install()
 		self.reactor = twisted.internet.reactor
 		
 	def begin_round(self):
 		self.reactor.iterate()
-		soya.Idler.begin_round(self)
+		soya.MainLoop.begin_round(self)
 		tofu.Level.discard_inactives()
 		
 	def add_level(self, level): self.scenes[0].insert(0, level)
 	
 	def remove_level(self, level): self.scenes[0].remove(level)
 
+Idler = MainLoop
 
 class Level(tofu.Level, soya.World):
 	_reffed = tofu.Level.get

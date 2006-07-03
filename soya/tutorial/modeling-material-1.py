@@ -83,16 +83,16 @@ material.separate_specular = 1
 
 cube_world = soya.cube.Cube(None, material)
 
-# Creates a subclass of Volume that permanently rotates.
+# Creates a subclass of Body that permanently rotates.
 # See the timemanagement-* lesson series for more info.
 
-class RotatingVolume(soya.Volume):
+class RotatingBody(soya.Body):
 	def advance_time(self, proportion):
 		self.rotate_y(2.0 * proportion)
 
-# Create a rotating volume in the scene, using the cube shape.
+# Create a rotating body in the scene, using the cube model.
 
-cube = RotatingVolume(scene, cube_world.shapify())
+cube = RotatingBody(scene, cube_world.to_model())
 cube.rotate_x(30.0)
 
 # Creates a light.
@@ -106,5 +106,5 @@ camera = soya.Camera(scene)
 camera.set_xyz(0.0, 0.0, 2.0)
 soya.set_root_widget(camera)
 
-soya.Idler(scene).idle()
+soya.MainLoop(scene).main_loop()
 

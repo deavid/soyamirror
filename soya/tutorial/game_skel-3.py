@@ -106,7 +106,7 @@ class Character(soya.World):
 	"""A character in the game."""
 	def __init__(self, parent, controller):
 		soya.World.__init__(self, parent)
-		self.set_shape(soya.Shape.get("cube"))
+		self.set_model(soya.Model.get("cube"))
 		
 		# Disable raypicking on the character itself !!!
 		self.solid = 0
@@ -246,6 +246,6 @@ soya.set_root_widget(widget.Group())
 soya.root_widget.add(camera)
 soya.root_widget.add(widget.FPSLabel())
 
-# Creates and run an "idler" (=an object that manage time and regulate FPS)
+# Creates and run an "main_loop" (=an object that manage time and regulate FPS)
 # By default, FPS is locked at 40.
-soya.Idler(scene).idle()
+soya.MainLoop(scene).main_loop()

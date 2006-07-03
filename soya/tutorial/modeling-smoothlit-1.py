@@ -60,11 +60,11 @@ faceted_ball_world = soya.sphere.Sphere()
 for face in faceted_ball_world.children:
 	face.smooth_lit = 0
 
-# Compiles sphere_world and faceted_ball_world into Shape.
-# Creates a sphere Volume in the scene, using the compilation of sphere_word as Shape.
-# Notice the use of World.shapify() to compile a World.
+# Compiles sphere_world and faceted_ball_world into Model.
+# Creates a sphere Body in the scene, using the compilation of sphere_word as Model.
+# Notice the use of World.to_model() to compile a World.
 
-sphere = soya.Volume(scene, sphere_world.shapify())
+sphere = soya.Body(scene, sphere_world.to_model())
 
 # Moves the sphere on the left.
 
@@ -72,7 +72,7 @@ sphere.x = -1.2
 
 # Does the same with the faceted ball.
 
-faceted_ball = soya.Volume(scene, faceted_ball_world.shapify())
+faceted_ball = soya.Body(scene, faceted_ball_world.to_model())
 faceted_ball.x = 1.2
 
 # Creates a light.
@@ -86,5 +86,5 @@ camera = soya.Camera(scene)
 camera.set_xyz(0.0, 0.0, 3.5)
 soya.set_root_widget(camera)
 
-soya.Idler(scene).idle()
+soya.MainLoop(scene).main_loop()
 

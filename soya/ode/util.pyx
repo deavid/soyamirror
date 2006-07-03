@@ -33,13 +33,13 @@ cdef int collide_edge(GLfloat *A, GLfloat *B,
 		cdef GeomObject other
 
 		# First, do one direction
-		dGeomRaySetLength(_land_ray, _soya.point_distance_to(A, B))
-		dGeomRaySet(_land_ray, A[0], A[1], A[2], AB[0], AB[1], AB[2])
-		nA = dCollide(_land_ray, o2, flags, &contactA, sizeof(dContactGeom))
+		dGeomRaySetLength(_terrain_ray, _soya.point_distance_to(A, B))
+		dGeomRaySet(_terrain_ray, A[0], A[1], A[2], AB[0], AB[1], AB[2])
+		nA = dCollide(_terrain_ray, o2, flags, &contactA, sizeof(dContactGeom))
 
 		# Then the other
-		dGeomRaySet(_land_ray, B[0], B[1], B[2], -AB[0], -AB[1], -AB[2])
-		nB = dCollide(_land_ray, o2, flags, &contactB, sizeof(dContactGeom))
+		dGeomRaySet(_terrain_ray, B[0], B[1], B[2], -AB[0], -AB[1], -AB[2])
+		nB = dCollide(_terrain_ray, o2, flags, &contactB, sizeof(dContactGeom))
 
 		if nA and nB:
 				contact.pos[0] = (contactA.pos[0] + contactB.pos[0]) / 2.0

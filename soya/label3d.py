@@ -179,6 +179,6 @@ if __name__ == "__main__":
 	soya.root_widget.add(camera)
 	soya.root_widget.add(widget.FPSLabel())
 
-	# Creates and run an "idler" (=an object that manage time and regulate FPS)
+	# Creates and run an "main_loop" (=an object that manage time and regulate FPS)
 	# By default, FPS is locked at 40.
-	soya.Idler(scene).idle()
+	soya.MainLoop(scene).main_loop()

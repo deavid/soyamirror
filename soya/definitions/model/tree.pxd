@@ -19,12 +19,12 @@
 
 cdef struct _Node:
 	int     nb_faces, nb_children
-	int*    faces # index in the TreeShape faces array
+	int*    faces # index in the TreeModel faces array
 	_Node** children
 	float   sphere[4]
 ctypedef _Node Node
 
-cdef class _TreeShape(_SimpleShape):
+cdef class _TreeModel(_SimpleModel):
 	cdef Node* _tree
 	
 	cdef __getcstate__(self)
@@ -33,7 +33,7 @@ cdef class _TreeShape(_SimpleShape):
 	cdef Node* _chunk2node(self, Chunk* chunk)
 	cdef void _build_tree(self)
 	cdef void _optimize_tree(self, float collapse, int mode, float max_children_radius)
-	cdef void compute_sphere(self, ShapeFace* face, float* sphere)
+	cdef void compute_sphere(self, ModelFace* face, float* sphere)
 	cdef void _batch(self, CoordSyst coordsyst)
 	cdef void _batch_node(self, Node* node, Frustum* frustum)
 	cdef void _render(self, CoordSyst instance)

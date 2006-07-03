@@ -99,7 +99,7 @@ See World.raypick"""
 		items.nb = 0
 		while items.nb < max:
 			obj = <_CObj> chunk_get_ptr(items)
-			if isinstance(obj, _TreeShape): (<_TreeShape> obj)._raypick_from_context(data, items)
+			if isinstance(obj, _TreeModel): (<_TreeModel> obj)._raypick_from_context(data, items)
 			else:                           (<CoordSyst>  obj)._raypick(data, (<CoordSyst> obj)._parent)
 			
 		if data.result_coordsyst is None: d = NULL
@@ -136,8 +136,8 @@ See World.raypick_b"""
 		items.nb = 0
 		while items.nb < max:
 			obj = <_CObj> chunk_get_ptr(items)
-			if isinstance(obj, _TreeShape):
-				if (<_TreeShape> obj)._raypick_from_context_b(data, items): result = 1; break
+			if isinstance(obj, _TreeModel):
+				if (<_TreeModel> obj)._raypick_from_context_b(data, items): result = 1; break
 			else:
 				if (<CoordSyst>  obj)._raypick_b(data, (<CoordSyst> obj)._parent) : result = 1; break
 		else: result = 0

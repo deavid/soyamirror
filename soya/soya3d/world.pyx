@@ -19,17 +19,17 @@
 
 
 	
-cdef class _World(_Volume):
+cdef class _World(_Body):
 	#cdef readonly         children
 	#cdef _Atmosphere      _atmosphere
 	#cdef public           _filename
-	#cdef Shapifier        _shapifier
+	#cdef ModelBuilder        _model_builder
 	
-	property shapifier:
+	property model_builder:
 		def __get__(self):
-			return self._shapifier
-		def __set__(self, Shapifier arg):
-			self._shapifier = arg
+			return self._model_builder
+		def __set__(self, ModelBuilder arg):
+			self._model_builder = arg
 			
 	property atmosphere:
 		def __get__(self):
@@ -37,18 +37,18 @@ cdef class _World(_Volume):
 		def __set__(self, _Atmosphere atmosphere):
 			self._atmosphere = atmosphere
 			
-	def __init__(self, _World parent = None, _Shape shape = None):
+	def __init__(self, _World parent = None, _Model model = None, opt = None):
 		self.children = []
-		_Volume.__init__(self, parent, shape)
+		_Body.__init__(self, parent, model, opt)
 		
 	cdef __getcstate__(self):
-		return CoordSyst.__getcstate__(self), self._shape, self._filename, self.children, self._atmosphere, self._shapifier, self._data
+		return CoordSyst.__getcstate__(self), self._model, self._filename, self.children, self._atmosphere, self._model_builder, self._data
 	
 	cdef void __setcstate__(self, cstate):
 		if len(cstate) == 6: # Old format, without _data
-			cstate2, self._shape, self._filename, self.children, self._atmosphere, self._shapifier = cstate
+			cstate2, self._model, self._filename, self.children, self._atmosphere, self._model_builder = cstate
 		else:
-			cstate2, self._shape, self._filename, self.children, self._atmosphere, self._shapifier, self._data = cstate
+			cstate2, self._model, self._filename, self.children, self._atmosphere, self._model_builder, self._data = cstate
 		CoordSyst.__setcstate__(self, cstate2)
 		cdef CoordSyst child
 		for child in self.children: child._parent = self
@@ -87,8 +87,8 @@ cdef class _World(_Volume):
 					renderer.current_context = renderer._context()
 					renderer.current_context.atmosphere = self._atmosphere
 					renderer.current_context.lights.extend(old_context.lights)
-		# Batch shape
-		if not self._shape is None: self._shape._batch(self)
+		# Batch model
+		if not self._model is None: self._model._batch(self)
 		# Batch children
 		for child in self.children: child._batch(self)
 		
@@ -98,7 +98,7 @@ cdef class _World(_Volume):
 		cdef CoordSyst child
 		cdef int       result
 		result = 0
-		if not self._shape is None: result = self._shape._shadow(self, light)
+		if not self._model is None: result = self._model._shadow(self, light)
 		for child in self.children: result = result | child._shadow(self, light)
 		return result
 	
@@ -106,13 +106,13 @@ cdef class _World(_Volume):
 	cdef void _raypick(self, RaypickData raypick_data, CoordSyst raypickable):
 		cdef CoordSyst child
 		if self._option & NON_SOLID: return
-		if not self._shape is None: self._shape._raypick(raypick_data, self)
+		if not self._model is None: self._model._raypick(raypick_data, self)
 		for child in self.children: child._raypick(raypick_data, self)
 		
 	cdef int _raypick_b(self, RaypickData raypick_data, CoordSyst raypickable):
 		cdef CoordSyst child
 		if self._option & NON_SOLID: return 0
-		if (not self._shape is None) and (self._shape._raypick_b(raypick_data, self) == 1): return 1
+		if (not self._model is None) and (self._model._raypick_b(raypick_data, self) == 1): return 1
 		for child in self.children:
 			if child._raypick_b(raypick_data, self) == 1: return 1
 		return 0
@@ -125,9 +125,9 @@ cdef class _World(_Volume):
 				if child is self: return 1
 				child = child._parent
 		else:
-			if self._shape is obj: return 1
+			if self._model is obj: return 1
 			for child in self.children:
-				if child._contains(shape): return 1
+				if child._contains(model): return 1
 		return 0
 	
 	# XXX TODO (e.g. using sphere_from_spheres)
@@ -139,7 +139,7 @@ cdef class _World(_Volume):
 		if matrix == NULL: matrix_copy    (matrix2, self._matrix)
 		else:              multiply_matrix(matrix2, matrix, self._matrix)
 		
-		if not self._shape is None: self._shape._get_box(box, matrix2)
+		if not self._model is None: self._model._get_box(box, matrix2)
 			
 		cdef CoordSyst child
 		for child in self.children: child._get_box(box, matrix2)
@@ -319,9 +319,9 @@ children, + the children of its children and so on)."""
 				if i: return i
 				
 	def subitem(self, namepath):
-		"""World.subitem(namepath) -> 3D element
+		"""World.subitem(namepath) -> CoordSyst
 
-Returns the 3D element denoted by NAMEPATH.
+Returns the CoordSyst denoted by NAMEPATH.
 NAMEPATH is a string that contains elements' names, separated by ".", such as
 "character.head.mouth"."""
 		cdef CoordSyst item
@@ -346,13 +346,7 @@ PREDICATE must be a callable of the form PREDICATE(CoordSyst) -> bool."""
 		"""World.search_name(name) -> CoordSyst
 
 Searches (recursively) in a World for the first element named NAME."""
-		cdef CoordSyst item
-		for item in self.children:
-			if getattr(item, "name", "") == name: return item
-			if isinstance(item, _World):
-				subresult = item.search(predicat)
-				if subresult: return subresult
-		return None
+		return self[name]
 	
 	def search_all(self, predicat):
 		"""World.search_all(predicate) -> [CoordSyst, CoordSyst, ...]
@@ -416,7 +410,7 @@ The returned RaypickContext has raypick and raypick_b method similar to the Worl
 		matrix = self._inverted_root_matrix()
 		point_by_matrix_copy(s, rsphere, matrix)
 		s[3] = length_by_matrix(rsphere[3], matrix)
-		if not self._shape is None: self._shape._collect_raypickables(items, rsphere, s, self)
+		if not self._model is None: self._model._collect_raypickables(items, rsphere, s, self)
 		for child in self.children:
 			child._collect_raypickables(items, rsphere, s)
 			
@@ -424,9 +418,9 @@ The returned RaypickContext has raypick and raypick_b method similar to the Worl
 	def begin_round(self):
 		"""World.begin_round()
 
-Called (by the idler) when a new round begins; default implementation calls all children's begin_round."""
+Called (by the main_loop) when a new round begins; default implementation calls all children's begin_round."""
 		
-		# XXX copied from CoordSyst.begin_round and Volume.begin_round
+		# XXX copied from CoordSyst.begin_round and Body.begin_round
 		
 		if (self._option & COORDSYS_NON_AUTO_STATIC) == 0:
 			if self._auto_static_count == 0:
@@ -442,28 +436,28 @@ Called (by the idler) when a new round begins; default implementation calls all 
 	def end_round(self):
 		"""World.end_round()
 
-Called (by the idler) when a round is finished; default implementation calls all children's end_round."""
+Called (by the main_loop) when a round is finished; default implementation calls all children's end_round."""
 		cdef CoordSyst child
 		for child in self.children: child.end_round()
 		
 	def advance_time(self, float proportion):
 		"""World.advance_time(proportion)
 
-Called (by the idler) when a piece of a round is achieved; default implementation calls all children's advance_time.
+Called (by the main_loop) when a piece of a round is achieved; default implementation calls all children's advance_time.
 PROPORTION is the proportion of the current round's time that has passed (1.0 for an entire round)."""
 		cdef CoordSyst child
 		
-		# XXX copied from Volume.begin_round
+		# XXX copied from Body.begin_round
 		
 		if self._data: self._data._advance_time(proportion)
 		
 		for child in self.children: child.advance_time(proportion)
 		
-	def shapify(self):
-		"""World.shapify() -> Shape
+	def to_model(self):
+		"""World.to_model() -> Model
 
-Turns the world into a Shape (a solid optimized / compiled model).
-See World.shapifier and Shapifier if you want to customize this process (e.g. for using
+Turns the world into a Model (a solid optimized / compiled model).
+See World.model_builder and ModelBuilder if you want to customize this process (e.g. for using
 trees, cell-shading or shadow)."""
-		if self.shapifier is None: return _DEFAULT_SHAPIFIER._shapify(self)
-		else:                      return self._shapifier   ._shapify(self)
+		if self.model_builder is None: return _DEFAULT_MODEL_BUILDER._to_model(self)
+		else:                      return self._model_builder   ._to_model(self)

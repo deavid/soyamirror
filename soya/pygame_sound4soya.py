@@ -38,9 +38,9 @@ _DIR      = soya.Vector()
 _INITED   = 0
 _SOURCES  = []
 
-def set_volume(volume):
-	"""Set the global volume level to VOLUME (a float value between 0.0 and 1.0)."""
-	pysdl_mixer.channel_volume(-1, int(volume * 255.0))
+def set_body(body):
+	"""Set the global body level to BODY (a float value between 0.0 and 1.0)."""
+	pysdl_mixer.channel_body(-1, int(body * 255.0))
 	
 def find_file_in_path(filename):
 	for p in soya.path:
@@ -96,9 +96,9 @@ class Source(object):
 		if self.position and self.channel:
 			x, y, z = _CAMERA.transform(self.position)
 			#d = self.position.distance_to(_CAMERA) / DISTANCE_ATTENUATION
-			#self.channel.set_volume(1.0 - d)
+			#self.channel.set_body(1.0 - d)
 			d = self.position.distance_to(_CAMERA)
-			self.channel.set_volume(DISTANCE_ATTENUATION / d)
+			self.channel.set_body(DISTANCE_ATTENUATION / d)
 			
 			
 class AsyncSource(Source):

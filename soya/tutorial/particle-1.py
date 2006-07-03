@@ -91,16 +91,16 @@ camera = soya.Camera(scene)
 camera.z = 10.0
 soya.set_root_widget(camera)
 
-# make an idler that stops on any keystroke
-class Idler(soya.Idler):
+# make an main_loop that stops on any keystroke
+class MainLoop(soya.MainLoop):
 	def begin_round(self):
-		soya.Idler.begin_round(self)
+		soya.MainLoop.begin_round(self)
 
 		# wait for any keystoke to quit
 		for e in soya.process_event():
 			if e[0]==sdlconst.KEYDOWN and e[1]!=0:
 				self.stop()        
 
-Idler(scene).idle()
+MainLoop(scene).main_loop()
 
 

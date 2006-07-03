@@ -33,7 +33,7 @@ import soya, soya.cube as cube
 
 soya.init(sound = 1)
 
-# Uses set_sound_volume to define the sound volume (1.0 is the default;
+# Uses set_sound_body to define the sound body (1.0 is the default;
 # values range from 0.0 to 1.0).
 
 soya.set_sound_volume(1.0)
@@ -60,8 +60,8 @@ camera.listen_sound = 1
 
 import math
 class NoisyCube(soya.World):
-	def __init__(self, parent, shape):
-		soya.World.__init__(self, parent, shape)
+	def __init__(self, parent, model):
+		soya.World.__init__(self, parent, model)
 		self.angle = 3.0
 		
 	def advance_time(self, proportion):
@@ -77,7 +77,7 @@ class NoisyCube(soya.World):
 		#self.set_xyz(10.0, 0.0, 0.0)
 		
 		
-cube = NoisyCube(scene, cube.Cube().shapify())
+cube = NoisyCube(scene, cube.Cube().to_model())
 
 
 # Gets the sound called "test.wav" from the data directory.
@@ -89,7 +89,7 @@ sound = soya.Sound.get("test.wav")
 #   - sound      : the sound currently played (read-only)
 #   - loop       : if true, the sound restarts from the beginning when it ends; default is false
 #   - play_in_3D : if true, the sound is played as a 3D sound; if false, as a 2D sound. Notice that OpenAL cannot play stereo sound in 3D.
-#   - gain       : the volume (default 1.0)
+#   - gain       : the body (default 1.0)
 #   - auto_remove: if true (default), the SoundPlayer is automatically removed when the sound ends (excepted in cases of looping!)
 
 sound_player = soya.SoundPlayer(cube, sound, loop = 1)
@@ -99,4 +99,4 @@ sound_player = soya.SoundPlayer(cube, sound, loop = 1)
 light = soya.Light(scene)
 light.set_xyz(1.5, 2.0, 2.2)
 
-soya.Idler(scene).idle()
+soya.MainLoop(scene).main_loop()

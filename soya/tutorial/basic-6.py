@@ -37,16 +37,16 @@ scene = soya.World()
 # The CaterpillarHead class is very similar to the CaterpillarHead class of the previous
 # lesson.
 
-class CaterpillarHead(soya.Volume):
+class CaterpillarHead(soya.Body):
 	def __init__(self, parent):
-		soya.Volume.__init__(self, parent, soya.Shape.get("caterpillar_head"))
+		soya.Body.__init__(self, parent, soya.Model.get("caterpillar_head"))
 		self.speed             = soya.Vector(self, 0.0, 0.0, 0.0)
 		self.rotation_y_speed  = 0.0
 		self.mouse_x           = 0
 		self.mouse_y           = 0
 		
 	def begin_round(self):
-		soya.Volume.begin_round(self)
+		soya.Body.begin_round(self)
 		
 		# Loops over all Soya / SDL events.
 		
@@ -90,20 +90,20 @@ class CaterpillarHead(soya.Volume):
 		self.look_at(mouse_pos)
 		
 	def advance_time(self, proportion):
-		soya.Volume.advance_time(self, proportion)
+		soya.Body.advance_time(self, proportion)
 		self.add_mul_vector(proportion, self.speed)
 
 
 # We change CaterpillarPiece, so it can deal with the variable-speed head.
 
-class CaterpillarPiece(soya.Volume):
+class CaterpillarPiece(soya.Body):
 	def __init__(self, parent, previous):
-		soya.Volume.__init__(self, parent, soya.Shape.get("caterpillar"))
+		soya.Body.__init__(self, parent, soya.Model.get("caterpillar"))
 		self.previous = previous
 		self.speed = soya.Vector(self, 0.0, 0.0, -0.2)
 		
 	def begin_round(self):
-		soya.Volume.begin_round(self)
+		soya.Body.begin_round(self)
 		
 		# As the speed can be very high, we need to take into account the speed of the previous
 		# piece (the one we are moving toward).
@@ -123,7 +123,7 @@ class CaterpillarPiece(soya.Volume):
 		self.speed.z = -(self.distance_to(previous_next_pos) - 1.5)
 		
 	def advance_time(self, proportion):
-		soya.Volume.advance_time(self, proportion)
+		soya.Body.advance_time(self, proportion)
 		self.add_mul_vector(proportion, self.speed)
 		
 
@@ -149,4 +149,4 @@ camera.set_xyz(0.0, 15.0, 15.0)
 camera.look_at(caterpillar_head)
 soya.set_root_widget(camera)
 
-soya.Idler(scene).idle()
+soya.MainLoop(scene).main_loop()

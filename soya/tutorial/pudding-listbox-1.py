@@ -18,4 +18,4 @@ a = soya.pudding.listbox.ListBox( rootWidget, list )
 camera = soya.Camera( scene )
 rootWidget.add_child( camera )
 
-soya.pudding.idler.Idler( scene ).idle()
+soya.pudding.main_loop.MainLoop( scene ).main_loop()

@@ -18,7 +18,7 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 
-cdef class _CellShadingShape(_SimpleShape):
+cdef class _CellShadingModel(_SimpleModel):
 	#cdef _Material _shader
 	#cdef float     _outline_color[4]
 	#cdef float     _outline_width, _outline_attenuation
@@ -29,10 +29,10 @@ cdef class _CellShadingShape(_SimpleShape):
 		chunk_add_float_endian_safe (chunk, self._outline_width)
 		chunk_add_float_endian_safe (chunk, self._outline_attenuation)
 		chunk_add_floats_endian_safe(chunk, self._outline_color, 4)
-		return _SimpleShape.__getcstate__(self), drop_chunk_to_string(chunk), self._shader
+		return _SimpleModel.__getcstate__(self), drop_chunk_to_string(chunk), self._shader
 		
 	cdef void __setcstate__(self, cstate):
-		_SimpleShape.__setcstate_data__(self, cstate[0])
+		_SimpleModel.__setcstate_data__(self, cstate[0])
 		
 		cdef Chunk* chunk
 		chunk = string_to_chunk(cstate[1])
@@ -56,14 +56,14 @@ cdef class _CellShadingShape(_SimpleShape):
 		if coordsyst._option & HIDDEN: return
 		
 		if quality == QUALITY_LOW:
-			_SimpleShape._batch(self, coordsyst)
+			_SimpleModel._batch(self, coordsyst)
 			return
 		
 		
 		cdef int      i
 		cdef Frustum* frustum
 		frustum = renderer._frustum(coordsyst)
-		if (self._option & SHAPE_HAS_SPHERE) and (sphere_in_frustum(frustum, self._sphere) == 0): return
+		if (self._option & MODEL_HAS_SPHERE) and (sphere_in_frustum(frustum, self._sphere) == 0): return
 		
 		if self._display_lists.nb_opaque_list != 0: renderer._batch(renderer.opaque, self, coordsyst, -1)
 		if self._display_lists.nb_alpha_list  != 0: renderer._batch(renderer.alpha , self, coordsyst, -1)
@@ -86,7 +86,7 @@ cdef class _CellShadingShape(_SimpleShape):
 #       frustum = renderer._frustum(coordsyst)
 #       self._render_outline(frustum)
 #     else:
-#       shape_option_activate(self._option)
+#       model_option_activate(self._option)
 			
 #       chunk = get_chunk()
 #       chunk_register(chunk, self._nb_vnormals * sizeof(float))
@@ -95,12 +95,12 @@ cdef class _CellShadingShape(_SimpleShape):
 			
 #       self._pack_render_cellshading(shades)
 #       drop_chunk(chunk)
-#       shape_option_inactivate(self._option)
+#       model_option_inactivate(self._option)
 			
 			
 #   cdef void _pack_render_cellshading(self, float* shades):
 #     cdef Pack*      pack
-#     cdef ShapeFace* face
+#     cdef ModelFace* face
 #     cdef _Material  material
 
 #     # Activate shader texture
@@ -118,18 +118,18 @@ cdef class _CellShadingShape(_SimpleShape):
 			
 #       face_option_activate(pack.option)
 			
-#       face = <ShapeFace*> chunk_get_ptr(renderer.data)
+#       face = <ModelFace*> chunk_get_ptr(renderer.data)
 #       if   pack.option & FACE_TRIANGLE:
 #         glBegin(GL_TRIANGLES)
 #         while face:
 #           self._render_triangle_cellshading(face, shades)
-#           face = <ShapeFace*> chunk_get_ptr(renderer.data)
+#           face = <ModelFace*> chunk_get_ptr(renderer.data)
 					
 #       elif pack.option & FACE_QUAD:
 #         glBegin(GL_QUADS)
 #         while face:
 #           self._render_quad_cellshading(face, shades)
-#           face = <ShapeFace*> chunk_get_ptr(renderer.data)
+#           face = <ModelFace*> chunk_get_ptr(renderer.data)
 					
 #       glEnd()
 			
@@ -144,7 +144,7 @@ cdef class _CellShadingShape(_SimpleShape):
 		
 	cdef void _render(self, CoordSyst coordsyst):
 		if quality == QUALITY_LOW:
-			_SimpleShape._render(self, coordsyst)
+			_SimpleModel._render(self, coordsyst)
 			return
 		
 		cdef int          i, start, end
@@ -159,7 +159,7 @@ cdef class _CellShadingShape(_SimpleShape):
 			frustum = renderer._frustum(coordsyst)
 			self._render_outline(frustum)
 		else:
-			shape_option_activate(self._option)
+			model_option_activate(self._option)
 			
 			chunk = get_chunk()
 			chunk_register(chunk, self._nb_vnormals * sizeof(float))
@@ -213,14 +213,14 @@ cdef class _CellShadingShape(_SimpleShape):
 				
 				
 			drop_chunk(chunk)
-			shape_option_inactivate(self._option)
+			model_option_inactivate(self._option)
 			
 			
 	cdef void _render_outline(self, Frustum* frustum):
 		cdef int        i, j, k, ns, nb
 		cdef float      d
 		cdef float*     plane
-		cdef ShapeFace* face, neighbor_face
+		cdef ModelFace* face, neighbor_face
 		
 		# Compute outline width, which depends on distance to camera
 		d = sphere_distance_point(self._sphere, frustum.position) * self._outline_attenuation
@@ -464,7 +464,7 @@ cdef class _CellShadingShape(_SimpleShape):
 				elif shades[n] < 0.05: shades[n] = 0.05
 
 
-	cdef void _render_triangle_cellshading(self, ShapeFace* face, float* shades):
+	cdef void _render_triangle_cellshading(self, ModelFace* face, float* shades):
 		if face.option & FACE_SMOOTH_LIT:
 			self._render_vertex_cellshading_smoothlit(face.v[0], face.option, shades)
 			self._render_vertex_cellshading_smoothlit(face.v[1], face.option, shades)
@@ -475,7 +475,7 @@ cdef class _CellShadingShape(_SimpleShape):
 			self._render_vertex_cellshading(face.v[1], face.option, self._values + face.normal)
 			self._render_vertex_cellshading(face.v[2], face.option, self._values + face.normal)
 
-	cdef void _render_quad_cellshading(self, ShapeFace* face, float* shades):
+	cdef void _render_quad_cellshading(self, ModelFace* face, float* shades):
 		if face.option & FACE_SMOOTH_LIT:
 			self._render_vertex_cellshading_smoothlit(face.v[0], face.option, shades)
 			self._render_vertex_cellshading_smoothlit(face.v[1], face.option, shades)
@@ -502,9 +502,9 @@ cdef class _CellShadingShape(_SimpleShape):
 		else:
 			shade = shades[n / 3]
 		
-		if self._option & SHAPE_DIFFUSES : glColor4fv   (self._colors   + self._vertex_diffuses [index])
-		if self._option & SHAPE_EMISSIVES: glMaterialfv (GL_FRONT_AND_BACK, GL_EMISSION, self._colors + self._vertex_emissives[index]) # XXX use glColorMaterial when emissive color but no diffuse ?
-		if self._option & SHAPE_TEXCOORDS:
+		if self._option & MODEL_DIFFUSES : glColor4fv   (self._colors   + self._vertex_diffuses [index])
+		if self._option & MODEL_EMISSIVES: glMaterialfv (GL_FRONT_AND_BACK, GL_EMISSION, self._colors + self._vertex_emissives[index]) # XXX use glColorMaterial when emissive color but no diffuse ?
+		if self._option & MODEL_TEXCOORDS:
 			glMultiTexCoord2fvARB(GL_TEXTURE0, self._values + self._vertex_texcoords[index])
 			glMultiTexCoord2fARB (GL_TEXTURE1, shade, shade)
 		else: glTexCoord2f(shade, shade)
@@ -526,9 +526,9 @@ cdef class _CellShadingShape(_SimpleShape):
 			if   shade < 0.05: shade = 0.05
 			elif shade > 0.95: shade = 0.95
 			
-		if self._option & SHAPE_DIFFUSES : glColor4fv  (self._colors   + self._vertex_diffuses [index])
-		if self._option & SHAPE_EMISSIVES: glMaterialfv(GL_FRONT_AND_BACK, GL_EMISSION, self._colors + self._vertex_emissives[index]) # XXX use glColorMaterial when emissive color but no diffuse ?
-		if self._option & SHAPE_TEXCOORDS:
+		if self._option & MODEL_DIFFUSES : glColor4fv  (self._colors   + self._vertex_diffuses [index])
+		if self._option & MODEL_EMISSIVES: glMaterialfv(GL_FRONT_AND_BACK, GL_EMISSION, self._colors + self._vertex_emissives[index]) # XXX use glColorMaterial when emissive color but no diffuse ?
+		if self._option & MODEL_TEXCOORDS:
 			glMultiTexCoord2fvARB(GL_TEXTURE0, self._values + self._vertex_texcoords[index])
 			glMultiTexCoord2fARB (GL_TEXTURE1, shade, shade)
 		else: glTexCoord2f(shade, shade)

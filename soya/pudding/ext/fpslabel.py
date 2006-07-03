@@ -46,10 +46,10 @@ class FPSLabel(SimpleLabel):
 			self.anchors = pudding.ANCHOR_BOTTOM_RIGHT
 
 	def begin_round(self):
-		""" get the fps from the current idler and update if its changed """
-		if soya.IDLER:
-			if self.fps != soya.IDLER.fps:
-				self.fps = soya.IDLER.fps
+		""" get the fps from the current main_loop and update if its changed """
+		if soya.MAIN_LOOP:
+			if self.fps != soya.MAIN_LOOP.fps:
+				self.fps = soya.MAIN_LOOP.fps
 				self.label = "%.1f FPS" % self.fps
 				self.update()
 				self.on_resize()

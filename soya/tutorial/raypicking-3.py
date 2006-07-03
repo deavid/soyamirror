@@ -34,9 +34,9 @@ scene = soya.World()
 
 # Adds an animated sorcerer (see character-animation-1.py for animated characters).
 
-sorcerer_shape = soya.Cal3dShape.get("balazar")
+sorcerer_model = soya.AnimatedModel.get("balazar")
 
-sorcerer = soya.Cal3dVolume(scene, sorcerer_shape)
+sorcerer = soya.Cal3dBody(scene, sorcerer_model)
 sorcerer.rotate_y(-120.0)
 sorcerer.animate_blend_cycle("marche")
 sorcerer.set_xyz(-1.0, -1.0, 0.0)
@@ -95,4 +95,4 @@ laser.x = 2.0
 
 # Main loop
 
-soya.Idler(scene).idle()
+soya.MainLoop(scene).main_loop()

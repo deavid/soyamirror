@@ -38,9 +38,9 @@ _SOURCES  = []
 _PENDING  = []
 _CHANNELS = []
 
-def set_volume(volume):
-	"""Set the global volume level to VOLUME (a float value between 0.0 and 1.0)."""
-	pysdl_mixer.channel_volume(-1, int(volume * 255.0))
+def set_body(body):
+	"""Set the global body level to BODY (a float value between 0.0 and 1.0)."""
+	pysdl_mixer.channel_body(-1, int(body * 255.0))
 	
 def find_file_in_path(filename):
 	for p in soya.path:

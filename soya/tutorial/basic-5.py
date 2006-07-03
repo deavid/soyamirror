@@ -41,14 +41,14 @@ scene = soya.World()
 # The CaterpillarHead class is very similar to the CaterpillarHead class of the previous
 # lesson.
 
-class CaterpillarHead(soya.Volume):
+class CaterpillarHead(soya.Body):
 	def __init__(self, parent):
-		soya.Volume.__init__(self, parent, soya.Shape.get("caterpillar_head"))
+		soya.Body.__init__(self, parent, soya.Model.get("caterpillar_head"))
 		self.speed                  = soya.Vector(self, 0.0, 0.0, 0.0)
 		self.rotation_y_speed = 0.0
 		
 	def begin_round(self):
-		soya.Volume.begin_round(self)
+		soya.Body.begin_round(self)
 		
 		# Loops over all Soya / SDL events.
 		# Each event is a tuple ; the first value indicates the event type and the other
@@ -88,12 +88,12 @@ class CaterpillarHead(soya.Volume):
 				elif event[1] == soya.sdlconst.K_LEFT:   self.rotation_y_speed =  10.0
 				elif event[1] == soya.sdlconst.K_RIGHT:  self.rotation_y_speed = -10.0
 				
-				# Pressing the escape or 'q' key will exit the idler mainloop, and thus terminate
-				# the program. soya.IDLER.stop() is the right way to end your application, and
-				# causes the Idler.idle() method to return.
+				# Pressing the escape or 'q' key will exit the main_loop mainloop, and thus terminate
+				# the program. soya.MAIN_LOOP.stop() is the right way to end your application, and
+				# causes the MainLoop.main_loop() method to return.
 				
-				elif event[1] == soya.sdlconst.K_q:      soya.IDLER.stop()
-				elif event[1] == soya.sdlconst.K_ESCAPE: soya.IDLER.stop()
+				elif event[1] == soya.sdlconst.K_q:      soya.MAIN_LOOP.stop()
+				elif event[1] == soya.sdlconst.K_ESCAPE: soya.MAIN_LOOP.stop()
 				
 			# Checks for key up (release) events.
 			
@@ -110,33 +110,33 @@ class CaterpillarHead(soya.Volume):
 				elif event[1] == soya.sdlconst.K_RIGHT:  self.rotation_y_speed = 0.0
 
 			elif event[0] == soya.sdlconst.QUIT:
-				soya.IDLER.stop()
+				soya.MAIN_LOOP.stop()
 				
 		# Do the rotation
 		
 		self.rotate_y(self.rotation_y_speed)
 		
 	def advance_time(self, proportion):
-		soya.Volume.advance_time(self, proportion)
+		soya.Body.advance_time(self, proportion)
 		self.add_mul_vector(proportion, self.speed)
 
 
 # CaterpillarPiece hasn't changed since the previous tutorial.
 
-class CaterpillarPiece(soya.Volume):
+class CaterpillarPiece(soya.Body):
 	def __init__(self, parent, previous):
-		soya.Volume.__init__(self, parent, soya.Shape.get("caterpillar"))
+		soya.Body.__init__(self, parent, soya.Model.get("caterpillar"))
 		self.previous = previous
 		self.speed = soya.Vector(self, 0.0, 0.0, -0.2)
 		
 	def begin_round(self):
-		soya.Volume.begin_round(self)
+		soya.Body.begin_round(self)
 		self.look_at(self.previous)
 		if self.distance_to(self.previous) < 1.5: self.speed.z =  0.0
 		else:                                     self.speed.z = -0.2
 		
 	def advance_time(self, proportion):
-		soya.Volume.advance_time(self, proportion)
+		soya.Body.advance_time(self, proportion)
 		self.add_mul_vector(proportion, self.speed)
 		
 
@@ -162,4 +162,4 @@ camera.set_xyz(0.0, 15.0, 15.0)
 camera.look_at(caterpillar_head)
 soya.set_root_widget(camera)
 
-soya.Idler(scene).idle()
+soya.MainLoop(scene).main_loop()

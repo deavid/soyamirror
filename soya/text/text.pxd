@@ -26,7 +26,7 @@ cdef class Glyph:
 	cdef readonly unichar
 
 	
-cdef class Font:
+cdef class _Font:
 	cdef FT_Face      _face
 	cdef readonly     filename
 	cdef int          _width, _height

@@ -26,20 +26,20 @@ See soya.cursor.Cursor.__doc__
 import soya
 
 
-class Cursor(soya.Volume):
+class Cursor(soya.Body):
 	"""soya.cursor.Cursor
 
 A 2D and 3D (with roll) mouse-based cursor.
 """
-	def __init__(self, parent = None, camera = None, shape = None, grid_step = 0.0):
-		"""Cursor(parent = None, camera = None, shape = None) -> Cursor
+	def __init__(self, parent = None, camera = None, model = None, grid_step = 0.0):
+		"""Cursor(parent = None, camera = None, model = None) -> Cursor
 
-Create a new cursor. A cursor is a volume, and so you should provide a shape
-(SHAPE arg) for it, if you want to see something.
+Create a new cursor. A cursor is a body, and so you should provide a model
+(MODEL arg) for it, if you want to see something.
 
 CAMERA is the camera in which the cursor is used.
 """
-		soya.Volume.__init__(self, parent, shape)
+		soya.Body.__init__(self, parent, model)
 		self.camera    = camera
 		self.grid_step = grid_step
 		

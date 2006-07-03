@@ -27,4 +27,4 @@ logo = pudding.ext.slicingimage.SlicingImage(w, pil_logo, left=100, top=100)
 
 w.add_child(camera)
 soya.set_root_widget(w)
-pudding.idler.Idler(scene).idle()
+pudding.main_loop.MainLoop(scene).main_loop()

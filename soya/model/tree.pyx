@@ -19,7 +19,7 @@
 
 #cdef struct _Node:
 #  int     nb_faces, nb_children
-#  int*    faces # index in the TreeShape faces array
+#  int*    faces # index in the TreeModel faces array
 #  _Node** children
 #  float   sphere[4]
 #ctypedef _Node Node
@@ -233,17 +233,17 @@ cdef node_collect_raypickables(Node* node, Chunk* items, float* sphere):
 		chunk_add(items, node.faces, node.nb_faces * sizeof(int))
 		for i from 0 <= i < node.nb_children: node_collect_raypickables(node.children[i], items, sphere)
 
-cdef class _TreeShape(_SimpleShape):
+cdef class _TreeModel(_SimpleModel):
 	#cdef Node* _tree
 	
 	cdef __getcstate__(self):
 		cdef Chunk* chunk
 		chunk = get_chunk()
 		self._node2chunk(self._tree, chunk)
-		return _SimpleShape.__getcstate__(self), drop_chunk_to_string(chunk)
+		return _SimpleModel.__getcstate__(self), drop_chunk_to_string(chunk)
 	
 	cdef void __setcstate__(self, cstate):
-		_SimpleShape.__setcstate_data__(self, cstate[0])
+		_SimpleModel.__setcstate_data__(self, cstate[0])
 		
 		cdef Chunk* chunk
 		chunk = string_to_chunk(cstate[1])
@@ -291,7 +291,7 @@ cdef class _TreeShape(_SimpleShape):
 		
 		print "* Soya * Tree optimized, %s levels, memory : %s bytes" % (node_get_nb_level(self._tree), node_get_memory_size(self._tree))
 		
-	cdef void compute_sphere(self, ShapeFace* face, float* sphere):
+	cdef void compute_sphere(self, ModelFace* face, float* sphere):
 		cdef float p[12]
 		memcpy(p,     self._coords + self._vertex_coords[face.v[0]], 3 * sizeof(float))
 		memcpy(p + 3, self._coords + self._vertex_coords[face.v[1]], 3 * sizeof(float))
@@ -312,7 +312,7 @@ cdef class _TreeShape(_SimpleShape):
 		# batch each face
 		self._batch_node(self._tree, frustum)
 		pack_batch_end(self, coordsyst)
-		#if self._option & SHAPE_CELL_SHADING:
+		#if self._option & MODEL_CELL_SHADING:
 		#  renderer_batch(renderer.secondpass, mesh, inst, renderer.data.nb)
 		#  mesh_batch_outline(mesh, inst, frustum)
 		
@@ -324,33 +324,33 @@ cdef class _TreeShape(_SimpleShape):
 		
 	cdef void _render(self, CoordSyst instance):
 		cdef Pack*      pack
-		cdef ShapeFace* face
+		cdef ModelFace* face
 		
-		shape_option_activate(self._option)
+		model_option_activate(self._option)
 		
 		pack = <Pack*> chunk_get_ptr(renderer.data)
 		while pack:
 			(<_Material> (pack.material_id))._activate()
 			face_option_activate(pack.option)
 
-			face = <ShapeFace*> chunk_get_ptr(renderer.data)
+			face = <ModelFace*> chunk_get_ptr(renderer.data)
 			if   pack.option & FACE_TRIANGLE:
 				glBegin(GL_TRIANGLES)
 				while face:
 					self._render_triangle(face)
-					face = <ShapeFace*> chunk_get_ptr(renderer.data)
+					face = <ModelFace*> chunk_get_ptr(renderer.data)
 
 			elif pack.option & FACE_QUAD:
 				glBegin(GL_QUADS)
 				while face:
 					self._render_quad(face)
-					face = <ShapeFace*> chunk_get_ptr(renderer.data)
+					face = <ModelFace*> chunk_get_ptr(renderer.data)
 
 			glEnd()
 			face_option_inactivate(pack.option)
 			pack = <Pack*> chunk_get_ptr(renderer.data)
 				
-		shape_option_inactivate(self._option)
+		model_option_inactivate(self._option)
 		
 	cdef void _raypick(self, RaypickData data, CoordSyst parent):
 		cdef float* raydata

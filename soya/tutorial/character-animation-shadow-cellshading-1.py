@@ -43,13 +43,13 @@ scene = soya.World()
 scene.atmosphere = soya.Atmosphere()
 scene.atmosphere.bg_color = (0.6, 0.6, 0.6, 1.0)
 
-# Loads the sorcerer shape.
+# Loads the sorcerer model.
 
-sorcerer_shape = soya.Cal3dShape.get("balazar")
+sorcerer_model = soya.AnimatedModel.get("balazar")
 
 # Enables shadows on Balazar !
 
-sorcerer_shape.shadow = 1
+sorcerer_model.shadow = 1
 
 # Enables cell-shading on Balazar !
 # Arguments (all are optional):
@@ -60,7 +60,7 @@ sorcerer_shape.shadow = 1
 #
 # See lesson modeling-cellshading-1 for more info on these parameters
 
-sorcerer_shape.set_cellshading()
+sorcerer_model.set_cellshading()
 
 # Notice that you can also add the following attribute in the Cal3D .cfg file (e.g.
 # balazar/balazar.cfg) :
@@ -72,15 +72,15 @@ sorcerer_shape.set_cellshading()
 #cellshading_outline_width=4.0
 #cellshading_outline_attenuation=0.0
 #
-# double_sided draws the Cal3D shape with double sided face (equivalent to
+# double_sided draws the Cal3D model with double sided face (equivalent to
 # Face.double_sided). Other attributes have obvious meaning!
 #
 # And remember : don't put ANY space before or after the "=" !
 
-# Create a sorcerer volume
+# Create a sorcerer body
 
-#sorcerer = soya.Cal3dVolume(scene, sorcerer_shape)
-sorcerer = soya.Volume(scene, sorcerer_shape)
+#sorcerer = soya.Cal3dBody(scene, sorcerer_model)
+sorcerer = soya.Body(scene, sorcerer_model)
 
 # Rotates Balazar the sorcerer
 
@@ -92,7 +92,7 @@ sorcerer.animate_blend_cycle("marche")
 
 
 # Creates a wall, to receive the shadow.
-# Notice that the wall can be any object (including e.g. a landscape,...) : receiving
+# Notice that the wall can be any object (including e.g. a terrain,...) : receiving
 # shadows doesn't require any particular property.
 
 wall_model = soya.World()
@@ -103,7 +103,7 @@ wall_face = soya.Face(wall_model, [
 	soya.Vertex(wall_model,  5.0, 0.0, -5.0),
 	])
 wall_face.double_sided = 1
-wall = soya.Volume(scene, wall_model.shapify())
+wall = soya.Body(scene, wall_model.to_model())
 wall.set_xyz(-1.0, 0.0, 0.0)
 
 # Adds a camera and a light and starts the main loop.
@@ -118,4 +118,4 @@ camera.set_xyz(0.0, 1.0, 4.0)
 
 soya.set_root_widget(camera)
 
-soya.Idler(scene).idle()
+soya.MainLoop(scene).main_loop()

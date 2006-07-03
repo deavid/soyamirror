@@ -40,23 +40,23 @@ scene.gravity = (0.0, -9.8, 0.0)
 print "creating space"
 space = ode.HashSpace(scene)
 
-# Creates a new landscape in the scene.
-print "creating land"
-land = soya.Land(scene)
+# Creates a new terrain in the scene.
+print "creating terrain"
+terrain = soya.Terrain(scene)
 
-# Gets the image "map1.png" from the tutorial data dir, and create the landscape
+# Gets the image "map1.png" from the tutorial data dir, and create the terrain
 # from this image. The image dimension must be power of 2 plus 1 : (2 ** n) + 1.
 
-print "setting land's image"
-land.from_image(soya.Image.get("map1.png"))
+print "setting terrain's image"
+terrain.from_image(soya.Image.get("map1.png"))
 
-# By default, the landscape height ranges from 0.0 (black pixels) to 1.0 (white pixels).
+# By default, the terrain height ranges from 0.0 (black pixels) to 1.0 (white pixels).
 # Here, we multiply the height by 4.0 so it ranges from 0.0 to 4.0.
 
 print "multiplying height"
-land.multiply_height(4.0)
+terrain.multiply_height(4.0)
 
-# Now that we have the landscape, we are going to texture it
+# Now that we have the terrain, we are going to texture it
 # (see lesson modeling-material-2 about texturing). First, we creates two textured
 # materials.
 
@@ -67,49 +67,49 @@ material2 = soya.Material(soya.Image.get("metal1.png"))
 # asigns MATERIAL1 to any point whose height is in the range 0.0-6.0, and material2 to
 # any point whose height is in the range 6.0-8.0 (remember, height ranges from 0.0 to 8.0).
 
-print "setting land's materials"
-land.set_material_layer(material1, 0.0, 3.0)
-land.set_material_layer(material2, 3.0, 4.0)
+print "setting terrain's materials"
+terrain.set_material_layer(material1, 0.0, 3.0)
+terrain.set_material_layer(material2, 3.0, 4.0)
 
 # Assigns material1 to any point whose height is in the range 0.0-8.0 and if the angle
 # between the surface normal and the verticalvector is in the range 0.0-20.0.
 
-#land.set_material_layer_angle(material1, 0.0, 8.0, 0.0, 20.0)
+#terrain.set_material_layer_angle(material1, 0.0, 8.0, 0.0, 20.0)
 
-# Now we set some Land attributes:
+# Now we set some Terrain attributes:
 #  - texture_factor specifies how much the textures are zoomed (higher values mean
 #    smaller texture)
 
-#  - scale_factor specifies how the landscape is scaled in the 2 horizontal dimensions.
+#  - scale_factor specifies how the terrain is scaled in the 2 horizontal dimensions.
 
 #  - the 2 last attributes influence the behaviour of the level of detail (LOD) algorithm
-#    (LOD means that parts of the landscape are rendered with more detail / more triangle
+#    (LOD means that parts of the terrain are rendered with more detail / more triangle
 #    if they are close to the camera). They are a trading between speed and quality.
 #    
 #    The higher split_factor is, the better precision you have (it means more triangles
-#    to draw the Land even far from Camera).
+#    to draw the Terrain even far from Camera).
 
 # the values below are the default ones.
  
-land.texture_factor = 1.0
+terrain.texture_factor = 1.0
 
 # XXX for some reason collisions don't work if this is set to anything other
 # than 1.0
-land.scale_factor   = 1.0
+terrain.scale_factor   = 1.0
 
-land.split_factor   = 2.0
+terrain.split_factor   = 2.0
 
-# Moves the landscape.
-land.y = -2.5
-#land.scale(8.0, 1.0, 8.0)
-# Make sure not to modify the land once the simulation starts, because
+# Moves the terrain.
+terrain.y = -2.5
+#terrain.scale(8.0, 1.0, 8.0)
+# Make sure not to modify the terrain once the simulation starts, because
 # the AABB is not recalculated
-#land_geom = ode.Land(land, space)
-land_geom = ode.GeomLand(land, space)
-land_geom.set_xyz(0.0, -2.5, 0.0)
-#land_geom = ode.GeomBox(scene, space, (100.0, 1.0, 100.0))
-#land_geom.y = -0.5
-#print land_geom.getAABB()
+#terrain_geom = ode.Terrain(terrain, space)
+terrain_geom = ode.GeomTerrain(terrain, space)
+terrain_geom.set_xyz(0.0, -2.5, 0.0)
+#terrain_geom = ode.GeomBox(scene, space, (100.0, 1.0, 100.0))
+#terrain_geom.y = -0.5
+#print terrain_geom.getAABB()
 
 # Adds a light.
 
@@ -128,13 +128,13 @@ class Car(ode.Body):
 
 				print "making SimpleSpace"
 				self.space = ode.SimpleSpace(None, space)
-				print "setting car's shape"
-				car_shape = soya.Shape.load("buggy_chassis")
+				print "setting car's model"
+				car_model = soya.Model.load("buggy_chassis")
 				print "Initializing body"
-				ode.Body.__init__(self, scene, shape=car_shape)
+				ode.Body.__init__(self, scene, model=car_model)
 				#self.set_xyz(32.0, 15.0, 20.0)
 
-				self.chassis_geom = ode.GeomShape(self, self.space)
+				self.chassis_geom = ode.GeomModel(self, self.space)
 				
 				print "setting car's mass"
 				car_mass = ode.Mass()
@@ -145,7 +145,7 @@ class Car(ode.Body):
 
 				print "making wheel mass object"
 				# Create the wheels
-				wheel_shape = soya.Shape.load("wheel4")
+				wheel_model = soya.Model.load("wheel4")
 				wheel_mass = ode.Mass()
 				wheel_mass.setSphere(1.0, 1.0)
 				wheel_mass.adjust(1.0)
@@ -156,10 +156,10 @@ class Car(ode.Body):
 				self.wheel_geoms = []
 				print "making wheels"
 				for i in range(4):
-						wheel = ode.Body(scene, shape=wheel_shape)
+						wheel = ode.Body(scene, model=wheel_model)
 						wheel.mass = wheel_mass
 						#wheel_geom = ode.GeomSphere(wheel, self.space, 1.0)
-						wheel_geom = ode.GeomShape(wheel, self.space)
+						wheel_geom = ode.GeomModel(wheel, self.space)
 						self.wheel_geoms.append(wheel_geom)
 						self.wheels.append(wheel)
 				
@@ -208,7 +208,7 @@ class Car(ode.Body):
 						elif event[1] == sdl.K_RIGHT:  
 								self.turn_angle = 0.25 * pi
 						elif event[1] == sdl.K_q:      
-								soya.IDLER.stop()
+								soya.MAIN_LOOP.stop()
 						elif event[1] == sdl.K_r:
 								self.wheels[0].set_xyz(2.5, 0.0, -2.0)
 								self.wheels[1].set_xyz(2.5, 0.0, 2.0)
@@ -217,7 +217,7 @@ class Car(ode.Body):
 						elif event[1] == sdl.K_w:
 								soya.toggle_wireframe()
 				
-						elif event[1] == sdl.K_ESCAPE: soya.IDLER.stop()
+						elif event[1] == sdl.K_ESCAPE: soya.MAIN_LOOP.stop()
 		
 					if event[0] == sdl.KEYUP:
 							if   event[1] == sdl.K_UP:
@@ -282,7 +282,7 @@ def near_callback(g1, g2):
 				joint.attach(g1.body, g2.body)
 
 		
-class BuggyIdler(soya.Idler):
+class BuggyMainLoop(soya.MainLoop):
 		"""Idle with collision testing"""
 
 		def begin_round(self):
@@ -294,10 +294,10 @@ class BuggyIdler(soya.Idler):
 				space.collide(near_callback)
 
 				# Do everything else
-				soya.Idler.begin_round(self)
+				soya.MainLoop.begin_round(self)
 
-				#print car.x, car.y, car.z, land_geom.params
+				#print car.x, car.y, car.z, terrain_geom.params
 
 print "idling"
-BuggyIdler(scene).idle()
+BuggyMainLoop(scene).main_loop()
 

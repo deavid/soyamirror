@@ -20,10 +20,10 @@
 cdef class _CObj
 cdef class _Image(_CObj)
 cdef class _Material(_CObj)
-cdef class _Shape(_CObj)
-cdef class _SimpleShape(_Shape)
-cdef class _CellShadingShape(_SimpleShape)
-cdef class _TreeShape(_SimpleShape)
+cdef class _Model(_CObj)
+cdef class _SimpleModel(_Model)
+cdef class _CellShadingModel(_SimpleModel)
+cdef class _TreeModel(_SimpleModel)
 cdef class _ModelData(_CObj)
 cdef class _AnimatedModelData(_ModelData)
 cdef class Position(_CObj)
@@ -33,23 +33,23 @@ cdef class _Vertex(_Point)
 cdef class CoordSyst(Position)
 cdef class _Camera(CoordSyst)
 cdef class _Light(CoordSyst)
-cdef class _Volume(CoordSyst)
-cdef class _World(_Volume)
+cdef class _Body(CoordSyst)
+cdef class _World(_Body)
 cdef class _Face(CoordSyst)
-#cdef class _Cal3dVolume(CoordSyst)
-cdef class _Cal3dShape(_Shape)
+#cdef class _Cal3dBody(CoordSyst)
+cdef class _AnimatedModel(_Model)
 cdef class _Sprite(CoordSyst)
 cdef class _Portal(CoordSyst)
-cdef class _Land(CoordSyst)
+cdef class _Terrain(CoordSyst)
 cdef class _Atmosphere(_CObj)
 cdef class Renderer
 cdef class Context
 cdef class RaypickData
 cdef class RaypickContext
-cdef class Idler
+cdef class MainLoop
 cdef class Glyph
-cdef class Font
-cdef class Shapifier(_CObj)
+cdef class _Font
+cdef class ModelBuilder(_CObj)
 cdef class Traveling(_CObj)
 cdef class _TravelingCamera(_Camera)
 
@@ -124,7 +124,7 @@ cdef enum:
 	SOUND_AUTO_REMOVE     = 1 << 7
 	SOUND_LOOP            = 1 << 8
 	FACE2_LIT             = 1 << 12 # FACE2_* constants are for soya.Face 
-	FACE2_SMOOTH_LIT      = 1 << 13 # FACE_* are for the ShapeFace structure used by shapes
+	FACE2_SMOOTH_LIT      = 1 << 13 # FACE_* are for the ModelFace structure used by models
 	FACE2_STATIC_LIT      = 1 << 14 # They have equivalent meanings, but are not used for
 	FACE2_DOUBLE_SIDED    = 1 << 15 # the same objects.
 	COORDSYST_STATE_VALID = 1 << 16
@@ -161,23 +161,23 @@ cdef enum:
 	DISPLAY_LIST_OPTIONS = FACE_TRIANGLE | FACE_QUAD | FACE_ALPHA | FACE_DOUBLE_SIDED | FACE_NON_LIT
 	
 cdef enum:
-	SHAPE_DIFFUSES         = 1 << 5
-	SHAPE_EMISSIVES        = 1 << 6
-	SHAPE_TEXCOORDS        = 1 << 8
-	SHAPE_VERTEX_OPTIONS   = 1 << 10
-	SHAPE_CELLSHADING      = 1 << 11
-	SHAPE_NEVER_LIT        = 1 << 12
-	SHAPE_PLANE_EQUATION   = 1 << 14
-	SHAPE_NEIGHBORS        = 1 << 15
-	SHAPE_INITED           = 1 << 16
-	SHAPE_TREE             = 1 << 17
-	SHAPE_DISPLAY_LISTS    = 1 << 18
-	SHAPE_FACE_LIST        = 1 << 19
-	SHAPE_HAS_SPHERE       = 1 << 20
-	SHAPE_SHADOW           = 1 << 21
-	SHAPE_STATIC_SHADOW    = 1 << 22
-	SHAPE_STATIC_LIT       = 1 << 23
-	SHAPE_SIMPLE_NEIGHBORS = 1 << 24 # Neighbors take face angle into account, but simple neighbors don't
+	MODEL_DIFFUSES         = 1 << 5
+	MODEL_EMISSIVES        = 1 << 6
+	MODEL_TEXCOORDS        = 1 << 8
+	MODEL_VERTEX_OPTIONS   = 1 << 10
+	MODEL_CELLSHADING      = 1 << 11
+	MODEL_NEVER_LIT        = 1 << 12
+	MODEL_PLANE_EQUATION   = 1 << 14
+	MODEL_NEIGHBORS        = 1 << 15
+	MODEL_INITED           = 1 << 16
+	MODEL_TREE             = 1 << 17
+	MODEL_DISPLAY_LISTS    = 1 << 18
+	MODEL_FACE_LIST        = 1 << 19
+	MODEL_HAS_SPHERE       = 1 << 20
+	MODEL_SHADOW           = 1 << 21
+	MODEL_STATIC_SHADOW    = 1 << 22
+	MODEL_STATIC_LIT       = 1 << 23
+	MODEL_SIMPLE_NEIGHBORS = 1 << 24 # Neighbors take face angle into account, but simple neighbors don't
 	
 cdef enum:
 	TEXT_ALIGN_LEFT   = 0
@@ -206,16 +206,16 @@ cdef enum:
 	PARTICLES_REMOVABLE     = 1 << 18
 
 cdef enum:
-	LAND_INITED           = 1 << 2
-	LAND_REAL_LOD_RAYPICK = 1 << 3
-	LAND_VERTEX_OPTIONS   = 1 << 7
-	LAND_COLORED          = 1 << 8
+	TERRAIN_INITED           = 1 << 2
+	TERRAIN_REAL_LOD_RAYPICK = 1 << 3
+	TERRAIN_VERTEX_OPTIONS   = 1 << 7
+	TERRAIN_COLORED          = 1 << 8
 
 cdef enum:
-	LAND_VERTEX_HIDDEN         = 1 << 0
-	LAND_VERTEX_ALPHA          = VERTEX_ALPHA # 1 << 1
-	LAND_VERTEX_NON_SOLID      = 1 << 2
-	LAND_VERTEX_FORCE_PRESENCE = 1 << 3
+	TERRAIN_VERTEX_HIDDEN         = 1 << 0
+	TERRAIN_VERTEX_ALPHA          = VERTEX_ALPHA # 1 << 1
+	TERRAIN_VERTEX_NON_SOLID      = 1 << 2
+	TERRAIN_VERTEX_FORCE_PRESENCE = 1 << 3
 
 cdef enum:
 	CAL3D_ALPHA        = 1 <<  5

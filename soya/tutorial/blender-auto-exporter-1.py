@@ -45,17 +45,17 @@ scene = soya.World()
 
 # To use auto-exporter, simply put your Blender models in {soya.path}/blender/ , your
 # OBJ/MTL models in {soya.path}/obj/ and your textures in {soya.path}/images/ .
-# Soya will automatically exports models to Soya worlds ans shapes, and textures to
+# Soya will automatically exports models to Soya worlds ans models, and textures to
 # materials, if the corresponding Soya doesn't exist OR is not up-to-date.
 
 # Here, the knife model doesn't exist as a Soya model yet, but the original Blender model
 # is in {soya.path}/blender/knife.blender ; so Soya will find it, export it to
-# a world and then compile the world into a shape.
+# a world and then compile the world into a model.
 
-# Soya will save the exported world and shape, so if you run the lesson again, the model
+# Soya will save the exported world and model, so if you run the lesson again, the model
 # won't be exported again. If you want so, just modify the model and/or the texture.
 
-knife_model = soya.Shape.get("knife")
+knife_model = soya.Model.get("knife")
 
 # The Blender model has a Text buffer called "soya_params".
 # This buffer is analyzed and gives additionnal information ; here it contains
@@ -83,7 +83,7 @@ knife_model = soya.Shape.get("knife")
 # If you want to generate SEVERAL different models from a SINGLE Blender file,
 # you can use alternative text buffers. For example the following :
 
-knife_model2 = soya.Shape.get("knife@with_sword_material")
+knife_model2 = soya.Model.get("knife@with_sword_material")
 
 # will read the Blender text buffer "with_sword_material" in the model in addition to
 # "soya_params". Here is contains "material_knife=epee_turyle", which replace the knife
@@ -92,18 +92,18 @@ knife_model2 = soya.Shape.get("knife@with_sword_material")
 
 # The rest of the script is the same than lesson-2.
 
-# Creates a rotating volume class.
+# Creates a rotating body class.
 
-class RotatingVolume(soya.Volume):
+class RotatingBody(soya.Body):
 	def advance_time(self, proportion):
-		soya.Volume.advance_time(self, proportion)
+		soya.Body.advance_time(self, proportion)
 		self.rotate_y(proportion * 5.0)
 
 
-knife    = RotatingVolume(scene, knife_model )
+knife    = RotatingBody(scene, knife_model )
 knife.x  = -1
 
-knife2   = RotatingVolume(scene, knife_model2)
+knife2   = RotatingBody(scene, knife_model2)
 knife2.x = 1
 
 # Creates a light.
@@ -117,5 +117,5 @@ camera = soya.Camera(scene)
 camera.z = 3.0
 soya.set_root_widget(camera)
 
-soya.Idler(scene).idle()
+soya.MainLoop(scene).main_loop()
 

@@ -39,7 +39,7 @@ soya.path.append(os.path.join(os.path.dirname(sys.argv[0]), "data"))
 scene = soya.World()
 
 # Creates the World that will contain the pyramid. We don't create the pyramid in the
-# scene since we are going to compile the pyramid into a shape.
+# scene since we are going to compile the pyramid into a model.
 
 pyramid_world = soya.World()
 
@@ -67,20 +67,20 @@ soya.Face(pyramid_world, [base4, base3, apex])
 soya.Face(pyramid_world, [base1, base4, apex])
 soya.Face(pyramid_world, [base3, base2, apex])
 
-# Compile the pyramid into a shape.
+# Compile the pyramid into a model.
 
-pyramid_shape = pyramid_world.shapify()
+pyramid_model = pyramid_world.to_model()
 
-# Creates a subclass of Volume that permanently rotates.
+# Creates a subclass of Body that permanently rotates.
 # See the timemanagement-* lesson series for more info.
 
-class RotatingVolume(soya.Volume):
+class RotatingBody(soya.Body):
 	def advance_time(self, proportion):
 		self.rotate_y(2.0 * proportion)
 
-# Create a rotating volume in the scene, using the cube shape.
+# Create a rotating body in the scene, using the cube model.
 
-pyramid = RotatingVolume(scene, pyramid_shape)
+pyramid = RotatingBody(scene, pyramid_model)
 pyramid.rotate_x(60.0)
 
 # Creates a light.
@@ -94,5 +94,5 @@ camera = soya.Camera(scene)
 camera.set_xyz(0.0, 0.0, 2.0)
 soya.set_root_widget(camera)
 
-soya.Idler(scene).idle()
+soya.MainLoop(scene).main_loop()
 

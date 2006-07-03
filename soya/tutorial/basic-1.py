@@ -44,7 +44,7 @@ soya.init()
 #   ./images    : the image file
 #   ./materials : the materials (including textures, optimized forms of images)
 #   ./worlds    : the model
-#   ./shapes    : the optimized model
+#   ./models    : the optimized model
 
 # Notice the use of sys.argv to get the directory where this script lives.
 
@@ -56,26 +56,26 @@ soya.path.append(os.path.join(os.path.dirname(sys.argv[0]), "data"))
 
 scene = soya.World()
 
-# Loads the sword model (from file "tutorial/data/shapes/sword.data").
+# Loads the sword model (from file "tutorial/data/models/sword.data").
 
-# A shape is an optimized model ; the sword shape we use here was designed in Blender.
+# A model is an optimized model ; the sword model we use here was designed in Blender.
 
-# Shape.get is a static method that returns the object of the corresponding filename,
+# Model.get is a static method that returns the object of the corresponding filename,
 # and loads it if needed, i.e. if you call get a second time, it will return the same
 # object instead of loading it again.
 # Any dependancy of the model (e.g. materials) are loaded too.
 
-sword_model = soya.Shape.get("sword")
+sword_model = soya.Model.get("sword")
 
 # Create the model.
-# A Volume displays a shape. The first argument of the Volume constructor is the
-# parent of the new volume ; here we put the volume in the scene. The parent must be
+# A Body displays a model. The first argument of the Body constructor is the
+# parent of the new body ; here we put the body in the scene. The parent must be
 # a World or a World derivative (or None).
 # (this is a convention, similarly to Tkinter, where the first argument of a
 # widget's constructor is the master).
-# The second argument of the Volume constructor is the shape : our sword model.
+# The second argument of the Body constructor is the model : our sword model.
 
-sword = soya.Volume(scene, sword_model)
+sword = soya.Body(scene, sword_model)
 
 # The default position is 0.0, 0.0, 0.0
 # To view it better, we moves the sword to the right.
@@ -87,6 +87,9 @@ sword.x = 1.0
 
 sword.rotate_y(90.0)
 
+
+
+sword.scale(0.5, 0.5, 0.5)
 # Creates a light in the scene (same convention: the first argument of the
 # constructor is the parent) and moves it to (1.5, 2.0, 0.2).
 
@@ -112,14 +115,14 @@ soya.set_root_widget(camera)
 
 #soya.render(); soya.screenshot().resize((320, 240)).save(os.path.join(os.path.dirname(sys.argv[0]), "results", os.path.basename(sys.argv[0])[:-3] + ".jpeg"))
 
-# Creates an 'Idler' for the scene, and launch it.
-# The Idler is the object that manages the Soya's mainloop. It take care of :
+# Creates an 'MainLoop' for the scene, and launch it.
+# The MainLoop is the object that manages the Soya's mainloop. It take care of :
 #  - looping
 #  - regulating the frame rate to 40 FPS
 #  - smoothing the animation
 #  - computing FPS
 #  - rendering the screen
 
-soya.Idler(scene).idle()
+soya.MainLoop(scene).main_loop()
 
 

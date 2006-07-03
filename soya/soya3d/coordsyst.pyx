@@ -243,9 +243,9 @@ the given dimensions."""
 	def begin_round(self):
 		"""CoordSyst.begin_round()
 
-Called (by the Idler) when a new round begins; default implementation does nothing."""
+Called (by the MainLoop) when a new round begins; default implementation does nothing."""
 		
-		# XXX copied to Volume.begin_round, World.begin_round
+		# XXX copied to Body.begin_round, World.begin_round
 		
 		if (self._option & COORDSYS_NON_AUTO_STATIC) == 0:
 			if self._auto_static_count == 0:
@@ -256,13 +256,13 @@ Called (by the Idler) when a new round begins; default implementation does nothi
 	def end_round(self):
 		"""CoordSyst.end_round()
 
-Called (by the Idler) when a round is finished; default implementation does nothing."""
+Called (by the MainLoop) when a round is finished; default implementation does nothing."""
 		pass
 	
 	def advance_time(self, float proportion):
 		"""CoordSyst.advance_time(proportion)
 
-Called (by the Idler) when a piece of a round is achieved; default implementation does nothing.
+Called (by the MainLoop) when a piece of a round is achieved; default implementation does nothing.
 PROPORTION is the proportion of the current round's time that has passed (1.0 for an entire round)."""
 		pass
 	
@@ -706,7 +706,25 @@ Same as rotate_z."""
 		self._invalidate()
 	
 	def rotate_axe(self, float angle, Position axe not None):
-		"""CoordSyst.rotate_axe(ANGLE, AXE)
+		"""Same as rotate_axis"""
+		cdef float coords[3]
+		memcpy(coords, self._matrix + 12, 3 * sizeof(float))
+		cdef float f[3]
+		axe._into(self._parent, f)
+		matrix_rotate_axe(self._matrix, to_radians(angle), f[0], f[1], f[2])
+		memcpy(self._matrix + 12, coords, 3 * sizeof(float))
+		self._invalidate()
+		
+	def rotate_axe_xyz(self, float angle, float x, float y, float z):
+		"""Same as rotate_axis_xyz"""
+		cdef float coords[3]
+		memcpy(coords, self._matrix + 12, 3 * sizeof(float))
+		matrix_rotate_axe(self._matrix, to_radians(angle), x, y, z)
+		memcpy(self._matrix + 12, coords, 3 * sizeof(float))
+		self._invalidate()
+		
+	def rotate_axis(self, float angle, Position axe not None):
+		"""CoordSyst.rotate_axis(ANGLE, AXE)
 
 Rotate a CoordSyst about an axis, of ANGLE degrees.
 The axis is defined by a Vector AXE, and pass through the origin (0, 0, 0)."""
@@ -718,8 +736,8 @@ The axis is defined by a Vector AXE, and pass through the origin (0, 0, 0)."""
 		memcpy(self._matrix + 12, coords, 3 * sizeof(float))
 		self._invalidate()
 		
-	def rotate_axe_xyz(self, float angle, float x, float y, float z):
-		"""CoordSyst.rotate_axe_xyz(ANGLE, X, Y, Z)
+	def rotate_axis_xyz(self, float angle, float x, float y, float z):
+		"""CoordSyst.rotate_axis_xyz(ANGLE, X, Y, Z)
 
 Rotate a CoordSyst about an (X, Y, Z) axis, of ANGLE degrees."""
 		cdef float coords[3]

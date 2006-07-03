@@ -20,5 +20,5 @@
 import warnings
 warnings.warn("The content of this module is now in the soya module.", DeprecationWarning)
 
-from soya import CoordSyst, Volume, World, Camera, Light, Atmosphere
+from soya import CoordSyst, Body, World, Camera, Light, Atmosphere
 

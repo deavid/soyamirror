@@ -31,6 +31,6 @@ svgelements.ElementImage(soya.root_widget,
 												 left=0, top=elimg.height, width=0, height=0,
 												 manager=e_man, image='info')
 
-pudding.idler.Idler(scene).idle()
+pudding.main_loop.MainLoop(scene).main_loop()
 
 	

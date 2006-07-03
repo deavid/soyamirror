@@ -19,7 +19,7 @@
 
 """soya.facecutter -- A model beautifier
 
-Cuts some faces in two (or more), in order to get smoother shape."""
+Cuts some faces in two (or more), in order to get smoother model."""
 
 import soya
 from soya import Point, Vector
@@ -196,7 +196,7 @@ compute)."""
 		if not edges: continue
 		
 		h = barycenter(a, b, 0.5)
-		if edges[0][0].smooth_lit: # Smooth the shape
+		if edges[0][0].smooth_lit: # Smooth the model
 			a_normal = normal_at_vertex(a)
 			b_normal = normal_at_vertex(b)
 			

@@ -28,7 +28,7 @@
 # usually the shader have only a few color levels. See tutorial/data.images/shader.png for
 # an example.
 #
-# In Soya, cell-shading can be activated during world-to-shape compilation.
+# In Soya, cell-shading can be activated during world-to-model compilation.
 # In this tuto, we'll draw 2 rotating swords, one normal and one with cell-shading.
 
 # To add cell-shading to an animated character, see also tutorial lesson
@@ -65,22 +65,22 @@ material.texture = soya.Image.get("epee_turyle-cs.png")
 #material.shininess = 15.0
 #material.specular = (1.0, 1.0, 1.0, 1.0)
 
-# Compiles the sword model to a normal shape
+# Compiles the sword model to a normal model
 
-sword_shape = sword.shapify()
+sword_model = sword.to_model()
 
 # Creates the shader. The shader is a normal material with a texture.
 
 shader = soya.Material()
 shader.texture = soya.Image.get("shader.png")
 
-# Creates a cell-shading shapifier object. A shapifier is an object that says how a world
-# is compiled into a shape. When no shapifier is specified, Soya uses the default shapifier
-# (an instance of SimpleShapifier, that does not include cell-shading effect).
+# Creates a cell-shading model_builder object. A model_builder is an object that says how a world
+# is compiled into a model. When no model_builder is specified, Soya uses the default model_builder
+# (an instance of SimpleModelBuilder, that does not include cell-shading effect).
 
-cellshading = soya.CellShadingShapifier()
+cellshading = soya.CellShadingModelBuilder()
 
-# Sets the shapifier properties. These properties can also be passed to the constructor,
+# Sets the model_builder properties. These properties can also be passed to the constructor,
 # see docstrings for more info.
 # The shader property is (obviously) the shader :-)
 # outline_color specifies the color of the outline (default : black)
@@ -92,35 +92,35 @@ cellshading.outline_color       = (0.0, 0.0, 0.0, 1.0)
 cellshading.outline_width       = 7.0
 cellshading.outline_attenuation = 1.0
 
-# Assigns the shapifier to the sword.
+# Assigns the model_builder to the sword.
 
-sword.shapifier = cellshading
+sword.model_builder = cellshading
 
-# Compiles the sword model to a cell-shaded shape. Notice that is you save the sword now,
-# the shapifier would be saved with it too, and thus you can use 'soya.Shape.get("sword")'
+# Compiles the sword model to a cell-shaded model. Notice that is you save the sword now,
+# the model_builder would be saved with it too, and thus you can use 'soya.Model.get("sword")'
 # with cell-shading.
 
-sword_cellshaded_shape = sword.shapify()
+sword_cellshaded_model = sword.to_model()
 
-# Create a rotating volume class, and 2 rotating volumes. The left one is normal, the right
+# Create a rotating body class, and 2 rotating bodys. The left one is normal, the right
 # one is cell-shaded.
 
-class RotatingVolume(soya.Volume):
-	def __init__(self, parent = None, shape = None, sens = 1.0):
-		soya.Volume.__init__(self, parent, shape)
+class RotatingBody(soya.Body):
+	def __init__(self, parent = None, model = None, sens = 1.0):
+		soya.Body.__init__(self, parent, model)
 		self.sens = sens
 		
 	def advance_time(self, proportion):
-		soya.Volume.advance_time(self, proportion)
+		soya.Body.advance_time(self, proportion)
 		self.rotate_y(proportion * 2.0 * self.sens)
 
-volume1 = RotatingVolume(scene, sword_shape)
-volume1.set_xyz(-1.0, 0.0, 0.0)
-volume1.rotate_x(90.0)
+body1 = RotatingBody(scene, sword_model)
+body1.set_xyz(-1.0, 0.0, 0.0)
+body1.rotate_x(90.0)
 
-volume2 = RotatingVolume(scene, sword_cellshaded_shape, -1)
-volume2.set_xyz( 1.0, 0.0, 0.0)
-volume2.rotate_x(90.0)
+body2 = RotatingBody(scene, sword_cellshaded_model, -1)
+body2.set_xyz( 1.0, 0.0, 0.0)
+body2.rotate_x(90.0)
 
 # Creates a light.
 
@@ -133,5 +133,5 @@ camera = soya.Camera(scene)
 camera.set_xyz(0.0, 0.8, 2.5)
 soya.set_root_widget(camera)
 
-soya.Idler(scene).idle()
+soya.MainLoop(scene).main_loop()
 

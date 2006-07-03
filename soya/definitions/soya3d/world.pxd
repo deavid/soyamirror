@@ -19,11 +19,11 @@
 
 
 	
-cdef class _World(_Volume):
+cdef class _World(_Body):
 	cdef readonly         children
 	cdef _Atmosphere      _atmosphere
 	cdef public           _filename
-	cdef Shapifier        _shapifier
+	cdef ModelBuilder        _model_builder
 	
 	cdef __getcstate__(self)
 	cdef void __setcstate__(self, object cstate)

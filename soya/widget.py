@@ -254,7 +254,7 @@ It might call glyph tessellation that would be included in the display list !"""
 #   """FPSLabel
 
 # A label that shows the FPS.
-# It works ONLY with soya.idler !!!"""
+# It works ONLY with soya.main_loop !!!"""
 	
 #   def resize(self, parent_left, parent_top, parent_width, parent_height):
 #     self.x = parent_left + parent_width  - 120
@@ -263,16 +263,16 @@ It might call glyph tessellation that would be included in the display list !"""
 #   def render(self):
 #     soya.DEFAULT_MATERIAL.activate()
 #     glColor4f(1.0, 1.0, 1.0, 1.0)
-#     if soya.IDLER:
-#       default_font.draw("%.1f FPS" % soya.IDLER.fps, self.x, self.y)
+#     if soya.MAIN_LOOP:
+#       default_font.draw("%.1f FPS" % soya.MAIN_LOOP.fps, self.x, self.y)
 #     else:
-#       default_font.draw("No idler", self.x, self.y)
+#       default_font.draw("No main_loop", self.x, self.y)
 
 class FPSLabel(Label):
 	"""FPSLabel
 
 A label that shows the FPS.
-It works ONLY with soya.idler !!!"""
+It works ONLY with soya.main_loop !!!"""
 	def __init__(self, master = None):
 		Label.__init__(self, master)
 		self.fps = -1.0
@@ -286,14 +286,14 @@ It works ONLY with soya.idler !!!"""
 		self._changed = -2
 		
 	def widget_begin_round(self):
-		if soya.IDLER:
-			if self.fps != soya.IDLER.fps:
-				self.fps  = soya.IDLER.fps
+		if soya.MAIN_LOOP:
+			if self.fps != soya.MAIN_LOOP.fps:
+				self.fps  = soya.MAIN_LOOP.fps
 				self.text = "%.1f FPS" % self.fps
 		else:
 			if self.fps != -2.0:
 				self.fps  = -2.0
-				self.text = "No idler"
+				self.text = "No main_loop"
 				
 				
 class Image(Widget):

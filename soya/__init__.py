@@ -182,10 +182,14 @@ If SOURCE_DIRNAME is None, the exported object is up-to-date.
 If SOURCE_DIRNAME is one of SOURCE_DIRNAMES, the source object of this directory have been
 modified more recently that the exported one, and SOURCE_FULL_FILENAME is the complete
 filename of the source that needs to be re-exported."""
-		filename        = filename.replace("/", os.sep)
-		#source_filename = filename[:filename.index("@")]
+		if not os.path.exists(os.path.join(path[0], klass.DIRNAME)): # Backward compatibility
+			if   klass.DIRNAME == "models"         : klass.DIRNAME = "shapes"
+			elif klass.DIRNAME == "animated_models": klass.DIRNAME = "shapes"
+			#elif klass.DIRNAME == "worlds"         : klass.DIRNAME = "groups"
+			
+		filename = filename.replace("/", os.sep)
 		for p in path:
-			file        = os.path.join(p, klass.DIRNAME , exported_filename)
+			file = os.path.join(p, klass.DIRNAME , exported_filename)
 			
 			if   os.path.exists(file):
 				for source_dirname, source_filename in source_dirnames:
@@ -241,6 +245,11 @@ Saves this object. If no FILENAME is given, the object is saved in the path,
 using its filename attribute. If FILENAME is given, it is saved at this
 location."""
 		if ".." in self.filename: raise ValueError("Cannot have .. in filename (security reason)!", filename)
+		if not os.path.exists(os.path.join(path[0], self.DIRNAME)): # Backward compatibility
+			if   self.DIRNAME == "models"         : self.__class__.DIRNAME = "shapes"
+			elif self.DIRNAME == "animated_models": self.__class__.DIRNAME = "shapes"
+			#elif self.DIRNAME == "worlds"         : self.__class__.DIRNAME = "groups"
+			
 		global _SAVING
 		try:
 			_SAVING = self # Hack !!
@@ -401,26 +410,26 @@ class PythonMaterial(_soya._PythonMaterial, Material):
 class PythonIdleingMaterial(_soya._PythonIdleingMaterial, Material):
 	pass
 
-class Shape(SavedInAPath, _soya._Shape):
-	"""Shape
+class Model(SavedInAPath, _soya._Model):
+	"""Model
 
-A Shape is an optimized model. Shapes cannot be modified, but they are rendered very
+A Model is an optimized model. Models cannot be modified, but they are rendered very
 quickly, and they can be used several time, e.g. if you want to 2 same cubes in a scene.
-Shapes are used in conjunction with Volume."""
-	DIRNAME = "shapes"
+Models are used in conjunction with Body."""
+	DIRNAME = "models"
 	_alls = weakref.WeakValueDictionary()
 	
 	def load(klass, filename):
 		if ".." in filename: raise ValueError("Cannot have .. in filename (security reason)!", filename)
 		need_export, world_file, file = klass._check_export(filename + ".data", filename, (World.DIRNAME, filename + ".data"), ("blender", filename.split("@")[0] + ".blend"), ("obj", filename + ".obj"), ("obj", filename + ".mtl"), ("3ds", filename + ".3ds"))
 		if need_export:
-			shape = World.get(filename).shapify()
-			shape._filename = filename
-			try: shape.save()
+			model = World.get(filename).to_model()
+			model._filename = filename
+			try: model.save()
 			except:
 				sys.excepthook(*sys.exc_info())
-				print "* Soya * WARNING : can't save compiled shape %s!" % filename
-			return shape
+				print "* Soya * WARNING : can't save compiled model %s!" % filename
+			return model
 		else:
 			obj = loads(open(file, "rb").read())
 			obj.loaded()
@@ -431,26 +440,26 @@ Shapes are used in conjunction with Volume."""
 	availables = classmethod(availables)
 	
 	
-class SimpleShape(Shape, _soya._SimpleShape):
-	"""SimpleShape
+class SimpleModel(Model, _soya._SimpleModel):
+	"""SimpleModel
 
-The most basic class of Shape."""
+The most basic class of Model."""
 	
-class SolidShape(_soya._SolidShape, SimpleShape):
-	"""SolidShape
+class SolidModel(_soya._SolidModel, SimpleModel):
+	"""SolidModel
 
-Like SimpleShape, but when the shape intersects the camera, the section is drawn.
+Like SimpleModel, but when the model intersects the camera, the section is drawn.
 Usefull for light effects."""
 	
-class TreeShape(Shape, _soya._TreeShape):
-	"""TreeShape
+class TreeModel(Model, _soya._TreeModel):
+	"""TreeModel
 
-A Shape that use a BSP-like tree to optimize rendering and raypicking."""
+A Model that use a BSP-like tree to optimize rendering and raypicking."""
 
-class CellShadingShape(Shape, _soya._CellShadingShape):
-	"""CellShadingShape
+class CellShadingModel(Model, _soya._CellShadingModel):
+	"""CellShadingModel
 
-A Shape that use cell-shading for rendering."""
+A Model that use cell-shading for rendering."""
 
 
 class Point(_soya._Point):
@@ -479,35 +488,41 @@ ure coordinates (sometime called U and V).
 """
 	
 	
-class Volume(_soya._Volume):
-	"""Volume
+class Body(_soya._Body):
+	"""Body
 
-A Volume is a Soya 3D object that display a Shape. The Volume contains data about the
-position, the orientation and the scaling, and the Shape contains the geometric data.
+A Body is a Soya 3D object that display a Model. The Body contains data about the
+position, the orientation and the scaling, and the Model contains the geometric data.
 
-This separation allows to use several time the same Shape at different position, without
+This separation allows to use several time the same Model at different position, without
 dupplicating the geometric data.
 
 Attributes are (see also CoordSyst for inherited attributes):
 
- - shape : the Shape (a Shape object, defaults to None).
+ - model : the Model (a Model object, defaults to None).
 """
 
 def do_cmd(cmd):
 	print "* Soya * Running '%s'..." % cmd
 	os.system(cmd)
 	
-class World(SavedInAPath, _soya._World, Volume):
+def do_cmd_popen(cmd):
+	print "* Soya * Running '%s'..." % cmd
+	p = os.popen(cmd)
+	import time; time.sleep(1.0)
+	return p.read()
+	
+class World(SavedInAPath, _soya._World, Body):
 	"""World
 
 A World is a Soya 3D object that can contain other Soya 3D objects, including other Worlds.
 Worlds are used to group 3D objects ; when a World is moved, all the objects it contains
 are moved too, since they are part of the World.
-Mostly for historical reasons, World is a subclass of Volume, and thus can display a Shape.
+Mostly for historical reasons, World is a subclass of Body, and thus can display a Model.
 
 Worlds can be saved in the "worlds" directory ; see SavedInAPath.
 
-Attributes are (see also Volume, CoordSyst and SavedInAPath for inherited attributes):
+Attributes are (see also Body, CoordSyst and SavedInAPath for inherited attributes):
 
  - children : the list of 3D object contained in the World (default to an empty list).
 	 use World.add(coordsyst) and World.remove(coordsyst) for additions and removals.
@@ -515,9 +530,9 @@ Attributes are (see also Volume, CoordSyst and SavedInAPath for inherited attrib
  - atmosphere : the atmosphere specifies atmospheric properties of the World (see
 	 Atmosphere). Default is None.
 
- - shapifier : the shapifier specifies how the World is compiled into Shape.
-	 Default is None, which result in the use of the default Shapifier, which is
-	 SimpleShapifier().
+ - model_builder : the model_builder specifies how the World is compiled into Model.
+	 Default is None, which result in the use of the default ModelBuilder, which is
+	 SimpleModelBuilder().
 """
 
 	DIRNAME = "worlds"
@@ -527,6 +542,8 @@ Attributes are (see also Volume, CoordSyst and SavedInAPath for inherited attrib
 		for i in self:
 			if hasattr(i, "loaded"): i.loaded()
 	def load(klass, filename):
+		global path
+		
 		if ".." in filename: raise ValueError("Cannot have .. in filename (security reason)!", filename)
 		need_export, source_file, file = klass._check_export(filename + ".data", filename, ("blender", filename.split("@")[0] + ".blend"), ("obj", filename + ".obj"), ("obj", filename + ".mtl"), ("3ds", filename + ".3ds"))
 		if need_export:
@@ -537,14 +554,25 @@ Attributes are (see also Volume, CoordSyst and SavedInAPath for inherited attrib
 				extra = ""
 				if "@" in filename:
 					extra += " CONFIG_TEXT=%s" % filename[filename.index("@") + 1:]
-					
-				do_cmd("blender %s -P %s --blender2soya FILENAME=%s FILE_FORMAT=%s %s" % (
+
+				import tempfile
+				tmp_file = tempfile.mkstemp()[1]
+				do_cmd("blender %s -P %s --blender2soya FILENAME=%s FILE_FORMAT=%s TMP_FILE=%s %s" % (
 					source_file,
-					os.path.join(os.path.dirname(__file__), "blender2soya.py"),
+					os.path.join(os.path.dirname(__file__), "blender2soya_batch.py"),
 					filename,
 					file_format,
+					tmp_file,
 					extra,
 					))
+				code = open(tmp_file).read()
+				os.unlink(tmp_file)
+				
+				old_path = path
+				
+				exec code
+				
+				path = old_path
 				
 			elif need_export == "obj":
 				import soya.objmtl2soya
@@ -580,13 +608,13 @@ Attributes are (see also CoordSyst for inherited attributes):
  - constant, linear and quadratic : the 3 components of the light attenuation. Constant
 	 reduces the light independently of the distance, linear increase with the distance,
 	 and quadratic increase the squared distance. Default is 1.0, 0.0 and 0.0.
- - cast_shadow : True if the light cast shadows on Shapes that have shadows enabled.
+ - cast_shadow : True if the light cast shadows on Models that have shadows enabled.
 	 Default is true.
  - shadow_color : the color of the shadow . Default is a semi-transparent black
 	 (0.0, 0.0, 0.0, 0.5).
  - top_level : XXX ???
  - static : True if the light can be used for static lighting when compiling a World into
-	 a Shape. Default is true.
+	 a Model. Default is true.
  - ambient : the light's ambient color, which is not affected by the light's orientation
 	 or attenuation. Default is black (no ambient).
  - diffuse : the light's color. Default is white.
@@ -625,7 +653,7 @@ class Face(_soya._Face):
 A Face displays a polygon composed of several Vertices (see the Vertex class).
 Notice that Face are SLOW ; Faces are normally used for building model but not for
 rendering them. To get a fast rendering, you should put several Faces in a World, and
-then compile the World into a Shape (see the modeling-X.py tutorial series).
+then compile the World into a Model (see the modeling-X.py tutorial series).
 
 According to the number of Vertices, the result differs:
  - 1 Vertex => Plot
@@ -647,16 +675,16 @@ Interesting properties are:
 
  - lit: true to enable lighting on the Face. Default is true.
 
-The following options are used when compiling the Face into a Shape,
+The following options are used when compiling the Face into a Model,
 but does not affect the rendering of the Face itself:
 
  - static_lit: true to enable static lighting (faster). If true, when compiling the Face
-	 into a Shape, all Lights available will be applied as static lighting. Default is true.
+	 into a Model, all Lights available will be applied as static lighting. Default is true.
 
  - smooth_lit: true to compute per-vertex normal vectors, instead of per-face normal vector.
-	 This makes the Shape looking smooth (see tutorial modeling-smoothlit-1.py).
+	 This makes the Model looking smooth (see tutorial modeling-smoothlit-1.py).
 	 Notice that Soya automatically disable smooth_lit between 2 faces that makes a sharp
-	 angle (see Shapifier.max_face_angle attribute).
+	 angle (see ModelBuilder.max_face_angle attribute).
 	 Default is false.
 """
 
@@ -767,10 +795,10 @@ to another makes it plays twice)."""
 				coordsyst.to_render = self.beyond
 			if coordsyst.parent is self.parent:
 				self.beyond.add(coordsyst)
-		IDLER.next_round_tasks.append(do_it)
+		MAIN_LOOP.next_round_tasks.append(do_it)
 		
 		
-class Land(_soya._Land):
+class Terrain(_soya._Terrain):
 	pass
 
 class TravelingCamera(_soya._TravelingCamera):
@@ -782,13 +810,11 @@ class ThirdPersonTraveling(_soya._ThirdPersonTraveling):
 class FixTraveling(_soya._FixTraveling):
 	pass
 
-#class Cal3dVolume(_soya._Cal3dVolume):
-#	pass
 
-Cal3dVolume = Volume
-
-
-class Cal3dShape(Shape, _soya._Cal3dShape):
+class AnimatedModel(Model, _soya._AnimatedModel):
+	DIRNAME = "animated_models"
+	_alls = weakref.WeakValueDictionary()
+	
 	def load(klass, filename):
 		if ".." in filename: raise ValueError("Cannot have .. in filename (security reason)!", filename)
 		need_export, source_file, file = klass._check_export(os.path.join(filename, filename + ".cfg"), filename, ("blender", filename.split("@")[0] + ".blend"))
@@ -801,7 +827,7 @@ class Cal3dShape(Shape, _soya._Cal3dShape):
 				do_cmd("blender %s -P %s --blender2cal3d FILENAME=%s EXPORT_FOR_SOYA=1 XML=0 %s" % (
 					source_file,
 					os.path.join(os.path.dirname(__file__), "blender2cal3d.py"),
-					os.path.join(os.path.dirname(source_file), "..", "shapes", filename, filename + ".cfg"),
+					os.path.join(os.path.dirname(source_file), "..", "models", filename, filename + ".cfg"),
 					extra,
 					))
 				
@@ -869,7 +895,7 @@ if hasattr(_soya, "_Sound"):
 		- sound      : the sound currently played (read-only)
 		- loop       : if true, the sound restarts from the beginning when it ends; default is false
 		- auto_remove: if true (default), the SoundPlayer is automatically removed when the sound ends (excepted in cases of looping!)
-		- gain       : the volume (default 1.0)
+		- gain       : the body (default 1.0)
 		- play_in_3D : if true, the sound is played as a 3D sound; if false, as a 2D sound. Notice that OpenAL cannot play stereo sound in 3D.
 
 	Constructor is SoundPlayer(parent = None, sound = None, loop = 0, play_in_3D = 1, gain = 1.0, auto_remove = 1)
@@ -888,28 +914,68 @@ if hasattr(_soya, "_Sound"):
 	The default implementation removes the SoundPlayer, if SoundPlayer.auto_remove is true."""
 			# Implemented in Python because of the lambda
 			if self.auto_remove:
-				IDLER.next_round_tasks.append(lambda: self.parent.remove(self))
+				MAIN_LOOP.next_round_tasks.append(lambda: self.parent.remove(self))
 		
+
+
+class Font(SavedInAPath, _soya._Font):
+	DIRNAME = "fonts"
+	_alls = weakref.WeakValueDictionary()
+	
+	def load(klass, filename):
+		width  = 20
+		height = 30
+		p = filename.split("@")
+		filename2 = p[0]
+		if len(p) > 1:
+			width, height = map(int, p[1].split("x"))
+		if ".." in filename2: raise ValueError("Cannot have .. in filename (security reason)!", filename2)
+		filename2 = filename2.replace("/", os.sep)
+		for p in path:
+			file = os.path.join(p, klass.DIRNAME, filename2)
+			if os.path.exists(file):
+				font = Font(file, width, height)
+				font._filename = filename
+				return font
+		raise ValueError("No %s named %s" % (klass.__name__, filename2))
+	load = classmethod(load)
+	
+	def save(klass, filename = None): raise NotImplementedError("Soya cannot save font.")
+	
+	def availables(klass):
+		"""SavedInAPath.availables() -> list
+
+Returns the list of the filename all the objects available in the current path."""
+		import dircache
+		filenames = dict(klass._alls)
+		for p in path:
+			for filename in dircache.listdir(os.path.join(p, klass.DIRNAME)):
+				filenames[filename] = 1
+		filenames = filenames.keys()
+		filenames.sort()
+		return filenames
+	availables = classmethod(availables)
+	
 
 _soya.Image            = Image
 _soya.Material         = Material
-_soya.Shape            = Shape
-_soya.SimpleShape      = SimpleShape
-_soya.SolidShape       = SolidShape
-_soya.TreeShape        = TreeShape
-_soya.CellShadingShape = CellShadingShape
+_soya.Model            = Model
+_soya.SimpleModel      = SimpleModel
+_soya.SolidModel       = SolidModel
+_soya.TreeModel        = TreeModel
+_soya.CellShadingModel = CellShadingModel
 _soya.Point            = Point
 _soya.Vector           = Vector
 _soya.Camera           = Camera
 _soya.Light            = Light
-_soya.Volume           = Volume
+_soya.Body             = Body
 _soya.World            = World
-_soya.Cal3dVolume      = Cal3dVolume
-_soya.Cal3dShape       = Cal3dShape
+_soya.Cal3dBody        = Cal3dBody
+_soya.AnimatedModel    = AnimatedModel
 _soya.Face             = Face
 _soya.Atmosphere       = Atmosphere
 _soya.Portal           = Portal
-_soya.Land             = Land
+_soya.Terrain          = Terrain
 _soya.Particles        = Particles
 
 DEFAULT_MATERIAL = Material()
@@ -938,5 +1004,22 @@ _soya._set_shader_default_material(SHADER_DEFAULT_MATERIAL)
 
 
 inited = 0
+
+
+# Backward compatibility
+
+Idler            = MainLoop
+Volume           = Body
+Cal3dVolume      = Body
+Shape            = Model
+SimpleShape      = SimpleModel
+SolidShape       = SolidModel
+CellShadingShape = CellShadingModel
+TreeShape        = TreeModel
+Cal3dShape       = AnimatedModel
+Land             = Terrain
+
+Body.set_shape = Body.set_model
+Body.shape     = Body.model
 
 

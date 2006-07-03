@@ -36,7 +36,7 @@ class MaterialEditor:
 		
 		#self.cube = cube.Cube(self.scene, material)
 		cube_world = cube.Cube(None, material)
-		self.cube = soya.Volume(self.scene, cube_world.shapify())
+		self.cube = soya.Body(self.scene, cube_world.to_model())
 		self.cube.set_xyz(0.0, 0.0, -2.0)
 		self.cube.rotate_x(30.0)
 		

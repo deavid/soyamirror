@@ -126,8 +126,8 @@ cdef void _update_sound_listener_position(CoordSyst ear, float proportion):
 	alListenerfv(AL_POSITION, pos)
 	alGetListenerfv(AL_POSITION, pos)
 	
-	if IDLER is None: dt = proportion * 0.030
-	else:             dt = proportion * IDLER.round_duration
+	if MAIN_LOOP is None: dt = proportion * 0.030
+	else:             dt = proportion * MAIN_LOOP.round_duration
 	alListener3f(AL_VELOCITY,
 							 (pos[0] - _ear_old_pos[0]) / dt,
 							 (pos[1] - _ear_old_pos[1]) / dt,
@@ -374,7 +374,7 @@ cdef class _SoundPlayer(CoordSyst):
 		
 		cdef int    i, nb_queued, nb_processed
 		cdef ALuint buffer
-
+		
 		if self._pending_buffer == 0:
 			if not self._option & SOUND_LOOP:
 				alGetSourcei(self._source, AL_SOURCE_STATE, &i)
@@ -399,14 +399,17 @@ cdef class _SoundPlayer(CoordSyst):
 				
 			alSourceQueueBuffers(self._source, 1, &self._pending_buffer)
 			
+			alGetSourcei(self._source, AL_SOURCE_STATE, &i)
+			if i == AL_STOPPED: alSourcePlay(self._source)
+			
 			
 	def advance_time(self, float proportion):
 		cdef float pos[3]
 		cdef float dt
 		
 		if (self._option & SOUND_PLAY_IN_3D) and (not self._option & COORDSYS_STATIC):
-			if IDLER is None: dt = proportion * 0.030
-			else:             dt = proportion * IDLER.round_duration
+			if MAIN_LOOP is None: dt = proportion * 0.030
+			else:             dt = proportion * MAIN_LOOP.round_duration
 			
 			self._out(pos)
 			

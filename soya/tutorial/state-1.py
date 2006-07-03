@@ -34,11 +34,11 @@ soya.path.append(os.path.join(os.path.dirname(sys.argv[0]), "data"))
 scene = soya.World()
 
 
-# Create a volume class that interpolates between two States.
+# Create a body class that interpolates between two States.
 
-class InterpolatingVolume(soya.Volume):
-	def __init__(self, parent = None, shape = None):
-		soya.Volume.__init__(self, parent, shape)
+class InterpolatingBody(soya.Body):
+	def __init__(self, parent = None, model = None):
+		soya.Body.__init__(self, parent, model)
 		
 		# Create two State objects, based on the current position of 'self'.
 		
@@ -56,17 +56,17 @@ class InterpolatingVolume(soya.Volume):
 		
 
 
-volume = InterpolatingVolume(scene, soya.cube.Cube(None).shapify())
+body = InterpolatingBody(scene, soya.cube.Cube(None).to_model())
 
 # Moves, rotates and scales the States.
 # Notice that States have the Soya's usual positioning method (actually State even inherit
 # from CoordSyst).
 
-volume.state1.set_xyz(-1.0, -0.5, 0.0)
+body.state1.set_xyz(-1.0, -0.5, 0.0)
 
-volume.state2.set_xyz(1.0, 1.0, -1.0)
-volume.state2.rotate_y(90.0)
-volume.state2.scale(3.0, 1.0, 1.0)
+body.state2.set_xyz(1.0, 1.0, -1.0)
+body.state2.rotate_y(90.0)
+body.state2.scale(3.0, 1.0, 1.0)
 
 
 # Adds a light.
@@ -84,7 +84,7 @@ soya.set_root_widget(camera)
 
 # Main loop
 
-soya.Idler(scene).idle()
+soya.MainLoop(scene).main_loop()
 
 
 # TODO / exercice : turn this demo into a puzzle game !

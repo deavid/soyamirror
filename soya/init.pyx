@@ -142,7 +142,7 @@ cdef void init_gl():
 	gluTessCallback(SHADOW_TESS, GLU_TESS_BEGIN  , <_GLUfuncptr> glBegin)
 	gluTessCallback(SHADOW_TESS, GLU_TESS_VERTEX , <_GLUfuncptr> glVertex3dv)
 	gluTessCallback(SHADOW_TESS, GLU_TESS_END    , <_GLUfuncptr> glEnd)
-	gluTessCallback(SHADOW_TESS, GLU_TESS_COMBINE, <_GLUfuncptr> shape_shadow_tess_combine)
+	gluTessCallback(SHADOW_TESS, GLU_TESS_COMBINE, <_GLUfuncptr> model_shadow_tess_combine)
 	
 	
 	set_quality(quality)
@@ -158,10 +158,10 @@ cdef void init_gl():
 		DRIVER_3D = PyString_FromString(<char*> glGetString(GL_RENDERER))
 	if "DRI Radeon" in DRIVER_3D:
 		# Avoid a bug in free radeon driver
-		global land_drawColor, land_disableColor, land_enableColor
-		#land_drawColor    = land_drawColor_radeon
-		#land_disableColor = land_disableColor_radeon
-		#land_enableColor  = land_enableColor_radeon
+		global terrain_drawColor, terrain_disableColor, terrain_enableColor
+		#terrain_drawColor    = terrain_drawColor_radeon
+		#terrain_disableColor = terrain_disableColor_radeon
+		#terrain_enableColor  = terrain_enableColor_radeon
 		
 		# free radeon driver print A LOT OF debug code when using texture border, which
 		# slow down the rendering ! => disable texture border.
@@ -172,7 +172,7 @@ cdef void base_init():
 	global renderer
 	#srand (1);
 	renderer = Renderer()
-	#land_tri_recycler = P3_list_new(20)
+	#terrain_tri_recycler = P3_list_new(20)
 	#chunks = P3_list_new(2)
 
 cdef void base_quit():
@@ -182,7 +182,7 @@ cdef void base_quit():
 	print "* Soya3D * Quit..."
 	
 	# renderer
-	#P3_list_dealloc(land_tri_recycler)
+	#P3_list_dealloc(terrain_tri_recycler)
 	#free(NULL_packs)
 	# fx
 	if renderer.engine_option & FX_INITED: fx_quit()

@@ -160,11 +160,11 @@ include "ode/geoms.pyx"
 # Utility functions for Soya geoms
 include "ode/util.pyx"
 
-# Land geom for Soya
-include "ode/land.pyx"
+# Terrain geom for Soya
+include "ode/terrain.pyx"
 
-# Shape geom using TriMesh
-include "ode/shape.pyx"
+# Model geom using TriMesh
+include "ode/model.pyx"
 
 		
 def collide(GeomObject geom1, GeomObject geom2, int max_contacts=8):

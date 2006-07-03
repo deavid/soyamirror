@@ -32,7 +32,7 @@ soya.path.append(os.path.join(os.path.dirname(sys.argv[0]), "data"))
 scene = soya.World()
 
 sword = soya.World(scene)
-sword.set_shape(soya.Shape.get("sword"))
+sword.set_model(soya.Model.get("sword"))
 sword.y = -1.5
 
 # Adds a light, and a camera
@@ -90,7 +90,7 @@ sword.begin_round = begin_round
 
 # Main loop
 
-soya.Idler(scene).idle()
+soya.MainLoop(scene).main_loop()
 
 
 # TODO (left as an exercice):

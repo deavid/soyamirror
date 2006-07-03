@@ -263,7 +263,7 @@ cdef class Renderer:
 				glLoadMatrixf(coordsyst._render_matrix)
 				if coordsyst._render_matrix[17] != 1.0: glEnable(GL_NORMALIZE)
 			
-			if isinstance(obj, _Shape): (<_Shape>    obj)._render(coordsyst)
+			if isinstance(obj, _Model): (<_Model>    obj)._render(coordsyst)
 			else:                       (<CoordSyst> obj)._render(coordsyst)
 			
 			if (not coordsyst is None) and (coordsyst._render_matrix[17] != 1.0): glDisable(GL_NORMALIZE)
@@ -344,7 +344,7 @@ cdef class Renderer:
 			glEnable      (GL_STENCIL_TEST)
 			glColorMask   (GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE)
 			
-			# draw shadow volume
+			# draw shadow body
 			if self.root_object._shadow(None, light):
 				# draw stencil buffer on screen
 				glStencilMask (0)

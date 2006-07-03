@@ -6,7 +6,7 @@
 Name: 'Soya'
 Blender: 235
 Group: 'Export'
-Tip: 'Export mesh data to a Soya World (then compilable to a Shape).'
+Tip: 'Export mesh data to a Soya World (then compilable to a Model).'
 """
 
 __author__  = "Jean-Baptiste 'Jiba' Lamy"
@@ -98,12 +98,27 @@ FILE_FORMAT = "pickle"
 
 try:
 	import soya
-except ImportError:
-	print """
-ERROR : Cannot find Soya !
+except ImportError, e:
+	sys.excepthook(*sys.exc_info())
+	
+	if "undefined symbol" in e:
+		print """
+ERROR: It seems that Soya is installed, but Blender is unable to load it.
+This is a known bug with some version of Blender.
+A work-around is to launch Blender as following:
+
+  LD_PRELOAD=/usr/lib/libpython2.4.so.1.0 blender
+
+(you may have to change /usr/lib/libpython2.4.so.1.0 according to your version of Python)
 """
-	print __bpydoc__
-	#sys.exit()
+		
+	else:
+		print """
+ERROR: Cannot find Soya!
+You need to install Soya!
+"""
+		print __bpydoc__
+		#sys.exit()
 	
 
 import string
@@ -365,7 +380,7 @@ class Blender2Soya:
 			root_world.scale(self.scale, self.scale, self.scale)
 			
 		if self.cellshading:
-			root_world.shapifier = soya.CellShadingShapifier(
+			root_world.model_builder = soya.CellShadingModelBuilder(
 				shader              = (self.cellshading_shader and get_material(self.cellshading_shader)) or None,
 				outline_color       = self.cellshading_outline_color,
 				outline_width       = self.cellshading_outline_width,
@@ -373,12 +388,12 @@ class Blender2Soya:
 				)
 			
 		if self.shadow:
-			if not root_world.shapifier: root_world.shapifier = soya.SimpleShapifier()
-			root_world.shapifier.shadow = 1
+			if not root_world.model_builder: root_world.model_builder = soya.SimpleModelBuilder()
+			root_world.model_builder.shadow = 1
 			
 		if self.max_face_angle != 80.0:
-			if not root_world.shapifier: root_world.shapifier = soya.SimpleShapifier()
-			root_world.shapifier.max_face_angle = self.max_face_angle
+			if not root_world.model_builder: root_world.model_builder = soya.SimpleModelBuilder()
+			root_world.model_builder.max_face_angle = self.max_face_angle
 			
 			
 		if self.launch_editor: self.edit(root_world, *materials)

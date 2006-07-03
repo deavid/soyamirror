@@ -15,12 +15,12 @@ cdef class _World(_soya._World):
 			_World()
 		"""
 
-		cdef public double steptime # Should be the same as the idler's round_duration
+		cdef public double steptime # Should be the same as the main_loop's round_duration
 		#cdef _bodies
 		cdef dWorldID _wid
 
 		def __new__(self, *args, **kw):
-				self.steptime = 0.030 # Same as idler default
+				self.steptime = 0.030 # Same as main_loop default
 				self._wid = dWorldCreate()
 				#self._bodies = []
 

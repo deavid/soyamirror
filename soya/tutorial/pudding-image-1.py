@@ -15,8 +15,8 @@ pudding.init()
 
 scene = soya.World()
 
-sword_model = soya.Shape.get("sword")
-sword = soya.Volume(scene, sword_model)
+sword_model = soya.Model.get("sword")
+sword = soya.Body(scene, sword_model)
 sword.x = 1
 sword.rotate_y(90.)
 
@@ -42,5 +42,5 @@ w.add_child(camera)
 
 soya.set_root_widget(w)
 
-pudding.idler.Idler(scene).idle()
+pudding.main_loop.MainLoop(scene).main_loop()
 

@@ -127,5 +127,5 @@ camera = soya.Camera(scene)
 camera.set_xyz(0.0, -0.6, 2.0)
 soya.set_root_widget(camera)
 
-soya.Idler(scene).idle()
+soya.MainLoop(scene).main_loop()
 

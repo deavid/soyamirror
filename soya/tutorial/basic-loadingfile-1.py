@@ -18,7 +18,7 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 
-# basic-loadingfile-1: Load a file : load the rotating volume
+# basic-loadingfile-1: Load a file : load the rotating body
 
 # This lesson loads the rotating model from a file, using either Cerealizer or cPickle.
 #
@@ -32,7 +32,7 @@
 import sys, os, os.path, soya
 import cerealizer
 
-# Import the module that defines the RotatingVolume class. Cerealizer or Pickle saves the
+# Import the module that defines the RotatingBody class. Cerealizer or Pickle saves the
 # object data, but NOT the source or executable code of their class.
 #
 # Here, we use "execfile" since the file "basic-savingfile-cerealizer-1.py" is not a valid
@@ -53,12 +53,12 @@ execfile(os.path.join(os.path.dirname(sys.argv[0]), "basic-savingfile-cerealizer
 soya.init()
 soya.path.append(os.path.join(os.path.dirname(sys.argv[0]), "data"))
 
-# Load the scene we have saved previously. "a_scene_with_a_rotating_volume" is the filename
+# Load the scene we have saved previously. "a_scene_with_a_rotating_body" is the filename
 # we have given to this scene.
-# The "World.load" method is similar to "Shape.get", except that "load" ALWAYS returns a new
+# The "World.load" method is similar to "Model.get", except that "load" ALWAYS returns a new
 # object read from the file, whereas "get" cache its result.
 
-scene = soya.World.load("a_scene_with_a_rotating_volume")
+scene = soya.World.load("a_scene_with_a_rotating_body")
 
 
 # Creates a camera.
@@ -71,4 +71,4 @@ camera = soya.Camera(scene)
 camera.z = 3.0
 soya.set_root_widget(camera)
 
-soya.Idler(scene).idle()
+soya.MainLoop(scene).main_loop()

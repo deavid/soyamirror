@@ -177,8 +177,8 @@ class MaterialEditor(editor.WithButtonEditor):
 	def button_click(self, event = None):
 		edit(getattr(self.obj, self.attr))
 		
-class ShapeEditor(editor.WithButtonEditor):
-	INTERNAL_EDITOR_CLASS = editor.LambdaListEditor(lambda obj: filter(lambda filename: not (filename and filename.startswith("_")), soya.Shape.availables()), lambda filename: filename and soya.Shape.get(filename))
+class ModelEditor(editor.WithButtonEditor):
+	INTERNAL_EDITOR_CLASS = editor.LambdaListEditor(lambda obj: filter(lambda filename: not (filename and filename.startswith("_")), soya.Model.availables()), lambda filename: filename and soya.Model.get(filename))
 	
 	def __init__(self, master, obj, attr):
 		editor.WithButtonEditor.__init__(self, master, obj, attr, self.INTERNAL_EDITOR_CLASS, "...")
@@ -195,7 +195,7 @@ class WorldEditor(editor.WithButtonEditor):
 	def button_click(self, event = None):
 		edit(getattr(self.obj, self.attr))
 		
-custom.register_attr("shape"            , ShapeEditor)
+custom.register_attr("model"            , ModelEditor)
 custom.register_attr("material"         , MaterialEditor)
 custom.register_attr("beyond"           , WorldEditor)
 
@@ -234,14 +234,14 @@ def _Gone(vertices):
 soya.Triangle = lambda : _Gone([ImmatureVertex(), ImmatureVertex(), ImmatureVertex()])
 soya.Quad     = lambda : _Gone([ImmatureVertex(), ImmatureVertex(), ImmatureVertex(), ImmatureVertex()])
 
-custom.register_available_children(["soya.Triangle()", "soya.Quad()", "soya.Volume()", "soya.World()", "soya.Camera()", "soya.Light()", "soya.Portal()", "soya.Fountain()", "laser.Laser()", "ray.Ray()"], soya.World)
+custom.register_available_children(["soya.Triangle()", "soya.Quad()", "soya.Body()", "soya.World()", "soya.Camera()", "soya.Light()", "soya.Portal()", "soya.Fountain()", "laser.Laser()", "ray.Ray()"], soya.World)
 custom.register_available_children(["soya.Vertex()"], soya.Face)
 
 custom.register_values("color"       , ["None", "(1.0, 1.0, 1.0, 1.0)", "(0.0, 0.0, 0.0, 1.0)"])
 custom.register_values("diffuse"     , ["None", "(1.0, 1.0, 1.0, 1.0)", "(0.0, 0.0, 0.0, 1.0)"])
 custom.register_values("specular"    , ["None", "(1.0, 1.0, 1.0, 1.0)", "(0.0, 0.0, 0.0, 1.0)"])
-custom.register_values("shapify_args", ["None", """("tree", {})""", """("cell-shading", { 'shader':'shader2', 'line_color':(0.0, 0.0, 0.0, 1.0), 'line_width':8.0 })"""])
-#custom.register_values("shapify_args", ["None", """("tree", {"min_node_content":0, "min_node_radius":5.0, "min_node_distance":0.0})""", """("morph", {})"""])
+custom.register_values("to_model_args", ["None", """("tree", {})""", """("cell-shading", { 'shader':'shader2', 'line_color':(0.0, 0.0, 0.0, 1.0), 'line_width':8.0 })"""])
+#custom.register_values("to_model_args", ["None", """("tree", {"min_node_content":0, "min_node_radius":5.0, "min_node_distance":0.0})""", """("morph", {})"""])
 
 editobj.EVAL_ENV.update({
 	"soya"       : soya,

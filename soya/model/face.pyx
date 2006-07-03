@@ -105,7 +105,7 @@ coordinates TEX_X and TEX_Y, and the given DIFFUSE and EMISSIVE colors."""
 		cdef float coords[3]
 		glTexCoord2f(self._tex_x, self._tex_y)
 		if not self._diffuse  is None:
-			# this call doesnt seem to work. shape.pyx uses glColor so used again here 
+			# this call doesnt seem to work. model.pyx uses glColor so used again here 
 			#glMaterialfv(GL_FRONT, GL_DIFFUSE, <float*> self._diffuse)
 			# using glColor4fv(<float*>self._diffuse) doesnt work 
 			glColor4f(self._diffuse[0], self._diffuse[1], self._diffuse[2], self._diffuse[3])

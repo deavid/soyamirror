@@ -78,7 +78,7 @@ as controller."""
 		jump = 0
 		
 		# get the events that have not been captured by pudding 
-		for event in soya.IDLER.events:
+		for event in soya.MAIN_LOOP.events:
 			if   event[0] == sdlconst.KEYDOWN:
 				if   (event[1] == sdlconst.K_q) or (event[1] == sdlconst.K_ESCAPE):
 					sys.exit() # Quit the game
@@ -121,12 +121,12 @@ class Character(soya.World):
 	def __init__(self, parent, controler):
 		soya.World.__init__(self, parent)
 
-		# Loads a Cal3D shape (=model)
-		balazar = soya.Cal3dShape.get("balazar")
+		# Loads a Cal3D model (=model)
+		balazar = soya.AnimatedModel.get("balazar")
 		
-		# Creates a Cal3D volume displaying the "balazar" shape
+		# Creates a Cal3D body displaying the "balazar" model
 		# (NB Balazar is the name of a wizard).
-		self.perso = soya.Cal3dVolume(self, balazar)
+		self.perso = soya.Cal3dBody(self, balazar)
 		
 		# Starts playing the idling animation in loop
 		self.perso.animate_blend_cycle("attente")
@@ -297,6 +297,6 @@ button.set_pos_bottom_right(bottom = 10)
 button.anchors = pudding.ANCHOR_BOTTOM | pudding.ANCHOR_LEFT
 button.on_click = sys.exit
 
-# Creates and run an "idler" (=an object that manage time and regulate FPS)
+# Creates and run an "main_loop" (=an object that manage time and regulate FPS)
 # By default, FPS is locked at 40.
-pudding.idler.Idler(scene).idle()
+pudding.main_loop.MainLoop(scene).main_loop()

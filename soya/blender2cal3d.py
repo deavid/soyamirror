@@ -822,15 +822,15 @@ class Spring:
 		self.vertex1 = vertex1
 		self.vertex2 = vertex2
 		self.spring_coefficient = 0.0
-		self.idlelength = 0.0
+		self.main_looplength = 0.0
 		
 	def to_cal3d(self):
-		return struct.pack("iiff", self.vertex1.id, self.vertex2.id, self.spring_coefficient, self.idlelength)
+		return struct.pack("iiff", self.vertex1.id, self.vertex2.id, self.spring_coefficient, self.main_looplength)
 
 	def to_cal3d_xml(self):
 		return "    <SPRING VERTEXID=\"%i %i\" COEF=\"%f\" LENGTH=\"%f\"/>\n" % \
 					 (self.vertex1.id, self.vertex2.id, self.spring_coefficient,
-					 self.idlelength)
+					 self.main_looplength)
 
 class Face:
 	def __init__(self, submesh, vertex1, vertex2, vertex3):

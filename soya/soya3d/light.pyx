@@ -382,8 +382,8 @@ cdef void disable_all_lights():
 				
 cdef void disable_static_lights():
 	"""Disable all static lights. Static lights are disabled when rendering static lit
-shape (Soya assume the effect of static lights was already taken into account at the
-shape computation time)."""
+model (Soya assume the effect of static lights was already taken into account at the
+model computation time)."""
 	cdef _Light light
 	for light in LIGHTS:
 		if (not light is None) and (light._gl_id_enabled == 1) and (light._option & COORDSYS_STATIC):
@@ -393,7 +393,7 @@ shape computation time)."""
 cdef void enable_static_lights():
 	"""Enable all static lights. Static lights are disabled when rendering static lit
 object (Soya assume the effect of static lights was already taken into account at the
-shape computation time)."""
+model computation time)."""
 	cdef _Light light
 	for light in LIGHTS:
 		if (not light is None) and (light._gl_id_enabled == 0) and (light._option & COORDSYS_STATIC):

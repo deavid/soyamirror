@@ -14,7 +14,7 @@ import os, sys
 import soya.pudding as pudding
 import soya.pudding.core
 import soya.pudding.control
-import soya.pudding.idler
+import soya.pudding.main_loop
 
 import soya
 from soya.opengl import *

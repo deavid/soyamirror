@@ -56,7 +56,7 @@ material = soya.Material()
 material.texture = soya.Image.get("block2.png")
 
 # Creates the World that will contain the pyramid. We don't create the pyramid in the
-# scene since we are going to compile the pyramid into a shape.
+# scene since we are going to compile the pyramid into a model.
 
 pyramid_world = soya.World()
 
@@ -99,22 +99,22 @@ soya.Face(pyramid_world, [soya.Vertex(pyramid_world, -0.5, -0.5, -0.5, 1.0, 1.0)
 
 cube_world = soya.cube.Cube(None, material)
 
-# Creates a subclass of Volume that permanently rotates.
+# Creates a subclass of Body that permanently rotates.
 # See the timemanagement-* lesson series for more info.
 
-class RotatingVolume(soya.Volume):
+class RotatingBody(soya.Body):
 	def advance_time(self, proportion):
 		self.rotate_y(2.0 * proportion)
 
-# Create a rotating volume in the scene, using the cube shape.
+# Create a rotating body in the scene, using the cube model.
 
-cube = RotatingVolume(scene, cube_world.shapify())
+cube = RotatingBody(scene, cube_world.to_model())
 cube.x = -1.0
 cube.rotate_x(30.0)
 
-# Create a rotating volume in the scene, using the pyramid shape.
+# Create a rotating body in the scene, using the pyramid model.
 
-pyramid = RotatingVolume(scene, pyramid_world.shapify())
+pyramid = RotatingBody(scene, pyramid_world.to_model())
 pyramid.x = 1.0
 pyramid.rotate_x(30.0)
 
@@ -130,5 +130,5 @@ camera.set_xyz(0.0, 0.0, 3.0)
 camera.set_xyz(-1.0, 0.0, 1.4)
 soya.set_root_widget(camera)
 
-soya.Idler(scene).idle()
+soya.MainLoop(scene).main_loop()
 

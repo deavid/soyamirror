@@ -227,12 +227,23 @@
       in an unstable stage and may change radically.
 
 * July 2006 : Soya3D 0.12
+  * Massive renaming (backward compatibility is maintained through aliases):
+      Idler       -> MainLoop
+      Shape       -> Model
+      Cal3dShape  -> AnimatedModel
+      Shapifier   -> ModelBuilder
+      Volume      -> Body
+      Cal3dVolume -> Body (merged with Volume)
+      Land        -> Terrain
+  * New sound API (see soya.Sound, soya.SoundPlayer and tuto sound-1.py)
   * Static and auto_static: all Soya objects (inheriting from
     CoordSyst) have now a "static" attribute that can be use to tag
     them as static for optimizing them, and an "auto_static" attribute
     (defaulting to true) that allows Soya to automatically determine
     wether they are static or not
   * Static shadows: static object's shadows are rendered faster
-  * New method Idler.update, for embedding Soya inside Tk (or other
-    GUI or mainloop) ; Idler.start has been removed since it has never
+  * New method MainLoop.update, for embedding Soya inside Tk (or other
+    GUI or mainloop) ; MainLoop.start has been removed since it has never
     been really working
+  * Font now inherits from SavedInAPath (=> you can have a data/fonts/
+    directory)

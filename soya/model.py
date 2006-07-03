@@ -21,5 +21,5 @@
 import warnings
 warnings.warn("The content of this module is now in the soya module.", DeprecationWarning)
 
-from soya import Material, Shape, Face, Vertex
+from soya import Material, Model, Face, Vertex
 

@@ -44,17 +44,17 @@ scene = soya.World()
 
 # Loads the sword model.
 
-sword_model = soya.Shape.get("sword")
+sword_model = soya.Model.get("sword")
 
 
-# Create a class of rotating volume. Soya if fully Object Oriented, and almost all
+# Create a class of rotating body. Soya if fully Object Oriented, and almost all
 # Soya classes can be extended.
-# Here, our class inherits from soya.Volume, and so can display a model.
+# Here, our class inherits from soya.Body, and so can display a model.
 
-class RotatingVolume(soya.Volume):
+class RotatingBody(soya.Body):
 	
-	# The Idler calls repeatedly the advance_time method, for all object in the scene.
-	# To make the volume rotate, we just have to override this method.
+	# The MainLoop calls repeatedly the advance_time method, for all object in the scene.
+	# To make the body rotate, we just have to override this method.
 	# In Soya, the time unit is the "round" ; one round is 30 milliseconds (default value).
 	# The proportion argument of advance_time is the proportion of a round that has occured:
 	# e.g. 0.3 means that 30% of a round has occured since last call, i.e. 9 milliseconds.
@@ -67,7 +67,7 @@ class RotatingVolume(soya.Volume):
 		# Calls the super implementation of advance_time. This IS NEEDED, as some Soya object
 		# already have an advance_time method.
 		
-		soya.Volume.advance_time(self, proportion)
+		soya.Body.advance_time(self, proportion)
 		
 		# Rotates the object around Y axis. The angle is proportional to proportion because
 		# the more time has been spent, the more we want to rotate, in order to achieve a
@@ -79,9 +79,9 @@ class RotatingVolume(soya.Volume):
 		self.rotate_y(proportion * 5.0)
 
 
-# Creates a rotating volume in the scene, using the sword model.
+# Creates a rotating body in the scene, using the sword model.
 
-sword = RotatingVolume(scene, sword_model)
+sword = RotatingBody(scene, sword_model)
 
 # Creates a light.
 
@@ -94,6 +94,6 @@ camera = soya.Camera(scene)
 camera.z = 3.0
 soya.set_root_widget(camera)
 
-soya.Idler(scene).idle()
+soya.MainLoop(scene).main_loop()
 
 

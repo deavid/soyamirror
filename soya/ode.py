@@ -15,19 +15,19 @@ class Body(_ode._Body, soya.World):
 
 _ode.Body = Body
 
-class Land(_ode._Land):
+class Terrain(_ode._Terrain):
 		pass
 
-_ode.Land = Land
+_ode.Terrain = Terrain
 
-class GeomShape(_ode._GeomShape):
+class GeomModel(_ode._GeomModel):
 		pass
 
-_ode.GeomShape = GeomShape
+_ode.GeomModel = GeomModel
 
-class GeomLand(_ode._GeomLand):
+class GeomTerrain(_ode._GeomTerrain):
 		pass
 
-_ode.GeomLand = GeomLand
+_ode.GeomTerrain = GeomTerrain
 
 

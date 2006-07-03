@@ -412,8 +412,8 @@ Converts a 3D Position into 2D screen coordinates X, Y in pixel."""
 		cdef float sphere[4]
 		
 		if isinstance(coordsyst, World):
-			# Check it as Volume
-			_Volume._get_sphere(coordsyst, sphere)
+			# Check it as Body
+			_Body._get_sphere(coordsyst, sphere)
 			coordsyst._frustum_id = -1
 			if sphere_in_frustum(renderer._frustum(coordsyst), sphere): return 1
 			

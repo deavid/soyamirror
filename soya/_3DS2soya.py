@@ -419,12 +419,12 @@ Imports a "{name}.3ds" file (from the "3ds" directory) and converts it into a So
 	makeWorld(Name)  
 	return soya.World.get(Name)
 
-def getShape(Name):
-	"""getShape(NAME) -> World
+def getModel(Name):
+	"""getModel(NAME) -> World
 
-Imports a "{name}.3ds" file (from the "3ds" directory) and converts it into a Soya Shape."""
+Imports a "{name}.3ds" file (from the "3ds" directory) and converts it into a Soya Model."""
 	makeWorld(Name)
-	return soya.Shape.get(Name)
+	return soya.Model.get(Name)
 
 
 if __name__=="__main__":     
@@ -441,5 +441,5 @@ if __name__=="__main__":
 	light.set_xyz(0.5, 1.0, 2.0)
 	soya.set_root_widget(camera)    
 	soya.init()
-	soya.Idler(world).idle()
+	soya.MainLoop(world).main_loop()
 

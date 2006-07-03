@@ -29,7 +29,7 @@ This script is an OBJ/MTL exporter for Soya.
 
 import sys, os, os.path, soya
 
-__all__ = ["getObj", "getShape"]
+__all__ = ["getObj", "getModel"]
 
 def loadMat(fileName, mat):
 	f=open(fileName,'r')
@@ -152,17 +152,17 @@ Imports a "{name}.obj" file (from the "obj" directory) and converts it into a So
 	makeWorld(Name)
 	return soya.World.get(Name)
 
-def getShape(Name):
-	"""getShape(NAME) -> World
+def getModel(Name):
+	"""getModel(NAME) -> World
 
-Imports a "{name}.obj" file (from the "obj" directory) and converts it into a Soya Shape."""
+Imports a "{name}.obj" file (from the "obj" directory) and converts it into a Soya Model."""
 	makeWorld(Name)
-	return soya.Shape.get(Name)
+	return soya.Model.get(Name)
 
 def main():
 	"""Imports the .obj file given as arg 1 and saves the created world to the 
 file given as arg 2. Does not add the .data extension. Put this in
-your worlds directory or shapify it."""
+your worlds directory or to_model it."""
 	infilename = sys.argv[1]
 	outfilename = sys.argv[2]
 	

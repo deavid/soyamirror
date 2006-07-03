@@ -26,7 +26,7 @@
 # For information, this character has been created in Blender and exported to Cal3D
 # with my Blender2Cal3D script: http://oomadness.nekeme.net/en/blender2cal3d/index.html
 
-# See Cal3D documentation for more info, and Cal3dShape and Cal3dVolume docstrings for
+# See Cal3D documentation for more info, and AnimatedModel and Cal3dBody docstrings for
 # advanced info on materials loading (e.g, how to substitute Cal3D materials by Soya ones).
 
 
@@ -41,29 +41,29 @@ soya.path.append(os.path.join(os.path.dirname(sys.argv[0]), "data"))
 
 scene = soya.World()
 
-# Load a Cal3D shape.
-# Cal3D shapes are saved in the 'shapes' subdirectory of soya.path ; each cal3d model
-# is a subdirectory and not a file (see tutorial/data/shapes/balazar). It contains
+# Load a Cal3D model.
+# Cal3D models are saved in the 'models' subdirectory of soya.path ; each cal3d model
+# is a subdirectory and not a file (see tutorial/data/models/balazar). It contains
 # skeleton, animation, mesh and material files, and a ".cfg" file with the same name
 # that the subdirectory.
 
 # You can also use cal3d.parse_cfg_file(filename).
 
-sorcerer_shape = soya.Cal3dShape.get("balazar")
+sorcerer_model = soya.AnimatedModel.get("balazar")
 
 # You can get the list of available mesh and animation names
 # as following:
 
-print "Available meshes    :", sorcerer_shape.meshes    .keys()
-print "Available animations:", sorcerer_shape.animations.keys()
+print "Available meshes    :", sorcerer_model.meshes    .keys()
+print "Available animations:", sorcerer_model.animations.keys()
 
-# Creates a Cal3D volume, using the sorcerer_shape.
+# Creates a Cal3D body, using the sorcerer_model.
 # See the docstrings of the soya.cal3d module to learn about mesh attachment and
-# detachment possibilities (see Volume.__init__, Volume.attach and Volume.detach).
+# detachment possibilities (see Body.__init__, Body.attach and Body.detach).
 # It can be used e.g. for dismembering, or changing the weapon of a character.
 
-#sorcerer = soya.Cal3dVolume(scene, sorcerer_shape)
-sorcerer = soya.Volume(scene, sorcerer_shape)
+#sorcerer = soya.Cal3dBody(scene, sorcerer_model)
+sorcerer = soya.Body(scene, sorcerer_model)
 
 # Rotates Balazar the sorcerer
 
@@ -81,7 +81,7 @@ sorcerer.animate_blend_cycle("marche")
 #
 #sorcerer.animate_execute_action("marche")
 #
-# See the cal3d.Volume.animate* docstrings for more info about optional arguments
+# See the cal3d.Body.animate* docstrings for more info about optional arguments
 
 
 # Adds a camera, an FPS label, a light and starts the main loop.
@@ -95,4 +95,4 @@ soya.root_widget.add(widget.FPSLabel())
 
 soya.Light(scene).set_xyz(5.0, 5.0, 2.0)
 
-soya.Idler(scene).idle()
+soya.MainLoop(scene).main_loop()

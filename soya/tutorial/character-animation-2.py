@@ -37,41 +37,41 @@ soya.path.append(os.path.join(os.path.dirname(sys.argv[0]), "data"))
 
 scene = soya.World()
 
-# Loads the sorcerer shape.
+# Loads the sorcerer model.
 
-sorcerer_shape = soya.Cal3dShape.get("balazar")
+sorcerer_model = soya.AnimatedModel.get("balazar")
 
 # Creates the sorcerer.
 # We need the sorcerer to be a World, in order to add other objects in it (= the sword).
-# The Cal3D volume is now added in the sorcerer world.
+# The Cal3D body is now added in the sorcerer world.
 
 sorcerer = soya.World(scene)
 sorcerer.rotate_y(-120.0)
-#sorcerer_volume = soya.Cal3dVolume(sorcerer, sorcerer_shape)
-#sorcerer_volume = soya.Volume(sorcerer, sorcerer_shape)
-#sorcerer_volume.animate_blend_cycle("marche")
-sorcerer.shape = sorcerer_shape
+#sorcerer_body = soya.Cal3dBody(sorcerer, sorcerer_model)
+#sorcerer_body = soya.Body(sorcerer, sorcerer_model)
+#sorcerer_body.animate_blend_cycle("marche")
+sorcerer.model = sorcerer_model
 sorcerer.animate_blend_cycle("marche")
 
 # Creates a right hand world in the sorcerer, and attach it to the bone called 'mainD'
 # (French abbrev for 'right hand').
 
 right_hand = soya.World(sorcerer)
-#sorcerer_volume.attach_to_bone(right_hand, "mainD")
+#sorcerer_body.attach_to_bone(right_hand, "mainD")
 sorcerer.attach_to_bone(right_hand, "mainD")
 
-# Creates a right_hand_item Volume, with a sword shape, inside the right hand.
+# Creates a right_hand_item Body, with a sword model, inside the right hand.
 
 #sword = soya.World()
 #soya.Face(sword, [soya.Vertex(sword, 0.0, 0.0, 0.0), soya.Vertex(sword, 0.0, 1.0, 0.0), soya.Vertex(sword, 1.0, 0.0, 0.0)])
-#epee = soya.Volume(scene, sword.shapify())
+#epee = soya.Body(scene, sword.to_model())
 
-right_hand_item = soya.Volume(right_hand)
-right_hand_item = soya.Volume(right_hand, soya.Shape.get("sword"))
+right_hand_item = soya.Body(right_hand)
+right_hand_item = soya.Body(right_hand, soya.Model.get("sword"))
 right_hand_item.rotate_z(180.0)
 right_hand_item.set_xyz(0.05, 0.1, 0.0)
 
-# By using right_hand_item.set_shape(...), you can easily replace the sword with an axe
+# By using right_hand_item.set_model(...), you can easily replace the sword with an axe
 # or a gun !
 # Use Soya system coordinate conversion facilities for collision detection
 # (e.g. Point(right_hand_item, 0.0, 0.0, -3.0) is the end of the sword)
@@ -85,4 +85,4 @@ soya.root_widget.add(widget.FPSLabel())
 
 soya.Light(scene).set_xyz(5.0, 5.0, 8.0)
 
-soya.Idler(scene).idle()
+soya.MainLoop(scene).main_loop()

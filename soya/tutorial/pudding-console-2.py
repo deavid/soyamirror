@@ -43,11 +43,11 @@ root.add_child(camera)
 root.on_resize()
 
 
-class Idler(soya.Idler):
+class MainLoop(soya.MainLoop):
 	def begin_round(self):
-		soya.Idler.begin_round(self)
+		soya.MainLoop.begin_round(self)
 
 		pudding.process_event()
 
-pudding.idler.Idler(scene).idle()
+pudding.main_loop.MainLoop(scene).main_loop()
 

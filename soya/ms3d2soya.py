@@ -8,7 +8,7 @@ import os
 import soya
 
 def decode_ms3d(f):
-	"""Decode a milkshape 3d ascii file (sort of)"""
+	"""Decode a milkmodel 3d ascii file (sort of)"""
 
 	data = ''
 	m = None
@@ -100,9 +100,9 @@ def main():
 	filename = sys.argv[1]
 	
 	world = decode_ms3d(open(filename))
-	shape = world.shapify()
-	shape.filename=sys.argv[2]
-	shape.save()
+	model = world.to_model()
+	model.filename=sys.argv[2]
+	model.save()
 	
 	
 	

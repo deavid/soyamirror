@@ -37,14 +37,14 @@ soya.path.append(os.path.join(os.path.dirname(sys.argv[0]), "data"))
 
 scene = soya.World()
 
-# Adds 3 rotating cubes in it (see basic-2.py about rotating volume).
+# Adds 3 rotating cubes in it (see basic-2.py about rotating body).
 
 cube_world = soya.cube.Cube()
-cube_shape = cube_world.shapify()
+cube_model = cube_world.to_model()
 
-class RotatingCube(soya.Volume):
+class RotatingCube(soya.Body):
 	def __init__(self, parent, angle_speed):
-		soya.Volume.__init__(self, parent, cube_shape)
+		soya.Body.__init__(self, parent, cube_model)
 		self.angle_speed = angle_speed
 		
 	def advance_time(self, proportion):
@@ -111,7 +111,7 @@ scene.x = 1.0
 
 # Main loop
 
-soya.Idler(scene).idle()
+soya.MainLoop(scene).main_loop()
 
 
 # TODO (left as an exercice):

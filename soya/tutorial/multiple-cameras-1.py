@@ -71,5 +71,5 @@ g.add(c2)
 
 soya.set_root_widget(g)
 
-soya.Idler().idle()
+soya.MainLoop().main_loop()
 

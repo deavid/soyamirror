@@ -36,7 +36,7 @@ cdef class Glyph:
 		return "<Glyph '%s' %s x %s>" % (self.unichar, self.width, self.height)
 	
 	
-cdef class Font:
+cdef class _Font:
 	#cdef FT_Face      _face
 	#cdef readonly     filename
 	#cdef int          _width, _height

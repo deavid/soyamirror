@@ -56,17 +56,17 @@ sword2 = soya.World.load("sword")
 
 soya.facecutter.cut(sword2, 80)
 
-# Creates 2 volumes, one for each sword.
+# Creates 2 bodys, one for each sword.
 
-volume1 = soya.Volume(scene, sword1.shapify())
-volume1.set_xyz(-1.0, -0.5, 0.0)
-volume1.rotate_x(90.0)
-volume1.rotate_y(90.0)
+body1 = soya.Body(scene, sword1.to_model())
+body1.set_xyz(-1.0, -0.5, 0.0)
+body1.rotate_x(90.0)
+body1.rotate_y(90.0)
 
-volume2 = soya.Volume(scene, sword2.shapify())
-volume2.set_xyz(1.0, -0.5, 0.0)
-volume2.rotate_x(90.0)
-volume2.rotate_y(90.0)
+body2 = soya.Body(scene, sword2.to_model())
+body2.set_xyz(1.0, -0.5, 0.0)
+body2.rotate_x(90.0)
+body2.rotate_y(90.0)
 
 # Renders the scene in wireframe mode -- it's easier to see the facecutter action
 # in wireframe.
@@ -86,4 +86,4 @@ camera.set_xyz(0.0, 0.0, 3.0)
 
 # Starts the main loop.
 
-soya.Idler(scene).idle()
+soya.MainLoop(scene).main_loop()

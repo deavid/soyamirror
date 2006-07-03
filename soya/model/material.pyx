@@ -377,28 +377,28 @@ at the same time. This method is a Python wrapper for _Material._activate()."""
 cdef class _IdleingMaterial(_Material):
 	def __init__(self, _Image texture = None):
 		_Material.__init__(self, texture)
-		IDLEING_ITEMS[self] = 1
+		MAIN_LOOP_ITEMS[self] = 1
 		
 	cdef void __setcstate__(self, cstate):
 		_Material.__setcstate__(self, cstate)
-		IDLEING_ITEMS[self] = 1
+		MAIN_LOOP_ITEMS[self] = 1
 		
 	def begin_round(self):
 		"""_IdleingMaterial.begin_round()
 
-Called by the Idler when a new round begins; default implementation does nothing."""
+Called by the MainLoop when a new round begins; default implementation does nothing."""
 		pass
 	
 	def end_round(self):
 		"""_IdleingMaterial.end_round()
 
-Called by the Idler when a round is finished; default implementation does nothing."""
+Called by the MainLoop when a round is finished; default implementation does nothing."""
 		pass
 		
 	def advance_time(self, float proportion):
 		"""_IdleingMaterial.advance_time(proportion)
 
-Called by the Idler when a piece of a round has occured; does nothing.
+Called by the MainLoop when a piece of a round has occured; does nothing.
 PROPORTION is the proportion of the current round's time that has passed (1.0 for an entire round)."""
 		pass
 
@@ -465,7 +465,7 @@ In addition to PythonMaterial, PythonIdleingMaterial also has begin_round, advan
 # A pack is the combination of a material, drawing options (triangle/quad, alpha,
 # double_sided, non_lit), and a renderer batching state (opaque, alpha or second_pass).
 # Packs are used to sort the triangle / quad according to the material, the drawing
-# options and the renderer batching state, in particular in complex object (land, tree).
+# options and the renderer batching state, in particular in complex object (terrain, tree).
 #
 # Attributes are:
 #

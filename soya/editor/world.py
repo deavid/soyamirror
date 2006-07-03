@@ -304,10 +304,10 @@ def build_handles():
 	blue_cube   = cube.Cube(None, BLUE);   blue_cube  .scale(STEP, STEP, STEP)
 	yellow_cube = cube.Cube(None, YELLOW); yellow_cube.scale(STEP, STEP, STEP)
 	
-	RED_HANDLE    = red_cube   .shapify()
-	GREEN_HANDLE  = green_cube .shapify()
-	BLUE_HANDLE   = blue_cube  .shapify()
-	YELLOW_HANDLE = yellow_cube.shapify()
+	RED_HANDLE    = red_cube   .to_model()
+	GREEN_HANDLE  = green_cube .to_model()
+	BLUE_HANDLE   = blue_cube  .to_model()
+	YELLOW_HANDLE = yellow_cube.to_model()
 	
 build_handles()
 
@@ -452,9 +452,9 @@ class MoveClickManager(ClickManager):
 
 # List of 3D items' classes that are positionned at the next mouse click's position.
 
-class Handle(soya.Volume):
+class Handle(soya.Body):
 	def __init__(self, parent, editor = None):
-		soya.Volume.__init__(self, parent, self.NATURAL)
+		soya.Body.__init__(self, parent, self.NATURAL)
 		self.editor      = editor
 		self.selected    = 0
 		self.highlighted = 0
@@ -469,10 +469,10 @@ class Handle(soya.Volume):
 	def highlight(self, value = 1):
 		self.highlighted = value
 		if value:
-			self.set_shape(GREEN_HANDLE)
+			self.set_model(GREEN_HANDLE)
 		else:
 			if self.selected: self.select(0)
-			self.set_shape(self.NATURAL)
+			self.set_model(self.NATURAL)
 			
 	def select(self, value = 1):
 		self.selected = value

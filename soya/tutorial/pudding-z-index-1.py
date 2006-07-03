@@ -34,4 +34,4 @@ box3 = pudding.control.Box(root,
 
 root.add_child(camera)
 soya.set_root_widget(root)
-pudding.idler.Idler(scene).idle()
+pudding.main_loop.MainLoop(scene).main_loop()

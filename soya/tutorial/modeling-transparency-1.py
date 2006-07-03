@@ -55,19 +55,19 @@ for face in cube_world.children:
 
 # Compile the cube model.
 
-cube_shape = cube_world.shapify()
+cube_model = cube_world.to_model()
 
 # Creates several semi-transparent cubes.
 
-cube1 = soya.Volume(scene, cube_shape)
+cube1 = soya.Body(scene, cube_model)
 cube1.set_xyz(-0.3, 0.3, 0.0)
 cube1.rotate_y(30.0)
 
-cube2 = soya.Volume(scene, cube_shape)
+cube2 = soya.Body(scene, cube_model)
 cube2.set_xyz(0.0, 0.0, -1.5)
 cube2.rotate_y(30.0)
 
-cube3 = soya.Volume(scene, cube_shape)
+cube3 = soya.Body(scene, cube_model)
 cube3.set_xyz(0.6, -0.4, 0.5)
 cube3.rotate_y(30.0)
 
@@ -82,5 +82,5 @@ camera = soya.Camera(scene)
 camera.set_xyz(0.0, 0.0, 3.0)
 soya.set_root_widget(camera)
 
-soya.Idler(scene).idle()
+soya.MainLoop(scene).main_loop()
 
