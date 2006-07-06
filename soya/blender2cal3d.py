@@ -4,7 +4,7 @@
 
 """
 Name: 'Cal3D'
-Blender: 235
+Blender: 241
 Group: 'Export'
 Tip: 'Export armature/bone/mesh/action data to the Cal3D format.'
 """
@@ -28,7 +28,7 @@ Tip: 'Export armature/bone/mesh/action data to the Cal3D format.'
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 
-__version__ = "0.13"
+__version__ = "0.14"
 __author__  = "Jean-Baptiste 'Jiba' Lamy"
 __email__   = "jibalamy@free.fr"
 __url__     = "Soya3d's homepage http://home.gna.org/oomadness/en/soya/"
@@ -130,6 +130,8 @@ CONFIG_TEXT = ""
 # Allows to replace a material by another
 MATERIAL_MAP = {}
 
+# Flip the UV texture coordinates
+FLIP_TEXTURE_COORDS = 1
 
 MESSAGES = ""
 
@@ -149,7 +151,7 @@ try:
 except:
 	print "* Blender2Cal3D * (Psyco not found)"
 	
-import Blender
+import Blender, Blender.Scene
 from Blender import Registry
 from Blender.Window import DrawProgressBar
 from Blender import Draw, BGL
@@ -1012,7 +1014,7 @@ def export(filename):
 	skeleton = Skeleton()
 
 	foundarmature = False
-	for obj in Blender.Object.Get():
+	for obj in Blender.Scene.GetCurrent().getChildren(): #Blender.Object.Get():
 		data = obj.getData()
 		if type(data) is not Blender.Types.ArmatureType:
 			continue
@@ -1100,7 +1102,7 @@ def export(filename):
 	
 	meshes = []
 	
-	for obj in Blender.Object.Get():
+	for obj in Blender.Scene.GetCurrent().getChildren(): #Blender.Object.Get():
 		data = obj.getData()
 		if (type(data) is Blender.Types.NMeshType) and data.faces:
 			mesh_name = obj.getName()
@@ -1199,7 +1201,9 @@ def export(filename):
 								old_vertex.clones.append(vertex)
 								
 							if data.hasFaceUV():
-								uv = [face.uv[i][0], 1.0 - face.uv[i][1]]
+								uv = [face.uv[i][0], face.uv[i][1]]
+								if FLIP_TEXTURE_COORDS: uv[1] = -uv[1]
+								
 								if not vertex.maps:
 									if outputuv: vertex.maps.append(Map(*uv))
 								elif (vertex.maps[0].u != uv[0]) or (vertex.maps[0].v != uv[1]):
