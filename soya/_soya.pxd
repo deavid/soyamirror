@@ -50,6 +50,7 @@ include "definitions/model/sprite.pxd"
 include "definitions/model/particle.pxd"
 include "definitions/model/terrain.pxd"
 include "definitions/model/model_builder.pxd"
+include "definitions/model/deform.pxd"
 
 include "cal3d/cal3d.pxd"
 include "cal3d/model.pxd"

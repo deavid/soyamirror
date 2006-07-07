@@ -24,7 +24,7 @@ cdef class _Model(_CObj)
 cdef class _SimpleModel(_Model)
 cdef class _CellShadingModel(_SimpleModel)
 cdef class _TreeModel(_SimpleModel)
-cdef class _ModelData(_CObj)
+cdef class _ModelData(_Model)
 cdef class _AnimatedModelData(_ModelData)
 cdef class Position(_CObj)
 cdef class _Point(Position)
@@ -52,6 +52,8 @@ cdef class _Font
 cdef class ModelBuilder(_CObj)
 cdef class Traveling(_CObj)
 cdef class _TravelingCamera(_Camera)
+cdef class _Deform(_ModelData)
+cdef class _DynamicDeform(_Deform)
 
 cdef enum:
 	QUALITY_LOW    = 0
@@ -178,6 +180,7 @@ cdef enum:
 	MODEL_STATIC_SHADOW    = 1 << 22
 	MODEL_STATIC_LIT       = 1 << 23
 	MODEL_SIMPLE_NEIGHBORS = 1 << 24 # Neighbors take face angle into account, but simple neighbors don't
+	MODEL_SHARED_DATA      = 1 << 25
 	
 cdef enum:
 	TEXT_ALIGN_LEFT   = 0

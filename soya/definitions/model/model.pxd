@@ -3,15 +3,33 @@
 cdef class _Model(_CObj):
 	cdef public _filename
 	cdef void _instanced(self, _Body body, opt)
-	cdef void _batch(self, CoordSyst coord_syst)
-	cdef void _render(self, CoordSyst coord_syst)
+	cdef void _batch(self, _Body body)
+	cdef void _render(self, _Body body)
 	cdef int _shadow(self, CoordSyst coord_syst, _Light light)
 	cdef void _get_box(self, float* box, float* matrix)
 	cdef void _raypick(self, RaypickData raypick_data, CoordSyst raypickable)
 	cdef int _raypick_b(self, RaypickData raypick_data, CoordSyst raypickable)
 	cdef void _collect_raypickables(self, Chunk* items, float* rsphere, float* sphere, CoordSyst parent)
 	
-
+	cdef _Model _create_deformed_data(self)
+	
+	cdef void _attach(self, mesh_names)
+	cdef void _detach(self, mesh_names)
+	cdef int  _is_attached(self, mesh_name)
+	cdef void _attach_to_bone(self, CoordSyst coordsyst, bone_name)
+	cdef void _detach_from_bone(self, CoordSyst coordsyst)
+	cdef void _advance_time(self, float proportion)
+	cdef void _begin_round(self)
+	cdef      _get_attached_meshes    (self)
+	cdef      _get_attached_coordsysts(self)
+	cdef void _animate_blend_cycle   (self, animation_name, float weight, float fade_in)
+	cdef void _animate_clear_cycle   (self, animation_name, float fade_out)
+	cdef void _animate_execute_action(self, animation_name, float fade_in, float fade_out)
+	cdef void _animate_reset(self)
+	cdef void _set_lod_level(self, float lod_level)
+	cdef void _begin_round  (self)
+	cdef void _advance_time (self, float proportion)
+	
 ctypedef struct DisplayList:
 	int    option
 	int    id
@@ -62,9 +80,9 @@ cdef class _SimpleModel(_Model):
 	cdef void _build_sphere(self)
 	cdef void _build_display_list(self)
 	cdef void _init_display_list(self)
-	cdef void _batch(self, CoordSyst coordsyst)
+	cdef void _batch(self, _Body body)
 	cdef void _batch_face(self, ModelFace* face)
-	cdef void _render(self, CoordSyst instance)
+	cdef void _render(self, _Body body)
 	cdef void _raypick(self, RaypickData data, CoordSyst parent)
 	cdef int _raypick_b(self, RaypickData data, CoordSyst parent)
 	cdef void _face_raypick(self, ModelFace* face, float* raydata, RaypickData data, CoordSyst parent)
@@ -78,22 +96,7 @@ cdef class _SimpleModel(_Model):
 	cdef void _get_box(self, float* box, float* matrix)
 
 
-cdef class _ModelData(_CObj):
-	cdef void _attach(self, mesh_names)
-	cdef void _detach(self, mesh_names)
-	cdef int  _is_attached(self, mesh_name)
-	cdef void _attach_to_bone(self, CoordSyst coordsyst, bone_name)
-	cdef void _detach_from_bone(self, CoordSyst coordsyst)
-	cdef void _advance_time(self, float proportion)
-	cdef void _begin_round(self)
-	cdef      _get_attached_meshes    (self)
-	cdef      _get_attached_coordsysts(self)
-	cdef void _animate_blend_cycle   (self, animation_name, float weight, float fade_in)
-	cdef void _animate_clear_cycle   (self, animation_name, float fade_out)
-	cdef void _animate_execute_action(self, animation_name, float fade_in, float fade_out)
-	cdef void _animate_reset(self)
-	cdef void _set_lod_level(self, float lod_level)
-	cdef void _begin_round  (self)
-	cdef void _advance_time (self, float proportion)
-	
+cdef class _ModelData(_Model):
+	pass
+
 

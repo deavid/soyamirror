@@ -302,16 +302,18 @@ cdef class _TreeModel(_SimpleModel):
 			sphere_from_points(sphere, p, 4)
 			
 			
-	cdef void _batch(self, CoordSyst coordsyst):
-		if coordsyst._option & HIDDEN: return
+	cdef void _batch(self, _Body body):
+		# XXX deforms: batched_object is ignored
+		
+		if body._option & HIDDEN: return
 		
 		cdef Frustum* frustum
-		frustum = renderer._frustum(coordsyst)
-		#batch_start(coordsyst)
+		frustum = renderer._frustum(body)
+		#batch_start(body)
 		
 		# batch each face
 		self._batch_node(self._tree, frustum)
-		pack_batch_end(self, coordsyst)
+		pack_batch_end(self, body)
 		#if self._option & MODEL_CELL_SHADING:
 		#  renderer_batch(renderer.secondpass, mesh, inst, renderer.data.nb)
 		#  mesh_batch_outline(mesh, inst, frustum)
@@ -322,7 +324,7 @@ cdef class _TreeModel(_SimpleModel):
 			for i from 0 <= i < node.nb_faces:    self._batch_face(self._faces + node.faces[i])
 			for i from 0 <= i < node.nb_children: self._batch_node(node.children[i], frustum)
 		
-	cdef void _render(self, CoordSyst instance):
+	cdef void _render(self, _Body instance):
 		cdef Pack*      pack
 		cdef ModelFace* face
 		

@@ -48,7 +48,8 @@ cdef class _AnimatedModel(_Model):
 	cdef void _build_submeshes(self)
 	cdef void _set_face_neighborhood(self, int index1, int index2, GLfloat* vertices)
 	cdef void _set_cell_shading(self, _Material shader, GLfloat* color, GLfloat line_width_factor)
-	cdef void _render(self, CoordSyst coordsyst)
+	cdef void _batch (self, _Body body)
+	cdef void _render(self, _Body body)
 	cdef void _prepare_cellshading(self, CoordSyst coordsyst, float* shades, int nb_vertices, float* coords, float* vnormals)
 	cdef void _prepare_cellshading_shades(self, float* shades, lights, int nb_vertices, float* coords, float* vnormals)
 	cdef void _render_outline(self, _Cal3dSubMesh submesh, Frustum* frustum, float* coords, float* vnormals, float* plane)
@@ -63,13 +64,13 @@ cdef class _AnimatedModel(_Model):
 
 
 cdef class _AnimatedModelData(_ModelData):
-	cdef _Body     _body
+	cdef _Body          _body
 	cdef _AnimatedModel _model
-	cdef             _attached_meshes, _attached_coordsysts
-	cdef CalModel*   _cal_model
-	cdef float       _delta_time
-	cdef float*      _face_planes, *_vertex_coords, *_vertex_normals
-	cdef int         _face_plane_ok, _vertex_ok
+	cdef                _attached_meshes, _attached_coordsysts
+	cdef CalModel*      _cal_model
+	cdef float          _delta_time
+	cdef float*         _face_planes, *_coords, *_vnormals
+	cdef int            _face_plane_ok, _vertex_ok
 	
 	cdef      __getcstate__(self)
 	cdef void __setcstate__(self, cstate)

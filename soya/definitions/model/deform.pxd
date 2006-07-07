@@ -1,7 +1,7 @@
 # -*- indent-tabs-mode: t -*-
 
 # Soya 3D
-# Copyright (C) 2003-2004 Jean-Baptiste LAMY -- jiba@tuxfamily.org
+# Copyright (C) 2004 Jean-Baptiste LAMY -- jiba@tuxfamily.org
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -18,18 +18,19 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 
-
-cdef class _Body(CoordSyst):
+cdef class _Deform(_ModelData):
 	cdef _Model _model
 	cdef _Model _data
 	
-	cdef __getcstate__(self)
-	cdef void __setcstate__(self, object cstate)
-	cdef void _batch(self, CoordSyst coordsyst)
-	cdef int _shadow(self, CoordSyst coordsyst, _Light light)
-	cdef void _raypick(self, RaypickData raypick_data, CoordSyst raypickable)
-	cdef int _raypick_b(self, RaypickData raypick_data, CoordSyst raypickable)
-	cdef void _collect_raypickables(self, Chunk* items, float* rsphere, float* sphere)
-	cdef int _contains(self, _CObj obj)
-	cdef void _get_box(self, float* box, float* matrix)
+	cdef _set_model(self, _Model model)
+	
+	cdef void _begin_round(self)
+	cdef void _advance_time(self, float proportion)
+	
+	cdef _deform_points(self, float* coords, float* r, int nb)
+	cdef _deform_point (self, float* coord, float* r)
+	
+cdef class _DynamicDeform(_Deform):
+	cdef float  _time
+	
 

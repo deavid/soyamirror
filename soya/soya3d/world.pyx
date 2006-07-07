@@ -44,12 +44,27 @@ cdef class _World(_Body):
 	cdef __getcstate__(self):
 		return CoordSyst.__getcstate__(self), self._model, self._filename, self.children, self._atmosphere, self._model_builder, self._data
 	
+# 	cdef void __setcstate__(self, cstate):
+# 		if len(cstate) == 6: # Old format, without _data
+# 			cstate2, self._model, self._filename, self.children, self._atmosphere, self._model_builder = cstate
+# 		else:
+# 			cstate2, self._model, self._filename, self.children, self._atmosphere, self._model_builder, self._data = cstate
+# 		if self._data is None: self._data = self._model
+		
+# 		CoordSyst.__setcstate__(self, cstate2)
+# 		cdef CoordSyst child
+# 		for child in self.children: child._parent = self
+		
 	cdef void __setcstate__(self, cstate):
-		if len(cstate) == 6: # Old format, without _data
-			cstate2, self._model, self._filename, self.children, self._atmosphere, self._model_builder = cstate
-		else:
-			cstate2, self._model, self._filename, self.children, self._atmosphere, self._model_builder, self._data = cstate
-		CoordSyst.__setcstate__(self, cstate2)
+		self._filename      = cstate[2]
+		self.children       = cstate[3]
+		self._atmosphere    = cstate[4]
+		self._model_builder = cstate[5]
+		
+		if len(cstate) == 6: data = None
+		else:                data = cstate[6]
+		_Body.__setcstate__(self, (cstate[0], cstate[1], data))
+		
 		cdef CoordSyst child
 		for child in self.children: child._parent = self
 		

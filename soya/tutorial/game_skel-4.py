@@ -111,7 +111,7 @@ class Character(soya.World):
 		balazar = soya.AnimatedModel.get("balazar")
 		
 		# Creates a Cal3D body displaying the "balazar" model
-		self.perso = soya.Cal3dBody(self, balazar)
+		self.perso = soya.Body(self, balazar)
 		
 		# Starts playing the idling animation in loop
 		# "attente" is the French for "wait"

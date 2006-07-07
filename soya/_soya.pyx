@@ -68,3 +68,5 @@ include "text/text.pyx"
 include "config.pyx"
 
 #include "shader/shader.pyx"
+
+include "model/deform.pyx"

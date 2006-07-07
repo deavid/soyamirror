@@ -222,7 +222,6 @@ cdef class _AnimatedModel(_Model):
 	#cdef float     _outline_width, _outline_attenuation
 	
 	cdef void _instanced(self, _Body body, opt):
-		# Default is no data
 		body._data = _AnimatedModelData(body, self, opt)
 		
 	property filename:
@@ -346,10 +345,8 @@ cdef class _AnimatedModel(_Model):
 		pass
 	
 	
-	cdef void _batch(self, CoordSyst coordsyst):
-		cdef _Body body
+	cdef void _batch(self, _Body body):
 		cdef _AnimatedModelData data
-		body = <_Body> coordsyst
 		data   = <_AnimatedModelData> body._data
 		
 		data._build_vertices(0)
@@ -367,10 +364,9 @@ cdef class _AnimatedModel(_Model):
 				renderer._batch(renderer.secondpass, self, body, -1)
 				
 				
-	cdef void _render(self, CoordSyst coordsyst):
+	cdef void _render(self, _Body body):
 		global cal3d_texcoords_array, cal3d_shades_array
 		
-		cdef _Body            body
 		cdef _AnimatedModelData data
 		cdef CalRenderer*               cal_renderer
 		cdef _Cal3dSubMesh              submesh
@@ -380,15 +376,14 @@ cdef class _AnimatedModel(_Model):
 		cdef float*                     shades, *plane
 		cdef Frustum*                   frustum
 		
-		body = coordsyst
 		data   = body._data
-		ptrf   = data._vertex_coords
-		ptrn   = data._vertex_normals
+		ptrf   = data._coords
+		ptrn   = data._vnormals
 		
 		if renderer.state == RENDERER_STATE_SECONDPASS:
 			if data._face_plane_ok <= 0: data._build_face_planes()
 			
-			frustum = renderer._frustum(coordsyst)
+			frustum = renderer._frustum(body)
 			plane = data._face_planes
 			for submesh in self._submeshes:
 				if data._attached_meshes[submesh._mesh]:
@@ -432,7 +427,7 @@ cdef class _AnimatedModel(_Model):
 						submesh._build_neighbors(os.path.join(os.path.dirname(self._full_filename), "neighbors_%s-%s" % (submesh._mesh, submesh._submesh)), ptrf)
 						
 					shades = cal3d_shades_array
-					self._prepare_cellshading(coordsyst, shades, submesh._nb_vertices, ptrf, ptrn)
+					self._prepare_cellshading(body, shades, submesh._nb_vertices, ptrf, ptrn)
 					
 					# Activate shader texture
 					glActiveTextureARB(GL_TEXTURE1)
@@ -483,8 +478,8 @@ cdef class _AnimatedModel(_Model):
 		cdef _Cal3dSubMesh   submesh
 		cdef GLfloat*        ptrf, *ptrn
 		
-		ptrf   = data._vertex_coords
-		ptrn   = data._vertex_normals
+		ptrf   = data._coords
+		ptrn   = data._vnormals
 		
 		cal_renderer = CalModel_GetRenderer(data._cal_model)
 		
@@ -768,8 +763,8 @@ cdef class _AnimatedModel(_Model):
 		data   = body._data
 		if data._face_plane_ok <= 0: data._build_face_planes()
 		
-		ptrf   = data._vertex_coords
-		ptrn   = data._vertex_normals
+		ptrf   = data._coords
+		ptrn   = data._vnormals
 		plane  = data._face_planes
 		i      = 0
 		r      = 0
@@ -1066,7 +1061,7 @@ cdef class _AnimatedModel(_Model):
 		
 		i = 0
 		plane  = da._face_planes
-		ptrf   = da._vertex_coords
+		ptrf   = da._coords
 		for submesh in self._submeshes:
 			if da._attached_meshes[submesh._mesh]:
 				for j from 0 <= j < submesh._nb_faces:
@@ -1110,7 +1105,7 @@ cdef class _AnimatedModel(_Model):
 		
 		i = 0
 		plane  = da._face_planes
-		ptrf   = da._vertex_coords
+		ptrf   = da._coords
 		for submesh in self._submeshes:
 			if da._attached_meshes[submesh._mesh]:
 				for j from 0 <= j < submesh._nb_faces:
@@ -1128,17 +1123,17 @@ cdef class _AnimatedModel(_Model):
 
 	
 cdef class _AnimatedModelData(_ModelData):
-	#cdef _Body     _body
+	#cdef _Body          _body
 	#cdef _AnimatedModel _model
-	#cdef             _attached_meshes, _attached_coordsysts
-	#cdef CalModel*   _cal_model
-	#cdef float       _delta_time
-	#cdef float*      _face_planes, *_vertex_coords, *_vertex_normals
-	#cdef int         _face_plane_ok, _vertex_ok
+	#cdef                _attached_meshes, _attached_coordsysts
+	#cdef CalModel*      _cal_model
+	#cdef float          _delta_time
+	#cdef float*         _face_planes, *_coords, *_vnormals
+	#cdef int            _face_plane_ok, _vertex_ok
 	
 	def __init__(self, _Body body, _AnimatedModel model, attached_meshes = None):
-		self._body = body
-		self._model  = model
+		self._body  = body
+		self._model = model
 		
 		self._cal_model = CalModel_New(model._core_model)
 		if self._cal_model == NULL:
@@ -1154,9 +1149,9 @@ cdef class _AnimatedModelData(_ModelData):
 		
 	def __dealloc__(self):
 		CalModel_Delete (self._cal_model)
-		if self._vertex_coords  != NULL: free(self._vertex_coords)
-		if self._vertex_normals != NULL: free(self._vertex_normals)
-		if self._face_planes    != NULL: free(self._face_planes)
+		if self._coords      != NULL: free(self._coords)
+		if self._vnormals    != NULL: free(self._vnormals)
+		if self._face_planes != NULL: free(self._face_planes)
 		
 	cdef __getcstate__(self):
 		return self._body, self._model, self._attached_meshes, self._attached_coordsysts
@@ -1179,13 +1174,13 @@ cdef class _AnimatedModelData(_ModelData):
 	cdef void _build_submeshes(self):
 		if not(self._model._option & CAL3D_INITED): self._model._build_submeshes()
 		
-		if self._vertex_coords  != NULL: free(self._vertex_coords)
-		if self._vertex_normals != NULL: free(self._vertex_normals)
+		if self._coords  != NULL: free(self._coords)
+		if self._vnormals != NULL: free(self._vnormals)
 		if self._face_planes    != NULL: free(self._face_planes)
 		
-		self._vertex_coords  = <GLfloat*> malloc(self._model._nb_vertices * 3 * sizeof(GLfloat))
-		self._vertex_normals = <GLfloat*> malloc(self._model._nb_vertices * 3 * sizeof(GLfloat))
-		self._face_planes    = <GLfloat*> malloc(self._model._nb_faces    * 4 * sizeof(GLfloat))
+		self._coords      = <GLfloat*> malloc(self._model._nb_vertices * 3 * sizeof(GLfloat))
+		self._vnormals    = <GLfloat*> malloc(self._model._nb_vertices * 3 * sizeof(GLfloat))
+		self._face_planes = <GLfloat*> malloc(self._model._nb_faces    * 4 * sizeof(GLfloat))
 		
 	cdef void _build_face_planes(self):
 		cdef float*        ptrf, *plane
@@ -1196,7 +1191,7 @@ cdef class _AnimatedModelData(_ModelData):
 		
 		i     = 0
 		plane = self._face_planes
-		ptrf  = self._vertex_coords
+		ptrf  = self._coords
 		for submesh in self._model._submeshes:
 			if self._attached_meshes[submesh._mesh]:
 				for j from 0 <= j < submesh._nb_faces:
@@ -1318,3 +1313,11 @@ cdef class _AnimatedModelData(_ModelData):
 		if vertices == 1:
 			self._model._build_vertices(self)
 			self._vertex_ok = 1
+	
+	cdef void _batch               (self, _Body body): self._model._batch(body)
+	cdef void _render              (self, _Body body): self._model._render(coord_syst)
+	cdef int  _shadow              (self, CoordSyst coord_syst, _Light light): return self._model._shadow(coord_syst, light)
+	cdef void _get_box             (self, float* box, float* matrix): self._model._get_box(box, matrix)
+	cdef void _raypick             (self, RaypickData raypick_data, CoordSyst raypickable):        self._model._raypick  (raypick_data, raypickable)
+	cdef int  _raypick_b           (self, RaypickData raypick_data, CoordSyst raypickable): return self._model._raypick_b(raypick_data, raypickable)
+	cdef void _collect_raypickables(self, Chunk* items, float* rsphere, float* sphere, CoordSyst parent): self._model._collect_raypickables(items, rsphere, sphere, parent)

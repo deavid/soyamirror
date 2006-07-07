@@ -26,7 +26,7 @@
 # For information, this character has been created in Blender and exported to Cal3D
 # with my Blender2Cal3D script: http://oomadness.nekeme.net/en/blender2cal3d/index.html
 
-# See Cal3D documentation for more info, and AnimatedModel and Cal3dBody docstrings for
+# See Cal3D documentation for more info, and AnimatedModel and Body docstrings for
 # advanced info on materials loading (e.g, how to substitute Cal3D materials by Soya ones).
 
 
@@ -62,7 +62,6 @@ print "Available animations:", sorcerer_model.animations.keys()
 # detachment possibilities (see Body.__init__, Body.attach and Body.detach).
 # It can be used e.g. for dismembering, or changing the weapon of a character.
 
-#sorcerer = soya.Cal3dBody(scene, sorcerer_model)
 sorcerer = soya.Body(scene, sorcerer_model)
 
 # Rotates Balazar the sorcerer

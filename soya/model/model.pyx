@@ -23,17 +23,35 @@ cdef class _Model(_CObj):
 	def __repr__(self):
 		return "<%s %s>" % (self.__class__.__name__, self._filename)
 	
-	cdef void _batch               (self, CoordSyst coord_syst): pass
-	cdef void _render              (self, CoordSyst coord_syst): pass
+	cdef void _batch               (self, _Body body): pass
+	cdef void _render              (self, _Body body): pass
 	cdef int  _shadow              (self, CoordSyst coord_syst, _Light light): return 0
 	cdef void _get_box             (self, float* box, float* matrix): pass
 	cdef void _raypick             (self, RaypickData raypick_data, CoordSyst raypickable): pass
 	cdef int  _raypick_b           (self, RaypickData raypick_data, CoordSyst raypickable): return 0
 	cdef void _collect_raypickables(self, Chunk* items, float* rsphere, float* sphere, CoordSyst parent): pass
 	
+	cdef void _attach(self, mesh_names): raise TypeError("This type of model doesn't support attach!")
+	cdef void _detach(self, mesh_names): raise TypeError("This type of model doesn't support detach!")
+	cdef int  _is_attached(self, mesh_name): return 0
+	cdef void _attach_to_bone(self, CoordSyst coordsyst, bone_name): raise TypeError("This type of model doesn't support attach_to_bone!")
+	cdef void _detach_from_bone(self, CoordSyst coordsyst): raise TypeError("This type of model doesn't support detach_from_bone!")
+	cdef      _get_attached_meshes    (self): return []
+	cdef      _get_attached_coordsysts(self): return []
+	cdef void _animate_blend_cycle   (self, animation_name, float weight, float fade_in):   raise TypeError("This type of model doesn't support animation!")
+	cdef void _animate_clear_cycle   (self, animation_name, float fade_out):                raise TypeError("This type of model doesn't support animation!")
+	cdef void _animate_execute_action(self, animation_name, float fade_in, float fade_out): raise TypeError("This type of model doesn't support animation!")
+	cdef void _animate_reset(self): pass
+	cdef void _set_lod_level(self, float lod_level): raise TypeError("This type of model doesn't support LOD!")
+	cdef void _begin_round  (self): pass
+	cdef void _advance_time (self, float proportion): pass
+	
 	cdef void _instanced(self, _Body body, opt):
-		body._data = None
+		body._data = self
 		
+	cdef _Model _create_deformed_data(self): return None
+	#cdef void _apply_deform(self, _Deform deform): pass
+	
 	def __deepcopy__(self, memo):
 		"""Models are immutable."""
 		return self
@@ -75,6 +93,48 @@ cdef class _SimpleModel(_Model):
 	#cdef signed char*  _neighbors_side, *_simple_neighbors_side
 	#cdef DisplayLists* _display_lists
 	#cdef float*        _sphere
+	
+	cdef _Model _create_deformed_data(self):
+		cdef _SimpleModel data
+		data = self.__class__.__new__(self.__class__)
+		data.base_model = self # Needed, to keep in memory the base model
+		
+		data._materials     = self._materials
+		data._option        = self._option
+		data._nb_vertices   = self._nb_vertices
+		data._nb_coords     = self._nb_coords
+		data._nb_vnormals   = self._nb_vnormals
+		data._nb_colors     = self._nb_colors
+		data._nb_values     = self._nb_values
+		data._nb_faces      = self._nb_faces
+		
+		data._faces         = self._faces
+		data._coords        = <float*> malloc(3 * data._nb_coords * sizeof(float))
+		data._vnormals      = self._vnormals
+		data._colors        = self._colors
+		data._values        = self._values
+		data._vertex_coords = self._vertex_coords
+		
+		if self._option & MODEL_VERTEX_OPTIONS: data._vertex_options   = self._vertex_options
+		if self._option & MODEL_TEXCOORDS:      data._vertex_texcoords = self._vertex_texcoords
+		if self._option & MODEL_DIFFUSES:       data._vertex_diffuses  = self._vertex_diffuses
+		if self._option & MODEL_EMISSIVES:      data._vertex_emissives = self._vertex_emissives
+		if self._option & MODEL_HAS_SPHERE:     data._sphere           = self._sphere
+		
+		if self._option & MODEL_NEIGHBORS:
+			data._neighbors      = self._neighbors
+			data._neighbors_side = self._neighbors_side
+			
+		if self._option & MODEL_SIMPLE_NEIGHBORS:
+			data._simple_neighbors      = self._simple_neighbors
+			data._simple_neighbors_side = self._simple_neighbors_side
+			
+		data._build_display_list()
+		
+		data._option = data._option & ~MODEL_DISPLAY_LISTS # Deformed models change => don't render them with display lists
+		data._option = data._option & ~MODEL_INITED
+		data._option = data._option |  MODEL_SHARED_DATA
+		return data
 	
 	cdef void _get_box(self, float* box, float* matrix):
 		cdef float* coord
@@ -731,7 +791,7 @@ and if the angle between their 2 faces is < ANGLE."""
 			display_list.faces_id = <int*> (display_list.chunk.content)
 			free(display_list.chunk)
 			
-		# XXX sort displaiy list by material ?
+		# XXX sort display list by material ?
 			
 		self._display_lists = display_lists
 		self._option = self._option | MODEL_DISPLAY_LISTS
@@ -772,6 +832,7 @@ and if the angle between their 2 faces is < ANGLE."""
 	def __dealloc__(self):
 		cdef DisplayList*  display_list
 		cdef int i, nb
+		
 		if (self._option & MODEL_DISPLAY_LISTS) and (self._option & MODEL_INITED):
 			nb = self._display_lists.nb_opaque_list + self._display_lists.nb_alpha_list
 			display_list = self._display_lists.display_lists
@@ -779,29 +840,36 @@ and if the angle between their 2 faces is < ANGLE."""
 				display_list = self._display_lists.display_lists + i
 				glDeleteLists(display_list.id, 1)
 				
-		free(self._faces)
 		free(self._coords)
-		free(self._vnormals)
-		free(self._colors)
-		free(self._values)
-		free(self._vertex_coords)
-		if self._option & MODEL_VERTEX_OPTIONS: free(self._vertex_options)
-		if self._option & MODEL_TEXCOORDS:      free(self._vertex_texcoords)
-		if self._option & MODEL_DIFFUSES:       free(self._vertex_diffuses)
-		if self._option & MODEL_EMISSIVES:      free(self._vertex_emissives)
-		if self._option & MODEL_HAS_SPHERE:     free(self._sphere)
 		
-	cdef void _batch(self, CoordSyst coordsyst):
-		if coordsyst._option & HIDDEN: return
+		if not self.option & MODEL_SHARED_DATA:
+			free(self._faces)
+			free(self._vnormals)
+			free(self._colors)
+			free(self._values)
+			free(self._vertex_coords)
+			if self._option & MODEL_VERTEX_OPTIONS: free(self._vertex_options)
+			if self._option & MODEL_TEXCOORDS:      free(self._vertex_texcoords)
+			if self._option & MODEL_DIFFUSES:       free(self._vertex_diffuses)
+			if self._option & MODEL_EMISSIVES:      free(self._vertex_emissives)
+			if self._option & MODEL_HAS_SPHERE:     free(self._sphere)
+			
+	cdef void _batch(self, _Body body):
+		if body._option & HIDDEN: return
 		
 		cdef Frustum* frustum
-		frustum = renderer._frustum(coordsyst)
+		frustum = renderer._frustum(body)
 		if (self._option & MODEL_HAS_SPHERE) and (sphere_in_frustum(frustum, self._sphere) == 0): return
 		
-		if self._option & MODEL_DISPLAY_LISTS:
-			if self._display_lists.nb_opaque_list != 0: renderer._batch(renderer.opaque, self, coordsyst, -1)
-			if self._display_lists.nb_alpha_list  != 0: renderer._batch(renderer.alpha , self, coordsyst, -1)
-			
+		#if self._display_lists.nb_opaque_list != 0: renderer._batch(renderer.opaque, body._data, body, -1)
+		#if self._display_lists.nb_alpha_list  != 0: renderer._batch(renderer.alpha , body._data, body, -1)
+		
+		if body._data is None:
+			print body, body._data, body._model, self
+		
+		if self._display_lists.nb_opaque_list != 0: renderer._batch(renderer.opaque, self, body, -1)
+		if self._display_lists.nb_alpha_list  != 0: renderer._batch(renderer.alpha , self, body, -1)
+		
 	# Not used by _SimpleModel, but by subclasses (like _TreeModel or _CellShadingModel)
 	cdef void _batch_face(self, ModelFace* face):
 		# XXX inline this func
@@ -824,24 +892,10 @@ and if the angle between their 2 faces is < ANGLE."""
 			
 		pack_batch_face(face.pack, face)
 		
-	cdef void _render(self, CoordSyst instance):
-#     cdef int liste
-		
-#     self._display_lists.display_lists.id = glGenLists(1)
-#     glNewList(self._display_lists.display_lists.id, GL_COMPILE)
-#     glEndList()
-#     glCallList(self._display_lists.display_lists.id)
-#     return
-	
-#     liste = glGenLists(1)
-#     self._display_lists.display_lists.id = liste
-#     glNewList(liste, soya.opengl.GL_COMPILE)
-#     glEndList()
-#     glCallList(liste)
-#     return
-		
+	cdef void _render(self, _Body body):
 		cdef DisplayList*  display_list
-		cdef int i, start, end
+		cdef ModelFace*    face
+		cdef int i, j, start, end
 		
 		model_option_activate(self._option) # XXX put this in the display list ?
 		
@@ -859,7 +913,73 @@ and if the angle between their 2 faces is < ANGLE."""
 				(<_Material> (display_list.material_id))._activate()        
 				glCallList(display_list.id)
 				face_option_inactivate(display_list.option)
+				
+		else:
+			if renderer.state == RENDERER_STATE_OPAQUE:
+				start = 0
+				end   = self._display_lists.nb_opaque_list
+			else:
+				start = self._display_lists.nb_opaque_list
+				end   = start + self._display_lists.nb_alpha_list
+			for i from start <= i < end:
+				display_list = self._display_lists.display_lists + i
+				face_option_activate(display_list.option)
+				(<_Material> (display_list.material_id))._activate()        
+				
+				if   display_list.option & FACE_TRIANGLE: glBegin(GL_TRIANGLES)
+				elif display_list.option & FACE_QUAD:     glBegin(GL_QUADS)
+				else:
+					print "Model supports only triangle or quad faces !"
+					raise ValueError("Model supports only triangle or quad faces !")
+				
+				for j from 0 <= j < self._nb_faces:
+					face = self._faces + j
+					if ((face.option & DISPLAY_LIST_OPTIONS) == display_list.option) and (face.pack.material_id == display_list.material_id):
+						if face.option & FACE_QUAD: self._render_quad    (face)
+						else:                       self._render_triangle(face)
+						
+				glEnd()
+				
+				face_option_inactivate(display_list.option)
+				
 		model_option_inactivate(self._option)
+		
+# 	cdef void _render_deformed(self, _Body body, _SimpleShape deformed):
+# 		cdef DisplayList*  display_list
+# 		cdef ModelFace*    face
+# 		cdef int i, j, start, end
+		
+# 		model_option_activate(self._option) # XXX put this in the display list ?
+		
+# 		if self._option & MODEL_DISPLAY_LISTS:
+# 			if not(self._option & MODEL_INITED): self._init_display_list()
+# 			if renderer.state == RENDERER_STATE_OPAQUE:
+# 				start = 0
+# 				end   = self._display_lists.nb_opaque_list
+# 			else:
+# 				start = self._display_lists.nb_opaque_list
+# 				end   = start + self._display_lists.nb_alpha_list
+# 			for i from start <= i < end:
+# 				display_list = self._display_lists.display_lists + i
+# 				face_option_activate(display_list.option)
+# 				(<_Material> (display_list.material_id))._activate()        
+				
+# 				if   display_list.option & FACE_TRIANGLE: glBegin(GL_TRIANGLES)
+# 				elif display_list.option & FACE_QUAD:     glBegin(GL_QUADS)
+# 				else:
+# 					print "Model supports only triangle or quad faces !"
+# 					raise ValueError("Model supports only triangle or quad faces !")
+				
+# 				for j from 0 <= j < self._nb_faces:
+# 					face = self._faces + j
+# 					if ((face.option & DISPLAY_LIST_OPTIONS) == display_list.option) and (face.pack.material_id == display_list.material_id):
+# 						if face.option & FACE_QUAD: self._render_quad    (face)
+# 						else:                       self._render_triangle(face)
+						
+# 				glEnd()
+				
+# 				face_option_inactivate(display_list.option)
+# 		model_option_inactivate(self._option)
 		
 	cdef void _raypick(self, RaypickData data, CoordSyst parent):
 		cdef float* raydata
@@ -921,14 +1041,12 @@ and if the angle between their 2 faces is < ANGLE."""
 			chunk_add_ptr(items, <void*> parent)
 			
 	cdef void _render_triangle(self, ModelFace* face):
-		#print "triangle"
 		if not(face.option & FACE_SMOOTH_LIT): glNormal3fv(self._values + face.normal) # face normal
 		self._render_vertex(face.v[0], face.option) # render each vertex
 		self._render_vertex(face.v[1], face.option)
 		self._render_vertex(face.v[2], face.option)
 		
 	cdef void _render_quad(self, ModelFace* face):
-		#print "quad"
 		if not(face.option & FACE_SMOOTH_LIT): glNormal3fv(self._values + face.normal) # face normal
 		self._render_vertex(face.v[0], face.option) # render each vertex
 		self._render_vertex(face.v[1], face.option)
@@ -936,9 +1054,6 @@ and if the angle between their 2 faces is < ANGLE."""
 		self._render_vertex(face.v[3], face.option)
 		
 	cdef void _render_vertex(self, int index, int face_option):
-		#print "  ", self._coords[self._vertex_coords[index]    ]
-		#print "  ", self._coords[self._vertex_coords[index] + 1]
-		#print "  ", self._coords[self._vertex_coords[index] + 2]
 		if self._option & MODEL_DIFFUSES : glColor4fv   (self._colors   + self._vertex_diffuses [index])
 		if self._option & MODEL_EMISSIVES: glMaterialfv (GL_FRONT_AND_BACK, GL_EMISSION, self._colors + self._vertex_emissives[index]) # XXX use glColorMaterial when emissive color but no diffuse ?
 		if self._option & MODEL_TEXCOORDS: glTexCoord2fv(self._values   + self._vertex_texcoords[index])
@@ -1465,21 +1580,6 @@ cdef void segment_projection_intersect_plane(float* p1, float* v1, float* p2, fl
 	
 	nb[0] = nb_face / 3
 
-cdef class _ModelData(_CObj):
-	def __init__(self, _Body body, _Model model):
-		pass
+cdef class _ModelData(_Model):
+	def __init__(self, _Body body, _Model model): pass
 	
-	cdef void _attach(self, mesh_names): raise TypeError("This type of model doesn't support attach!")
-	cdef void _detach(self, mesh_names): raise TypeError("This type of model doesn't support detach!")
-	cdef int  _is_attached(self, mesh_name): return 0
-	cdef void _attach_to_bone(self, CoordSyst coordsyst, bone_name): raise TypeError("This type of model doesn't support attach_to_bone!")
-	cdef void _detach_from_bone(self, CoordSyst coordsyst): raise TypeError("This type of model doesn't support detach_from_bone!")
-	cdef      _get_attached_meshes    (self): return []
-	cdef      _get_attached_coordsysts(self): return []
-	cdef void _animate_blend_cycle   (self, animation_name, float weight, float fade_in):   raise TypeError("This type of model doesn't support animation!")
-	cdef void _animate_clear_cycle   (self, animation_name, float fade_out):                raise TypeError("This type of model doesn't support animation!")
-	cdef void _animate_execute_action(self, animation_name, float fade_in, float fade_out): raise TypeError("This type of model doesn't support animation!")
-	cdef void _animate_reset(self): pass
-	cdef void _set_lod_level(self, float lod_level): raise TypeError("This type of model doesn't support LOD!")
-	cdef void _begin_round  (self): pass
-	cdef void _advance_time (self, float proportion): pass

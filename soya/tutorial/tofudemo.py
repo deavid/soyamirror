@@ -222,7 +222,7 @@ class Character(soya.tofu4soya.Mobile):
 		
 		# Creates a Cal3D body displaying the "balazar" model
 		# (NB Balazar is the name of a wizard).
-		self.perso = soya.Cal3dBody(self, balazar)
+		self.perso = soya.Body(self, balazar)
 		
 		# Starts playing the idling animation in loop
 		self.perso.animate_blend_cycle("attente")

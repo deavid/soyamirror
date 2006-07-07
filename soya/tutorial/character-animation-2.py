@@ -47,9 +47,6 @@ sorcerer_model = soya.AnimatedModel.get("balazar")
 
 sorcerer = soya.World(scene)
 sorcerer.rotate_y(-120.0)
-#sorcerer_body = soya.Cal3dBody(sorcerer, sorcerer_model)
-#sorcerer_body = soya.Body(sorcerer, sorcerer_model)
-#sorcerer_body.animate_blend_cycle("marche")
 sorcerer.model = sorcerer_model
 sorcerer.animate_blend_cycle("marche")
 

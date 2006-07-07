@@ -52,28 +52,28 @@ cdef class _CellShadingModel(_SimpleModel):
 		self._outline_attenuation = outline_attenuation
 		for i from 0 <= i < 4: self._outline_color[i] = outline_color[i]
 		
-	cdef void _batch(self, CoordSyst coordsyst):
-		if coordsyst._option & HIDDEN: return
+	cdef void _batch(self, _Body body):
+		if body._option & HIDDEN: return
 		
 		if quality == QUALITY_LOW:
-			_SimpleModel._batch(self, coordsyst)
+			_SimpleModel._batch(self, body)
 			return
 		
 		
 		cdef int      i
 		cdef Frustum* frustum
-		frustum = renderer._frustum(coordsyst)
+		frustum = renderer._frustum(body)
 		if (self._option & MODEL_HAS_SPHERE) and (sphere_in_frustum(frustum, self._sphere) == 0): return
 		
-		if self._display_lists.nb_opaque_list != 0: renderer._batch(renderer.opaque, self, coordsyst, -1)
-		if self._display_lists.nb_alpha_list  != 0: renderer._batch(renderer.alpha , self, coordsyst, -1)
+		if self._display_lists.nb_opaque_list != 0: renderer._batch(renderer.opaque, body._data, body, -1)
+		if self._display_lists.nb_alpha_list  != 0: renderer._batch(renderer.alpha , body._data, body, -1)
 		
 #    # batch each face
 #    for i from 0 <= i < self._nb_faces: self._batch_face(self._faces + i)
-#    pack_batch_end(self, coordsyst)
+#    pack_batch_end(self, body)
 
 		# For outline
-		if self._outline_width > 0.0: renderer._batch(renderer.secondpass, self, coordsyst, 0)
+		if self._outline_width > 0.0: renderer._batch(renderer.secondpass, body._data, body, 0)
 
 				
 #   cdef void _render(self, CoordSyst coordsyst):
@@ -142,9 +142,9 @@ cdef class _CellShadingModel(_SimpleModel):
 #     glActiveTextureARB(GL_TEXTURE0)
 		
 		
-	cdef void _render(self, CoordSyst coordsyst):
+	cdef void _render(self, _Body body):
 		if quality == QUALITY_LOW:
-			_SimpleModel._render(self, coordsyst)
+			_SimpleModel._render(self, body)
 			return
 		
 		cdef int          i, start, end
@@ -156,7 +156,7 @@ cdef class _CellShadingModel(_SimpleModel):
 		cdef DisplayList* display_list
 		
 		if renderer.state == RENDERER_STATE_SECONDPASS:
-			frustum = renderer._frustum(coordsyst)
+			frustum = renderer._frustum(body)
 			self._render_outline(frustum)
 		else:
 			model_option_activate(self._option)
@@ -164,7 +164,7 @@ cdef class _CellShadingModel(_SimpleModel):
 			chunk = get_chunk()
 			chunk_register(chunk, self._nb_vnormals * sizeof(float))
 			shades = <float*> chunk.content
-			self._prepare_cellshading(coordsyst, shades)
+			self._prepare_cellshading(body, shades)
 			
 			if renderer.state == RENDERER_STATE_OPAQUE:
 				start = 0

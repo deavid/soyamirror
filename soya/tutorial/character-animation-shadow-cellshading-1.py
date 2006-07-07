@@ -79,7 +79,6 @@ sorcerer_model.set_cellshading()
 
 # Create a sorcerer body
 
-#sorcerer = soya.Cal3dBody(scene, sorcerer_model)
 sorcerer = soya.Body(scene, sorcerer_model)
 
 # Rotates Balazar the sorcerer

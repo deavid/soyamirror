@@ -20,8 +20,8 @@
 
 
 cdef class _Body(CoordSyst):
-	#cdef _Model     _model
-	#cdef _ModelData _data
+	#cdef _Model _model
+	#cdef _Model _data
 	
 	def __init__(self, _World parent = None, _Model model = None, opt = None):
 		if not model is None:
@@ -55,29 +55,37 @@ cdef class _Body(CoordSyst):
 				for coordsyst, bone_id in cstate[3]: attached_coordsysts.append((coordsyst, bone_id, 1))
 				self._data.__setcstate__((self, self._model, cstate[2], attached_coordsysts))
 				
-			else: # New (Soya >= 12) Body
+			else: # New (Soya >= 0.12) Body
 				self._data = cstate[2]
-				
+		if self._data is None: self._data = self._model
+		
 	cdef void _batch(self, CoordSyst coordsyst):
 		#multiply_matrix(self._render_matrix, renderer.current_camera._render_matrix, self._root_matrix())
 		multiply_matrix(self._render_matrix, coordsyst._render_matrix, self._matrix)
 		self._frustum_id = -1
-		if not self._model is None: self._model._batch(self)
+		#if not self._model is None: self._model._batch(self)
+		if not self._data is None: self._data._batch(self)
 		
 	cdef int _shadow(self, CoordSyst coordsyst, _Light light):
-		if not self._model is None: return self._model._shadow(self, light)
+		#if not self._model is None: return self._model._shadow(self, light)
+		if not self._data is None: return self._data._shadow(self, light)
 		return 0
 	
 	cdef void _raypick(self, RaypickData raypick_data, CoordSyst raypickable):
-		if (self._model is None) or (self._option & NON_SOLID): return
-		self._model._raypick(raypick_data, self)
+		#if (self._model is None) or (self._option & NON_SOLID): return
+		#self._model._raypick(raypick_data, self)
+		if (self._data is None) or (self._option & NON_SOLID): return
+		self._data._raypick(raypick_data, self)
 		
 	cdef int _raypick_b(self, RaypickData raypick_data, CoordSyst raypickable):
-		if (self._model is None) or (self._option & NON_SOLID): return 0
-		return self._model._raypick_b(raypick_data, self)
+		#if (self._model is None) or (self._option & NON_SOLID): return 0
+		#return self._model._raypick_b(raypick_data, self)
+		if (self._data is None) or (self._option & NON_SOLID): return 0
+		return self._data._raypick_b(raypick_data, self)
 	
 	cdef void _collect_raypickables(self, Chunk* items, float* rsphere, float* sphere):
-		if self._option & NON_SOLID: return
+		#if (self._model is None) or (self._option & NON_SOLID): return
+		if (self._data is None) or (self._option & NON_SOLID): return
 		
 		cdef float* matrix
 		cdef float  s[4]
@@ -86,7 +94,9 @@ cdef class _Body(CoordSyst):
 		matrix = self._inverted_root_matrix()
 		point_by_matrix_copy(s, rsphere, matrix)
 		s[3] = length_by_matrix(rsphere[3], matrix)
-		if not self._model is None: self._model._collect_raypickables(items, rsphere, s, self)
+		
+		#self._model._collect_raypickables(items, rsphere, s, self)
+		self._data._collect_raypickables(items, rsphere, s, self)
 		
 	cdef int _contains(self, _CObj obj):
 		if self._model is obj: return 1
@@ -95,22 +105,65 @@ cdef class _Body(CoordSyst):
 	cdef void _get_box(self, float* box, float* matrix):
 		cdef float matrix2[19]
 		
-		if not self._model is None:
+		#if not self._model is None:
+		if not self._data is None:
 			if matrix == NULL: matrix_copy    (matrix2, self._matrix)
 			else:              multiply_matrix(matrix2, matrix, self._matrix)
-			self._model._get_box(box, matrix2)
+			
+			#self._model._get_box(box, matrix2)
+			self._data._get_box(box, matrix2)
 			
 	cdef void _get_sphere(self, float* sphere):
-		if self._model and isinstance(self._model, _SimpleModel) and ((<_SimpleModel> (self._model))._option & MODEL_HAS_SPHERE):
-			memcpy(sphere, (<_SimpleModel> (self._model))._sphere, 4 * sizeof(float))
+		#if self._model and isinstance(self._model, _SimpleModel) and ((<_SimpleModel> (self._model))._option & MODEL_HAS_SPHERE):
+			#memcpy(sphere, (<_SimpleModel> (self._model))._sphere, 4 * sizeof(float))
+		if self._data and isinstance(self._data, _SimpleModel) and ((<_SimpleModel> (self._data))._option & MODEL_HAS_SPHERE):
+			memcpy(sphere, (<_SimpleModel> (self._data))._sphere, 4 * sizeof(float))
 		else:
 			sphere[0] = sphere[1] = sphere[2] = sphere[3] = 0.0
 			
 	def __repr__(self):
 		return "<%s, model=%s>" % (self.__class__.__name__, self._model)
 	
-
-
+	def add_deform(self, _Deform deform):
+		if not deform._model is None:
+			raise ValueError("This Deform object is already used by another Body! Please create a new Deform!")
+		
+		deform._set_model(self._data)
+		self._data = deform
+		
+	def remove_deform(self, _Deform deform):
+		cdef _Model model
+		cdef _Deform previous
+		
+		if self._data is deform:
+			self._data = deform._model
+		else:
+			model    = self._data
+			previous = self._data
+			while model and isinstance(model, _Deform):
+				if model is deform:
+					previous._set_model(deform._model)
+					break
+				
+				previous = model
+				model = previous._model
+			else: raise ValueError("Cannot remove deform: this deform hasn't been added.")
+			
+		deform._set_model(None)
+		
+	property deforms:
+		def __get__(self):
+			deforms = []
+			cdef _Model model
+			cdef _Deform deform
+			
+			model = self._data
+			while model and isinstance(model, _Deform):
+				deform = model
+				deforms.insert(0, deform)
+				model = deform._model
+			return deforms
+		
 		
 		
 	def attach(self, *mesh_names):

@@ -18,21 +18,21 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 cdef class _SolidModel(_SimpleModel):
-	cdef void _render(self, CoordSyst coord_syst):
+	cdef void _render(self, _Body body):
 		cdef float         pos[3]
 		cdef int           v2[3]
 		cdef ModelFace*    face
 		cdef DisplayList*  display_list
 		cdef int           i, j, start, end
 		
-		point_by_matrix_copy(pos, self._sphere, coord_syst._render_matrix)
+		point_by_matrix_copy(pos, self._sphere, body._render_matrix)
 		#print "pos", pos[0], pos[1], pos[2]
 		#print self._sphere[0], self._sphere[1], self._sphere[2], self._sphere[3]
 		if pos[2] + self._sphere[3] < -renderer.current_camera._front:
 			#print "en dehors"
 
 
-			_SimpleModel._render(self, coord_syst)
+			_SimpleModel._render(self, body)
 			
 		else:
 			#print "dedans"
@@ -60,13 +60,13 @@ cdef class _SolidModel(_SimpleModel):
 					face = self._faces + j
 					if ((face.option & DISPLAY_LIST_OPTIONS) == display_list.option) and (face.pack.material_id == display_list.material_id):
 						if face.option & FACE_QUAD:
-							self._render_triangle_solid(face, coord_syst, face.v)
+							self._render_triangle_solid(face, body, face.v)
 							v2[0] = face.v[0]
 							v2[1] = face.v[2]
 							v2[2] = face.v[3]
-							self._render_triangle_solid(face, coord_syst, v2)
+							self._render_triangle_solid(face, body, v2)
 						else:
-							self._render_triangle_solid(face, coord_syst, face.v)
+							self._render_triangle_solid(face, body, face.v)
 							
 				face_option_inactivate(display_list.option)
 			model_option_inactivate(self._option)

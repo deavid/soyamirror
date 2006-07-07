@@ -1,0 +1,117 @@
+# -*- indent-tabs-mode: t -*-
+
+# Soya 3D
+# Copyright (C) 2004 Jean-Baptiste LAMY -- jiba@tuxfamily.org
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+cdef class _Deform(_ModelData):
+	#cdef _Model _model
+	#cdef _Model _data
+	
+	cdef _set_model(self, _Model model):
+		if model is None:
+			#self._KEEP = self._model, self._data
+			
+			self._model = None
+			self._data  = None
+			
+		else:
+			self._model = model
+			self._data  = model._create_deformed_data()
+			
+	cdef void _begin_round(self):
+		self._model._begin_round()
+		
+	cdef void _advance_time(self, float proportion):
+		self._model._advance_time(proportion)
+		
+	cdef _Model _create_deformed_data(self): return self._data._create_deformed_data()
+	
+	cdef void _batch               (self, _Body body):
+		if self._model is None: raise ValueError
+		self._data._batch (body)
+	cdef void _render              (self, _Body body):
+		if self._model is None: raise ValueError
+		self._data._render(body)
+	cdef int  _shadow              (self, CoordSyst coord_syst, _Light light): return self._data._shadow(coord_syst, light)
+	cdef void _get_box             (self, float* box, float* matrix): self._data._get_box(box, matrix)
+	cdef void _raypick             (self, RaypickData raypick_data, CoordSyst raypickable):        self._data._raypick  (raypick_data, raypickable)
+	cdef int  _raypick_b           (self, RaypickData raypick_data, CoordSyst raypickable): return self._data._raypick_b(raypick_data, raypickable)
+	cdef void _collect_raypickables(self, Chunk* items, float* rsphere, float* sphere, CoordSyst parent): self._data._collect_raypickables(items, rsphere, sphere, parent)
+	
+	cdef _deform_points(self, float* coords, float* r, int nb):
+		cdef int i
+		for i from 0 <= i < nb:
+			self._deform_point(coords + 3 * i, r + 3 * i)
+			
+	cdef _deform_point(self, float* coord, float* r):
+		r[0] = coord[0]
+		r[1] = coord[1]
+		r[2] = coord[2]
+	
+	def __repr__(self):
+		return "<%s deforming %s>" % (self.__class__.__name__, self._model)
+	
+	
+cdef class _DynamicDeform(_Deform):
+	#cdef float _time
+	
+	def __init__(self):
+		self._time = 0
+		
+	property time:
+		def __get__(self):
+			return self._time
+		def __set__(self, float x):
+			self._time = x
+			
+	cdef void _advance_time(self, float proportion):
+		self._model._advance_time(proportion)
+		
+		self._time = self._time + proportion
+
+		cdef _Model       base
+		cdef _Deform      deform
+		cdef _SimpleModel simple_model, simple_data
+		
+		if isinstance(self._model, _Deform):
+			deform = self._model
+			base = deform._data
+		else: base = self._model
+		
+		if isinstance(base, _SimpleModel):
+			simple_model = base
+			simple_data  = self._data
+			self._deform_points(simple_model._coords, simple_data._coords, simple_model._nb_coords)
+			
+		else:
+			raise ValueError("Cannot deform %s!" % base)
+			
+			
+
+cdef class _TestDynamicDeform(_DynamicDeform):
+	cdef _deform_point(self, float* coord, float* r):
+		r[0] = coord[0] + coord[1] * self._time * 0.1
+		r[1] = coord[1]
+		r[2] = coord[2]
+		
+		
+cdef class _PythonDynamicDeform(_DynamicDeform):
+	cdef _deform_point(self, float* coord, float* r):
+		r[0], r[1], r[2] = self.deform_point(coord[0], coord[1], coord[2])
+		
+	def deform_point(self, x, y, z):
+		return x, y, z
