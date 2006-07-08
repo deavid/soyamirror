@@ -187,11 +187,11 @@ def process_next_object_chunk(file, previous_chunk, mesh):
 						print "Cannot assign more than 2 materials to a mesh: Continue?%t|OK"
 						break;
 					else:						
-						material_found=1						
-						for mat_counter in range(0,len(materials)):							
-							if materials[mat_counter].name==material_name:
-								mat_index=mat_counter
+						material_found=1
+						for mat_index,material in enumerate(materials):
+							if material.name == material_name:
 								break
+						break
 							
 				else:
 					material_found=0
