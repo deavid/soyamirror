@@ -56,15 +56,8 @@ terrain.multiply_height(8.0)
 # (see lesson modeling-material-2 about texturing). First, we creates two textured
 # materials.
 
-#material1 = soya.Material(soya.Image.get("block2.png"))
-#material2 = soya.Material(soya.Image.get("metal1.png"))
 material1 = soya.Material.get("block2")
 material2 = soya.Material.get("metal1")
-
-#material1 = soya.Material()
-#material1.diffuse = (0.0, 0.0, 0.0, 1.0)
-#material1 = soya.Material.get("block2")
-#material2 = soya.Material()
 
 # asigns MATERIAL1 to any point whose height is in the range 0.0-6.0, and material2 to
 # any point whose height is in the range 6.0-8.0 (remember, height ranges from 0.0 to 8.0).

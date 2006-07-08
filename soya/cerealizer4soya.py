@@ -90,6 +90,7 @@ cerealizer.register_class(soya.ray.Ray)
 cerealizer.register_class(soya.ray.HalfRay)
 cerealizer.register_class(soya.spc_material.ZoomingMaterial, SavedInAPathHandler(soya.spc_material.ZoomingMaterial))
 cerealizer.register_class(soya.spc_material.MovingMaterial, SavedInAPathHandler(soya.spc_material.MovingMaterial))
+cerealizer.register_class(soya.spc_material.RotatingMaterial, SavedInAPathHandler(soya.spc_material.RotatingMaterial))
 
 cerealizer.register_class(_soya.TreeModelBuilder)
 cerealizer.register_class(_soya.SimpleModelBuilder)

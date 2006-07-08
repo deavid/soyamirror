@@ -407,7 +407,7 @@ Attributes are:
 class PythonMaterial(_soya._PythonMaterial, Material):
 	pass
 
-class PythonIdleingMaterial(_soya._PythonIdleingMaterial, Material):
+class PythonMainLoopingMaterial(_soya._PythonMainLoopingMaterial, Material):
 	pass
 
 class Model(SavedInAPath, _soya._Model):

@@ -374,7 +374,7 @@ at the same time. This method is a Python wrapper for _Material._activate()."""
 
 
 
-cdef class _IdleingMaterial(_Material):
+cdef class _MainLoopingMaterial(_Material):
 	def __init__(self, _Image texture = None):
 		_Material.__init__(self, texture)
 		MAIN_LOOP_ITEMS[self] = 1
@@ -432,14 +432,14 @@ Just implement the following methods:
 		pass
 
 
-cdef class _PythonIdleingMaterial(_IdleingMaterial):
+cdef class _PythonMainLoopingMaterial(_MainLoopingMaterial):
 	"""A Material class that can be extended and hacked in Python.
 Just implement the following methods:
 	init_texture()
 	activated()
 	inactivated()
 
-In addition to PythonMaterial, PythonIdleingMaterial also has begin_round, advance_time and end_round method."""
+In addition to PythonMaterial, PythonMainLoopingMaterial also has begin_round, advance_time and end_round method."""
 	cdef void _init_texture(self):
 		_Material._init_texture(self)
 		self.init_texture()

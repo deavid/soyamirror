@@ -21,10 +21,14 @@ cdef class _Deform(_ModelData):
 	#cdef _Model _model
 	#cdef _Model _data
 	
+	cdef __getcstate__(self):
+		return self._model,
+	
+	cdef void __setcstate__(self, cstate):
+		self._set_model(cstate[0])
+		
 	cdef _set_model(self, _Model model):
 		if model is None:
-			#self._KEEP = self._model, self._data
-			
 			self._model = None
 			self._data  = None
 			
@@ -69,8 +73,15 @@ cdef class _Deform(_ModelData):
 cdef class _DynamicDeform(_Deform):
 	#cdef float _time
 	
+	cdef __getcstate__(self):
+		return self._model, self._time
+	
+	cdef void __setcstate__(self, cstate):
+		self._set_model(cstate[0])
+		self._time = cstate[1]
+		
 	def __init__(self):
-		self._time = 0
+		self._time = 0.0
 		
 	property time:
 		def __get__(self):
@@ -109,7 +120,7 @@ cdef class _TestDynamicDeform(_DynamicDeform):
 		r[2] = coord[2]
 		
 		
-cdef class _PythonDynamicDeform(_DynamicDeform):
+cdef class PythonDynamicDeform(_DynamicDeform):
 	cdef _deform_point(self, float* coord, float* r):
 		r[0], r[1], r[2] = self.deform_point(coord[0], coord[1], coord[2])
 		

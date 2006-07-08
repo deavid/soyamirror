@@ -106,6 +106,12 @@ camera.y = 4.0
 camera.look_at(soya.Vector(scene, 0.0, -1.0, 0.0))
 soya.set_root_widget(camera)
 
-soya.MainLoop(scene).main_loop()
+try:
+	soya.MainLoop(scene).main_loop()
+except: pass
 
+moon_center = soya.Point(moon, 0.0, 0.0, 0.0)
 
+moon_center.convert_to(sun)
+
+print "In the sun coordinate system, the center of the moon is", moon_center

@@ -39,27 +39,12 @@ sword = soya.Body(scene, sword_model)
 sword.x = 1.0
 sword.rotate_y(90.0)
 
-class MyDeform(soya._soya._PythonDynamicDeform):
+class MyDeform(soya.PythonDynamicDeform):
 	def deform_point(self, x, y, z):
-		return x, y, z + 0.1 * math.sin(0.1 * self.time + 5.0 * y)
+		return x, y, z + 0.3 * math.sin(0.1 * self.time + 5.0 * y)
 	
-
-
 deform = MyDeform()
 sword.add_deform(deform)
-
-deform2 = MyDeform()
-sword.add_deform(deform2)
-
-
-print "deform ", id(deform ), deform , deform.__class__
-print "deform2", id(deform2), deform2
-print sword.deforms
-
-sword.remove_deform(deform2)
-
-print sword.deforms
-print
 
 
 light = soya.Light(scene)
@@ -70,5 +55,4 @@ camera.z = 2.0
 soya.set_root_widget(camera)
 
 soya.MainLoop(scene).main_loop()
-
 

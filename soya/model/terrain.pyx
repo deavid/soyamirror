@@ -445,9 +445,9 @@ cdef class _Terrain(CoordSyst):
 				vertex.pack = pack[i]
 		
 	def set_material_layer(self, _Material material, float start, float end):
-		cdef int         i, j
+		cdef int            i, j
 		cdef TerrainVertex* vertex
-		cdef Pack*       pack
+		cdef Pack*          pack
 		self._add_material(material)
 		pack = material._pack(FACE_TRIANGLE)
 		for j from 0 <= j < self._nb_vertex_depth:
