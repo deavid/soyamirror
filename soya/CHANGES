@@ -247,3 +247,6 @@
     been really working
   * Font now inherits from SavedInAPath (=> you can have a data/fonts/
     directory)
+  * Dynamic model deforming (see tuto deform-1.py); this feature is
+    still under work and the API may change in the next release.
+
