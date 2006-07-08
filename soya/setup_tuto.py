@@ -37,7 +37,7 @@ sys.argv.extend(["--template", "MANIFEST_tuto.in", "--manifest", "MANIFEST_tuto"
 
 setup(
 	name         = "SoyaTutorial",
-	version      = "0.11",
+	version      = "0.12rc1",
 	license      = "GPL",
 	description  = "Tutorial for Soya, a practical high-level object-oriented 3D engine for Python.",
 	long_description  = """Tutorial for Soya, a practical high-level object-oriented 3D engine for Python.

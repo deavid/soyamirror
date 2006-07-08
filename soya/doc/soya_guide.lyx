@@ -1,0 +1,4483 @@
+#LyX 1.3 created this file. For more info see http://www.lyx.org/
+\lyxformat 221
+\textclass report
+\begin_preamble
+\usepackage{ae,aecompl}
+\end_preamble
+\language english
+\inputencoding auto
+\fontscheme default
+\graphics default
+\float_placement tp
+\paperfontsize default
+\spacing single 
+\papersize a4paper
+\paperpackage a4
+\use_geometry 1
+\use_amsmath 0
+\use_natbib 0
+\use_numerical_citations 0
+\paperorientation portrait
+\leftmargin 1cm
+\topmargin 1cm
+\rightmargin 1cm
+\bottommargin 2cm
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\defskip medskip
+\quotes_language english
+\quotes_times 2
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+
+\layout Title
+
+
+\begin_inset Graphics
+	filename yeti.png
+	lyxscale 25
+	width 20col%
+
+\end_inset 
+
+
+\newline 
+\SpecialChar ~
+
+\newline 
+\SpecialChar ~
+
+\newline 
+\SpecialChar ~
+
+\newline 
+
+\family sans 
+\series bold 
+\size giant 
+The
+\newline 
+\SpecialChar ~
+
+\newline 
+(yet-in)
+\newline 
+\SpecialChar ~
+
+\newline 
+complete
+\newline 
+\SpecialChar ~
+
+\newline 
+guide
+\newline 
+\SpecialChar ~
+
+\newline 
+to
+\newline 
+\SpecialChar ~
+
+\newline 
+Soya 3D
+\family default 
+\series default 
+\size default 
+
+\newline 
+\SpecialChar ~
+
+\newline 
+\SpecialChar ~
+
+\newline 
+\SpecialChar ~
+
+\newline 
+
+\size normal 
+(also known as 
+\begin_inset Quotes eld
+\end_inset 
+
+the yet-in
+\begin_inset Quotes erd
+\end_inset 
+
+)
+\layout Author
+
+LAMY Jean-Baptiste 
+\begin_inset Quotes eld
+\end_inset 
+
+Jiba
+\begin_inset Quotes erd
+\end_inset 
+
+
+\layout Standard
+
+
+\begin_inset LatexCommand \tableofcontents{}
+
+\end_inset 
+
+
+\layout Chapter
+
+Introduction
+\layout Section
+
+License
+\layout Standard
+
+Permission is granted to copy, distribute and/or modify this document under
+ the terms of the GNU Free Documentation License, Version 1.1 or any later
+ version published by the Free Software Foundation; with the Invariant Sections
+ being just 
+\begin_inset Quotes eld
+\end_inset 
+
+What is Soya 3D ?
+\begin_inset Quotes erd
+\end_inset 
+
+, 
+\begin_inset Quotes eld
+\end_inset 
+
+History
+\begin_inset Quotes erd
+\end_inset 
+
+ and 
+\begin_inset Quotes eld
+\end_inset 
+
+The Soya project objectives and the Soya spirit
+\begin_inset Quotes erd
+\end_inset 
+
+, with no Front-Cover Texts, and with no Back-Cover Texts.
+ A copy of the license is included in the section entitled 
+\begin_inset Quotes eld
+\end_inset 
+
+GNU Free Documentation License
+\begin_inset Quotes erd
+\end_inset 
+
+.
+\layout Standard
+
+The Yeti picture on the cover was drawn by Jean-noël Lafargue (jn (at) hyperbate
+ (dot) com), and is available under the Free Art License (
+\begin_inset LatexCommand \url{http://artlibre.org/licence/lal/en/}
+
+\end_inset 
+
+).
+\layout Section
+
+What is Soya 3D ?
+\layout Section
+
+History
+\layout Subsection
+
+Old history
+\layout Standard
+
+The actual Soya was originally written by Jiba and Blam.
+ Jiba is the man that has written seven 3D engines:
+\layout Enumerate
+
+a 3D engine ("Vertige 3D") in visual basic + direct X
+\layout Enumerate
+
+a 3D engine in visual basic + OpenGL (direct X was too horrible)
+\layout Enumerate
+
+a second 3D engine in visual basic + OpenGL (rewrite of the previous one)
+\layout Enumerate
+
+a 3D engine ("Opale.Soya") in Java + OpenGL (my last engine was too big to
+ compile with VB!)
+\layout Enumerate
+
+a 3D engine ("Opale.Soya 2") in Java + OpenGL (rewrite of the previous one,
+ with my brother Blam)
+\layout Enumerate
+
+a 3D engine ("Soya" < 0.7) in Python + C + OpenGL (Python was now more appealing
+ for me than Java, still helped by Blam for the C part)
+\layout Enumerate
+
+a 3D engine ("Soya" >= 0.7) in Python + Pyrex + OpenGL (I was not at ease
+ with C and Blam was gone)
+\layout Standard
+
+The engine in visual basic have never been published (I haven't got the
+ Internet at this time!).
+ The Java engine have been published and can still be found on the web;
+ in particular they were used in Arkanae.
+ They are no longer maintained.
+\layout Subsection
+
+The fork
+\layout Standard
+
+Then, after trying an aggressive take-over on Soya, Arc Riley has forked
+ the project into PySoy, on June the 6th in 2006.
+ Arc still own the soya3d.org domain name, and use it as a placeholder spreading
+ false and slanderous allegations.
+\layout Standard
+
+You can find more historical information on 
+\begin_inset LatexCommand \htmlurl{http://home.gna.org/oomadness/en/soya/history.html}
+
+\end_inset 
+
+.
+\layout Section
+
+The Soya project objectives and the Soya spirit
+\layout Standard
+
+Here are the spirit that Soya follows (or 
+\emph on 
+should
+\emph default 
+ follow ;-) ):
+\layout Itemize
+
+
+\series bold 
+Soya's goal #1 is to allow to develop as rapidly as possible
+\series default 
+ 3D games and other 3D apps
+\newline 
+(Rationale: Soya targets "amateur" developpers, who code during their limited
+ free time! Moreover, rapid development allows to gain a precious time that
+ can be re-invested in improving your code or testing your app.
+ For game, it leads to a better gameplay)
+\layout Itemize
+
+
+\series bold 
+Soya's goal #2 is to be as easy as possible to learn
+\series default 
+, in particular for people with no 3D background at all
+\newline 
+(Rationale: Soya is not a toy; to be easy to learn is only goal #2 since
+ any newbie will, a day, not longer be a newbie)
+\layout Itemize
+
+
+\series bold 
+Despite its simplicity, Soya never sacrifices performance and speed
+\series default 
+
+\newline 
+(Rationale: speed is important for 3D game!)
+\layout Itemize
+
+
+\series bold 
+Soya's API does not necessarily fit to the mathematical, computational or
+ technical reality of the 3D
+\series default 
+, e.g.
+ Soya API does not require the use of matrices
+\newline 
+(Rationale: math are not the natural way to represent 3D object.
+ Soya should be useable without an important mathematical background.
+ However, Soya provides matrices, mainly for debug purpose)
+\layout Itemize
+
+
+\series bold 
+Soya relies a lot on Python facilities and modules
+\series default 
+, e.g.
+ saving 3D model is done through object serialization.
+ As a consequence, Soya won't evolve toward a multi-language 3D engine and
+ will stay Python-centred
+\newline 
+(Rationale: Python modules ease the Soya development, but also the use of
+ Soya, since they are already well-known to Python developers)
+\layout Itemize
+
+
+\series bold 
+Soya has plenty of dependencies
+\series default 
+
+\newline 
+(Rationale: any good OS has a package system tools today)
+\layout Itemize
+
+
+\series bold 
+Soya always assumes by default the most common usecase
+\series default 
+
+\newline 
+(Rationale: doing so lead to a substencial time gain)
+\layout Itemize
+
+
+\series bold 
+Soya is an "atypic" 3D engine and relies on a certain number of controversal
+ choices
+\series default 
+ that are somehow debatable ; however, most of these choices are deliberate
+\newline 
+(Rationale: Soya should be seen as a "research project" aiming at "a new
+ way for 3D" ; the objective is not to satisfy anyone, but to be the ideal
+ 3D engine for a few persons.
+ Python does similarly)
+\layout Section
+
+Documentation available
+\layout Subsection
+
+Docstrings
+\layout Standard
+
+About half of Soya objects and functions have docstrings.
+ You can use pydoc to read them, or just type 
+\emph on 
+e.g.
+
+\emph default 
+ 
+\begin_inset Quotes eld
+\end_inset 
+
+help(soya.Body)
+\begin_inset Quotes erd
+\end_inset 
+
+ in a Python interpreter.
+ You can also browse the doc online at 
+\begin_inset LatexCommand \htmlurl{http://home.gna.org/oomadness/en/soya/pydoc.html}
+
+\end_inset 
+
+.
+\layout Subsection
+
+Tutorials
+\layout Subsection
+
+About this doc
+\layout Standard
+
+The (yet-in)complete guide to Soya 3D, also known as 
+\begin_inset Quotes eld
+\end_inset 
+
+the yet-in
+\begin_inset Quotes erd
+\end_inset 
+
+, is still under writing.
+\layout Section
+
+Getting help
+\layout Standard
+
+You may ask for help either on the Soya's mailing list (soya-user@gna.org,
+ suscribe from 
+\begin_inset LatexCommand \htmlurl{http://mail.gna.org/listinfo/soya-user}
+
+\end_inset 
+
+) or the #soya IRC channel on FreeNode.
+ Please check if you cannot find the reply to your question in the documentation
+ listed above, though.
+\layout Chapter
+
+Soya's basics
+\layout Section
+
+Initializing Soya
+\layout Standard
+
+Initializing Soya is done in three steps, corresponding to these three lines:
+\layout LyX-Code
+
+import soya
+\layout LyX-Code
+
+soya.path.append("/your/data/path")
+\layout LyX-Code
+
+soya.init("My 3D app", sound = 1)
+\layout Enumerate
+
+Importing module.
+ Soya has several Python sub-packages, but most of the basic stuff is directly
+ in the soya module.
+\layout Enumerate
+
+Setting data path.
+ The data directory (
+\family typewriter 
+/your/data/path
+\family default 
+ above) is referred as <data>/ in this documentation; it is expected to
+ contain several subdirectories (see section 
+\begin_inset LatexCommand \ref{cha:Managing-data}
+
+\end_inset 
+
+).
+\begin_deeper 
+\layout Description
+
+Hint: if your data are in the 
+\begin_inset Quotes eld
+\end_inset 
+
+data
+\begin_inset Quotes erd
+\end_inset 
+
+ directory located in the same directory than your script, a common trick
+ for Python script is:
+\layout LyX-Code
+
+soya.path.append(os.path.join(os.path.dirname(sys.argv[0]), "data")) 
+\layout Standard
+
+and for Python module:
+\layout LyX-Code
+
+soya.path.append(os.path.basename(__file__, "data"))
+\end_deeper 
+\layout Enumerate
+
+Creating and showing the 3D display.
+ 
+\family typewriter 
+soya.init
+\family default 
+ can take the following arguments (all being optional):
+\begin_deeper 
+\layout Description
+
+title is the title of the window (windowed mode only, defaults to 
+\begin_inset Quotes eld
+\end_inset 
+
+Soya 3D
+\begin_inset Quotes erd
+\end_inset 
+
+).
+\layout Description
+
+width,\SpecialChar ~
+height the dimensions of the 3D screen (default to 640, 480).
+\layout Description
+
+fullscreen is true for fullscreen and false for windowed mode (defaults
+ to false).
+\layout Description
+
+resizeable is true for a resizeable window (windowed mode only, defaults
+ to true).
+\layout Description
+
+create_surface is true for creating an OpenGL surface through SDL, and false
+ for using whatever OpenGL that is currently active (in this case it is
+ up to you to initialize OpenGL, 
+\emph on 
+e.g.
+
+\emph default 
+ with PyGame, see section 
+\begin_inset LatexCommand \ref{sec:PyGame}
+
+\end_inset 
+
+; it defaults to true)
+\layout Description
+
+sound is true to initialize 3D sound support (default to false for backward
+ compatibility).
+ There are other sound-related arguments, which are discussed in section
+ 
+\begin_inset LatexCommand \ref{sec:Sound-related-init-parameters}
+
+\end_inset 
+
+.
+\end_deeper 
+\layout Standard
+
+The rest of this documentation assume that you have initialized Soya correctly.
+ It may also assume that you have imported some common modules (os, sys,...),
+ well, you are probably enough intelligent to understand that ;-).
+\layout Section
+
+Basic classes
+\layout Standard
+
+
+\begin_inset Float figure
+wide false
+collapsed false
+
+\layout Standard
+\noindent \align center 
+
+\begin_inset Graphics
+	filename uml1.eps
+	width 60col%
+
+\end_inset 
+
+
+\layout Caption
+
+
+\begin_inset LatexCommand \label{cap:Soya's-basic-classes}
+
+\end_inset 
+
+Soya's basic classes (UML schema)
+\end_inset 
+
+
+\layout Standard
+
+The UML schema of figure 
+\begin_inset LatexCommand \ref{cap:Soya's-basic-classes}
+
+\end_inset 
+
+ shows Soya's basic classes:
+\layout Description
+
+MainLoop is in charge of managing and regulating time (see section 
+\begin_inset LatexCommand \ref{sub:Time-management}
+
+\end_inset 
+
+).
+\layout Description
+
+CoordSyst is the base class for all 3D objects.
+ It defines a coordinate system, 
+\emph on 
+i.e.
+
+\emph default 
+ it has a 3D position, orientation and size.
+\layout Description
+
+Light is a light.
+\layout Description
+
+Camera is the 
+\begin_inset Quotes eld
+\end_inset 
+
+eye
+\begin_inset Quotes erd
+\end_inset 
+
+ from which the 3D scene is viewed.
+ It also acts as the 
+\begin_inset Quotes eld
+\end_inset 
+
+ear
+\begin_inset Quotes erd
+\end_inset 
+
+, for 3D sound.
+\layout Description
+
+Model (sometimes called 
+\begin_inset Quotes eld
+\end_inset 
+
+Mesh
+\begin_inset Quotes erd
+\end_inset 
+
+ in other 3D engines) is a 3D model.
+ Model is actually an 
+\begin_inset Quotes eld
+\end_inset 
+
+abstract
+\begin_inset Quotes erd
+\end_inset 
+
+ class, and Soya provides several Model subclasses (SimpleModel, AnimatedModel,...).
+\layout Description
+
+Material defines the attributes of a surface, 
+\emph on 
+e.g.
+
+\emph default 
+ color or texture.
+\layout Description
+
+Image is a 2D image.
+ It is used in particular for textures.
+\layout Description
+
+Body (sometimes called 
+\begin_inset Quotes eld
+\end_inset 
+
+Entity
+\begin_inset Quotes erd
+\end_inset 
+
+ in other 3D engines, or 
+\begin_inset Quotes eld
+\end_inset 
+
+Object
+\begin_inset Quotes erd
+\end_inset 
+
+ in Blender) displays a Model at a specific 3D position.
+ Model cannot be displayed without 
+\begin_inset Quotes eld
+\end_inset 
+
+emBodying
+\begin_inset Quotes erd
+\end_inset 
+
+ them; it allows to display the same Model at several location (
+\emph on 
+e.g.
+
+\emph default 
+ two identical houses in a town), by creating two Bodies with the same Model.
+\layout Description
+
+World (sometimes called 
+\begin_inset Quotes eld
+\end_inset 
+
+Node
+\begin_inset Quotes erd
+\end_inset 
+
+ or 
+\begin_inset Quotes eld
+\end_inset 
+
+Group
+\begin_inset Quotes erd
+\end_inset 
+
+ in other 3D engines) acts as a grouping container.
+ A World can contain other nested CoordSysts, including other Worlds.
+ When a World is moved, all the CoordSysts it contains are moved too.
+ As a consequence, Soya scenegraph is a tree structure, the root being a
+ World, usually called 
+\begin_inset Quotes eld
+\end_inset 
+
+scene
+\begin_inset Quotes erd
+\end_inset 
+
+.
+ World also inherit from Body, and thus can display a Model.
+\layout Standard
+
+Most of the more advanced Soya classes derive from these.
+\layout Description
+
+Hint: some people find odd that World inherits from Body...
+ but this will make sense in section 
+\begin_inset LatexCommand \ref{sec:Attaching-objects-to-bones}
+
+\end_inset 
+
+, please wait ;-)
+\layout Description
+
+History: For a long time, Soya has used 
+\begin_inset Quotes eld
+\end_inset 
+
+folkloric
+\begin_inset Quotes erd
+\end_inset 
+
+ names.
+ These names are still available as aliases, for backward compatibility
+ (and archeologists :-).
+ They are: Idler for MainLoop, Shape for Model, Volume for Body, Land for
+ Terrain (see section 
+\begin_inset LatexCommand \ref{sec:Terrain}
+
+\end_inset 
+
+).
+\layout Section
+
+Your first 3D scene with Soya
+\layout Standard
+
+We are going to create a basic 3D scene that just displays a Model.
+ First, we need to create the root of the tree, a World we call 
+\begin_inset Quotes eld
+\end_inset 
+
+scene
+\begin_inset Quotes erd
+\end_inset 
+
+ (Worlds with no parent are usually called 
+\begin_inset Quotes eld
+\end_inset 
+
+scene
+\begin_inset Quotes erd
+\end_inset 
+
+).
+ Then we load the Model and create a Body that displays it.
+ Then we create a Light and a Camera, and we set the Camera as the 
+\emph on 
+root widget
+\emph default 
+, 
+\emph on 
+i.e.
+
+\emph default 
+ the object Soya renders (see chapter 
+\begin_inset LatexCommand \ref{cha:Widget-systems}
+
+\end_inset 
+
+).
+ Finally, we create the MainLoop and start looping.
+ The scene tree is the following:
+\layout LyX-Code
+
+World scene
+\layout LyX-Code
+
+  |
+\layout LyX-Code
+
+  +-- Body sword, displaying the sword Model
+\layout LyX-Code
+
+  |
+\layout LyX-Code
+
+  +-- Light light
+\layout LyX-Code
+
+  |
+\layout LyX-Code
+
+  +-- Camera camera
+\layout Standard
+
+And here is the code (see tutorial basic-1.py):
+\layout LyX-Code
+
+scene = soya.World()
+\layout LyX-Code
+
+ 
+\layout LyX-Code
+
+sword_model = soya.Model.get("sword")
+\layout LyX-Code
+
+ 
+\layout LyX-Code
+
+sword = soya.Body(scene, sword_model)
+\layout LyX-Code
+
+sword.x = 1.0
+\layout LyX-Code
+
+sword.rotate_y(90.0)
+\layout LyX-Code
+
+ 
+\layout LyX-Code
+
+light = soya.Light(scene)
+\layout LyX-Code
+
+light.set_xyz(0.5, 0.0, 2.0)
+\layout LyX-Code
+
+ 
+\layout LyX-Code
+
+camera = soya.Camera(scene)
+\layout LyX-Code
+
+camera.z = 2.0
+\layout LyX-Code
+
+ 
+\layout LyX-Code
+
+soya.set_root_widget(camera)
+\layout LyX-Code
+
+soya.MainLoop(scene).main_loop()
+\layout Standard
+\noindent \align center 
+
+\begin_inset Graphics
+	filename /home/jiba/src/soya/tutorial/results/basic-1.jpeg
+	lyxscale 50
+	width 20col%
+
+\end_inset 
+
+
+\layout Standard
+
+In the next sections, we are going to see in more details the various objects
+ used in this first example.
+\layout Section
+
+Loading Images, Materials and Models
+\layout Standard
+
+Models are usually not created but loaded from a file (if you want to create
+ Models directly from Soya, see chapter 
+\begin_inset LatexCommand \ref{cha:Modeling}
+
+\end_inset 
+
+).
+ To load a Model, do:
+\layout LyX-Code
+
+your_model = soya.Model.get("your_model_filename")
+\layout Standard
+
+and Soya loads the <data>/models/your_model_filename.data file.
+ The Materials and Images used by the Model are also automatically loaded,
+ from the <data>/materials/ and <data>/images/ directories.
+ Image files are PNG or JPEG, and Material and Model files are raw serialized
+ Python objects, a format that only Soya can read or write.
+\layout Standard
+
+However, Soya can import Blender models automatically.
+ If a <data>/blender/your_model_filename.blend file exist, and the Model
+ file doesn't exist (or is older), Soya loads the Blender files and caches
+ the resulting Model in <data>/models/your_model_filename.data.
+ This feature is known as 
+\begin_inset Quotes eld
+\end_inset 
+
+auto-exporters
+\begin_inset Quotes erd
+\end_inset 
+
+; for more details on auto-exporters or data management, see chapter 
+\begin_inset LatexCommand \ref{cha:Managing-data}
+
+\end_inset 
+
+, and for more details on using Blender with Soya, see chapter 
+\begin_inset LatexCommand \ref{cha:Blender-for-Soya}
+
+\end_inset 
+
+.
+\layout Standard
+
+If you call Model.get several times with the same filename argument, Soya
+ doesn't load the Model twice but returns the same (cached) object.
+ This is nice since Models are immutable.
+\layout Section
+
+Displaying Models with Bodies
+\layout Standard
+
+Models cannot be directly displayed on the screen; you need to put them
+ onto a Body.
+ You can create a Body as following:
+\layout LyX-Code
+
+your_body = soya.Body(parent, model)
+\layout Standard
+
+where parent is the World in which the Body is added, and model is the Model
+ to display (both default to None).
+ For all constructors of 3D objects (derivating from CoordSyst), the first
+ argument is the parent World.
+ It is possible to reparent a CoordSyst, and the current parent World can
+ be accessed through the parent attribute.
+\layout Standard
+
+The Model displayed by a Body can be get or set through the model attribute:
+\layout LyX-Code
+
+your_body.model = soya.Model.get("your_second_model_filename")
+\layout Standard
+
+Bodies allow to display several times the same Model.
+ For example, to display two swords instead of one, you can use the following
+ scene tree:
+\layout LyX-Code
+
+World scene
+\layout LyX-Code
+
+  |
+\layout LyX-Code
+
+  +-- Body sword1, displaying the sword Model
+\layout LyX-Code
+
+  |
+\layout LyX-Code
+
+  +-- Body sword2, displaying the sword Model
+\layout LyX-Code
+
+  |
+\layout LyX-Code
+
+  +-- Light light
+\layout LyX-Code
+
+  |
+\layout LyX-Code
+
+  +-- Camera camera
+\layout Standard
+
+And here is the code (set_xyz and rotate_y are used to position the two
+ Bodies and will be seen in the next section; the code snipplet doesn't
+ include the scene, Light, Camera and MainLoop, which are identical to the
+ 
+\begin_inset Quotes eld
+\end_inset 
+
+first scene
+\begin_inset Quotes erd
+\end_inset 
+
+ example):
+\layout LyX-Code
+
+sword_model = soya.Model.get("sword")
+\layout LyX-Code
+
+ 
+\layout LyX-Code
+
+sword1 = soya.Body(scene, sword_model)
+\layout LyX-Code
+
+sword1.set_xyz(1.0, 0.5, 0.0)
+\layout LyX-Code
+
+sword1.rotate_y(90.0)
+\layout LyX-Code
+
+ 
+\layout LyX-Code
+
+sword2 = soya.Body(scene, sword_model)
+\layout LyX-Code
+
+sword2.set_xyz(1.0, -0.5, 0.0)
+\layout LyX-Code
+
+sword2.rotate_y(90.0)
+\layout Standard
+\noindent \align center 
+
+\begin_inset Graphics
+	filename /home/jiba/src/soya/tutorial/results/basic-1-two-swords.jpeg
+	lyxscale 50
+	width 20col%
+
+\end_inset 
+
+
+\layout Section
+
+Moving, rotating and scaling CoordSysts
+\layout Standard
+
+Moving, rotating and scaling methods belong to the CoordSyst class, and
+ are inherited to all CoordSyst children classes.
+ This section shows the most common Moving, rotating and scaling methods;
+ for a complete reference see section 
+\begin_inset LatexCommand \ref{sub:CoordSyst}
+
+\end_inset 
+
+.
+\layout Subsection
+
+Soya's conventions
+\layout Itemize
+
+When relevant, Soya always considers X as the right-hand direction, Y as
+ the up direction, Z as the backward direction, and thus -Z as the frontward
+ direction (Soya uses -Z for front in order to keep all coordinate systems
+ right-handed, just to avoid an internal mathematical nighmare).
+\layout Itemize
+
+All angles are expressed in degrees.
+\layout Itemize
+
+In Soya, a 3D position is defined by three X, Y, Z values 
+\series bold 
+and
+\series default 
+ the CoordSyst in which they are expressed.
+ X, Y, Z alone are not enough to make a 3D position.
+\layout Itemize
+
+By default, a distance of 1.0 is considered as roughly one meter, although
+ you may choose a different convention.
+\layout Subsection
+
+
+\begin_inset LatexCommand \label{sub:Moving}
+
+\end_inset 
+
+Moving
+\layout Standard
+
+The most basic method for moving an object is to set his x, y or z attributes.
+ set_xyz sets x, y and z in a single call.
+\layout LyX-Code
+
+coord_syst.x = 1.0
+\layout LyX-Code
+
+coord_syst.set_xyz(1.0, 2.0, 3.0) # Set x to 1.0, y to 2.0 and z to 3.0
+\layout Standard
+
+When using methods that take object arguments (and not raw X, Y and Z values),
+ Soya automatically performs coodinate system conversion if needed.
+ To move a CoordSyst at the same position than another one, use the move
+ method:
+\layout LyX-Code
+
+coord_syst.move(coord_syst2)
+\layout Standard
+
+Translation can be done by the add_vector method (which is aliased to the
+ += operator).
+ The vector constructor accepts the parent (any CoordSyst), and then the
+ X, Y and Z coordinates.
+ For example, to move coord_syst one step on its right:
+\layout LyX-Code
+
+coord_syst.add_vector(soya.Vector(coord_syst, 1.0, 0.0, 0.0))
+\layout Standard
+
+And to move coord_syst one step on the scene's right:
+\layout LyX-Code
+
+coord_syst.add_vector(soya.Vector(scene, 1.0, 0.0, 0.0))
+\layout Standard
+
+Finally, add_mul_vector(proportion, vector) is a faster equivalent to add_vector
+(proportion * vector), which often used in advance_time.
+\layout Subsection
+
+Rotating
+\layout Standard
+
+rotate_x(angle) (aliased to rotate_vertical), rotate_y(angle) (aliased to
+ rotate_lateral) and rotate_z(angle) (aliased to rotate_incline) perform
+ rotation around the CoordSyst's 
+\series bold 
+parent
+\series default 
+ X, Y and Z axes.
+ The turn_* methods (turn_x, turn_lateral,...) are identical but they refer
+ to the CoordSyst 
+\series bold 
+local
+\series default 
+ X, Y and Z axes, and not its parent ones.
+ All angles are in degrees.
+\layout LyX-Code
+
+coord_syst.rotate_y(90.0)
+\layout Standard
+
+rotate_axis(angle, axis) performs a rotation around an axis defined by the
+ origin (0, 0, 0) and the Vector axis.
+\layout LyX-Code
+
+coord_syst.rotate_axis(90.0, soya.Vector(scene, 0.0, 1.0, 0.0))
+\layout Standard
+
+rotate(angle, a, b) performs a rotation around an axis that pass through
+ a and b (either CoordSysts or Points).
+\layout LyX-Code
+
+coord_syst.rotate(90.0, scene, soya.Point(scene, 0.0, 1.0, 0.0))
+\layout Standard
+
+Finally, the very handy look_at(direction) method rotates a CoordSyst so
+ as it looks toward direction (either a Vector, a Point or a CoordSyst);
+ the -Z direction is considered as 
+\begin_inset Quotes eld
+\end_inset 
+
+front
+\begin_inset Quotes erd
+\end_inset 
+
+, and look_at tries to maintain the Y direction as up (which is usually
+ what one expects):
+\layout LyX-Code
+
+arrow.look_at(enemy)
+\layout Subsection
+
+Scaling
+\layout Standard
+
+To scale a CoordSyst, use the scale method, which accepts three arguments,
+ the X, Y and Z scale factors.
+ Negative values can be used for mirroring.
+\layout LyX-Code
+
+coord_syst.scale(0.5, 0.5, 0.5)
+\layout LyX-Code
+
+\layout Standard
+\noindent \align center 
+
+\begin_inset Graphics
+	filename /home/jiba/src/soya/tutorial/results/basic-1-scaled.jpeg
+	lyxscale 50
+	width 20col%
+
+\end_inset 
+
+
+\layout Standard
+
+The scale_x, scale_y and scale_z attributes are the current X, Y and Z scale
+ factors (
+\emph on 
+e.g.
+
+\emph default 
+ 0.5 in the previous example).
+\layout Section
+
+
+\begin_inset LatexCommand \label{sub:Time-management}
+
+\end_inset 
+
+Time management and the MainLoop
+\layout Standard
+
+
+\begin_inset Float figure
+wide false
+collapsed false
+
+\layout Standard
+\noindent \align center 
+
+\begin_inset Graphics
+	filename time.eps
+	lyxscale 50
+	width 40col%
+
+\end_inset 
+
+
+\layout Caption
+
+
+\begin_inset LatexCommand \label{cap:Time}
+
+\end_inset 
+
+Time division in Soya
+\end_inset 
+
+
+\layout Standard
+
+In Soya, the time is divided in 
+\emph on 
+round
+\emph default 
+, each round having the same theorical duration (by default, 30 milliseconds).
+ 
+\begin_inset Quotes eld
+\end_inset 
+
+Theorical duration
+\begin_inset Quotes erd
+\end_inset 
+
+ means that a given round may be shorter or longer, but the mean duration
+ is constant.
+ The following three methods of CoordSysts are automatically called as time
+ goes on (see figure 
+\begin_inset LatexCommand \ref{cap:Time}
+
+\end_inset 
+
+):
+\layout Description
+
+begin_round() is called at the beginning of each round, for each CoordSyst.
+ begin_round may 
+\emph on 
+e.g.
+
+\emph default 
+ perform collision detection, read events, determine the CoordSyst next
+ move, and compute a speed vector.
+\layout Description
+
+advance_time(proportion) is called in proportion as time goes on; the proportion
+ agument is the proportion of the round that has passed (1.0 for a complete
+ round, 0.5 for halt a round,...
+ during a round, the sum of the proportion arguments in the different calls
+ to advance_time, is always 1.0).
+ advance_time is in charge of 
+\emph on 
+e.g.
+
+\emph default 
+ applying the speed vector computed by begin_round.
+\layout Description
+
+end_round() is called at the end of the round.
+ It is rarely used.
+\layout Standard
+
+The 3D rendering may occurs at any instant, possibly in the middle of a
+ round, as if it was simultaneous (although Soya uses a single thread).
+ This time managing system yields a very smooth and soft animation: 
+\emph on 
+e.g.
+
+\emph default 
+ if two third of a round has passed, two third of the movement will be done
+ when the rendering occurs.
+\layout Standard
+
+MainLoop is responsible for cutting the time as exposed above, and it does
+ a good job.
+ The MainLoop object constructor accpets one (or more) World arguments,
+ which are the root scenes.
+ Then the MainLoop is started by calling MainLoop.main_loop, and it loops
+ until you call MainLoop.stop(arg); arg will be the value returned by MainLoop.mai
+n_loop (see section 
+\begin_inset LatexCommand \ref{sub:MainLoop}
+
+\end_inset 
+
+ for more details on MainLoop).
+\layout Standard
+
+For example, here is a subclass of Body that rotates continuously over the
+ Y axis (see tutorial basic-2.py):
+\layout LyX-Code
+
+class RotatingBody(soya.Body):
+\layout LyX-Code
+
+    def advance_time(self, proportion):
+\layout LyX-Code
+
+        soya.Body.advance_time(self, proportion)
+\layout LyX-Code
+
+ 
+\layout LyX-Code
+
+        self.rotate_y(proportion * 5.0)
+\layout Standard
+\noindent \align center 
+
+\begin_inset Graphics
+	filename /home/jiba/src/soya/tutorial/results/basic-2_0.jpeg
+	lyxscale 50
+	width 15text%
+
+\end_inset 
+
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+
+\begin_inset Graphics
+	filename /home/jiba/src/soya/tutorial/results/basic-2_1.jpeg
+	lyxscale 50
+	width 15text%
+
+\end_inset 
+
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+
+\begin_inset Graphics
+	filename /home/jiba/src/soya/tutorial/results/basic-2_2.jpeg
+	lyxscale 50
+	width 15text%
+
+\end_inset 
+
+
+\layout Standard
+
+As the rotation is always the same, we don't need a begin_round.
+ The advance_time method calls the super implementation, and then rotates
+ the object.
+ Notice how the rotation angle takes into account the proportion argument
+ (
+\emph on 
+e.g.
+
+\emph default 
+ if half of the round has passed, half of the rotation is performed).
+\layout Standard
+
+A more complex example is a randomly moving Body (see tutorial basic-3.py):
+\layout LyX-Code
+
+class RandomlyMovingBody(soya.Body):
+\layout LyX-Code
+
+    def __init__(self, parent = None, model = None):
+\layout LyX-Code
+
+        soya.Body.__init__(self, parent, model)
+\layout LyX-Code
+
+        self.rotation_speed = 0.0
+\layout LyX-Code
+
+        self.speed = soya.Vector(self, 0.0, 0.0, -0.2)
+\layout LyX-Code
+
+ 
+\layout LyX-Code
+
+    def begin_round(self):
+\layout LyX-Code
+
+        soya.Body.begin_round(self)
+\layout LyX-Code
+
+        self.rotation_speed = random.uniform(-25.0, 25.0)
+\layout LyX-Code
+
+ 
+\layout LyX-Code
+
+    def advance_time(self, proportion):
+\layout LyX-Code
+
+        soya.Body.advance_time(self, proportion)
+\layout LyX-Code
+
+        self.rotate_y(proportion * self.rotation_speed)
+\layout LyX-Code
+
+        self.add_mul_vector(proportion, self.speed)
+\layout Standard
+\noindent \align center 
+
+\begin_inset Graphics
+	filename /home/jiba/src/soya/tutorial/results/basic-3_0.jpeg
+	lyxscale 50
+	width 15text%
+
+\end_inset 
+
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+
+\begin_inset Graphics
+	filename /home/jiba/src/soya/tutorial/results/basic-3_1.jpeg
+	lyxscale 50
+	width 15text%
+
+\end_inset 
+
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+
+\begin_inset Graphics
+	filename /home/jiba/src/soya/tutorial/results/basic-3_2.jpeg
+	lyxscale 50
+	width 15text%
+
+\end_inset 
+
+
+\layout Standard
+
+This RandomlyMovingBody has too additional attributes: the rotation speed
+ (in degrees, around the Y axis), and the speed vector.
+ The speed vector is expressed in the RandomlyMovingBody coordinate system
+ itself (remind that the -Z direction is the front).
+\layout Standard
+
+begin_round computes a new random rotation speed (from -25.0 to 25.0); the
+ speed vector doesn't need update since it is expressed in the RandomlyMovingBod
+y coordinate system (
+\emph on 
+i.e.
+
+\emph default 
+ rotating or moving the RandomlyMovingBody will rotate or move the vector).
+ advance_time applies the rotation and speed vector; self.add_mul_vector(propotio
+n, self.speed) is equivalent to self.add_vector(proportion * self.speed), but
+ faster.
+\layout Section
+
+Grouping objects in Worlds
+\layout Standard
+
+A World is a Body that can also have children CoordSysts nested in it (including
+ other Worlds).
+ When the World is moved, rotated or scaled, all the children CoordSysts
+ are moved, rotated or scaled.
+ For example, we can use nested World for representing celestial objects
+ like suns/stars, planets and satellites.
+ In this example, CelestialObject inherits from World, and continuously
+ rotates (similarly to the RotatingBody example we've seen previously),
+ but it can also contain other CoordSyst.
+ As the CelestialObject rotates, the CoordSysts it contains are moved too.
+\layout Standard
+
+For three CelestialObjects, the sun, the earth and the moon, the scene tree
+ is:
+\layout LyX-Code
+
+World scene
+\layout LyX-Code
+
+  |
+\layout LyX-Code
+
+  +-- CelestialObject sun, displaying the sun Model
+\layout LyX-Code
+
+  |     |
+\layout LyX-Code
+
+  |     +-- CelestialObject earth, displaying the earth Model
+\layout LyX-Code
+
+  |           |
+\layout LyX-Code
+
+  |           +-- CelestialObject moon, displaying the moon Model
+\layout LyX-Code
+
+  |
+\layout LyX-Code
+
+  +-- Light light
+\layout LyX-Code
+
+  |
+\layout LyX-Code
+
+  +-- Camera camera
+\layout Standard
+
+And here is the code (see tutorial nested-worlds-1.py):
+\layout LyX-Code
+
+class CelestialObject(soya.World):
+\layout LyX-Code
+
+    def advance_time(self, proportion):
+\layout LyX-Code
+
+        soya.World.advance_time(self, proportion)
+\layout LyX-Code
+
+        self.rotate_y(proportion * 2.0)
+\layout LyX-Code
+
+ 
+\layout LyX-Code
+
+sun   = CelestialObject(scene, soya.Model.get("sun"))
+\layout LyX-Code
+
+ 
+\layout LyX-Code
+
+earth = CelestialObject(sun  , soya.Model.get("earth"))
+\layout LyX-Code
+
+earth.x = 2.0
+\layout LyX-Code
+
+ 
+\layout LyX-Code
+
+moon  = CelestialObject(earth, soya.Model.get("moon"))
+\layout LyX-Code
+
+moon.x = 0.5
+\layout LyX-Code
+
+ 
+\layout LyX-Code
+
+camera = soya.Camera(scene)
+\layout LyX-Code
+
+camera.y = 4.0
+\layout LyX-Code
+
+camera.look_at(soya.Vector(scene, 0.0, -1.0, 0.0)) # Looks downward
+\layout LyX-Code
+
+soya.set_root_widget(camera)
+\layout Standard
+\noindent \align center 
+
+\begin_inset Graphics
+	filename /home/jiba/src/soya/tutorial/results/nested-world-1.jpeg
+	lyxscale 50
+	width 15text%
+
+\end_inset 
+
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+
+\begin_inset Graphics
+	filename /home/jiba/src/soya/tutorial/results/nested-world-1_1.jpeg
+	lyxscale 50
+	width 15text%
+
+\end_inset 
+
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+
+\begin_inset Graphics
+	filename /home/jiba/src/soya/tutorial/results/nested-world-1_2.jpeg
+	lyxscale 50
+	width 15text%
+
+\end_inset 
+
+
+\layout Standard
+
+Notice that the moon position (X = 0.5) is relative to its parent coordinate
+ system (the earth), and not to the scene.
+\layout Standard
+
+The easiest way to add a CoordSyst into a World is to pass the World as
+ the first argument to the CoordSyst's constructor (as done previously):
+\layout LyX-Code
+
+earth = CelestialObject(sun, soya.Model.get("earth"))
+\layout Standard
+
+However, it is also possible to use the add method:
+\layout LyX-Code
+
+earth = CelestialObject(None, soya.Model.get("earth"))
+\layout LyX-Code
+
+sun.add(earth)
+\layout Standard
+
+Then, CoordSysts can be removed by the remove method:
+\layout LyX-Code
+
+sun.remove(earth)
+\layout Standard
+
+The CoordSyst.parent attribute is the World currently containing the CoordSyst;
+ this attribute is read-only (use remove and add to reparent a CoordSyst):
+\layout LyX-Code
+
+if moon.parent is earth: print "it's OK"
+\layout Standard
+
+The World.children attribute is a list containing all the children CoordSysts
+ (you 
+\series bold 
+should not modify this list
+\series default 
+ directly, use add and remove!).
+\layout LyX-Code
+
+print earth in sun.children # => true
+\layout LyX-Code
+
+print moon  in sun.children # => false
+\layout Standard
+
+Worlds can also be iterated as list:
+\layout LyX-Code
+
+for coord_syst in sun:
+\layout LyX-Code
+
+    print "the sun contains", coord_syst
+\layout Standard
+
+Soya also provide handy recursive methods.
+ World.recursive() returns all the nested CoordSysts, recursively, and CoordSyst.i
+s_inside(World) can be used to check recursively for inclusion:
+\layout LyX-Code
+
+print earth.is_inside(sun) # => true
+\layout LyX-Code
+
+print moon .is_inside(sun) # => true
+\layout Standard
+
+World also has various methods for searching children, using predicate or
+ the CoordSyst.name attribute.
+ For example, to search (recursively) the scene for all Bodies that display
+ the moon Model:
+\layout LyX-Code
+
+scene.search_all(lambda coord_syst: isinstance(coord_syst, soya.Body)
+\layout LyX-Code
+
+                                and coord_syst.model is soya.Model.get("moon"))
+\layout Standard
+
+Finally, Worlds can be turned into Model using the to_model() method.
+ Models are faster than Worlds, but they are immutable (this will be discussed
+ in detail in chapter 
+\begin_inset LatexCommand \ref{cha:Modeling}
+
+\end_inset 
+
+).
+\layout Section
+
+Math computation: Point
+\layout Standard
+
+As stated above, Soya defines a 3D position by three X, Y, Z values 
+\series bold 
+and
+\series default 
+ the CoordSyst in which they are expressed.
+ Soya provides Point objects for encapsulating the X, Y, Z coordinates and
+ the CoordSyst.
+ Using Points, Soya automatically converts the X, Y, Z coordinates from
+ a CoordSyst to another when needed.
+\layout Standard
+
+A Point represent a 3D position.
+ To create a Point, use the constructor:
+\layout LyX-Code
+
+soya.Point(CoordSyst, x, y, z) -> Point
+\layout Standard
+
+For example, this creates the Point located at X=1.0, Y=0.0, Z=0.0 in the earth
+ (using the solar system example previously seen).
+\layout LyX-Code
+
+soya.Point(earth, 1.0, 0.0, 0.0)
+\layout Standard
+
+The constructors are very similar to the CoordSyst's (and subclasses') ones,
+ the first argument being the parent object.
+ However, Point can be created in any CoordSyst, and not only World, and
+ they are not considered as 
+\begin_inset Quotes eld
+\end_inset 
+
+3D objects
+\begin_inset Quotes erd
+\end_inset 
+
+.
+ For example, they are not listed in World.children:
+\layout LyX-Code
+
+world = soya.World()
+\layout LyX-Code
+
+point = soya.Point(world, 1.0, 0.0, 0.0)
+\layout LyX-Code
+
+print world.children # => [] (empty list)
+\layout Standard
+
+The distance between two CoordSysts or Points can be computed by the distance_to
+ method:
+\layout LyX-Code
+
+print moon.distance_to(sun) # Notice that moon and sun are not defined in
+ the same CoordSyst
+\layout Standard
+
+Point provides the same moving methods than CoordSyst (see 
+\begin_inset LatexCommand \ref{sub:Moving}
+
+\end_inset 
+
+).
+\layout Standard
+
+The parent attribute of a Point can be used to get or set the CoordSyst
+ in which the X, Y, Z values are defined.
+ If parent is set, X, Y, Z are left unmodifed; if you want to perform a
+ manual coordinate system conversion, use the convert_to method:
+\layout LyX-Code
+
+moon_center = soya.Point(moon, 0.0, 0.0, 0.0)
+\layout LyX-Code
+
+moon_center.convert_to(sun)
+\layout LyX-Code
+
+print "In the sun coordinate system, the center of the moon is", moon_center
+\layout LyX-Code
+
+# => In the sun coordinate system, the center of the moon is <Point 1.98,
+ 0.0, 0.5
+\layout LyX-Code
+
+#    in <CelestialObject, model=<SimpleModel sun>>>
+\layout Standard
+
+The % operator performs a similar conversion, but not in place (
+\emph on 
+i.e.
+
+\emph default 
+ without modifying the object) : obj % coord_syst means obj expressed in
+ the coord_syst coordinate system, 
+\emph on 
+i.e.
+
+\emph default 
+ either obj itself if obj.parent is already coord_syst, or a newly created
+ Point.
+ The following is thus equivalent to the previous example:
+\layout LyX-Code
+
+print "In the sun coordinate system, the center of the moon is", moon %
+ sun
+\layout Section
+
+Math computation: Vector
+\layout Standard
+
+A Vector represent a 3D vector; it can be used for translation or angular
+ computation.
+\layout Description
+
+Hint: Vector inherits from Point, only to avoid dupplicating some internal
+ code, although this inheritance relation is mathematically absurd ;-).
+\layout Standard
+
+To create a Vector, you can use either the constructor, or the vector_to
+ method, which create a vector from a beginning position and an end position
+ (both being CoordSyst or Point):
+\layout LyX-Code
+
+soya.Vector(CoordSyst, x, y, z) -> Vector
+\layout LyX-Code
+
+CoordSyst_or_Point.vector_to(CoordSyst_or_Point) -> Vector # Aliased to the
+ >> operator
+\layout Standard
+
+For example, to move character one unit forward, we first create the speed
+ vector, which is Z=-1 in the character CoordSyst (-Z being the front direction
+ in Soya convention), and then we use add_vector:
+\layout LyX-Code
+
+speed = soya.Vector(character, 0.0, 0.0, -1.0)
+\layout LyX-Code
+
+character.add_vector(speed)
+\layout Standard
+
+Like Point, Vector are not considered as 
+\begin_inset Quotes eld
+\end_inset 
+
+3D objects
+\begin_inset Quotes erd
+\end_inset 
+
+ and, in particular, they are not listed in World.children.
+ Vector provides the same moving methods than CoordSyst (see 
+\begin_inset LatexCommand \ref{sub:Moving}
+
+\end_inset 
+
+).
+\layout Standard
+
+The length method returns the length of the Vector; you can use the set_length(n
+ew_length) method to scale the Vector to the given length.
+ The following example moves the moon 1.0 unit toward the sun (remind that
+ add_vector perform a translation):
+\layout LyX-Code
+
+vector = moon.vector_to(sun)
+\layout LyX-Code
+
+vector.set_length(1.0)
+\layout LyX-Code
+
+moon.add_vector(vector)
+\layout Standard
+
+Vector provides also some methods for dealing with rotations and angles.
+ The angle_to method returns the angle between two Vectors; the following
+ example computes the angle between the sun and the moon, at the earth position:
+\layout LyX-Code
+
+print (earth >> sun).angle_to(earth >> moon) # >> is the same than vector_to
+\layout Standard
+
+For Vector, add_vector performs a vectorial addition (since translating
+ a vector doesn't change it and is thus useless).
+ The dot_product and cross_product methods compute what you can expect from
+ them.
+\layout Description
+
+Hints: Creating many Points or Vectors is time-consuming, since they are
+ Python object.
+ You can increase the performance by re-using the same objects instead of
+ creating new ones.
+\layout Section
+
+The eye: Camera
+\layout Section
+
+Using Light
+\layout Section
+
+Basic object reference
+\layout Subsection
+
+
+\begin_inset LatexCommand \label{sub:MainLoop}
+
+\end_inset 
+
+MainLoop
+\layout Standard
+
+MainLoop is in charge of managing and regulating time (see section 
+\begin_inset LatexCommand \ref{sub:Time-management}
+
+\end_inset 
+
+).
+ The current running MainLoop can be accessed as soya.MAIN_LOOP.
+\layout Standard
+
+Constructor:
+\layout Description
+
+MainLoop(scene1,\SpecialChar ~
+scene2,...)\SpecialChar ~
+->\SpecialChar ~
+MainLoop
+\layout Standard
+
+Noticeable attributes are:
+\layout Description
+
+fps the frame rate (number of frame per second, a usefull speed indicator;
+ read only).
+\layout Description
+
+running true if the MainLoop is running (read only).
+\layout Description
+
+next_round_tasks a list of callable (taking no arg) that will be called
+ once, just after the beginning of the next round.
+ You can add callable if you want.
+\layout Description
+
+scenes the Worlds associated to the MainLoop.
+ These Worlds begin_round, advance_time and end_round will be called regularly
+ (as well as the ones of all objects inside the Worlds, of course).
+\layout Description
+
+round_duration the duration of a round, in second.
+ Round is the time unit.
+ It is granted that 
+\series bold 
+all
+\series default 
+ rounds correspond to a period lasting round_durection (though the different
+ period may not be regularly spread over time).
+ (default to 0.030, 
+\emph on 
+i.e.
+
+\emph default 
+ 30 milliseconds).
+\layout Description
+
+min_frame_duration: minimum duration for a frame.
+ This attribute can be used to limit the maximum FPS to save CPU time; 
+\emph on 
+e.g.
+
+\emph default 
+ having FPS higher than 30-40 is usually useless.
+ Default is 0.020, which limits FPS to 40 in theory and to about 33 in practice
+ (I don't know why there is a difference between theory and practice !).
+\layout Standard
+
+Noticeable methods are:
+\layout Description
+
+main_loop()\SpecialChar ~
+->\SpecialChar ~
+return_value starts the MainLoop.
+ This method returns only after MainLoop.stop is called, and it returns the
+ argument given to MainLoop.stop.
+\layout Description
+
+stop(return_value=None) stops the main loop.
+ The stop doesn't occur immediately, but at the end of the next iteration.
+ MainLoop.stop causes MainLoop.main_loop to returns; return_value is the (optionna
+l) value that MainLoop.main_loop will return.
+\layout Description
+
+reset() rester the internal time counter.
+ You need to call MainLoop.reset if your program has paused, and you don't
+ want the MainLoop to compensate the time loss by accelerating.
+ This is usually the case when you put a game in pause mode.
+\layout Description
+
+update() calling regularly MainLoop.update is an alternative to MainLoop.start
+ (see section 
+\begin_inset LatexCommand \ref{sec:External-GUI-systems}
+
+\end_inset 
+
+).
+\layout Description
+
+begin_round()
+\layout Description
+
+advance_time(proportion)
+\layout Description
+
+end_round() default implementation calls all the corresponding methods of
+ all scenes in the MainLoop.
+\layout Description
+
+render() called when it is time to render; default implementation calls
+ soya.render that does the job.
+\layout Subsection
+
+Model
+\layout Standard
+
+Model is a 3D model (sometimes called 
+\begin_inset Quotes eld
+\end_inset 
+
+Mesh
+\begin_inset Quotes erd
+\end_inset 
+
+ in other 3D engines).
+ Model is actually an 
+\begin_inset Quotes eld
+\end_inset 
+
+abstract
+\begin_inset Quotes erd
+\end_inset 
+
+ class, and Soya provides several Model classes (SimpleModel, AnimatedModel,...).
+ Models are created either by exporting them from 3D modelers (see chapter
+ 
+\begin_inset LatexCommand \ref{cha:Blender-for-Soya}
+
+\end_inset 
+
+) or by creating a Group, putting Faces in the Group and then 
+\begin_inset Quotes eld
+\end_inset 
+
+compiling
+\begin_inset Quotes erd
+\end_inset 
+
+ the Group into a Model (see chapter 
+\begin_inset LatexCommand \ref{cha:Modeling}
+
+\end_inset 
+
+).
+ Models are considered as immutable, as a single model can be shared and
+ used by several Body; if you want to modify a Model in your code, you'll
+ have to modify the Group that has generated it, and then to turn the Group
+ into a new Model.
+\layout Standard
+
+Models are not created by calling the Model constructor directly, they are
+ loaded from a file or created from a World, respectively:
+\layout Description
+
+Model.get("filename")\SpecialChar ~
+->\SpecialChar ~
+Model (see section 
+\begin_inset LatexCommand \ref{cha:Managing-data}
+
+\end_inset 
+
+)
+\layout Description
+
+World.to_model()\SpecialChar ~
+->\SpecialChar ~
+Model
+\layout Standard
+
+Noticeable attributes are:
+\layout Description
+
+filename the name of the file the model was loaded from (without path or
+ extension).
+\layout Description
+
+materials a tuples of the materials the model uses.
+\layout Subsection
+
+
+\begin_inset LatexCommand \label{sub:CoordSyst}
+
+\end_inset 
+
+CoordSyst
+\layout Standard
+
+CoordSyst is the base class for all 3D objects.
+ It defines a coordinate system, 
+\emph on 
+i.e.
+
+\emph default 
+ it has a 3D position, orientation and size.
+\layout Standard
+
+Constructor is:
+\layout Description
+
+CoordSyst(parent=None)\SpecialChar ~
+->\SpecialChar ~
+CoordSyst where parent is the ComplexBody in which
+ the CoordSyst will be added (use None for no addition).
+\layout Standard
+
+Noticeable attributes are:
+\layout Description
+
+parent the ComplexBody that contains this CoordSyst (None if no such parent;
+ read-only, use World.remove and World.add to reparent a CoordSyst).
+\layout Description
+
+x,\SpecialChar ~
+y,\SpecialChar ~
+z the X, Y and Z coordinates (defaults to 0.0, 0.0, 0.0).
+\layout Description
+
+scale_x,\SpecialChar ~
+scale_y,\SpecialChar ~
+scale_z the X, Y and Z scaling factors.
+\layout Description
+
+visible if false, the object is not displayed (defaults to true).
+\layout Description
+
+solid if false, the object is not taken into account for collision and raypickin
+g (see section 
+\begin_inset LatexCommand \ref{cha:Collision-detection-and-physics}
+
+\end_inset 
+
+, defaults to true).
+\layout Description
+
+static if true, the object is considered as static (doesn't move), and Soya
+ take that into account for optimizing rendering (default to false, may
+ be modified automatically due to auto_static, see below).
+\layout Description
+
+auto_static if true, Soya automatically determines and sets the static attribute
+ (defaults to true).
+\layout Description
+
+matrix,\SpecialChar ~
+root_matrix,\SpecialChar ~
+inverted_root_matrix the underlying 4x4 matrix, the root
+ matrix (
+\emph on 
+i.e.
+
+\emph default 
+ the multiplication of all matrices from scene.matrix up to CoordSyst.matrix),
+ and the inverse of the root matrix (for debugging or hacking purpose only).
+\layout Description
+
+left_handed true if the CoordSyst is left_handed (read only,\SpecialChar ~
+for debugging
+ or hacking purpose only).
+\layout Standard
+
+Noticeable methods are:
+\layout Description
+
+get_root()\SpecialChar ~
+->\SpecialChar ~
+World get the root parent of the CoordSyst (the scene).
+\layout Description
+
+is_inside(coord_syst) returns true if the CoordSyst is inside coord_syst,
+ 
+\emph on 
+i.e.
+
+\emph default 
+ both CoordSysts are the same, or coord_syst is a World that (recursively)
+ contains the CoordSyst.
+\layout Description
+
+position()\SpecialChar ~
+->\SpecialChar ~
+Point creates a Point in the same parent and at the same place
+ than the CoordSyst.
+\layout Description
+
+distance_to(position)\SpecialChar ~
+->\SpecialChar ~
+float returns the distance between the CoordSyst
+ and position (another CoordSyst or a Point).
+\layout Description
+
+vector_to(position)\SpecialChar ~
+->\SpecialChar ~
+Vector creates a Vector that starts at the CoordSyst
+ position, and ends at the given position (another CoordSyst or a Point;
+ aliased to the >> operator).
+\layout Description
+
+set_identity() resets the CoordSyst position, orientation and scaling.
+\layout Description
+
+get_sphere()\SpecialChar ~
+->\SpecialChar ~
+(Point,\SpecialChar ~
+float) returns a sphere (defined by the center Point,
+ and the radius) that includes all elements in the CoordSyst.
+\layout Description
+
+get_box()\SpecialChar ~
+->\SpecialChar ~
+(Point,\SpecialChar ~
+Point) returns a sphere (defined by two corners) that
+ includes all elements in the CoordSyst.
+\layout Description
+
+interpolate(state1,\SpecialChar ~
+state2,\SpecialChar ~
+factor) moves, rotates and scales the CoordSyst
+ by interpolating between the two CoordSystStates state1 and state2.
+ factor indicates the weight of the two CoordSystStates (0.0 means state1,
+ 1.0 state2, and 0.5 half-way).
+ XXX details interpolation in an other chapter; this feature is not yet
+ stable.
+\layout Description
+
+set_xyz(x,\SpecialChar ~
+y,\SpecialChar ~
+z) set the x, y and z attributes in a single call.
+\layout Description
+
+move(position) moves the CoordSyst at the same place than position (another
+ CoordSyst or a Point).
+\layout Description
+
+add_vector(vector) translates the CoordSyst by the given Vector (aliased
+ to the += operator) .
+\layout Description
+
+add_mul_vector(k,\SpecialChar ~
+vector) translates the CoordSyst by k times the given Vector
+ (equivalent to, but faster than, add_vector(k * vector)).
+\layout Description
+
+add_xyz(x,\SpecialChar ~
+y,\SpecialChar ~
+z) translates the CoordSyst by (x, y, z) (expressed in the CoordSyst
+'s parent coordinate system).
+\layout Description
+
+shift(x,\SpecialChar ~
+y,\SpecialChar ~
+z) translates the CoordSyst by (x, y, z) (expressed in the CoordSyst
+ coordinate system).
+\layout Description
+
+rotate_x(angle),\SpecialChar ~
+rotate_vertical(angle) rotates arround the CoordSyst's parent
+ X axis (like of you rotate the head vertically).
+\layout Description
+
+rotate_y(angle),\SpecialChar ~
+rotate_lateral(angle) rotates arround the CoordSyst's parent
+ Y axis (like of you rotate the head laterally).
+\layout Description
+
+rotate_z(angle),\SpecialChar ~
+rotate_incline(angle) rotates arround the CoordSyst's parent
+ Z axis(like of you roll the head).
+\layout Description
+
+turn_x(angle),\SpecialChar ~
+turn_vertical(angle) rotates arround the CoordSyst local X
+ axis.
+\layout Description
+
+turn_y(angle),\SpecialChar ~
+turn_lateral(angle) rotates arround the CoordSyst local Y
+ axis.
+\layout Description
+
+turn_z(angle),\SpecialChar ~
+turn_incline(angle) rotates arround the CoordSyst local Z
+ axis.
+\layout Description
+
+rotate(angle,\SpecialChar ~
+a,\SpecialChar ~
+b) rotates around the axis defined by the a and b position
+ (CoordSysts or Points).
+\layout Description
+
+rotate_axis(angle,\SpecialChar ~
+axis) rotates around the axis defined by the origin (0,
+ 0, 0) and the Vector axis.
+\layout Description
+
+rotate_xyz(angle,\SpecialChar ~
+a_x,\SpecialChar ~
+a_y,\SpecialChar ~
+a_z,\SpecialChar ~
+b_x,\SpecialChar ~
+b_y,\SpecialChar ~
+b_z) rotates around the axis defined
+ by (a_x, a_y, a_z) and (b_x, b_y, b_z).
+\layout Description
+
+rotate_axis_xyz(angle,\SpecialChar ~
+axis_x,\SpecialChar ~
+axis_y,\SpecialChar ~
+axis_z) rotates around the axis defined
+ by the origin (0, 0, 0) and the (axis_x, axis_y, axis_z) Vector.
+\layout Description
+
+look_at(target) rotates the CoordSyst so as his front (
+\emph on 
+i.e.
+
+\emph default 
+ -Z) direction points toward the given target, and tries to maintain the
+ Y direction as the up direction.
+\layout Description
+
+look_at_x(target) is similar to look_at, but makes the X direction looking
+ at the target, instead of -Z.
+\layout Description
+
+look_at_y(target) is similar to look_at, but makes the Y direction looking
+ at the target, instead of -Z.
+\layout Description
+
+scale(x,\SpecialChar ~
+y,\SpecialChar ~
+z) scales the CoordSyst by x, y and z.
+\layout Description
+
+set_scale_factors(scale_x,\SpecialChar ~
+scale_y,\SpecialChar ~
+scale_z) sets the scale_x, scale_y and
+ scale_z attributes in a single call.
+\layout Description
+
+get_dimension()\SpecialChar ~
+->\SpecialChar ~
+(float,\SpecialChar ~
+float,\SpecialChar ~
+float) returns the width, height and depth
+ dimension of the CoordSyst.
+\layout Description
+
+set_dimension(width,\SpecialChar ~
+height,\SpecialChar ~
+depth) scales the CoordSyst so as its dimensions
+ are the given width, height and depth.
+\layout Description
+
+CoordSyst1\SpecialChar ~
+%\SpecialChar ~
+CoordSyst2\SpecialChar ~
+->\SpecialChar ~
+Point returns a Point at the same place than CoordSyst1,
+ but in the CoordSyst2 coordinate system (the returned value may be CoordSyst1
+ itself if it is already in CoordSyst2, or a newly created Point).
+\layout Subsection
+
+
+\begin_inset LatexCommand \label{sub:Body}
+
+\end_inset 
+
+Body
+\layout Standard
+
+Inherits from: 
+\series bold 
+CoordSyst
+\series default 
+.
+\layout Standard
+
+A Body displays a Model at a specific 3D position.
+ Model cannot be displayed without 
+\begin_inset Quotes eld
+\end_inset 
+
+emBodying
+\begin_inset Quotes erd
+\end_inset 
+
+ them; it allows to display the same Model at several location (
+\emph on 
+e.g.
+
+\emph default 
+ two identical houses in a town), by creating two Bodies with the same Model.
+\layout Standard
+
+Constructor is:
+\layout Description
+
+Body(parent=None,\SpecialChar ~
+model=None,\SpecialChar ~
+opt=None)\SpecialChar ~
+->\SpecialChar ~
+Body where parent and model are obvious,
+ and opt is an optional argument passed to the model (for AnimatedModel,
+ it can be a list of the mesh names to attach, see chapter 
+\begin_inset LatexCommand \ref{cha:Animated-models}
+
+\end_inset 
+
+).
+\layout Standard
+
+Noticeable attributes are:
+\layout Description
+
+model the Model the Body displays.
+\layout Standard
+
+The following attribute is only available if the Body's Model is an AnimatedMode
+l (see chapter 
+\begin_inset LatexCommand \ref{cha:Animated-models}
+
+\end_inset 
+
+):
+\layout Description
+
+attached_meshes the list of the attached meshes names (only with AnimatedModel,
+ see chapter 
+\begin_inset LatexCommand \ref{cha:Animated-models}
+
+\end_inset 
+
+).
+\layout Standard
+
+The following methods are only available if the Body's Model is an AnimatedModel
+ (see chapter 
+\begin_inset LatexCommand \ref{cha:Animated-models}
+
+\end_inset 
+
+):
+\layout Description
+
+attach(mesh_name1,\SpecialChar ~
+mesh_name2,...) attaches the meshes of the given names.
+\layout Description
+
+detach(mesh_name1,\SpecialChar ~
+mesh_name2,...) detaches the meshes of the given names.
+\layout Description
+
+is_attached(mesh_name)\SpecialChar ~
+->\SpecialChar ~
+int returns true if the mesh named mesh_name is
+ attached.
+\layout Description
+
+animate_blend_cycle(animation_name,\SpecialChar ~
+weight=1.0,\SpecialChar ~
+fade_in=0.2) plays the animation
+ of the given name in cycle, with the given weight (usefull is several animation
+s are cycled simultaneously, which is possible), and fade_in is the time
+ (in second) needed to reach the full weight, in order to avoid a brutal
+ transition.
+ The animation will 
+\series bold 
+not
+\series default 
+ start at its beginning, but at the current global animation time, which
+ is shared by all cycles (use animate_reset if you want to start a cycle
+ at its beginning).
+\layout Description
+
+animate_clear_cycle(animation_name,\SpecialChar ~
+fade_out=0.2) stops cycling the animation
+ of the given name; fade_out is the time (in second) needed to stop the
+ animation.
+\layout Description
+
+animate_execute_action(animation_name,\SpecialChar ~
+fade_in=0.2,\SpecialChar ~
+fade_out=0.2) plays the
+ animation of the given name once; fade_in and fade_out are the time (in
+ second) needed to reach full weight, and to stop the animation, in order
+ to avoid brutal transitions.
+\layout Description
+
+animate_reset() immidiately stops 
+\series bold 
+all
+\series default 
+ animations, and resets the cycle animation time, 
+\emph on 
+i.e.
+
+\emph default 
+ future animations played with animate_blend_cycle will restart from their
+ beginning.
+\layout Description
+
+set_lod_level() set the current LOD level (only if the Cal3D model file
+ support it).
+\layout Subsection
+
+
+\begin_inset LatexCommand \label{sub:World}
+
+\end_inset 
+
+World
+\layout Standard
+
+Inherits from: 
+\series bold 
+Body, SavedInAPath
+\series default 
+.
+\layout Standard
+
+Constructor and loading class methods are:
+\layout Description
+
+World(parent=None,\SpecialChar ~
+model=None,\SpecialChar ~
+opt=None)\SpecialChar ~
+->\SpecialChar ~
+World equivalent to Body's constructor.
+\layout Description
+
+World.load(filename) loads a World (see section 
+\begin_inset LatexCommand \ref{sub:SavedInAPath}
+
+\end_inset 
+
+).
+\layout Description
+
+World.get(filename) loads a World, using a cache of already loaded Worlds
+ (see section 
+\begin_inset LatexCommand \ref{sub:SavedInAPath}
+
+\end_inset 
+
+).
+\layout Standard
+
+Noticeable attributes are:
+\layout Description
+
+children the list of children CoordSyst directly nested in the World.
+ Do not modify the list (use the add and remove methods).
+\layout Description
+
+filename the World's filename (relative to the <data>/worlds/ directory;
+ defaults to None).
+\layout Description
+
+atmosphere the Atmosphere, defining the World atmospheric properties like
+ fog, sky or background color (defaults to None, see section 
+\begin_inset LatexCommand \ref{sec:Atmosphere}
+
+\end_inset 
+
+).
+\layout Description
+
+model_builder the ModelBuider, 
+\emph on 
+i.e.
+
+\emph default 
+ the object responsible for turning the World into a Model (defaults to
+ None; in this case, a default ModelBuilder is used, see chapter 
+\begin_inset LatexCommand \ref{cha:Modeling}
+
+\end_inset 
+
+).
+ ModelBuider can be used to add shadows, cell-shading,...
+\layout Standard
+
+The following attributes are only available if the World's Model is an AnimatedM
+odel (see chapter 
+\begin_inset LatexCommand \ref{cha:Animated-models}
+
+\end_inset 
+
+):
+\layout Description
+
+attached_coordsysts the list of the CoordSysts attached to a bone, containing
+ (CoordSyst, bone_id, option_flags) tuples (only with AnimatedModel, see
+ chapter 
+\begin_inset LatexCommand \ref{cha:Animated-models}
+
+\end_inset 
+
+).
+\layout Standard
+
+Noticeable methods are:
+\layout Description
+
+add(CoordSyst) adds the given CoordSyst inside the World.
+\layout Description
+
+insert(index,\SpecialChar ~
+CoordSyst) is similar to add, but insert the CoordSyst at the
+ given index in the children list.
+\layout Description
+
+remove(CoordSyst) removes the given CoordSyst from the World.
+\layout Description
+
+recursive()\SpecialChar ~
+->\SpecialChar ~
+list\SpecialChar ~
+of\SpecialChar ~
+CoordSysts returns the recursive list of children CoordSysts,
+ 
+\emph on 
+i.e.
+
+\emph default 
+ the children list, plus the children list of the nested Worlds, and so
+ on.
+\layout Description
+
+search(predicate)\SpecialChar ~
+->\SpecialChar ~
+CoordSyst searches (recursively) for a CoordSyst that
+ satisfies the given predicate; predicate is callable that take a CoordSyst
+ argument and that return true of false.
+\layout Description
+
+search_all(predicate)\SpecialChar ~
+->\SpecialChar ~
+list\SpecialChar ~
+of\SpecialChar ~
+CoordSysts is like search, but returns the
+ list of all CoordSysts that satisfy the predicate.
+\layout Description
+
+search_name(name)\SpecialChar ~
+->\SpecialChar ~
+CoordSyst searches (recursively) for a CoordSyst whose
+ name attribute is the given name (aliased to World[name]).
+\layout Description
+
+subitem(namepath)\SpecialChar ~
+->\SpecialChar ~
+CoordSyst returns the CoordSyst denoted by namepath.
+ namepath is one or more names separated by dots, 
+\emph on 
+e.g.
+
+\emph default 
+ "character.head.mouth".
+\layout Description
+
+to_model()\SpecialChar ~
+->\SpecialChar ~
+Model turns the World into a Model (see chapter 
+\begin_inset LatexCommand \ref{cha:Modeling}
+
+\end_inset 
+
+).
+\layout Description
+
+raypick(origin,\SpecialChar ~
+direction,\SpecialChar ~
+distance=-1.0,\SpecialChar ~
+half_line=1,\SpecialChar ~
+cull_face=1,\SpecialChar ~
+p=None,\SpecialChar ~
+v=None)\SpecialChar ~
+->\SpecialChar ~
+(P
+oint,\SpecialChar ~
+Vector) performs a raypicking, and returns either a (impact_point,
+ normal_at_the_impact) tuple, or None (see section 
+\begin_inset LatexCommand \ref{sec:Raypicking}
+
+\end_inset 
+
+).
+\layout Description
+
+raypick_b(origin,\SpecialChar ~
+direction,\SpecialChar ~
+distance=-1.0,\SpecialChar ~
+half_line=1,\SpecialChar ~
+cull_face=1)\SpecialChar ~
+->\SpecialChar ~
+int performs
+ a raypicking, and returns 1 if there is a collision, and 0 if there is
+ not (see section 
+\begin_inset LatexCommand \ref{sec:Raypicking}
+
+\end_inset 
+
+).
+\layout Description
+
+RaypickContext(center,\SpecialChar ~
+radius,\SpecialChar ~
+RaypickContext=None,\SpecialChar ~
+items\SpecialChar ~
+=\SpecialChar ~
+None)\SpecialChar ~
+->\SpecialChar ~
+RaypickContext
+ creates a RaypickingContext.
+ RaypickingContext are used to perform several raypicking in the same region,
+ faster than by calling raypick or raypick_b (see section 
+\begin_inset LatexCommand \ref{sec:Raypicking}
+
+\end_inset 
+
+).
+\layout Standard
+
+The following methods are only available if the World's Model is an AnimatedMode
+l (see chapter 
+\begin_inset LatexCommand \ref{cha:Animated-models}
+
+\end_inset 
+
+):
+\layout Description
+
+attach_to_bone(CoordSyst,\SpecialChar ~
+bone_name) attaches the given CoordSyst (which
+ is understood to be a direct child of the World) to the bone of the given
+ name.
+ When the bone is moved by the animation, the CoordSyst moves too.
+\layout Description
+
+detach_from_bone(CoordSyst) detaches the given CoordSyst from a bone.
+\layout Subsection
+
+Camera
+\layout Standard
+
+Camera is the 
+\begin_inset Quotes eld
+\end_inset 
+
+eye
+\begin_inset Quotes erd
+\end_inset 
+
+ from which the 3D scene is viewed.
+ It also acts as the 
+\begin_inset Quotes eld
+\end_inset 
+
+ear
+\begin_inset Quotes erd
+\end_inset 
+
+, for 3D sound.
+ It also inherits from Widget (see section 
+\begin_inset LatexCommand \ref{cha:Widget-systems}
+
+\end_inset 
+
+).
+\layout Standard
+
+Inherits from: 
+\series bold 
+CoordSyst
+\series default 
+, 
+\series bold 
+Widget
+\series default 
+.
+\layout Standard
+
+Constructor is:
+\layout Description
+
+Camera(CoordSyst)\SpecialChar ~
+->\SpecialChar ~
+Camera
+\layout Standard
+
+Noticeable attributes are:
+\layout Description
+
+front the minimum distance at which 3D objects can be seen (defaults to
+ 0.1; cannot be 0.0).
+\layout Description
+
+back the maximum distance at which 3D objects can be seen (defaults to 100.0).
+ If the back / front ratio is too big, you loose precision in the depth
+ buffer.
+\layout Description
+
+fov the field of vision (or FOV), in degrees.
+ Default is 60.0.
+\layout Description
+
+left,\SpecialChar ~
+top,\SpecialChar ~
+width,\SpecialChar ~
+height the viewport rectangle, in pixel.
+ Use it if you want the Camera to render only on a part of the screen.
+ It defaults to the whole screen.
+\layout Description
+
+partial if true, the Camera is considered to use only a part of the screen,
+ and not the whole screen, in particular for clearing purpose.
+ Clearing a partial Camera is slower, but it doesn't clear the whole screen
+ (defaults to false).
+\layout Description
+
+ortho if true, the Camera uses orthogonal perspective; if false (default)
+ it uses real perspective.
+\layout Description
+
+listen_sound true if the Camera is used as the 
+\begin_inset Quotes eld
+\end_inset 
+
+sound listener
+\begin_inset Quotes erd
+\end_inset 
+
+.
+ A single Camera can be used so at the same time (defaults to true, see
+ section 
+\begin_inset LatexCommand \ref{sec:Sound-and-multiple-Cameras}
+
+\end_inset 
+
+).
+\layout Description
+
+to_render the world that is rendered by the Camera.
+ Default is None, which means the root scene (as returned by get_root()).
+\layout Description
+
+master the master Widget (see section 
+\begin_inset LatexCommand \ref{sec:Widgets}
+
+\end_inset 
+
+).
+\layout Standard
+
+Noticeable methods are:
+\layout Description
+
+set_viewport(left,\SpecialChar ~
+top,\SpecialChar ~
+width,\SpecialChar ~
+height) sets left, top, width and height in
+ a single call.
+\layout Description
+
+get_screen_width(),\SpecialChar ~
+get_screen_height()\SpecialChar ~
+->\SpecialChar ~
+int gets the width and the height
+ of the rendering screen, in pixel.
+\layout Description
+
+coord2d_to_3d(x,\SpecialChar ~
+y,\SpecialChar ~
+z,\SpecialChar ~
+reused_Point=None)\SpecialChar ~
+->\SpecialChar ~
+Point converts 2D coordinates X
+ and Y (in pixel, 
+\emph on 
+e.g.
+
+\emph default 
+ mouse position) into a Point.
+ Z is the Point Z coordinates (in the Camera coordinate system) ; it should
+ be negative and defaults to -1.0.
+ reused_Point is an optionnal Point that is used to store the result, if
+ you want to avoid the creation of a new Point object and prefer reuse an
+ existant one (for speed purpose).
+\layout Description
+
+coord3d_to_2d(Point)\SpecialChar ~
+->\SpecialChar ~
+(x,\SpecialChar ~
+y) converts a Point (or a CoordSyst) into 2D screen
+ coordinates X, Y (in pixel).
+\layout Description
+
+render_to_material(Material,\SpecialChar ~
+what) renders the camera to a Material's texture.
+ 'what' is one of GL_RGBA, GL_LUMINANCE, GL_ALPHA.
+\layout Description
+
+is_in_frustum(CoordSyst)\SpecialChar ~
+->\SpecialChar ~
+int returns true if the given CoordSyst is inside
+ the Camera's frustum.
+\layout Subsection
+
+Light
+\layout Standard
+
+Inherits from: 
+\series bold 
+CoordSyst
+\series default 
+.
+\layout Standard
+
+Constructor is:
+\layout Description
+
+Light(CoordSyst)\SpecialChar ~
+->\SpecialChar ~
+Light
+\layout Standard
+
+Noticeable attributes are:
+\layout Description
+
+constant the constant attenuation of the Light (defaults to 1.0).
+ This attenuation factor is not influenced by the distance.
+\layout Description
+
+linear the linear attenuation of the Light (defaults to 0.0).
+ This attenuation factor is proportional to the distance.
+\layout Description
+
+quadratic the quadratic attenuation of the Light (defaults to 0.0).
+ This attenuation factor is proportional to the square distance.
+\layout Description
+
+ambient the ambient color of the Light (defaults to no ambient, 
+\emph on 
+i.e.
+
+\emph default 
+ black or (0.0, 0.0, 0.0, 1.0)).
+ This part of the Light is not affected by the Light's orientation or attenuatio
+n.
+\layout Description
+
+diffuse the diffuse color of the Light (defaults to white, 
+\emph on 
+i.e.
+
+\emph default 
+ (1.0, 1.0, 1.0, 1.0)).
+ This color is the 
+\begin_inset Quotes eld
+\end_inset 
+
+main color
+\begin_inset Quotes erd
+\end_inset 
+
+ of the Light.
+\layout Description
+
+specular the specular color of the Light (defaults to white, 
+\emph on 
+i.e.
+
+\emph default 
+ (1.0, 1.0, 1.0, 1.0)).
+ This color is used for the bright part of the object.
+\layout Description
+
+directional if true, the Light is directional (
+\emph on 
+e.g.
+
+\emph default 
+ a sun).
+ If false (default), The position of a directional Light doesn't matter,
+ and only the constant component of the attenuation is used.
+\layout Description
+
+angle if angle is < 180.0, the Light is a spotlight; angle being the angle
+ of the splot (defaults to 180.0).
+\layout Description
+
+exponent modifies how a spotlight Light is spread over space.
+\layout Description
+
+top_level if true, the Light pass through Portal (see section ; defaults
+ to false).
+\layout Description
+
+cast_shadow if true, the Light casts shadows on Model with shadow enabled
+ (default is true).
+\layout Description
+
+shadow_color the color of the shadows casted by the Light (default is semi-trans
+parent black, 
+\emph on 
+i.e.
+
+\emph default 
+ (0.0, 0.0, 0.0, 0.5)).
+\layout Subsection
+
+Point
+\layout Standard
+
+Constructor is:
+\layout Description
+
+Point(CoordSyst,\SpecialChar ~
+x,\SpecialChar ~
+y,\SpecialChar ~
+z)\SpecialChar ~
+->\SpecialChar ~
+Point
+\layout Standard
+
+Noticeable attributes are:
+\layout Description
+
+x,\SpecialChar ~
+y,\SpecialChar ~
+z the X, Y and Z coordinates (defaults to 0.0, 0.0, 0.0).
+\layout Description
+
+parent the CoordSyst in which the Point is defined.
+\layout Standard
+
+Noticeable methods are:
+\layout Description
+
+get_root()\SpecialChar ~
+->\SpecialChar ~
+World get the root parent of the Point (the scene).
+\layout Description
+
+position()\SpecialChar ~
+->\SpecialChar ~
+Point creates a Point in the same parent and at the same place
+ than the Point.
+\layout Description
+
+distance_to(position)\SpecialChar ~
+->\SpecialChar ~
+float returns the distance between the Point and
+ position (another CoordSyst or a Point).
+\layout Description
+
+vector_to(position)\SpecialChar ~
+->\SpecialChar ~
+Vector creates a Vector that starts at the Point position,
+ and ends at the given position (another CoordSyst or a Point; aliased to
+ the >> operator).
+\layout Description
+
+set_xyz(x,\SpecialChar ~
+y,\SpecialChar ~
+z) set the x, y and z attributes in a single call.
+\layout Description
+
+move(position) moves the Point at the same place than position (another
+ CoordSyst or a Point).
+\layout Description
+
+add_vector(vector) translates the Point by the given Vector (aliased to
+ the += operator) .
+\layout Description
+
+add_mul_vector(k,\SpecialChar ~
+vector) translates the Point by k times the given Vector
+ (equivalent to, but faster than, add_vector(k * vector)).
+\layout Description
+
+add_xyz(x,\SpecialChar ~
+y,\SpecialChar ~
+z) translates the Point by (x, y, z) (expressed in the CoordSyst's
+ parent coordinate system).
+\layout Description
+
+copy()\SpecialChar ~
+->\SpecialChar ~
+Point returns a copy of the Point 
+\layout Description
+
+clone(other) changes in place the Point so as it is a clone of other (a
+ Point or a CoordSyst).
+\layout Description
+
+convert_to(CoordSyst) converts in place the Point to the CoordSyst coordinates
+ system.
+ The x, y and z coordinates are modified, and the Point's parent is set
+ to the given CoordSyst.
+\layout Description
+
+Point\SpecialChar ~
+%\SpecialChar ~
+CoordSyst\SpecialChar ~
+->\SpecialChar ~
+Point returns a Point at the same place than the Point,
+ but in the CoordSyst coordinate system (the returned value may be the Point
+ itself if it is already in the right CoordSyst, or a newly created Point).
+\layout Description
+
+Point\SpecialChar ~
++\SpecialChar ~
+Vector,\SpecialChar ~
+Point\SpecialChar ~
+-\SpecialChar ~
+Vector\SpecialChar ~
+->\SpecialChar ~
+Point translates the Point by the Vector.
+\layout Subsection
+
+Vector
+\layout Standard
+
+Vector inherits from Point for implementation and internal purpose, although
+ it can be seen as a mathematical absurdity.
+\layout Standard
+
+Constructor is:
+\layout Description
+
+Vector(CoordSyst,\SpecialChar ~
+x,\SpecialChar ~
+y,\SpecialChar ~
+z)\SpecialChar ~
+->\SpecialChar ~
+Vector
+\layout Description
+
+CoordSyst_or_Point.vector_to(CoordSyst_or_Point)\SpecialChar ~
+->\SpecialChar ~
+Vector (aliased to >>).
+\layout Standard
+
+Noticeable methods are:
+\layout Description
+
+length()\SpecialChar ~
+->\SpecialChar ~
+float returns the length of the Vector.
+\layout Description
+
+set_length(float) scales the Vector so as its length is the given value.
+\layout Description
+
+normalize() scales the Vector so as its length is 1.0.
+\layout Description
+
+dot_product(Vector)\SpecialChar ~
+->\SpecialChar ~
+float returns the dot product of two Vectors.
+\layout Description
+
+cross_product(Vector,\SpecialChar ~
+reused_Vector\SpecialChar ~
+=\SpecialChar ~
+None)\SpecialChar ~
+->\SpecialChar ~
+Vector returns the cross product
+ of two Vectors; if reused_Vector is given, the result will be written in
+ it instead of creating a new Vector.
+\layout Description
+
+angle_to(Vector)\SpecialChar ~
+->\SpecialChar ~
+float returns the angle between the two Vectors (in degrees).
+\layout Description
+
+set_start_end(start,\SpecialChar ~
+end) changes the Vector in place so as it starts and
+ ends at the given start and end (Point or CoordSyst).
+\layout Description
+
+Vector\SpecialChar ~
++\SpecialChar ~
+Vector,\SpecialChar ~
+Vector\SpecialChar ~
+-\SpecialChar ~
+Vector\SpecialChar ~
+->\SpecialChar ~
+Vector vectorial addition.
+\layout Description
+
+float\SpecialChar ~
+*\SpecialChar ~
+Vector scales the Vector.
+\layout Subsection
+
+Interesting methods for overriding
+\layout Standard
+
+When overriding a Soya method, 
+\series bold 
+don't forget to call the super implementation
+\series default 
+!
+\layout Description
+
+CoordSyst.begin_round() (see section 
+\begin_inset LatexCommand \ref{sub:Time-management}
+
+\end_inset 
+
+).
+\layout Description
+
+CoordSyst.advance_time(proportion) (see section 
+\begin_inset LatexCommand \ref{sub:Time-management}
+
+\end_inset 
+
+).
+\layout Description
+
+CoordSyst.end_round() (see section 
+\begin_inset LatexCommand \ref{sub:Time-management}
+
+\end_inset 
+
+).
+\layout Description
+
+CoordSyst.added_into(newparent) is called whenever the CoordSyst is added
+ into a new Group, or removed from its current Group (in this case, newparent
+ is None).
+\layout Description
+
+CoordSyst.loaded() is called 
+\series bold 
+after
+\series default 
+ the object was loaded from a file.
+ Notice that, if you want to perform some hacking on file loading that involves
+ 
+\series bold 
+several
+\series default 
+ objects, overriding CoordSyst.loaded is safer than CoordSyst.__setstate__,
+ since other objects may not be fully initialized when CoordSyst.__setstate__
+ is called.
+\layout Description
+
+World.add(coordsyst)
+\layout Chapter
+
+
+\begin_inset LatexCommand \label{cha:Managing-data}
+
+\end_inset 
+
+Managing data
+\layout Section
+
+Data path
+\layout Standard
+
+Soya stores each class of object in a separate subdirectory in <data>, the
+ data path given at the initialization.
+ <data> is expected to contains the following subdirectories:
+\layout Description
+
+<data>/images contains image files (PNG or JPEG; for JPEG you should use
+ the .jpeg extension, and not .jpg).
+\layout Description
+
+<data>/materials contains Soya Materials.
+\layout Description
+
+<data>/models contains Soya Models.
+\layout Description
+
+<data>/animated_models contains Soya AnimatedModels (see chapter 
+\begin_inset LatexCommand \ref{cha:Animated-models}
+
+\end_inset 
+
+).
+\layout Description
+
+<data>/world contains Soya Worlds.
+ These Worlds can either be though as 3D scenes.
+\layout Description
+
+<data>/blenders contains Blender models (see chapter 
+\begin_inset LatexCommand \ref{cha:Blender-for-Soya}
+
+\end_inset 
+
+).
+\layout Description
+
+<data>/sounds contains sound files (WAV or OGG Vorbis, see chapter 
+\begin_inset LatexCommand \ref{cha:Sounds}
+
+\end_inset 
+
+).
+\layout Description
+
+<data>/fonts contains Fonts (see section 
+\begin_inset LatexCommand \ref{sec:Fonts-and-text}
+
+\end_inset 
+
+).
+\layout Standard
+
+These objects are the objects Soya can load; all of them inherit from SavedInAPa
+th (excepted for Blender model, which are not Soya objects, of course).
+ Other Soya objects can be saved, but not directly.
+ For example, you cannot save just a Body in a file, but you can include
+ a Body inside a World, and then you can save the World.
+\layout Description
+
+Known\SpecialChar ~
+bug: Currently, Camera cannot be saved in files.
+\layout Section
+
+File formats
+\layout Standard
+
+All Soya-specific objects (Materials, non-animated Models, Worlds and their
+ content) are saved through serialization.
+ Soya currently supports two file formats: Pickle and Cerealizer.
+ Pickle (actually cPickle) is integrated into Python, and can save any object
+ you may create, however 
+\series bold 
+Pickle is not secure
+\series default 
+ for networking game.
+ Cerealizer (
+\begin_inset LatexCommand \url{http://home.gna.org/oomadness/en/cerealizer}
+
+\end_inset 
+
+) is secure, but it requires you to register manually the class that are
+ safe to read from a file.
+\layout Standard
+
+The default file formats is to save files with Pickle, and to load either
+ Pickle or Cerealizer files (Soya can determine automatically the format
+ of a file; if Cerealizer is not installed, loading Cerealizer file is of
+ course disabled).
+ However, you are encouraged to use Cerealizer for security purpose.
+\layout Standard
+
+To set the file formats, use the following function:
+\layout Description
+
+set_file_format(saving_format,\SpecialChar ~
+loading_formats\SpecialChar ~
+=\SpecialChar ~
+None) where saving_format
+ is the format for saving files (either a function with a signature like
+ pickle.dumps, or a module with a dumps function), and loading_formats is
+ the format for loading files (either a function with a signature like pickle.loa
+ds, or a module with a loads function), or a list of formats.
+ If loading_formats is None, the loading formats are left unmodified.
+\layout Standard
+
+The actual default (which may change) is equivalent to:
+\layout LyX-Code
+
+import cPickle, Cerealizer
+\layout LyX-Code
+
+set_file_format(cPickle, [cerealizer, cPickle]) # if Cerealizer is available
+\layout LyX-Code
+
+set_file_format(cPickle, cPickle)               # if Cerealizer is not available
+\layout Standard
+
+To use only Pickle (for compatibility with older apps):
+\layout LyX-Code
+
+set_file_format(cPickle, cPickle)
+\layout Standard
+
+To use Cerealizer while still being able to read cPickle files:
+\layout LyX-Code
+
+set_file_format(cerealizer, [cerealizer, cPickle])
+\layout Standard
+
+To use only Cerealizer -- 
+\series bold 
+this is the only configuration safe for networking
+\series default 
+:
+\layout LyX-Code
+
+set_file_format(cerealizer, cerealizer)
+\layout Standard
+
+If you use Cerealizer you have to declare which class is safe for saving
+ / loading.
+ Soya automatically register Soya's classes, but you have still to register
+ your derived classes.
+ This can be done as following:
+\layout LyX-Code
+
+class YourClass(soya.CoordSyst):
+\layout LyX-Code
+
+    ...
+\layout LyX-Code
+
+cerealizer.register(YourClass)
+\layout Standard
+
+If your class inherits from SavedInAPath, usually World, and you want YourWorld.g
+et to work properly, you should do:
+\layout LyX-Code
+
+class YourWorld(soya.World):
+\layout LyX-Code
+
+    ...
+\layout LyX-Code
+
+cerealizer.register(YourWorld, SavedInAPathHandler(YourWorld))
+\layout Standard
+
+And, if you want your objects to be saved in the directory <data>/your_worlds/
+ instead of <data>/worlds/, do:
+\layout LyX-Code
+
+YourWorld.DIRNAME = "your_worlds"
+\layout Section
+
+Saving objects
+\layout Standard
+
+In Soya, saving an object is done in two steps (see tutorial basic-savingfile-pi
+ckle-1 and basic-savingfile-cerealizer-1):
+\layout LyX-Code
+
+obj.filename = "your_object"
+\layout LyX-Code
+
+obj.save()
+\layout Standard
+
+The object is saved in the corresonding subdirectory in the first data path
+ (
+\emph on 
+i.e.
+
+\emph default 
+ soya.path[0]), and the file is named <filename>.data (
+\emph on 
+e.g.
+
+\emph default 
+ <data>/worlds/your_object.data).
+ To save the object again, just call obj.save.
+ Images, Sounds and Fonts cannot be saved; as Soya is not able to modify
+ them, it would be a non-sense.
+\layout Standard
+
+When saving a reference to a SavedInAPath object (
+\emph on 
+i.e.
+
+\emph default 
+ an Image, a Material, a Model, an AnimatedModel, a World, a Sound or a
+ Font), if the object has a filename, only the filename will be saved.
+ If it has not, the object will be saved normally.
+ In the following example, the data of the sword Model are not saved in
+ the scene's file:
+\layout LyX-Code
+
+scene = soya.World()
+\layout LyX-Code
+
+body = soya.Body(scene, soya.Model.get("sword"))
+\layout LyX-Code
+
+scene.filename = "sword_scene"
+\layout LyX-Code
+
+scene.save()
+\layout Standard
+
+When the scene will be loaded, the sword Model will be loaded by calling
+ soya.Model.get("sword").
+ As a consequence, you'll have to distribute the sword Model along with
+ the scene.
+\layout Section
+
+Loading objects
+\layout Standard
+
+Objects can be loaded with one of these class methods:
+\layout Description
+
+SavedInAPath.load(filename)\SpecialChar ~
+->\SpecialChar ~
+SavedInAPath
+\layout Description
+
+SavedInAPath.get(filename)\SpecialChar ~
+->\SpecialChar ~
+SavedInAPath
+\layout Standard
+
+The difference between load and get is that load always return a new object,
+ whereas get return the same object when it is called several time with
+ the same filename.
+ Images, Models, Sounds and Fonts are immutable in Soya, and thus get is
+ the preferred method for loading them.
+ For example, to load the sword_scene saved above:
+\layout LyX-Code
+
+scene = soya.World.load("sword_scene")
+\layout Standard
+
+See also tutorial basic-loadingfile-1.
+\layout Subsection
+
+Extended filenames
+\layout Standard
+
+The @ character is used to indicate some optional parameters in a filename:
+\layout Description
+
+For\SpecialChar ~
+Fonts, it can be used to indicate the horizontal and vertical Font size
+ (the horizontal size follows the @, then an x, then the vertical size).
+ It can be used to create several Font objects of various sizes from a single
+ Font file.
+ 
+\emph on 
+E.g.
+
+\emph default 
+ :
+\layout LyX-Code
+
+font = soya.Font.get("indigo.ttf@20x30")
+\layout Description
+
+For\SpecialChar ~
+Models\SpecialChar ~
+and\SpecialChar ~
+Worlds, it can be used to generate several Worlds and Models
+ from a single Blender file (see section 
+\begin_inset LatexCommand \ref{sec:Generating-several-Soya}
+
+\end_inset 
+
+).
+\layout Section
+
+
+\begin_inset LatexCommand \label{sec:Auto-exporters}
+
+\end_inset 
+
+Auto-exporters and automatic conversions
+\layout Standard
+
+When loading data, Soya may automatically perform the following conversions:
+\layout Itemize
+
+Image -> Material
+\layout Itemize
+
+Blender model -> World
+\layout Itemize
+
+World-> Model
+\layout Standard
+
+Concretely, it means that, if you load (with either load or get) a Material
+ that doesn't exist, and if there is an Image with the same filename, Soya
+ will create a new Material, using this Image as texture, and saved (for
+ future use).
+ If the Material already exists, but there is a more recently modified Image
+ with the same filename, Soya will load the Material, and automatically
+ update the texture.
+\layout Standard
+
+Similarly, when loading a World, Soya searches for a Blender model with
+ the same filename, and, if needed, will export it to Soya.
+ When loading a Model, Soya searches for a World (and thus for a Blender
+ model), and, if needed, will load the World and re-turn it to a Model (Models
+ are generated from Worlds, see chapter 
+\begin_inset LatexCommand \ref{cha:Modeling}
+
+\end_inset 
+
+).
+ This feature is known as 
+\begin_inset Quotes eld
+\end_inset 
+
+Soya's auto-exporters
+\begin_inset Quotes erd
+\end_inset 
+
+.
+\layout Section
+
+Where can i obtain Models?
+\layout Standard
+
+First, you can design model yourself, using a 3D modeler like Blender (see
+ chapter 
+\begin_inset LatexCommand \ref{cha:Blender-for-Soya}
+
+\end_inset 
+
+), or within Python scripts (
+\emph on 
+e.g.
+
+\emph default 
+ for geometrical model; see chapter 
+\begin_inset LatexCommand \ref{cha:Modeling}
+
+\end_inset 
+
+).
+ Free models are also available:
+\layout Itemize
+
+Nekeme Prod., an association for Free Game (as in Free Speech) Jiba is a
+ member of, maintains the Free Data Repository.
+ The FDR is a database of free resources for games, including 3D models,
+ images, musics, sounds,...
+ It can be browsed at 
+\begin_inset LatexCommand \htmlurl{http://fdr.nekeme.net/}
+
+\end_inset 
+
+.
+\layout Itemize
+
+You can also re-use the model of an existing free game, such as Balazar
+ Brother (
+\begin_inset LatexCommand \htmlurl{http://home.gna.org/oomadness/en/balazar_brother/index.html}
+
+\end_inset 
+
+).
+\layout Section
+
+Object reference
+\layout Subsection
+
+
+\begin_inset LatexCommand \label{sub:SavedInAPath}
+
+\end_inset 
+
+SavedInAPath
+\layout Standard
+
+SavedInAPath is an abstract mix-in class, used by Image, Material, Model,
+ AnimatedModel, World, Sound and Font.
+\layout Standard
+
+Noticeable class attributes are:
+\layout Description
+
+DIRNAME the data subdirectory used for saving the instance of this class,
+ 
+\emph on 
+e.g.
+
+\emph default 
+ 
+\begin_inset Quotes eld
+\end_inset 
+
+models
+\begin_inset Quotes erd
+\end_inset 
+
+ for Model.
+\layout Standard
+
+Noticeable attributes are:
+\layout Description
+
+filename the object's filename (relative to the <data>/<class>/ directory);
+ if the extension is .data, it is not present in the filename.
+ If the object has a filename, when saving other Soya objects that refer
+ to it, only the filename will be saved (this allow to share 
+\emph on 
+e.g.
+
+\emph default 
+ a Model between two World scenes).
+ If the object has no filename, the object will be dupplicated in any other
+ file that refer to it.
+\layout Standard
+
+Noticeable class methods are:
+\layout Description
+
+load(filename)\SpecialChar ~
+->\SpecialChar ~
+SavedInAPath loads the object saved in the <data>/<class>/<filen
+ame> file.
+ Depending of the object, it may perform automatic conversion.
+\layout Description
+
+get(filename)\SpecialChar ~
+->\SpecialChar ~
+SavedInAPath is similar to load, but, if called several times
+ with the same with the same filename, it returns the same (cached) object
+ instead of loading it twice.
+\layout Description
+
+availables()\SpecialChar ~
+->\SpecialChar ~
+list\SpecialChar ~
+of\SpecialChar ~
+strings returns the list of the filename of all the
+ objects available in the <data>/<class>/ directory.
+\layout Standard
+
+Noticeable methods are:
+\layout Description
+
+save(absolute_filename=None) saves the object in <data>/<class>/<filename>,
+ or in absolute_filename if given.
+ Some objects (namely, Images, Sounds, Fonts and AnimatedModel) cannot be
+ saved by Soya, and can only be loaded.
+\layout Description
+
+loaded() called when the object is loaded from a file; you may override
+ it.
+\layout Chapter
+
+
+\begin_inset LatexCommand \label{cha:Blender-for-Soya}
+
+\end_inset 
+
+Blender for Soya
+\layout Section
+
+Auto-exporter
+\layout Standard
+
+The easiest way to export Blender model is to use the auto-exporter see
+ section 
+\begin_inset LatexCommand \ref{sec:Auto-exporters}
+
+\end_inset 
+
+).
+\layout Subsection
+
+Blender feature exported to Soya
+\layout Description
+
+UV\SpecialChar ~
+Texture\SpecialChar ~
+and\SpecialChar ~
+texture\SpecialChar ~
+coordinates
+\layout Description
+
+Smooth\SpecialChar ~
+or\SpecialChar ~
+solid\SpecialChar ~
+lighting
+\layout Section
+
+Adding Soya-specific attributes in Blender
+\layout Section
+
+
+\begin_inset LatexCommand \label{sec:Generating-several-Soya}
+
+\end_inset 
+
+Generating several Soya models from a single Blender file
+\layout Standard
+
+Notice that, for AnimatedModel (see chapter 
+\begin_inset LatexCommand \ref{cha:Animated-models}
+
+\end_inset 
+
+), AnimatedModel.get is not equivalent to Model.get.
+ Thus, you 
+\series bold 
+cannot
+\series default 
+ do Model.get("your_animated_model").
+ This allows you to have both an animated and a non-animated model with
+ the same filename.
+\layout Section
+
+Drawing texture
+\layout Description
+
+Hint: Soya automatically check if the texture image has an alpha channel
+ or not; however The Gimp (as well as other painting programs) sometimes
+ automatically add an undesired alpha channel.
+ Since alpha texture are slower that non-alpha one, ,and possibly buggy
+ when two of them overlap, you should ensure it is not the case.
+ If needed, remove the alpha channel (
+\begin_inset Quotes eld
+\end_inset 
+
+flatten image 
+\begin_inset Quotes erd
+\end_inset 
+
+ in The Gimp).
+\layout Section
+
+Exporting Soya model to Blender
+\layout Section
+
+What about other 3D modelers ?
+\layout Chapter
+
+
+\begin_inset LatexCommand \label{cha:Animated-models}
+
+\end_inset 
+
+Animated models
+\layout Section
+
+Displaying animated model
+\layout Section
+
+
+\begin_inset LatexCommand \label{sec:Attaching-objects-to-bones}
+
+\end_inset 
+
+Attaching objects to bones
+\layout Section
+
+Object reference
+\layout Chapter
+
+Event handling
+\layout Section
+
+Getting events
+\layout Section
+
+Converting mouse 2D coordinates to 3D coordinates
+\layout Chapter
+
+
+\begin_inset LatexCommand \label{cha:Sounds}
+
+\end_inset 
+
+Sounds
+\layout Standard
+
+Soya's sound API is very similar to the API for 3D objects.
+\layout Section
+
+Loading sounds
+\layout Standard
+
+Soya support currently the following sound file formats:
+\layout Itemize
+
+WAV (through the Python wave module)
+\layout Itemize
+
+OGG Vorbis (requires the PyOgg and PyVorbis Python module)
+\layout Standard
+
+Sound files should be placed in your 
+\family typewriter 
+<data>/sounds
+\family default 
+ directory (see chapter 
+\begin_inset LatexCommand \ref{cha:Managing-data}
+
+\end_inset 
+
+).
+ You can load a sound by doing:
+\layout LyX-Code
+
+sound = soya.Sound.get("my_sound.wav")
+\layout Standard
+
+Soya uses a kind of streaming to not have to read the whole sound file before
+ starting playing.
+ The Sound object contains only the sound raw data.
+\layout Section
+
+Playing sounds: SoundPlayer
+\layout Standard
+
+To play the Sound, you need to put it into a SoundPlayer, a subclass of
+ CoordSyst that plays a Sound in a 3D environment (SoundPlayer is to Sound
+ what Body is to Model):
+\layout LyX-Code
+
+sound_player = soya.SoundPlayer(parent, sound)
+\layout Standard
+
+That's all! The Sound will be played at the position of the SoundPlayer,
+ and Soya will automatically take care of the Doppler effect.
+ Moving the SoundPlayer (or his parent, of course) will move the source
+ of the Sound; see the sound-1.py tutorial for an example.
+ When the Sound is over, by default Soya automatically removes the SoundPlayer
+ from its parent.
+ To stop playing the Sound before the end, just remove manually the SoundPlayer
+ from its parent.
+\layout Standard
+
+To play a background music in loop, at no particular 3D position:
+\layout LyX-Code
+
+sound_player = soya.SoundPlayer(parent, sound, loop = 1, play_in_3D = 0)
+\layout Description
+
+Hint: the sound and play_in_3D attributes are currently read-only (this
+ may change in the future), and thus you'll have to set them when calling
+ the constructor.
+\layout Description
+
+Hint: when a World containing a SoundPlayer is saved, Soya saves the current
+ playing position.
+ When the World will be loaded, the sound will restart 
+\series bold 
+at (about) the same position
+\series default 
+, and not at the beginning.
+\layout Description
+
+Hint: as WAV files are not seekable though the wave Python module, loading
+ SoundPlayer that are playing WAV can be slow, particularly for big file.
+ As a consequence, you should prefer the OGG Vorbis format for big files
+ like music.
+\layout Section
+
+
+\begin_inset LatexCommand \label{sec:Sound-related-init-parameters}
+
+\end_inset 
+
+Sound initialization
+\layout Standard
+
+soya.init accept the following optional sound-related parameters:
+\layout Description
+
+sound is true to initialize 3D sound support (default to false for backward
+ compatibility).
+\layout Description
+
+sound_device is the OpenAL device names, the default value should be nice
+ (default tries native, esd, sdl, alsa, arts, and null devices, in order).
+\layout Description
+
+soud_frequency is the sound frequency, in Hz (defaults to 44100).
+\layout Description
+
+sound_reference_distance is the reference distance for sound attenuation
+ (defaults to 1.0).
+ Increase this value if you find that sounds far from the cameraare too
+ much attenuated.
+\layout Description
+
+sound_doppler_factor can be used to increase or decrease the Doppler effect
+ (defaults to 0.01, which sounds a nice value).
+\layout Standard
+
+Additionally, the set_sound_volume function can be used to control the global
+ sound volume, ranging from 0.0 (no sound) to 1.0 (default and maximum value):
+\layout LyX-Code
+
+soya.set_sound_volume(0.5)
+\layout Standard
+
+Use soya.get_sound_volume() to get the current sound volume.
+\layout Section
+
+
+\begin_inset LatexCommand \label{sec:Sound-and-multiple-Cameras}
+
+\end_inset 
+
+Sound and multiple Cameras
+\layout Standard
+
+Soya uses the Camera as the 
+\begin_inset Quotes eld
+\end_inset 
+
+ear
+\begin_inset Quotes erd
+\end_inset 
+
+ from which sounds are listened.
+ However, you can have only a single 
+\begin_inset Quotes eld
+\end_inset 
+
+ear
+\begin_inset Quotes erd
+\end_inset 
+
+ at the same time.
+ If you have several Cameras, you have to choose the one that will act as
+ the 
+\begin_inset Quotes eld
+\end_inset 
+
+ear
+\begin_inset Quotes erd
+\end_inset 
+
+.
+ This can be done through the listen_sound attribute of the Camera: if this
+ attribute is false, the Camera doesn't act as a 
+\begin_inset Quotes eld
+\end_inset 
+
+ear
+\begin_inset Quotes erd
+\end_inset 
+
+ (the default value is true):
+\layout LyX-Code
+
+camera.listen_sound = 0
+\layout Section
+
+Object reference
+\layout Subsection
+
+Sound
+\layout Standard
+
+Inherits from: 
+\series bold 
+SavedInAPath
+\series default 
+.
+\layout Standard
+
+Loading Sounds:
+\layout Description
+
+Sound.get(filename)\SpecialChar ~
+->\SpecialChar ~
+Sound loads a Sound from the <data>/sounds/ directory;
+ filename should include the sound extension (
+\emph on 
+e.g.
+
+\emph default 
+ .wav or .ogg).
+\layout Standard
+
+Noticeable attributes are:
+\layout Description
+
+filename the sound's filename (relative to the <data>/sounds/ directory).
+\layout Description
+
+stereo is true if the sound is stereo, and false if the sound is mono.
+\layout Subsection
+
+SoundPlayer
+\layout Standard
+
+Inherits from: 
+\series bold 
+CoordSyst
+\series default 
+.
+\layout Standard
+
+Constructor is:
+\layout Description
+
+SoundPlayer(parent,\SpecialChar ~
+sound,\SpecialChar ~
+loop,\SpecialChar ~
+play_in_3D,\SpecialChar ~
+gain,\SpecialChar ~
+auto_remove)\SpecialChar ~
+->\SpecialChar ~
+SoundPlayer
+ the parameters directly match the attributes.
+\layout Standard
+
+Noticeable attributes are:
+\layout Description
+
+sound is the Sound to play (read-only).
+\layout Description
+
+loop if true, the sound restarts from the beginning when it ends (defaults
+ to false).
+\layout Description
+
+play_in_3D if true, the sound is played as a 3D sound; if false, as a 2D
+ sound (read-only; defaults to true).
+ Notice that OpenAL cannot play stereo sound in 3D, and you'll get an error
+ if you try that.
+\layout Description
+
+gain is the volume of the Sound, ranging from 0.0 to 1.0 (default 1.0).
+\layout Description
+
+auto_remove if true, the SoundPlayer is automatically removed when the sound
+ ends (excepted in cases of looping!, defaults to true)
+\layout Standard
+
+Noticeable methods are:
+\layout Description
+
+ended() this method is called when the sound is over.
+ You may override it; the default implementation removes the SoundPlayer
+ from its parent if its auto_remove attribute is true.
+\layout Chapter
+
+
+\begin_inset LatexCommand \label{cha:Collision-detection-and-physics}
+
+\end_inset 
+
+Collision detection and physics
+\layout Section
+
+
+\begin_inset LatexCommand \label{sec:Raypicking}
+
+\end_inset 
+
+Raypicking
+\layout Section
+
+Collision (ODE support)
+\layout Section
+
+Physic engine
+\layout Section
+
+Object reference
+\layout Chapter
+
+Advanced Soya objects
+\layout Section
+
+
+\begin_inset LatexCommand \label{sec:Terrain}
+
+\end_inset 
+
+Terrain
+\layout Subsection
+
+Basics
+\layout Subsection
+
+Generating your own terrain
+\layout Section
+
+Particle systems
+\layout Section
+
+Traveling camera
+\layout Section
+
+Sprites
+\layout Section
+
+Portal
+\layout Section
+
+
+\begin_inset LatexCommand \label{sec:Atmosphere}
+
+\end_inset 
+
+Atmosphere
+\layout Subsection
+
+Basic Atmosphere
+\layout Subsection
+
+NoBackgroundAtmosphere
+\layout Subsection
+
+SkyAtmosphere
+\layout Section
+
+Object reference
+\layout Subsection
+
+Terrain
+\layout Subsection
+
+ParticleSystem
+\layout Subsection
+
+TravelingCamera
+\layout Subsection
+
+Traveling
+\layout Subsection
+
+ThirdPersonTraveling
+\layout Subsection
+
+Sprite
+\layout Subsection
+
+
+\begin_inset LatexCommand \label{sub:Portal}
+
+\end_inset 
+
+Portal
+\layout Subsection
+
+Atmosphere
+\layout Subsection
+
+SkyAtmosphere
+\layout Chapter
+
+
+\begin_inset LatexCommand \label{cha:Modeling}
+
+\end_inset 
+
+Modeling
+\layout Section
+
+Materials
+\layout Section
+
+Basic Models: cube and sphere
+\layout Section
+
+Faces and vertices
+\layout Section
+
+Modelifiers
+\layout Section
+
+Object reference
+\layout Subsection
+
+Image
+\layout Subsection
+
+Material
+\layout Subsection
+
+Vertex
+\layout Subsection
+
+Face
+\layout Subsection
+
+ModelBuilder
+\layout Chapter
+
+
+\begin_inset LatexCommand \label{cha:Widget-systems}
+
+\end_inset 
+
+Font, text, and widget systems
+\layout Section
+
+
+\begin_inset LatexCommand \label{sec:Fonts-and-text}
+
+\end_inset 
+
+Fonts and text drawing
+\layout Section
+
+
+\begin_inset LatexCommand \label{sec:Widgets}
+
+\end_inset 
+
+Widgets
+\layout Section
+
+Pudding
+\layout Section
+
+Object reference
+\layout Subsection
+
+Font
+\layout Subsection
+
+Label3D
+\layout Chapter
+
+Using Soya with...
+\layout Section
+
+
+\begin_inset LatexCommand \label{sec:External-GUI-systems}
+
+\end_inset 
+
+External GUI systems (Tk, Wx,...)
+\layout Standard
+
+Many GUI systems provide their own main loop.
+ In this case, you should create the Soya's MainLoop object as usual, but
+ instead of calling 
+\family typewriter 
+MainLoop.main_loop()
+\family default 
+, you should call 
+\family typewriter 
+MainLoop.update()
+\family default 
+ repeatedly, usually in a kind of timer, if possible about once per 25 or
+ 30 millisceonds.
+ 
+\family typewriter 
+MainLoop.update
+\family default 
+ manages time similarly than 
+\family typewriter 
+MainLoop.main_loop
+\family default 
+, but it cannot regulate time, as a consequence, you should use 
+\family typewriter 
+MainLoop.main_loop
+\family default 
+ whenever possible.
+\layout Subsection
+
+Tkinter
+\layout Standard
+
+Using Tkinter, this can be done as following, with 
+\family typewriter 
+after
+\family default 
+:
+\layout LyX-Code
+
+class Window(Tkinter.Tk):
+\layout LyX-Code
+
+    def __init__(self):
+\layout LyX-Code
+
+        Tkinter.Tk.__init__(self)
+\layout LyX-Code
+
+        self.after(30, self.update_soya)
+\layout LyX-Code
+
+ 
+\layout LyX-Code
+
+    def update_soya(self):
+\layout LyX-Code
+
+        self.after(30, self.update_soya)
+\layout LyX-Code
+
+        soya.MAIN_LOOP.update()
+\layout Standard
+
+See tutorial soya-with-tk-1.py for an example.
+\layout Section
+
+
+\begin_inset LatexCommand \label{sec:PyGame}
+
+\end_inset 
+
+PyGame
+\layout Standard
+
+Using Soya on PyGame surface is possible, by initializing first the PyGame
+ surface, and the initializing Soya as following:
+\layout LyX-Code
+
+soya.init(create_surface = 0)
+\layout Standard
+
+However, this is of little interest, since PyGame doesn't seem to be able
+ to blit on OpenGL surface.
+\layout Chapter
+
+Extending Soya
+\layout Section
+
+Direct calls to OpenGL
+\layout Section
+
+Writing new Material
+\layout Section
+
+Writing new CoordSysts
+\layout Section
+
+Object reference
+\layout Chapter
+
+Hacking the Soya sources
+\the_end
