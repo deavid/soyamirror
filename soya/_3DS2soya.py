@@ -86,9 +86,9 @@ class Material(soya.Material):
 	def __init__(self):
 		self.name=""
 		
-		def setName(self,name):
-			self.name=name
-			
+	def setName(self,name):
+		self.name=name
+		
 class chunk:
 	ID=0
 	length=0
