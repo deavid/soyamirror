@@ -540,6 +540,10 @@ sound is true to initialize 3D sound support (default to false for backward
 \end_deeper 
 \layout Standard
 
+You can use soya.set_video(width, height, fullscreen, resizable) to change
+ some of these parameters after initialization.
+\layout Standard
+
 The rest of this documentation assume that you have initialized Soya correctly.
  It may also assume that you have imported some common modules (os, sys,...),
  well, you are probably enough intelligent to understand that ;-).
@@ -3905,7 +3909,30 @@ e
 \begin_inset Quotes erd
 \end_inset 
 
-) some vertices or faces (to select a face, select all of its vertices).
+, or press space and then click the edit->extrude menu) some vertices or
+ faces (to select a face, select all of its vertices).
+\layout Standard
+
+Blender has several modes; the first one is the object mode, and allows
+ to move the different mesh objects you have (
+\emph on 
+e.g.
+
+\emph default 
+ the cube).
+ If you want to modify a mesh, select it (by clicking on it with the right
+ mouse button) and change to the edit mode.
+ A third mode, the face mode, will be used later for applying texture.
+\layout Standard
+\noindent \align center 
+
+\begin_inset Graphics
+	filename blender_mode.png
+	scale 50
+
+\end_inset 
+
+
 \layout Standard
 
 When drawing the mesh, you should use the Blender axis convention (X is
@@ -3948,6 +3975,17 @@ Textures can be done in any 2D bitmap image editor, such as The Gimp.
  Textures should be PNG or JPEG images (with a .jpeg extension), and they
  should be saved in the <data>/images/ directory.
  Soya support RGB and RGBA images, as well as indexed colors.
+ The 
+\series bold 
+dimensions of the image must be powers of two
+\series default 
+ (
+\emph on 
+e.g.
+
+\emph default 
+ 8, 16, 32, 64, 128, 256, 512,...
+ pixels), but the image doesn't need to be a square.
 \layout Description
 
 Hint: Soya automatically check if the texture image has an alpha channel
