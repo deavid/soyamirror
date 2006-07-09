@@ -827,7 +827,7 @@ class AnimatedModel(Model, _soya._AnimatedModel):
 				do_cmd("blender %s -P %s --blender2cal3d FILENAME=%s EXPORT_FOR_SOYA=1 XML=0 %s" % (
 					source_file,
 					os.path.join(os.path.dirname(__file__), "blender2cal3d.py"),
-					os.path.join(os.path.dirname(source_file), "..", "models", filename, filename + ".cfg"),
+					os.path.join(os.path.dirname(source_file), "..", AnimatedModel.DIRNAME, filename, filename + ".cfg"),
 					extra,
 					))
 				
