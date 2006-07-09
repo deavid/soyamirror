@@ -20,12 +20,36 @@
 cdef class _Deform(_ModelData):
 	#cdef _Model _model
 	#cdef _Model _data
+	#cdef int    _option
+	#cdef float  _time
+	#cdef float  _time_speed
 	
+	def __init__(self):
+		self._time       = 0.0
+		self._time_speed = 1.0
+		
+	property time:
+		def __get__(self):
+			return self._time
+		def __set__(self, float x):
+			self._time = x
+			
 	cdef __getcstate__(self):
-		return self._model,
+		cdef Chunk* chunk
+		chunk = get_chunk()
+		chunk_add_int_endian_safe  (chunk, self._option)
+		chunk_add_float_endian_safe(chunk, self._time)
+		chunk_add_float_endian_safe(chunk, self._time_speed)
+		return self._model, drop_chunk_to_string(chunk)
 	
 	cdef void __setcstate__(self, cstate):
 		self._set_model(cstate[0])
+		cdef Chunk* chunk
+		chunk = string_to_chunk(cstate)
+		chunk_get_int_endian_safe  (chunk, &self._option)
+		chunk_get_float_endian_safe(chunk, &self._time)
+		chunk_get_float_endian_safe(chunk, &self._time_speed)
+		drop_chunk(chunk)
 		
 	cdef _set_model(self, _Model model):
 		if model is None:
@@ -36,12 +60,6 @@ cdef class _Deform(_ModelData):
 			self._model = model
 			self._data  = model._create_deformed_data()
 			
-	cdef void _begin_round(self):
-		self._model._begin_round()
-		
-	cdef void _advance_time(self, float proportion):
-		self._model._advance_time(proportion)
-		
 	cdef _Model _create_deformed_data(self): return self._data._create_deformed_data()
 	
 	cdef void _batch               (self, _Body body):
@@ -70,30 +88,15 @@ cdef class _Deform(_ModelData):
 		return "<%s deforming %s>" % (self.__class__.__name__, self._model)
 	
 	
-cdef class _DynamicDeform(_Deform):
-	#cdef float _time
 	
-	cdef __getcstate__(self):
-		return self._model, self._time
-	
-	cdef void __setcstate__(self, cstate):
-		self._set_model(cstate[0])
-		self._time = cstate[1]
+	cdef void _begin_round(self):
+		self._model._begin_round()
 		
-	def __init__(self):
-		self._time = 0.0
-		
-	property time:
-		def __get__(self):
-			return self._time
-		def __set__(self, float x):
-			self._time = x
-			
 	cdef void _advance_time(self, float proportion):
 		self._model._advance_time(proportion)
 		
-		self._time = self._time + proportion
-
+		self._time = self._time + self._time_speed * proportion
+		
 		cdef _Model       base
 		cdef _Deform      deform
 		cdef _SimpleModel simple_model, simple_data
@@ -113,14 +116,14 @@ cdef class _DynamicDeform(_Deform):
 			
 			
 
-cdef class _TestDynamicDeform(_DynamicDeform):
+cdef class _TestDeform(_Deform):
 	cdef _deform_point(self, float* coord, float* r):
 		r[0] = coord[0] + coord[1] * self._time * 0.1
 		r[1] = coord[1]
 		r[2] = coord[2]
 		
 		
-cdef class PythonDynamicDeform(_DynamicDeform):
+cdef class PythonDeform(_Deform):
 	cdef _deform_point(self, float* coord, float* r):
 		r[0], r[1], r[2] = self.deform_point(coord[0], coord[1], coord[2])
 		

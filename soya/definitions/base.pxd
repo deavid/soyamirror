@@ -53,7 +53,6 @@ cdef class ModelBuilder(_CObj)
 cdef class Traveling(_CObj)
 cdef class _TravelingCamera(_Camera)
 cdef class _Deform(_ModelData)
-cdef class _DynamicDeform(_Deform)
 
 cdef enum:
 	QUALITY_LOW    = 0

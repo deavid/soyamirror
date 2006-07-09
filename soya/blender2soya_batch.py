@@ -28,7 +28,6 @@ import Blender
 PATH                  = os.path.join(os.path.dirname(Blender.Get("filename")), "..")
 FILENAME              = os.path.splitext(os.path.basename(Blender.Get("filename")))[0]
 KEEP_POINTS_AND_LINES = 0
-LAUNCH_EDITOR         = 0
 
 # Make current the animation of the given name, at the given time / key.
 # Usefull for batch mode.

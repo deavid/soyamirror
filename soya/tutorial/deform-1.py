@@ -39,7 +39,7 @@ sword = soya.Body(scene, sword_model)
 sword.x = 1.0
 sword.rotate_y(90.0)
 
-class MyDeform(soya.PythonDynamicDeform):
+class MyDeform(soya.PythonDeform):
 	def deform_point(self, x, y, z):
 		return x, y, z + 0.3 * math.sin(0.1 * self.time + 5.0 * y)
 	

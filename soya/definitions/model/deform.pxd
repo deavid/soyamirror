@@ -21,6 +21,9 @@
 cdef class _Deform(_ModelData):
 	cdef _Model _model
 	cdef _Model _data
+	cdef int    _option
+	cdef float  _time
+	cdef float  _time_speed
 	
 	cdef _set_model(self, _Model model)
 	
@@ -30,7 +33,5 @@ cdef class _Deform(_ModelData):
 	cdef _deform_points(self, float* coords, float* r, int nb)
 	cdef _deform_point (self, float* coord, float* r)
 	
-cdef class _DynamicDeform(_Deform):
-	cdef float  _time
 	
 

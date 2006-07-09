@@ -237,6 +237,21 @@ Then, after trying an aggressive take-over on Soya, Arc Riley has forked
  false and slanderous allegations.
 \layout Standard
 
+Arc was considering me (=Jiba) as a 
+\begin_inset Quotes eld
+\end_inset 
+
+bad leader
+\begin_inset Quotes erd
+\end_inset 
+
+ for the project.
+ After writing the Soya 3D engine and several games (including Arkanae,
+ Slune, Balazar and Balazar Brothers), I consider that I am definitevely
+ a great leader and that the technical directions I have chosen are right.
+ I don't claim being a good manager, though ;-)
+\layout Standard
+
 You can find more historical information on 
 \begin_inset LatexCommand \htmlurl{http://home.gna.org/oomadness/en/soya/history.html}
 
@@ -373,6 +388,9 @@ help(soya.Body)
 \layout Subsection
 
 Tutorials
+\layout Standard
+
+The Soya tutorial pack includes many tutorials, demos and examples.
 \layout Subsection
 
 About this doc
@@ -1928,6 +1946,19 @@ The eye: Camera
 \layout Section
 
 Using Light
+\layout Standard
+
+In Soya, colors are always four-value tupples of the form (red, green, blue,
+ alpha).
+ Each component ranges from 0.0 to 1.0.
+ The alpha component is the transparency (0.0 means fully transparent, 1.0
+ means fully opaque).
+ The alpha component is always mandatory, even if it is not used (
+\emph on 
+e.g.
+
+\emph default 
+ for Light colors).
 \layout Section
 
 Basic object reference
@@ -3798,93 +3829,6 @@ loaded() called when the object is loaded from a file; you may override
 \layout Chapter
 
 
-\begin_inset LatexCommand \label{cha:Blender-for-Soya}
-
-\end_inset 
-
-Blender for Soya
-\layout Section
-
-Auto-exporter
-\layout Standard
-
-The easiest way to export Blender model is to use the auto-exporter see
- section 
-\begin_inset LatexCommand \ref{sec:Auto-exporters}
-
-\end_inset 
-
-).
-\layout Subsection
-
-Blender feature exported to Soya
-\layout Description
-
-UV\SpecialChar ~
-Texture\SpecialChar ~
-and\SpecialChar ~
-texture\SpecialChar ~
-coordinates
-\layout Description
-
-Smooth\SpecialChar ~
-or\SpecialChar ~
-solid\SpecialChar ~
-lighting
-\layout Section
-
-Adding Soya-specific attributes in Blender
-\layout Section
-
-
-\begin_inset LatexCommand \label{sec:Generating-several-Soya}
-
-\end_inset 
-
-Generating several Soya models from a single Blender file
-\layout Standard
-
-Notice that, for AnimatedModel (see chapter 
-\begin_inset LatexCommand \ref{cha:Animated-models}
-
-\end_inset 
-
-), AnimatedModel.get is not equivalent to Model.get.
- Thus, you 
-\series bold 
-cannot
-\series default 
- do Model.get("your_animated_model").
- This allows you to have both an animated and a non-animated model with
- the same filename.
-\layout Section
-
-Drawing texture
-\layout Description
-
-Hint: Soya automatically check if the texture image has an alpha channel
- or not; however The Gimp (as well as other painting programs) sometimes
- automatically add an undesired alpha channel.
- Since alpha texture are slower that non-alpha one, ,and possibly buggy
- when two of them overlap, you should ensure it is not the case.
- If needed, remove the alpha channel (
-\begin_inset Quotes eld
-\end_inset 
-
-flatten image 
-\begin_inset Quotes erd
-\end_inset 
-
- in The Gimp).
-\layout Section
-
-Exporting Soya model to Blender
-\layout Section
-
-What about other 3D modelers ?
-\layout Chapter
-
-
 \begin_inset LatexCommand \label{cha:Animated-models}
 
 \end_inset 
@@ -3904,6 +3848,732 @@ Attaching objects to bones
 \layout Section
 
 Object reference
+\layout Chapter
+
+
+\begin_inset LatexCommand \label{cha:Blender-for-Soya}
+
+\end_inset 
+
+Blender for Soya
+\layout Section
+
+Modeling in Blender
+\layout Subsection
+
+Drawing the mesh structure
+\layout Standard
+
+The first step is to create the mesh structure in Blender.
+ I usually start by adding a cube (Menu add->mesh->cube), and then I deform
+ it, 
+\emph on 
+e.g.
+
+\emph default 
+ by selecting vertices (select them with the mouse right button) and then
+ moving (press the 
+\begin_inset Quotes eld
+\end_inset 
+
+g
+\begin_inset Quotes erd
+\end_inset 
+
+ key), rotating (press 
+\begin_inset Quotes eld
+\end_inset 
+
+r
+\begin_inset Quotes erd
+\end_inset 
+
+) or scaling (press 
+\begin_inset Quotes eld
+\end_inset 
+
+s
+\begin_inset Quotes erd
+\end_inset 
+
+) them.
+ You can also extrude (press 
+\begin_inset Quotes eld
+\end_inset 
+
+e
+\begin_inset Quotes erd
+\end_inset 
+
+) some vertices or faces (to select a face, select all of its vertices).
+\layout Standard
+
+When drawing the mesh, you should use the Blender axis convention (X is
+ right, Y is front and Z is up); the exporter automatically rotates the
+ Model so as it uses Soya's convention (X is right, Y is up and Z is back).
+\layout Subsection
+
+Smooth or solid lighting
+\layout Standard
+
+Then you have to choose between smooth or solid lighting.
+ Smooth ligthing should be used for objects that are smooth by nature (although
+ they are, as any 3D model, made of face).
+ The following picture shows two spheres; the left one uses smooth lighting,
+ and the right one uses solid lighting.
+\layout Standard
+\noindent \align center 
+
+\begin_inset Graphics
+	filename /home/jiba/src/soya/tutorial/results/modeling-smoothlit-1.jpeg
+	width 30col%
+
+\end_inset 
+
+
+\layout Standard
+
+Notice that the smooth or solid lighting can be set on a per-face basis.
+ In addition, Soya automatically remove the smooth lighting between two
+ faces that make an angle higher than 80 degrees (this value can be changed
+ by setting the max_face_angle parameter).
+ This effect is not visible in Blender, but usually corresponds to what
+ you expect.
+\layout Subsection
+
+Designing textures
+\layout Standard
+
+Textures can be done in any 2D bitmap image editor, such as The Gimp.
+ Textures should be PNG or JPEG images (with a .jpeg extension), and they
+ should be saved in the <data>/images/ directory.
+ Soya support RGB and RGBA images, as well as indexed colors.
+\layout Description
+
+Hint: Soya automatically check if the texture image has an alpha channel
+ or not; however The Gimp (as well as other painting programs) sometimes
+ automatically add an undesired alpha channel.
+ Since alpha texture are slower that non-alpha one, ,and possibly buggy
+ when two of them overlap, you should ensure it is not the case.
+ If needed, remove the alpha channel (
+\begin_inset Quotes eld
+\end_inset 
+
+flatten image 
+\begin_inset Quotes erd
+\end_inset 
+
+ in The Gimp).
+\layout Standard
+
+When an UV image is mapped to a face in Blender, Soya automatically exports
+ it using the Material of the same name than the image filename, and creates
+ this Material from the image if it doesn't exist yet.
+\layout Subsection
+
+Applying the texture to the model
+\layout Standard
+
+In Blender, enter in face mode, and select the faces you want to apply the
+ texture to (press 
+\begin_inset Quotes eld
+\end_inset 
+
+a
+\begin_inset Quotes erd
+\end_inset 
+
+ to select all faces).
+\layout Subsection
+
+Face's sides
+\layout Standard
+
+By default, Soya and Blender shows only one side of each face (Blender shows
+ both side in some draw type modes, but not in the final rendering).
+ Which side is visible depends on the normal of the face.
+ If a face shows the wrong side, select it (by selecting all of its vertices
+ in edition mode, or by selecting it in face mode, and then go to edition
+ mode), and then click the 
+\begin_inset Quotes eld
+\end_inset 
+
+flip normal
+\begin_inset Quotes erd
+\end_inset 
+
+ button.
+\layout Standard
+\noindent \align center 
+
+\begin_inset Graphics
+	filename blender_flip_normal.png
+	scale 50
+
+\end_inset 
+
+
+\layout Standard
+
+If you want to show both sides, select the face in face mode, and then click
+ the 
+\begin_inset Quotes eld
+\end_inset 
+
+twoside
+\begin_inset Quotes erd
+\end_inset 
+
+ button.
+\layout Standard
+\noindent \align center 
+
+\begin_inset Graphics
+	filename blender_two_side.png
+	scale 50
+
+\end_inset 
+
+
+\layout Subsection
+
+Adding face colors
+\layout Standard
+
+You can also add per-face colors, although it is not commonly used.
+ Soya exports them as per-vertex colors (since Soya doesn't support per-face
+ colors).
+\layout Subsection
+
+SubSurf
+\layout Standard
+
+In Blender, SubSurf can be used to automatically increase the details of
+ a Model.
+ The following picture show the same model with and without SubSurf:
+\layout Standard
+\noindent \align center 
+
+\begin_inset Graphics
+	filename blender_subsurf.png
+	width 30col%
+
+\end_inset 
+
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+
+\begin_inset Graphics
+	filename blender_subsurf2.png
+	scale 50
+
+\end_inset 
+
+
+\layout Standard
+
+When exporting non-animated Model, Soya automatically take SubSurf into
+ account.
+ However, this is not the case for AnimatedModel.
+ A common trick is to apply the SubSurf on the Model (by clicking the 
+\begin_inset Quotes eld
+\end_inset 
+
+Apply
+\begin_inset Quotes erd
+\end_inset 
+
+ button); notice that applying SubSurf destroys any vertex group that you
+ may have created, as a consequence it should be done 
+\series bold 
+before
+\series default 
+ designing animations.
+\layout Subsection
+
+Adding an armature
+\layout Subsection
+
+Adding animations
+\layout Section
+
+Auto-exporter
+\layout Standard
+
+The easiest way to export Blender model is to use the auto-exporter (see
+ section 
+\begin_inset LatexCommand \ref{sec:Auto-exporters}
+
+\end_inset 
+
+).
+\layout Standard
+
+Simply save your Blender model in <data>/blender/ (
+\emph on 
+e.g.
+
+\emph default 
+ <data>/blender/your_model.blend).
+ Then in Soya, load the World or the Model of the same name (without extension),
+ 
+\emph on 
+e.g.
+\emph default 
+:
+\layout LyX-Code
+
+soya.Model.get("your_model")
+\layout Standard
+
+Soya will automatically launch Blender, export the model, cache it in the
+ <data>/worlds/ and <data>/models/ directory, and quit Blender in a fraction
+ of second.
+\layout Standard
+
+If the Blender file is updated after that, Soya will automatically re-export
+ it.
+\layout Section
+
+Blender features exported to Soya
+\layout Standard
+
+Here is a summary of the following Blender features that are correctly exported
+ to Soya:
+\layout Description
+
+Mesh\SpecialChar ~
+structure
+\layout Description
+
+Face\SpecialChar ~
+UV\SpecialChar ~
+image (mapped to Face.material, see section 
+\begin_inset LatexCommand \ref{cha:Modeling}
+
+\end_inset 
+
+).
+\layout Description
+
+Vertex\SpecialChar ~
+UV\SpecialChar ~
+texture\SpecialChar ~
+coordinates (mapped to Vertex.tex_x and Vertex.tex_y, see section
+ 
+\begin_inset LatexCommand \ref{cha:Modeling}
+
+\end_inset 
+
+).
+\layout Description
+
+Face_twoside (mapped to Face.double_sided, see section 
+\begin_inset LatexCommand \ref{cha:Modeling}
+
+\end_inset 
+
+).
+\layout Description
+
+Smooth\SpecialChar ~
+or\SpecialChar ~
+solid\SpecialChar ~
+lighting (mapped to Face.smooth_lit, see section 
+\begin_inset LatexCommand \ref{cha:Modeling}
+
+\end_inset 
+
+).
+\layout Description
+
+Face\SpecialChar ~
+colors (mapped to Vertex.color, see section 
+\begin_inset LatexCommand \ref{cha:Modeling}
+
+\end_inset 
+
+)
+\layout Description
+
+SubSurf (only for non-animated Model).
+\layout Section
+
+Adding Soya-specific attributes in Blender
+\layout Standard
+
+
+\begin_inset Float figure
+wide false
+collapsed false
+
+\layout Standard
+\noindent \align center 
+
+\begin_inset Graphics
+	filename blender_param_text_buffer.png
+	lyxscale 50
+	width 50col%
+
+\end_inset 
+
+
+\layout Caption
+
+
+\begin_inset LatexCommand \label{cap:Using-parameter-text}
+
+\end_inset 
+
+Using 
+\begin_inset Quotes eld
+\end_inset 
+
+parameter text buffer
+\begin_inset Quotes erd
+\end_inset 
+
+ in Blender
+\end_inset 
+
+
+\layout Standard
+
+Soya also provides some features that are not supported by Blender.
+ These features can be defined using a 
+\begin_inset Quotes eld
+\end_inset 
+
+parameter text buffer
+\begin_inset Quotes erd
+\end_inset 
+
+ (see figure 
+\begin_inset LatexCommand \ref{cap:Using-parameter-text}
+
+\end_inset 
+
+).
+ First, create a text buffer in Blender, and name it 
+\begin_inset Quotes eld
+\end_inset 
+
+soya_params
+\begin_inset Quotes erd
+\end_inset 
+
+.
+ This text buffer contains Soya-specific informations, given as 
+\begin_inset Quotes eld
+\end_inset 
+
+key=value
+\begin_inset Quotes erd
+\end_inset 
+
+ pairs.
+ The following pairs are supported:
+\layout Description
+
+scale=2.0 scales the Model (in the three directions).
+\layout Description
+
+shadow=1 activate shadows on the Soya Model (use 0 for disabling shadow,
+ which is the default; see picture below).
+\layout Standard
+\noindent \align center 
+
+\begin_inset Graphics
+	filename /home/jiba/src/soya/tutorial/results/modeling-shadow-1.jpeg
+	width 30col%
+
+\end_inset 
+
+
+\layout Description
+
+cellshading=1 activate the cellshading on the Soya Model (use 0 for disabling
+ cellshading, which is the default).
+ A cellshaded Model use a different, more cartoon-like, lighting algorithm,
+ and can have an outline (see the picture below; the sword on the left has
+ not cellshading enabled, the sword on the right has it).
+\layout Description
+
+cellshading_shader="filename" the name of the Material used as the 
+\begin_inset Quotes eld
+\end_inset 
+
+shader
+\begin_inset Quotes erd
+\end_inset 
+
+ (defaults to soya.SHADER_DEFAULT_MATERIAL).
+ Only the texture of the Material is used; it should be a 1-pixel-wide alpha
+ texture.
+ This texture is then added over the normal Model texture, with the top-most
+ pixels being added over the darker parts of the Model and the bottom-most
+ pixels over the bright parts.
+\layout Description
+
+cellshading_outline_width=1.0 the width of the cellshading outline (default
+ to 0.0, this parameter is used only if cellshading is activated).
+ If the width is 0.0, no outline is added to the Model.
+\layout Description
+
+cellshading_outline_color=red,green,blue,alpha the color of the cellshading
+ outline (default to black, this parameter is used only if cellshading is
+ activated).
+\layout Description
+
+cellshading_outline_attenuation=0.3 the attenuation of the cellshading outline,
+ with regard to the distance (defaults to 0.3).
+\layout Standard
+\noindent \align center 
+
+\begin_inset Graphics
+	filename /home/jiba/src/soya/tutorial/results/modeling-cellshading-1.jpeg
+	width 30col%
+
+\end_inset 
+
+
+\layout Description
+
+animation=blender_action_name the name of a Blender action; the corresponding
+ action will be set current before exporting (defaults to None).
+\layout Description
+
+animation_time=3.0 the frame number sets before exporting (this parameter
+ is expected to be used with the animation one).
+\layout Description
+
+max_face_angle=80.0 the maximum angle between two smooth-lit Faces.
+ If the angle between two Faces is higher than the given value, the two
+ Faces won't be considered as smooth (with regard to each other), even if
+ they are marked as smooth in Blender.
+ In other 3D engine (including Blender), you need to dupplicate vertices
+ for disabling smoothing; however Soya takes into account the angle between
+ each Face, and does that automatically for you.
+ Default is 80.0; you can disable this feature by setting it to 360.0.
+\layout Description
+
+keep_points_and_lines=1 if true, points and lines are kept in the Model
+ (by default, Soya drops them, and keep only triangles and quads).
+\layout Description
+
+material_oldname=newname replaces the Material named 
+\begin_inset Quotes eld
+\end_inset 
+
+oldname
+\begin_inset Quotes erd
+\end_inset 
+
+ by the Material named 
+\begin_inset Quotes eld
+\end_inset 
+
+newname
+\begin_inset Quotes erd
+\end_inset 
+
+.
+\layout Description
+
+config_text=blender_text_buffer_name also read the Blender text buffer of
+ the given name.
+\layout Description
+
+config_file=file also read the given file (as if it was a parameter buffer).
+\layout Section
+
+
+\begin_inset LatexCommand \label{sec:Generating-several-Soya}
+
+\end_inset 
+
+Generating several Soya models from a single Blender file
+\layout Standard
+
+The parameter text buffers named 
+\begin_inset Quotes eld
+\end_inset 
+
+soya_params
+\begin_inset Quotes erd
+\end_inset 
+
+ is always parsed.
+ It is possible to export several Soya Model from a single Blender file,
+ using additional parameter text buffers.
+ In this case, the Model filename in Soya is 
+\begin_inset Quotes eld
+\end_inset 
+
+blender_filename@additional_parameter_text_buffers_name
+\begin_inset Quotes erd
+\end_inset 
+
+.
+ For example, if you have a <data>/blender/sword.blend Blender model, with
+ the following 
+\begin_inset Quotes eld
+\end_inset 
+
+soya_params
+\begin_inset Quotes erd
+\end_inset 
+
+ text buffer:
+\layout LyX-Code
+
+cellshading=1
+\layout LyX-Code
+
+cellshading_outline_width=1.0
+\layout Standard
+
+the following text buffer called 
+\begin_inset Quotes eld
+\end_inset 
+
+big
+\begin_inset Quotes erd
+\end_inset 
+
+:
+\layout LyX-Code
+
+scale=2.0
+\layout Standard
+
+and the following text buffer called 
+\begin_inset Quotes eld
+\end_inset 
+
+blue
+\begin_inset Quotes erd
+\end_inset 
+
+:
+\layout LyX-Code
+
+material_sword=sword_blue
+\layout Standard
+
+Then,
+\layout Itemize
+
+soya.Model.get("sword") loads the Model and parses only the 
+\begin_inset Quotes eld
+\end_inset 
+
+soya_params
+\begin_inset Quotes erd
+\end_inset 
+
+ buffer.
+\layout Itemize
+
+soya.Model.get("sword@big") loads the Model and parses the 
+\begin_inset Quotes eld
+\end_inset 
+
+soya_params
+\begin_inset Quotes erd
+\end_inset 
+
+ and the 
+\begin_inset Quotes eld
+\end_inset 
+
+big
+\begin_inset Quotes erd
+\end_inset 
+
+ buffers, and thus scales the Model by 2.
+\layout Itemize
+
+soya.Model.get("sword@blue") loads the Model and parses the 
+\begin_inset Quotes eld
+\end_inset 
+
+soya_params
+\begin_inset Quotes erd
+\end_inset 
+
+ and the 
+\begin_inset Quotes eld
+\end_inset 
+
+blue
+\begin_inset Quotes erd
+\end_inset 
+
+ buffers, and thus replaces the 
+\begin_inset Quotes eld
+\end_inset 
+
+sword
+\begin_inset Quotes erd
+\end_inset 
+
+ Material by the 
+\begin_inset Quotes eld
+\end_inset 
+
+sword_blue
+\begin_inset Quotes erd
+\end_inset 
+
+ Material.
+\layout Standard
+
+The animation and animation_time can be used to generate several non-animated
+ Model corresponding to the various frames of one or more Blender actions.
+ For example, to generate a non-animated Model that is a statue of Balazar
+ running, at the frame 2:
+\layout LyX-Code
+
+animation=run
+\layout LyX-Code
+
+animation_time=2.0
+\layout Section
+
+Exporting Soya model to Blender
+\layout Standard
+
+The script soya/soya2blender.py (in the Soya sources) can import a Soya Model
+ in Blender.
+ You have to modify the end of the script to choose the Model to import,
+ and then run the script manually in Blender.
+\layout Description
+
+Known\SpecialChar ~
+bug: It seems that soya2blender.py doesn't export texture well, so you'll
+ have to re-set the texture.
+\layout Section
+
+What about other 3D modelers ?
+\layout Standard
+
+In addition to Blender, the following modelers are supported by Soya:
+\layout Itemize
+
+3DSMax (see soya/_3DS2soya.py).
+\layout Itemize
+
+MilkShake 3D (see ms3D2soya.py).
+\layout Itemize
+
+OBJ/MTL (see objmtl2soya.py).
 \layout Chapter
 
 Event handling
@@ -4464,13 +5134,13 @@ However, this is of little interest, since PyGame doesn't seem to be able
  to blit on OpenGL surface.
 \layout Chapter
 
-Extending Soya
+Extending Soya in Python
 \layout Section
 
 Direct calls to OpenGL
 \layout Section
 
-Writing new Material
+Writing new Materials
 \layout Section
 
 Writing new CoordSysts
