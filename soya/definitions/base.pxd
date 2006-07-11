@@ -253,11 +253,11 @@ ctypedef struct Frustum:
 	float planes  [24] # planes equation : (a,b,c,d) * 6
 
 cdef struct _Pack: # See material.pyx for doc and comments
-	int    option
-	long   material_id # it is a pointer - should be long not to fail on AMD64
-	_Pack* alpha
-	_Pack* secondpass
-	Chunk* batched_faces
+	int      option
+	intptr_t material_id # it is a pointer - should be long not to fail on AMD64
+	_Pack*   alpha
+	_Pack*   secondpass
+	Chunk*   batched_faces
 
 ctypedef _Pack Pack
 

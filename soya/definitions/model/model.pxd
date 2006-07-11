@@ -31,11 +31,11 @@ cdef class _Model(_CObj):
 	cdef void _advance_time (self, float proportion)
 	
 ctypedef struct DisplayList:
-	int    option
-	int    id
-	long   material_id # it is a pointer - should be long not to fail on AMD64
-	int*   faces_id
-	Chunk* chunk # Only used for initialization of the DisplayList
+	int      option
+	int      id
+	intptr_t material_id # it is a pointer - should be long not to fail on AMD64
+	int*     faces_id
+	Chunk*   chunk # Only used for initialization of the DisplayList
 	
 
 ctypedef struct DisplayLists:
