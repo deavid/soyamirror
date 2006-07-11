@@ -486,7 +486,7 @@ In addition to PythonMaterial, PythonMainLoopingMaterial also has begin_round, a
 
 # cdef struct _Pack:
 #   int    option
-#   int    material_id
+#   long   material_id
 #   _Pack* alpha
 #   _Pack* secondpass
 #   Chunk* batched_faces

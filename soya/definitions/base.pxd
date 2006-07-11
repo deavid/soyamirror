@@ -254,7 +254,7 @@ ctypedef struct Frustum:
 
 cdef struct _Pack: # See material.pyx for doc and comments
 	int    option
-	int    material_id
+	long   material_id # it is a pointer - should be long not to fail on AMD64
 	_Pack* alpha
 	_Pack* secondpass
 	Chunk* batched_faces
