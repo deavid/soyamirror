@@ -254,3 +254,5 @@
     * The Blender => Soya auto-exporter no longer require that Blender
       can import Soya. This was causing some weird bugs with some
       Blender binaries.
+    * Fix for 64 bits platforms.
+
