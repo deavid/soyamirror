@@ -1120,16 +1120,21 @@ def export(filename):
 			faces = data.faces
 			while faces:
 				image          = faces[0].image
-				image_filename = image and image.filename
-				image_name     = os.path.splitext(os.path.basename(image_filename))[0]
-				#print "MATERIAL", image_filename, image_name
-				if MATERIAL_MAP.has_key(image_name):
-					image_filename2 = os.path.join(os.path.dirname(image_filename), MATERIAL_MAP[image_name] + os.path.splitext(image_filename)[1])
-					#print "=>", image_filename
-				else: image_filename2 = image_filename
-				material       = MATERIALS.get(image_filename2) or Material(image_filename2)
-				outputuv       = len(material.maps_filenames) > 0
-				
+				if image:
+					image_filename = image and image.filename
+					image_name     = os.path.splitext(os.path.basename(image_filename))[0]
+					if MATERIAL_MAP.has_key(image_name):
+						image_filename2 = os.path.join(os.path.dirname(image_filename), MATERIAL_MAP[image_name] + os.path.splitext(image_filename)[1])
+					else: image_filename2 = image_filename
+					material       = MATERIALS.get(image_filename2) or Material(image_filename2)
+					outputuv       = len(material.maps_filenames) > 0
+				else:
+					image_filename  = "default"
+					image_name      = ""
+					image_filename2 = ""
+					material        = MATERIALS.get("default") or Material("default")
+					outputuv        = len(material.maps_filenames) > 0
+					
 				# TODO add material color support here
 				
 				submesh  = SubMesh(mesh, material)
