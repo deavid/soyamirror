@@ -38,4 +38,5 @@ cdef extern from "math.h":
 	float ceil (float x)
 	float floor (float x)
 
-
+cdef extern from "stdint.h":
+	ctypedef long intptr_t

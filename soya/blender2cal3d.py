@@ -47,7 +47,7 @@ You should be able to open the .cfg file in cal3d_miniviewer.
 NOT (YET) SUPPORTED
 
 	- Rotation, translation, or stretching Blender objects is still quite
-		buggy, so AVOID MOVING / ROTATING / RESIZE OBJECTS (either mesh or armature) !
+		buggy, so AVOID MOVING / ROTATING / RESIZING OBJECTS (either mesh or armature) !
 		Instead, edit the object (with tab), select all points / bones (with "a"),
 		and move / rotate / resize them.
 	- no support for exporting springs yet

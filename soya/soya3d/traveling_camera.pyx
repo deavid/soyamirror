@@ -364,8 +364,8 @@ TARGET is a point in the character (or world) to follow."""
 		if lat == 1: dist = dist + 0.1
 		#dist = dist + 0.1 * lat
 		if dist > best_dist: best.clone(result); best_dist = dist
-
-		direction._matrix[0] = old_dirx
+		
+		#direction._matrix[0] = old_dirx
 		direction._matrix[1] = old_diry - 0.2 * self._speed
 		dist = self._check(self._context, target, direction, result)
 		if vert == -1: dist = dist + 0.1
@@ -378,19 +378,6 @@ TARGET is a point in the character (or world) to follow."""
 		#dist = dist + 0.1 * vert
 		if dist > best_dist: best.clone(result); best_dist = dist
 		
-#     for i from -1 <= i < 2:
-#       for j from -1 <= j < 2:
-#         if (i != 0) or (j != 0):
-#           direction._matrix[0] = old_dirx + self._speed * camera._speed_value * i
-#           direction._matrix[1] = old_diry + self._speed * camera._speed_value * j
-					
-#           dist = self._check(root, target, direction, result)
-#           dist = dist + 0.3 * (lat * i) + 0.3 * (vert * j)
-					
-#           if dist > best_dist: best.clone(result); best_dist = dist
-#           # XXX if dist > best_dist + 0.2 => returns immediately (cannot find better)
-					
-					
 		direction.set_start_end(target, best)
 		
 		return best

@@ -9,6 +9,7 @@ exclude test* tutorial/data/shapes/skeleton/* tutorial/data/shapes/cally/* tutor
 
 global-exclude *.pyc *.pyo *.old* *.save *.disabled *.o *.so test_* .xvpics/*
 global-exclude */CVS/* .cvswrappers .cvsignore *.~*~
+global-exclude .dia~
 
 exclude tutorial/data/shapes/*.data
 include tutorial/data/shapes/buggy_chassis.data

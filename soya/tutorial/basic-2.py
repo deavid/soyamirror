@@ -96,4 +96,3 @@ soya.set_root_widget(camera)
 
 soya.MainLoop(scene).main_loop()
 
-

@@ -163,12 +163,10 @@ The Soya project objectives and the Soya spirit
 \end_inset 
 
 , with no Front-Cover Texts, and with no Back-Cover Texts.
- A copy of the license is included in the section entitled 
-\begin_inset Quotes eld
-\end_inset 
+ A copy of the license is included in the soya/doc directory, and can also
+ be found online on 
+\begin_inset LatexCommand \url{http://gnu.org}
 
-GNU Free Documentation License
-\begin_inset Quotes erd
 \end_inset 
 
 .
@@ -246,7 +244,7 @@ bad leader
 \end_inset 
 
  for the project.
- After writing the Soya 3D engine and several games (including Arkanae,
+ After having written the Soya 3D engine and several games (including Arkanae,
  Slune, Balazar and Balazar Brothers), I consider that I am definitevely
  a great leader and that the technical directions I have chosen are right.
  I don't claim being a good manager, though ;-)
@@ -646,6 +644,26 @@ abstract
 \end_inset 
 
  class, and Soya provides several Model subclasses (SimpleModel, AnimatedModel,...).
+ Models are created either by exporting them from 3D modelers (see chapter
+ 
+\begin_inset LatexCommand \ref{cha:Blender-for-Soya}
+
+\end_inset 
+
+) or by creating a World, putting Faces in the World and then 
+\begin_inset Quotes eld
+\end_inset 
+
+compiling
+\begin_inset Quotes erd
+\end_inset 
+
+ the World into a Model (see chapter 
+\begin_inset LatexCommand \ref{cha:Modeling}
+
+\end_inset 
+
+).
 \layout Description
 
 Material defines the attributes of a surface, 
@@ -658,6 +676,7 @@ e.g.
 
 Image is a 2D image.
  It is used in particular for textures.
+ Images are usually created using a 2D painting program like The Gimp.
 \layout Description
 
 Body (sometimes called 
@@ -1949,7 +1968,7 @@ Hints: Creating many Points or Vectors is time-consuming, since they are
 The eye: Camera
 \layout Section
 
-Using Light
+Enlight your scene: Light
 \layout Standard
 
 In Soya, colors are always four-value tupples of the form (red, green, blue,
@@ -2113,7 +2132,7 @@ abstract
 
 \end_inset 
 
-) or by creating a Group, putting Faces in the Group and then 
+) or by creating a World, putting Faces in the World and then 
 \begin_inset Quotes eld
 \end_inset 
 
@@ -2121,7 +2140,7 @@ compiling
 \begin_inset Quotes erd
 \end_inset 
 
- the Group into a Model (see chapter 
+ the World into a Model (see chapter 
 \begin_inset LatexCommand \ref{cha:Modeling}
 
 \end_inset 
@@ -2129,7 +2148,7 @@ compiling
 ).
  Models are considered as immutable, as a single model can be shared and
  used by several Body; if you want to modify a Model in your code, you'll
- have to modify the Group that has generated it, and then to turn the Group
+ have to modify the World that has generated it, and then to turn the World
  into a new Model.
 \layout Standard
 
@@ -2184,15 +2203,15 @@ Constructor is:
 
 CoordSyst(parent=None)\SpecialChar ~
 ->\SpecialChar ~
-CoordSyst where parent is the ComplexBody in which
- the CoordSyst will be added (use None for no addition).
+CoordSyst where parent is the World in which the
+ CoordSyst will be added (use None for no addition).
 \layout Standard
 
 Noticeable attributes are:
 \layout Description
 
-parent the ComplexBody that contains this CoordSyst (None if no such parent;
- read-only, use World.remove and World.add to reparent a CoordSyst).
+parent the World that contains this CoordSyst (None if no such parent; read-only
+, use World.remove and World.add to reparent a CoordSyst).
 \layout Description
 
 x,\SpecialChar ~
@@ -2499,6 +2518,16 @@ Noticeable attributes are:
 \layout Description
 
 model the Model the Body displays.
+\layout Description
+
+deforms the list of Deform applied to the Body (default to an empty list;
+ you should not modify the list directly, but use the add_deform and remove_defo
+rm methods; see section 
+\begin_inset LatexCommand \ref{sec:Model-Deforms}
+
+\end_inset 
+
+).
 \layout Standard
 
 The following attribute is only available if the Body's Model is an AnimatedMode
@@ -2513,6 +2542,26 @@ l (see chapter
 attached_meshes the list of the attached meshes names (only with AnimatedModel,
  see chapter 
 \begin_inset LatexCommand \ref{cha:Animated-models}
+
+\end_inset 
+
+).
+\layout Standard
+
+Noticeable methods are:
+\layout Description
+
+add_deform(deform) applies the given Deform to the Body (see section 
+\begin_inset LatexCommand \ref{sec:Model-Deforms}
+
+\end_inset 
+
+).
+\layout Description
+
+remove_deform(deform) removes the given Deform from the Body (see section
+ 
+\begin_inset LatexCommand \ref{sec:Model-Deforms}
 
 \end_inset 
 
@@ -3318,7 +3367,7 @@ CoordSyst.end_round() (see section
 \layout Description
 
 CoordSyst.added_into(newparent) is called whenever the CoordSyst is added
- into a new Group, or removed from its current Group (in this case, newparent
+ into a new World, or removed from its current World (in this case, newparent
  is None).
 \layout Description
 
@@ -3863,6 +3912,10 @@ Blender for Soya
 \layout Section
 
 Modeling in Blender
+\layout Standard
+
+The following Blender tutorial is very short and Soya-oriented.
+ XXX add here some links to other Blender tutorials.
 \layout Subsection
 
 Drawing the mesh structure
@@ -4002,6 +4055,13 @@ flatten image
 \end_inset 
 
  in The Gimp).
+\layout Description
+
+Hint: In Blender, the length of the name given to a texture is limited to
+ about 19 characters.
+ As the exporter assume that this name is the name of the corresponding
+ image file (which is the default value in Blender), you should avoid long
+ filenames for textures.
 \layout Standard
 
 When an UV image is mapped to a face in Blender, Soya automatically exports
@@ -4022,6 +4082,36 @@ a
 \end_inset 
 
  to select all faces).
+ Then go the the UV/image editor window, and use the Image->Open menu to
+ open your texture.
+ Finally, position the UV coordinates by moving the vertex of the triangle
+ or quad over the texture.
+\layout Standard
+\noindent \align center 
+
+\begin_inset Graphics
+	filename blender_uv_image_editor.png
+	scale 50
+
+\end_inset 
+
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+
+\begin_inset Graphics
+	filename blender_uv_image_editor2.png
+	lyxscale 84
+	scale 42
+
+\end_inset 
+
+
 \layout Subsection
 
 Face's sides
@@ -4042,16 +4132,6 @@ flip normal
 
  button.
 \layout Standard
-\noindent \align center 
-
-\begin_inset Graphics
-	filename blender_flip_normal.png
-	scale 50
-
-\end_inset 
-
-
-\layout Standard
 
 If you want to show both sides, select the face in face mode, and then click
  the 
@@ -4067,6 +4147,21 @@ twoside
 \noindent \align center 
 
 \begin_inset Graphics
+	filename blender_flip_normal.png
+	scale 50
+
+\end_inset 
+
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+
+\begin_inset Graphics
 	filename blender_two_side.png
 	scale 50
 
@@ -4078,7 +4173,8 @@ twoside
 Adding face colors
 \layout Standard
 
-You can also add per-face colors, although it is not commonly used.
+You can also add per-face colors, although this feature is not commonly
+ used.
  Soya exports them as per-vertex colors (since Soya doesn't support per-face
  colors).
 \layout Subsection
@@ -4088,7 +4184,7 @@ SubSurf
 
 In Blender, SubSurf can be used to automatically increase the details of
  a Model.
- The following picture show the same model with and without SubSurf:
+ The following picture show the same model without and with SubSurf:
 \layout Standard
 \noindent \align center 
 
@@ -4132,13 +4228,129 @@ Apply
 \series bold 
 before
 \series default 
- designing animations.
+ defining vertex groups.
 \layout Subsection
 
 Adding an armature
+\layout Standard
+
+Blender's armatures are the skeletons used for animation.
+ An armature is thus required only for AnimatedModel (although it may be
+ used on non-animated Model, for generating several Soya Models being the
+ same Blender model at different animation frame).
+\layout Standard
+
+To add an armature, choose the Add->Armature menu, and then draw the armature's
+ bones.
+\layout Subsection
+
+Linking bones to vertices
+\layout Standard
+
+The second step for AnimatedModels is to link the armature's bones to the
+ vertices.
+ This can be done:
+\layout Itemize
+
+Using vertex groups: select both the model and the armature (in that order),
+ and click the Object->Parent->Make\SpecialChar ~
+parent->Armature->Create\SpecialChar ~
+from\SpecialChar ~
+closest\SpecialChar ~
+bones.
+ Vertex groups corresponding to the various bones will be automatically
+ created, and can then be refined manually.
+ However, it seems that the recent version of Blender (2.41) are not as efficient
+ for this than older version.
+\layout Itemize
+
+Using envelopes: process as above, but choose 
+\begin_inset Quotes eld
+\end_inset 
+
+Don't create group
+\begin_inset Quotes erd
+\end_inset 
+
+ instead of 
+\begin_inset Quotes eld
+\end_inset 
+
+Create from closest bones
+\begin_inset Quotes erd
+\end_inset 
+
+, and then check the 
+\begin_inset Quotes eld
+\end_inset 
+
+envelopes
+\begin_inset Quotes erd
+\end_inset 
+
+ button in the armature's properties.
+\layout Standard
+\noindent \align center 
+
+\begin_inset Graphics
+	filename blender_armature_envelope.png
+	scale 50
+
+\end_inset 
+
+
 \layout Subsection
 
 Adding animations
+\layout Standard
+
+In Blender, animations are called 
+\begin_inset Quotes eld
+\end_inset 
+
+actions
+\begin_inset Quotes erd
+\end_inset 
+
+.
+ Go to the 
+\begin_inset Quotes eld
+\end_inset 
+
+Action editor
+\begin_inset Quotes erd
+\end_inset 
+
+ window, add a new action, and give it a name.
+ In the 3D window, select the armature and enter in the pose mode.
+ Then move and rotate the bones, and add a keyframe with the Pose->Insert\SpecialChar ~
+keyfram
+e menu.
+\layout Standard
+\noindent \align center 
+
+\begin_inset Graphics
+	filename blender_action_editor.png
+	scale 50
+
+\end_inset 
+
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+
+\begin_inset Graphics
+	filename blender_action_editor2.png
+	scale 50
+
+\end_inset 
+
+
 \layout Section
 
 Auto-exporter
@@ -4168,11 +4380,14 @@ e.g.
 \layout LyX-Code
 
 soya.Model.get("your_model")
+\layout LyX-Code
+
+soya.AnimatedModel.get("your_model")
 \layout Standard
 
 Soya will automatically launch Blender, export the model, cache it in the
- <data>/worlds/ and <data>/models/ directory, and quit Blender in a fraction
- of second.
+ <data>/worlds/, <data>/models/ and <data>/animated_models directories,
+ and quit Blender in a fraction of second.
 \layout Standard
 
 If the Blender file is updated after that, Soya will automatically re-export
@@ -4237,10 +4452,76 @@ colors (mapped to Vertex.color, see section
 
 \end_inset 
 
-)
+).
+\layout Standard
+
+For non-animated Model only:
 \layout Description
 
-SubSurf (only for non-animated Model).
+SubSurf
+\layout Standard
+
+For AnimatedModel only:
+\layout Description
+
+Armature (also called 
+\begin_inset Quotes eld
+\end_inset 
+
+skeleton
+\begin_inset Quotes erd
+\end_inset 
+
+).
+\layout Description
+
+Animation (called 
+\begin_inset Quotes eld
+\end_inset 
+
+action
+\begin_inset Quotes erd
+\end_inset 
+
+ in Blender).
+\layout Standard
+
+AnimatedModel are exported to the Cal3D file format using Blender2Cal3D.py.
+\layout Description
+
+Known\SpecialChar ~
+bug: Blender2Cal3D.py is known to have several bugs.
+ I encourage you to export your model as early as possible, to ensure it
+ exports well and to avoid loosing too much works.
+ When building an AnimatedModel in Blender, you have to follow these rules
+ (for more information, read the comment at the beginning of Blender2Cal3D.py):
+\begin_deeper 
+\layout Itemize
+
+
+\series bold 
+Avoid moving, rotating or resizing objects
+\series default 
+ (either mesh or armature) ! Instead, edit the object (with tab), select
+ all points / bones (with "a"), and move / rotate / resize them.
+\layout Itemize
+
+Use only a single armature
+\layout Itemize
+
+Use only a single rootbone (Cal3D doesn't support floating bones)
+\layout Itemize
+
+Use only locrot keys (Cal3D doesn't support bone's size change)
+\layout Itemize
+
+Don't try to create child/parent constructs in blender object, that gets
+ exported incorrectly at the moment
+\layout Itemize
+
+Objects or animations whose names start by "_" are not exported (hidden
+ object) 
+\end_deeper 
 \layout Section
 
 Adding Soya-specific attributes in Blender
@@ -4256,7 +4537,6 @@ collapsed false
 
 \begin_inset Graphics
 	filename blender_param_text_buffer.png
-	lyxscale 50
 	width 50col%
 
 \end_inset 
@@ -4969,6 +5249,14 @@ NoBackgroundAtmosphere
 SkyAtmosphere
 \layout Section
 
+
+\begin_inset LatexCommand \label{sec:Model-Deforms}
+
+\end_inset 
+
+Deforming Models
+\layout Section
+
 Object reference
 \layout Subsection
 
@@ -5002,6 +5290,9 @@ Atmosphere
 \layout Subsection
 
 SkyAtmosphere
+\layout Subsection
+
+Deform
 \layout Chapter
 
 
@@ -5188,4 +5479,26 @@ Object reference
 \layout Chapter
 
 Hacking the Soya sources
+\layout Standard
+
+The source of the development version of Soya can be found on our Subversion
+ repository: 
+\begin_inset LatexCommand \htmlurl{http://gna.org/svn/?group=soya}
+
+\end_inset 
+
+.
+ Soya is written in Pyrex, Python and there is still a small part in C.
+\layout Standard
+
+You can propose patches on the Soya mailing list.
+ However, I (=Jiba, the Soya maintainer) am a very occupied guy with a small
+ memory :-).
+ If you don't get any feedback after while, it probably doesn't mean you
+ proposition has been rejected, but rather that no one got the time for
+ looking at it, and it has been forgotten...
+ in this case just insist!
+\layout Standard
+
+Do not hesitate to ask for Subversion write access, too.
 \the_end
