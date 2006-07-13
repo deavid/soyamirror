@@ -59,19 +59,17 @@ cdef class _CellShadingModel(_SimpleModel):
 			_SimpleModel._batch(self, body)
 			return
 		
-		
-		cdef int      i
-		cdef Frustum* frustum
-		frustum = renderer._frustum(body)
-		if (self._option & MODEL_HAS_SPHERE) and (sphere_in_frustum(frustum, self._sphere) == 0): return
+		#cdef Frustum* frustum
+		#frustum = renderer._frustum(body)
+		#if (self._option & MODEL_HAS_SPHERE) and (sphere_in_frustum(frustum, self._sphere) == 0): return
+		cdef float sphere[4]
+		if self._option & MODEL_HAS_SPHERE:
+			sphere_by_matrix_copy(sphere, self._sphere, body._root_matrix())
+			if sphere_in_frustum(renderer.root_frustum, sphere) == 0: return
 		
 		if self._display_lists.nb_opaque_list != 0: renderer._batch(renderer.opaque, body._data, body, -1)
 		if self._display_lists.nb_alpha_list  != 0: renderer._batch(renderer.alpha , body._data, body, -1)
 		
-#    # batch each face
-#    for i from 0 <= i < self._nb_faces: self._batch_face(self._faces + i)
-#    pack_batch_end(self, body)
-
 		# For outline
 		if self._outline_width > 0.0: renderer._batch(renderer.secondpass, body._data, body, 0)
 
@@ -159,6 +157,7 @@ cdef class _CellShadingModel(_SimpleModel):
 			frustum = renderer._frustum(body)
 			self._render_outline(frustum)
 		else:
+			if body._option & LEFTHANDED: glFrontFace(GL_CW)
 			model_option_activate(self._option)
 			
 			chunk = get_chunk()
@@ -214,6 +213,7 @@ cdef class _CellShadingModel(_SimpleModel):
 				
 			drop_chunk(chunk)
 			model_option_inactivate(self._option)
+			if body._option & LEFTHANDED: glFrontFace(GL_CCW)
 			
 			
 	cdef void _render_outline(self, Frustum* frustum):

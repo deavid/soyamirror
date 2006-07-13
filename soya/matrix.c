@@ -19,6 +19,7 @@
 /**********************************************
  * matrix.c : matrix and other 3D math functions
  * Copyright (C) 2001-2003 Bertrand 'blam' LAMY
+ * Copyright (C) 2003-2006 Jean-Baptiste 'Jiba' LAMY
  **********************************************/
 
 #include <stdlib.h>
@@ -735,6 +736,18 @@ void point_by_matrix_copy (GLfloat r[3], GLfloat p[3], GLfloat m[19]) {
   r[0] = p[0] * m[0] + p[1] * m[4] + p[2] * m[ 8] + m[12];
   r[1] = p[0] * m[1] + p[1] * m[5] + p[2] * m[ 9] + m[13];
   r[2] = p[0] * m[2] + p[1] * m[6] + p[2] * m[10] + m[14];
+}
+
+void sphere_by_matrix_copy (GLfloat r[4], GLfloat p[4], GLfloat m[19]) {
+  GLfloat scaling;
+  scaling = m[16];
+  if (m[17] > scaling) { scaling = m[17]; }
+  if (m[18] > scaling) { scaling = m[18]; }
+  
+  r[0] = p[0] * m[0] + p[1] * m[4] + p[2] * m[ 8] + m[12];
+  r[1] = p[0] * m[1] + p[1] * m[5] + p[2] * m[ 9] + m[13];
+  r[2] = p[0] * m[2] + p[1] * m[6] + p[2] * m[10] + m[14];
+  r[3] = p[3] * scaling;
 }
 
 void point4_by_matrix (GLfloat p[4], GLfloat m[19]) {
@@ -2019,18 +2032,12 @@ Frustum* frustum_by_matrix (Frustum* r, Frustum* f, GLfloat* m) {
   if (m[17] > scaling) { scaling = m[17]; }
   if (m[18] > scaling) { scaling = m[18]; }
   /* re-compute the normals */
-  face_normal (r->planes, r->points, r->points + 3, r->points + 9);
-  vector_set_length (r->planes, scaling);
-  face_normal (r->planes + 4, r->points + 12, r->points + 15, r->points);
-  vector_set_length (r->planes + 4, scaling);
-  face_normal (r->planes + 8, r->points + 9, r->points + 6, r->points + 21);
-  vector_set_length (r->planes + 8, scaling);
-  face_normal (r->planes + 12, r->points + 12, r->points, r->points + 21);
-  vector_set_length (r->planes + 12, scaling);
-  face_normal (r->planes + 16, r->points + 3, r->points + 15, r->points + 6);
-  vector_set_length (r->planes + 16, scaling);
-  face_normal (r->planes + 20, r->points + 15, r->points + 12, r->points + 18);
-  vector_set_length (r->planes + 20, scaling);
+  face_normal (r->planes     , r->points     , r->points +  3, r->points +  9); vector_set_length (r->planes     , scaling);
+  face_normal (r->planes +  4, r->points + 12, r->points + 15, r->points     ); vector_set_length (r->planes +  4, scaling);
+  face_normal (r->planes +  8, r->points + 9 , r->points +  6, r->points + 21); vector_set_length (r->planes +  8, scaling);
+  face_normal (r->planes + 12, r->points + 12, r->points     , r->points + 21); vector_set_length (r->planes + 12, scaling);
+  face_normal (r->planes + 16, r->points + 3 , r->points + 15, r->points +  6); vector_set_length (r->planes + 16, scaling);
+  face_normal (r->planes + 20, r->points + 15, r->points + 12, r->points + 18); vector_set_length (r->planes + 20, scaling);
   /* re-compute the constants */
   r->planes[ 3] = -(r->planes[ 0] * r->points[ 0] + r->planes[ 1] * r->points[ 1] + r->planes[ 2] * r->points[ 2]);
   r->planes[ 7] = -(r->planes[ 4] * r->points[ 0] + r->planes[ 5] * r->points[ 1] + r->planes[ 6] * r->points[ 2]);
@@ -2038,6 +2045,10 @@ Frustum* frustum_by_matrix (Frustum* r, Frustum* f, GLfloat* m) {
   r->planes[15] = -(r->planes[12] * r->points[ 0] + r->planes[13] * r->points[ 1] + r->planes[14] * r->points[ 2]);
   r->planes[19] = -(r->planes[16] * r->points[ 6] + r->planes[17] * r->points[ 7] + r->planes[18] * r->points[ 8]);
   r->planes[23] = -(r->planes[20] * r->points[12] + r->planes[21] * r->points[13] + r->planes[22] * r->points[14]);
+
+  if (m[16] * m[17] * m[18] < 0.0f) { // left-handed matrix
+    for (i = 0; i < 24; i++) { r->planes[i] = -r->planes[i]; }
+  }
   /* sphere */
 //  point_by_matrix (r->sphere, m);
 //  r->sphere[3] *= scaling;

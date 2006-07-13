@@ -19,6 +19,7 @@
 /**********************************************
  * matrix.h : matrix and other 3D math functions header
  * Copyright (C) 2001-2002 Bertrand 'blam' LAMY
+ * Copyright (C) 2003-2006 Jean-Baptiste 'Jiba' LAMY
  **********************************************/
 
 #define FALSE  0
@@ -113,6 +114,7 @@ void     point4_by_matrix            (GLfloat[4], GLfloat[19]);
 void     vector_by_matrix            (GLfloat[3], GLfloat[19]);
 void     vector_by_matrix_copy       (GLfloat result[3], GLfloat[3], GLfloat[19]);
 GLfloat  length_by_matrix            (GLfloat, GLfloat[19]);
+void     sphere_by_matrix_copy       (GLfloat result[4], GLfloat[4], GLfloat[19]);
 
 void     matrix_set_identity         (GLfloat[19]);
 void     matrix_scale                (GLfloat[19], GLfloat, GLfloat, GLfloat);

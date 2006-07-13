@@ -23,7 +23,7 @@ cdef class CoordSyst(Position):
 	cdef float* _raypick_data(self, RaypickData data)
 	cdef float _distance_out(self, float distance)
 	cdef void _invalidate(self)
-	cdef void check_lefthanded(self)
+	cdef void _check_lefthanded(self)
 	cdef float* _root_matrix(self)
 	cdef float* _inverted_root_matrix(self)
 	cdef _World _get_root(self)

@@ -348,6 +348,7 @@ PROPORTION is the proportion of the current round's time that has passed (1.0 fo
 			else:
 				self._matrix[0], self._matrix[1], self._matrix[2], self._matrix[3], self._matrix[4], self._matrix[5], self._matrix[6], self._matrix[7], self._matrix[8], self._matrix[9], self._matrix[10], self._matrix[11], self._matrix[12], self._matrix[13], self._matrix[14], self._matrix[15], self._matrix[16], self._matrix[17], self._matrix[18] = matrix
 			self._invalidate()
+			self._check_lefthanded()
 			
 	property root_matrix:
 		def __get__(self):
@@ -390,10 +391,10 @@ Sets the scale factors in the X, Y and Z dimension."""
 		self.scale(scale_x / self._matrix[16], scale_y / self._matrix[17], scale_z / self._matrix[18])
 		
 		
-	cdef void check_lefthanded(self):
-		if self._matrix[16] * self._matrix[17] * self._matrix[18] < 0.0: self._option = self._option |  COORDSYS_LEFTHANDED
-		else:                                                            self._option = self._option & ~COORDSYS_LEFTHANDED
-
+	cdef void _check_lefthanded(self):
+		if self._matrix[16] * self._matrix[17] * self._matrix[18] < 0.0: self._option = self._option |  LEFTHANDED
+		else:                                                            self._option = self._option & ~LEFTHANDED
+		
 	cdef float* _root_matrix(self):
 		if not(self._validity & COORDSYS_ROOT_VALID):
 			if self._parent is None: memcpy(self.__root_matrix, self._matrix, sizeof(self.__root_matrix))
@@ -518,6 +519,7 @@ nothing !)."""
 Scales a CoordSyst by X, Y and Z (Changes its dimensions).
 Negative values are accepted."""
 		matrix_scale(self._matrix, x, y, z)
+		self._check_lefthanded()
 		self._invalidate()
 		
 	def set_identity(self):

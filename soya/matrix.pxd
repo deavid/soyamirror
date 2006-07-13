@@ -1,7 +1,7 @@
 # -*- indent-tabs-mode: t -*-
 
 # Soya 3D
-# Copyright (C) 2003 Jean-Baptiste LAMY -- jiba@tuxfamily.org
+# Copyright (C) 2003-2006 Jean-Baptiste LAMY -- jiba@tuxfamily.org
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -95,6 +95,7 @@ cdef extern from "matrix.h":
 	void     vector_by_matrix            (GLfloat[3], GLfloat[19])
 	void     vector_by_matrix_copy       (GLfloat result[3], GLfloat[3], GLfloat[19])
 	GLfloat  length_by_matrix            (GLfloat, GLfloat[19])
+	void     sphere_by_matrix_copy       (GLfloat[4], GLfloat[4], GLfloat[19])
 
 	void     matrix_set_identity         (GLfloat[19])
 	void     matrix_scale                (GLfloat[19], GLfloat, GLfloat, GLfloat)

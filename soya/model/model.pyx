@@ -857,15 +857,13 @@ and if the angle between their 2 faces is < ANGLE."""
 	cdef void _batch(self, _Body body):
 		if body._option & HIDDEN: return
 		
-		cdef Frustum* frustum
-		frustum = renderer._frustum(body)
-		if (self._option & MODEL_HAS_SPHERE) and (sphere_in_frustum(frustum, self._sphere) == 0): return
-		
-		#if self._display_lists.nb_opaque_list != 0: renderer._batch(renderer.opaque, body._data, body, -1)
-		#if self._display_lists.nb_alpha_list  != 0: renderer._batch(renderer.alpha , body._data, body, -1)
-		
-		if body._data is None:
-			print body, body._data, body._model, self
+		#cdef Frustum* frustum
+		#frustum = renderer._frustum(body)
+		#if (self._option & MODEL_HAS_SPHERE) and (sphere_in_frustum(frustum, self._sphere) == 0): return
+		cdef float sphere[4]
+		if self._option & MODEL_HAS_SPHERE:
+			sphere_by_matrix_copy(sphere, self._sphere, body._root_matrix())
+			if sphere_in_frustum(renderer.root_frustum, sphere) == 0: return
 		
 		if self._display_lists.nb_opaque_list != 0: renderer._batch(renderer.opaque, self, body, -1)
 		if self._display_lists.nb_alpha_list  != 0: renderer._batch(renderer.alpha , self, body, -1)
@@ -898,6 +896,7 @@ and if the angle between their 2 faces is < ANGLE."""
 		cdef int i, j, start, end
 		
 		model_option_activate(self._option) # XXX put this in the display list ?
+		if body._option & LEFTHANDED: glFrontFace(GL_CW)
 		
 		if self._option & MODEL_DISPLAY_LISTS:
 			if not(self._option & MODEL_INITED): self._init_display_list()
@@ -942,44 +941,8 @@ and if the angle between their 2 faces is < ANGLE."""
 				
 				face_option_inactivate(display_list.option)
 				
+		if body._option & LEFTHANDED:	glFrontFace(GL_CCW)
 		model_option_inactivate(self._option)
-		
-# 	cdef void _render_deformed(self, _Body body, _SimpleShape deformed):
-# 		cdef DisplayList*  display_list
-# 		cdef ModelFace*    face
-# 		cdef int i, j, start, end
-		
-# 		model_option_activate(self._option) # XXX put this in the display list ?
-		
-# 		if self._option & MODEL_DISPLAY_LISTS:
-# 			if not(self._option & MODEL_INITED): self._init_display_list()
-# 			if renderer.state == RENDERER_STATE_OPAQUE:
-# 				start = 0
-# 				end   = self._display_lists.nb_opaque_list
-# 			else:
-# 				start = self._display_lists.nb_opaque_list
-# 				end   = start + self._display_lists.nb_alpha_list
-# 			for i from start <= i < end:
-# 				display_list = self._display_lists.display_lists + i
-# 				face_option_activate(display_list.option)
-# 				(<_Material> (display_list.material_id))._activate()        
-				
-# 				if   display_list.option & FACE_TRIANGLE: glBegin(GL_TRIANGLES)
-# 				elif display_list.option & FACE_QUAD:     glBegin(GL_QUADS)
-# 				else:
-# 					print "Model supports only triangle or quad faces !"
-# 					raise ValueError("Model supports only triangle or quad faces !")
-				
-# 				for j from 0 <= j < self._nb_faces:
-# 					face = self._faces + j
-# 					if ((face.option & DISPLAY_LIST_OPTIONS) == display_list.option) and (face.pack.material_id == display_list.material_id):
-# 						if face.option & FACE_QUAD: self._render_quad    (face)
-# 						else:                       self._render_triangle(face)
-						
-# 				glEnd()
-				
-# 				face_option_inactivate(display_list.option)
-# 		model_option_inactivate(self._option)
 		
 	cdef void _raypick(self, RaypickData data, CoordSyst parent):
 		cdef float* raydata

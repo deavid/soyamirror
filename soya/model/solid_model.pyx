@@ -40,6 +40,8 @@ cdef class _SolidModel(_SimpleModel):
 			
 			if not(self._option & MODEL_INITED): self._init_display_list()
 			
+			model_option_activate(self._option)
+			if body._option & LEFTHANDED: glFrontFace(GL_CW)
 			glLoadIdentity()
 			
 			if renderer.state == RENDERER_STATE_OPAQUE:
@@ -70,6 +72,7 @@ cdef class _SolidModel(_SimpleModel):
 							
 				face_option_inactivate(display_list.option)
 			model_option_inactivate(self._option)
+			if body._option & LEFTHANDED: glFrontFace(GL_CCW)
 			
 	cdef void _render_triangle_solid(self, ModelFace* face, CoordSyst coord_syst, int vertex_indices[3]):
 		cdef int    i, i3, j, j3, cur_inter3, nb_inter

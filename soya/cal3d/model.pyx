@@ -347,12 +347,17 @@ cdef class _AnimatedModel(_Model):
 	
 	cdef void _batch(self, _Body body):
 		cdef _AnimatedModelData data
+		cdef float sphere[4]
 		data   = <_AnimatedModelData> body._data
 		
 		data._build_vertices(0)
 		
 		if not body._option & HIDDEN:
-			if (self._sphere[3] != -1.0) and (sphere_in_frustum(renderer._frustum(body), self._sphere) == 0): return
+			if self._sphere[3] != -1.0:
+				sphere_by_matrix_copy(sphere, self._sphere, body._root_matrix())
+				if sphere_in_frustum(renderer.root_frustum, sphere) == 0: return
+				
+			#if (self._sphere[3] != -1.0) and (sphere_in_frustum(renderer._frustum(body), self._sphere) == 0): return
 			
 			# Ok, we render the Cal3D model ; rendering implies computing vertices
 			data._vertex_ok = 1
@@ -403,6 +408,7 @@ cdef class _AnimatedModel(_Model):
 		glEnableClientState(GL_VERTEX_ARRAY)
 		glEnableClientState(GL_NORMAL_ARRAY)
 		glEnableClientState(GL_TEXTURE_COORD_ARRAY)
+		if body._option & LEFTHANDED: glFrontFace(GL_CW)
 		
 		for submesh in self._submeshes:
 			if data._attached_meshes[submesh._mesh]:
@@ -470,6 +476,7 @@ cdef class _AnimatedModel(_Model):
 		glDisableClientState(GL_NORMAL_ARRAY)
 		glDisableClientState(GL_TEXTURE_COORD_ARRAY)
 		glDisableClientState(GL_VERTEX_ARRAY)
+		if body._option & LEFTHANDED: glFrontFace(GL_CCW)
 		if self._option & CAL3D_DOUBLE_SIDED: glEnable(GL_CULL_FACE)
 
 
