@@ -256,4 +256,6 @@
       Blender binaries.
     * Fix for 64 bits platforms.
     * Bugfix on mirroring (scaling with negative values)
+    * Bugfix on shadows on AnimatedModel: soya was segfaulting if the
+      model was culled on the first rendering
 
