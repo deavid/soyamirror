@@ -150,17 +150,12 @@ cdef class _Cal3dSubMesh:
 		cdef Chunk* chunk
 		
 		self._option = self._option | CAL3D_NEIGHBORS
-		
+
 		self._face_neighbors = <int*> malloc(self._nb_faces * 3 * sizeof(int))
 
 		# Read from the cache file, if it exist.
 		if os.path.exists(cache_filename):
 			file = open(cache_filename, "rb")
-			#i = 0
-			#for x in file.read().split():
-			#  self._face_neighbors[i] = int(x)
-			#  i = i + 1
-			
 			chunk = string_to_chunk(file.read())
 			chunk_get_ints_endian_safe(chunk, self._face_neighbors, 3 * self._nb_faces)
 			drop_chunk(chunk)
@@ -201,10 +196,6 @@ cdef class _Cal3dSubMesh:
 		chunk = get_chunk()
 		chunk_add_ints_endian_safe(chunk, self._face_neighbors, 3 * self._nb_faces)
 		file.write(drop_chunk_to_string(chunk))
-		
-		#file.write(PyString_FromStringAndSize(<char*> (self._face_neighbors), 3 * sizeof(int)))
-		#for i from 0 <= i < self._nb_faces:
-		#  file.write("%s %s %s\n" % (self._face_neighbors[3 * i], self._face_neighbors[3 * i + 1], self._face_neighbors[3 * i + 2]))
 		
 		
 cdef class _AnimatedModel(_Model):
@@ -787,6 +778,8 @@ cdef class _AnimatedModel(_Model):
 		return r
 			
 	cdef int _shadow2(self, _Cal3dSubMesh submesh, _Body body, _Light light, float* coords, float* vnormals, float* plane):
+		if not (submesh._option & CAL3D_NEIGHBORS): return 0 # Not yet initialized ???
+		
 		global cal3d_facesides_array
 		
 		cdef Frustum*     frustum
