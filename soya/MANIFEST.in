@@ -18,5 +18,5 @@ global-include *.c
 exclude test* setup_tuto.py
 
 global-exclude *.pyc *.pyo *.old* *.save *.disabled *.o *.so test_* .xvpics/*
-global-exclude */CVS/* .cvswrappers .cvsignore *.~*~
+global-exclude */CVS/* .svn .cvswrappers .cvsignore *.~*~
 

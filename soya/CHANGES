@@ -249,6 +249,7 @@
     directory)
   * Dynamic model deforming (see tuto deform-1.py); this feature is
     still under work and the API may change in the next release.
+  * Auto-exporters can now be disabled (soya.AUTO_EXPORTERS_ENABLED = 0)
   * Bugfix:
     * Bugfix in 3DSmax exporter on material (thanks Snaip)
     * The Blender => Soya auto-exporter no longer require that Blender

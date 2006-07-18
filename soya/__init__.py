@@ -43,15 +43,16 @@ sys.modules["_soya"    ] = _soya
 
 
 dumps = pickle.dumps
-loadss = [pickle.loads]
+_loadss = [pickle.loads]
+AUTO_EXPORTERS_ENABLED = 1
 try:
 	import cerealizer
-	loadss.insert(0, cerealizer.loads)
+	_loadss.insert(0, cerealizer.loads)
 except ImportError: pass
 
 def loads(s):
 	try:
-		for loads_func in loadss:
+		for loads_func in _loadss:
 			if loads_func.__module__ == "cerealizer":
 				import soya.cerealizer4soya
 				if s.startswith("cereal"): return loads_func(s)
@@ -64,7 +65,7 @@ def loads(s):
 	raise ValueError("Cannot read file / data!")
 	
 def set_file_format(dumps_func, loads_funcs = None):
-	"""set_file_format(dumps_func, loads_funcs)
+	"""set_file_format(dumps_func, loads_funcs = None)
 
 Sets the file format used when saving or loading files.
 DUMPS_FUNC is a function or module called to serialize objects.
@@ -81,6 +82,8 @@ The following are known to work:
 	- cPickle
 	- cerealizer
 
+AUTO_EXPORTERS is true for enabling auto-exporters (default) or false to disable them.
+
 The actual default (which will probably change) is equivalent to:
 	set_file_format(cPickle, [cerealizer, cPickle])  if Cerealizer is available
 	set_file_format(cPickle, cPickle)                if Cerealizer is not available
@@ -94,18 +97,18 @@ To use only Cerealizer (especially ineresting if you need security, e.g. for net
 To use only cPickle (for compatibility with older apps):
 	set_file_format(cPickle, cPickle)
 """
-	global dumps, loadss
+	global dumps, _loadss
 	
 	dumps = (callable(dumps_func) and dumps_func) or dumps_func.dumps
 	
 	if   loads_funcs:
 		if not hasattr(loads_funcs, "__iter__"): loads_funcs = [loads_funcs]
-		loadss = [(callable(loads_func) and loads_func) or loads_func.loads for loads_func in loads_funcs]
+		_loadss = [(callable(loads_func) and loads_func) or loads_func.loads for loads_func in loads_funcs]
 		
-	if "cerealizer" in [dumps.__module__] + [loads_func.__module__ for loads_func in loadss]:
+	if "cerealizer" in [dumps.__module__] + [loads_func.__module__ for loads_func in _loadss]:
 		import soya.cerealizer4soya
-
-
+	
+	
 def set_root_widget(widget):
 	"""set_root_widget(WIDGET)
 
@@ -385,7 +388,7 @@ Attributes are:
 	def load(klass, filename):
 		if ".." in filename: raise ValueError("Cannot have .. in filename (security reason)!", filename)
 		need_export, image_file, file = klass._check_export(filename + ".data", filename, (Image.DIRNAME, filename + ".png"), (Image.DIRNAME, filename + ".jpeg"))
-		if need_export:
+		if need_export and AUTO_EXPORTERS_ENABLED:
 			image = Image.get(os.path.basename(image_file))
 			if os.path.exists(file): material = loads(open(file, "rb").read())
 			else:
@@ -422,7 +425,7 @@ Models are used in conjunction with Body."""
 	def load(klass, filename):
 		if ".." in filename: raise ValueError("Cannot have .. in filename (security reason)!", filename)
 		need_export, world_file, file = klass._check_export(filename + ".data", filename, (World.DIRNAME, filename + ".data"), ("blender", filename.split("@")[0] + ".blend"), ("obj", filename + ".obj"), ("obj", filename + ".mtl"), ("3ds", filename + ".3ds"))
-		if need_export:
+		if need_export and AUTO_EXPORTERS_ENABLED:
 			model = World.get(filename).to_model()
 			model._filename = filename
 			try: model.save()
@@ -546,7 +549,7 @@ Attributes are (see also Body, CoordSyst and SavedInAPath for inherited attribut
 		
 		if ".." in filename: raise ValueError("Cannot have .. in filename (security reason)!", filename)
 		need_export, source_file, file = klass._check_export(filename + ".data", filename, ("blender", filename.split("@")[0] + ".blend"), ("obj", filename + ".obj"), ("obj", filename + ".mtl"), ("3ds", filename + ".3ds"))
-		if need_export:
+		if need_export and AUTO_EXPORTERS_ENABLED:
 			if   need_export == "blender":
 				if dumps is pickle.dumps: file_format = "pickle"
 				else:                     file_format = "cerealizer"
@@ -818,7 +821,7 @@ class AnimatedModel(Model, _soya._AnimatedModel):
 	def load(klass, filename):
 		if ".." in filename: raise ValueError("Cannot have .. in filename (security reason)!", filename)
 		need_export, source_file, file = klass._check_export(os.path.join(filename, filename + ".cfg"), filename, ("blender", filename.split("@")[0] + ".blend"))
-		if need_export:
+		if need_export and AUTO_EXPORTERS_ENABLED:
 			if need_export == "blender":
 				extra = ""
 				if "@" in filename:

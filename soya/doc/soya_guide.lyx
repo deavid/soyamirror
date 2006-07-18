@@ -560,7 +560,7 @@ collapsed false
 
 \begin_inset Graphics
 	filename uml1.eps
-	width 60col%
+	width 80col%
 
 \end_inset 
 
@@ -3415,7 +3415,8 @@ Soya stores each class of object in a separate subdirectory in <data>, the
 <data>/models contains Soya Models.
 \layout Description
 
-<data>/animated_models contains Soya AnimatedModels (see chapter 
+<data>/animated_models contains Soya AnimatedModels (in Cal3D format, using
+ a directory per AnimatedModel, see chapter 
 \begin_inset LatexCommand \ref{cha:Animated-models}
 
 \end_inset 
@@ -3600,8 +3601,8 @@ e.g.
 \emph default 
  <data>/worlds/your_object.data).
  To save the object again, just call obj.save.
- Images, Sounds and Fonts cannot be saved; as Soya is not able to modify
- them, it would be a non-sense.
+ Images, Sounds, Fonts and AnimatedModels cannot be saved; as Soya is not
+ able to modify them, it would be a non-sense.
 \layout Standard
 
 When saving a reference to a SavedInAPath object (
@@ -3706,7 +3707,7 @@ Worlds, it can be used to generate several Worlds and Models
 Auto-exporters and automatic conversions
 \layout Standard
 
-When loading data, Soya may automatically perform the following conversions:
+When loading data, Soya can automatically perform the following conversions:
 \layout Itemize
 
 Image -> Material
@@ -3716,6 +3717,9 @@ Blender model -> World
 \layout Itemize
 
 World-> Model
+\layout Itemize
+
+Blender model -> AnimatedModel
 \layout Standard
 
 Concretely, it means that, if you load (with either load or get) a Material
@@ -3728,7 +3732,8 @@ Concretely, it means that, if you load (with either load or get) a Material
 \layout Standard
 
 Similarly, when loading a World, Soya searches for a Blender model with
- the same filename, and, if needed, will export it to Soya.
+ the same filename, and, if needed, will export it to Soya (Notice that
+ this require Blender to be installed).
  When loading a Model, Soya searches for a World (and thus for a Blender
  model), and, if needed, will load the World and re-turn it to a Model (Models
  are generated from Worlds, see chapter 
@@ -3746,6 +3751,28 @@ Soya's auto-exporters
 \end_inset 
 
 .
+\layout Standard
+
+Auto-exporters are really nice for development, however they can be annoying
+ in the final version of an application, for example one doesn't expect
+ a game to start blender for re-exporting the model (when installing the
+ game, the timestamp of the various files may be changed, messing up the
+ whole auto-exporters system).
+ To prevent that, you can disable auto-exporters as following:
+\layout LyX-Code
+
+soya.AUTO_EXPORTERS_ENABLED = 0
+\layout Standard
+
+A common trick consists in enabling auto-exportes only for Subversion /
+ CVS sources:
+\layout LyX-Code
+
+APPDIR = os.path.dirname(sys.argv[0]) # os.path.dirname(__file__) for a Python
+ module
+\layout LyX-Code
+
+soya.AUTO_EXPORTERS_ENABLED = os.path.exists(os.path.join(APPDIR, ".svn"))
 \layout Section
 
 Where can i obtain Models?
@@ -3889,7 +3916,33 @@ loaded() called when the object is loaded from a file; you may override
 Animated models
 \layout Section
 
-Displaying animated model
+Loading animated model
+\layout Standard
+
+AnimatedModels are loaded as usual, excepted that the model is in the Cal3D
+ format, and not the Soya one.
+ Auto-exporter works as usual with Blender, and generates Cal3D model as
+ required.
+ For example to load the Cal3D model located in <data>/animated_models/balazar/
+ (corresponding to <data>/blender/balazar.blend, if it exists):
+\layout LyX-Code
+
+sorcerer_model = soya.AnimatedModel.get("balazar")
+\layout Section
+
+Displaying the model
+\layout Standard
+
+AnimatedModel can be attributed to Body or World as any other Models:
+\layout LyX-Code
+
+sorcerer = soya.Body(scene)
+\layout LyX-Code
+
+sorcerer.shape = sorcerer_shape
+\layout Section
+
+Playing animation
 \layout Section
 
 
@@ -3901,6 +3954,9 @@ Attaching objects to bones
 \layout Section
 
 Object reference
+\layout Subsection
+
+AnimatedModel
 \layout Chapter
 
 
