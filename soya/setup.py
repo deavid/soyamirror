@@ -230,7 +230,7 @@ if BUILDING:
 
 setup(
 	name         = "Soya",
-	version      = "0.12rc1",
+	version      = "0.12",
 	license      = "GPL",
 	description  = "A practical high-level object-oriented 3D engine for Python.",
 	long_description  = """A practical high-level object-oriented 3D engine for Python.

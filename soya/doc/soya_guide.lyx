@@ -185,9 +185,6 @@ What is Soya 3D ?
 \layout Section
 
 History
-\layout Subsection
-
-Old history
 \layout Standard
 
 The actual Soya was originally written by Jiba and Blam.
@@ -224,9 +221,6 @@ The engine in visual basic have never been published (I haven't got the
  The Java engine have been published and can still be found on the web;
  in particular they were used in Arkanae.
  They are no longer maintained.
-\layout Subsection
-
-The fork
 \layout Standard
 
 Then, after trying an aggressive take-over on Soya, Arc Riley has forked
@@ -3940,6 +3934,26 @@ sorcerer = soya.Body(scene)
 \layout LyX-Code
 
 sorcerer.shape = sorcerer_shape
+\layout Section
+
+Attaching meshes
+\layout Standard
+
+A Cal3D model can be composed of several meshes, that can be attached or
+ not.
+ The lists of avaiblabe meshes' names is given by the AnimatedModel.meshes
+ atributes.
+ By default, all meshes are attached, but you can detach or attach some
+ of them, as following:
+\layout LyX-Code
+
+print "Available meshes' names:", sorcerer_shape.meshes
+\layout LyX-Code
+
+sorcerer.detach("helmet")
+\layout LyX-Code
+
+sorcerer.attach("armor")
 \layout Section
 
 Playing animation
