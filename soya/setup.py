@@ -77,7 +77,7 @@ else:
 
 if sys.platform[:3] == "win":
 	#LIBS = ["m", "glew32", "SDL", "SDL_mixer", "freetype", "cal3d", "stdc++"]
-	LIBS = ["m", "glew32", "SDL", "freetype", "cal3d", "stdc++"]
+	LIBS = ["m", "glew32", "opengl32" , "glu32", "SDL" , "freetype", "cal3d", "stdc++"]
 else:
 	#LIBS = ["m", "GLEW", "GL", "GLU", "SDL", "SDL_mixer", "freetype", "cal3d", "stdc++"]
 	LIBS = ["m", "GLEW", "SDL", "freetype", "cal3d", "stdc++"]
@@ -98,7 +98,10 @@ if BUILDING:
 """)
 	if USE_OPENAL:
 		print "Sound support (with OpenAL) enabled..."
-		LIBS.append("openal")
+		if sys.platform[:3] == "win":
+                    LIBS.append("openal32")
+                else:
+                    LIBS.append("openal")
 		CONFIG_PXD_FILE.write("""include "sound/al.pxd"\n""")
 		CONFIG_PYX_FILE.write("""include "sound/sound.pyx"\n""")
 	else:
