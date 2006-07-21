@@ -19,7 +19,7 @@
 
 
 
-cdef void _init_sound(device_names, int frequency, float doppler_factor):
+cdef void _init_sound(device_names, int frequency, float reference_distance, float doppler_factor):
 	raise ImportError("Soya has not been compiled with sound support!")
 
 cdef void _update_sound_listener_position(CoordSyst ear, float proportion):
