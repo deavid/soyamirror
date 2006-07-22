@@ -2,7 +2,10 @@ import sys, os, os.path, re
 
 # Your source directory
 
-DIR = "/home/jiba/src/soya"
+DIR = ""
+if not DIR:
+    print>>sys.stderr,"Please edit this file add the path of you soya source to rename"
+    sys.exit(1)
 
 
 
@@ -12,10 +15,10 @@ EXC = "/build/"
 
 def replace_all(SRC, DST):
   def replace_dir(arg, dirname, names):
-    for name in names:
-      name = os.path.join(dirname, name)
+    for basename in names:
+      name = os.path.join(dirname, basename)
 
-      if EXC in name: continue
+      if EXC in basename: continue
 
       for ext in EXT:
         if name.endswith(ext): break
@@ -27,7 +30,7 @@ def replace_all(SRC, DST):
       os.unlink(name)
 
       s    = s   .replace(SRC, DST)
-      name = name.replace(SRC, DST)
+      name = os.path.join(basename.replace(SRC, DST))
       print name
 
       open(name, "w").write(s)
