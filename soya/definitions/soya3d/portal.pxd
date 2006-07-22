@@ -32,9 +32,9 @@ cdef class _Portal(CoordSyst):
 	cdef int _shadow(self, CoordSyst coordsyst, _Light light)
 	cdef void _atmosphere_clear_part(self)
 	cdef void _draw_fog(self, _Atmosphere atmosphere)
-	cdef void _raypick(self, RaypickData raypick_data, CoordSyst raypickable)
-	cdef int _raypick_b(self, RaypickData raypick_data, CoordSyst raypickable)
-	cdef void _collect_raypickables(self, Chunk* items, float* rsphere, float* sphere)
+	cdef void _raypick(self, RaypickData raypick_data, CoordSyst raypickable, int category)
+	cdef int _raypick_b(self, RaypickData raypick_data, CoordSyst raypickable, int category)
+	cdef void _collect_raypickables(self, Chunk* items, float* rsphere, float* sphere, int category)
 	cdef __getcstate__(self)
 	cdef void __setcstate__(self, object cstate)
 

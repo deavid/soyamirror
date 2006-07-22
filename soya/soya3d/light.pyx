@@ -218,7 +218,7 @@ cdef class _Light(CoordSyst):
 			rdata[6] = vector_length(rdata + 3) - 1.0
 			vector_normalize(rdata + 3)
 		data.option = RAYPICK_HALF_LINE
-		return root._raypick_b(data, None)
+		return root._raypick_b(data, None, 1)
 	
 	cdef float _spotlight_at(self, float position[3]):
 		cdef float v[3], w[3]

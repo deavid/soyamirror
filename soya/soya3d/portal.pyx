@@ -372,13 +372,13 @@ portal.beyond from memory (with 'portal.beyond = None')."""
 		glEnable(GL_FOG)
 		glEnable(GL_LIGHTING)
 
-	cdef void _raypick(self, RaypickData raypick_data, CoordSyst raypickable):
-		self._beyond._raypick(raypick_data, raypickable)
+	cdef void _raypick(self, RaypickData raypick_data, CoordSyst raypickable, int category):
+		self._beyond._raypick(raypick_data, raypickable, category)
 		
-	cdef int _raypick_b(self, RaypickData raypick_data, CoordSyst raypickable):
-		return self._beyond._raypick_b(raypick_data, raypickable)
+	cdef int _raypick_b(self, RaypickData raypick_data, CoordSyst raypickable, int category):
+		return self._beyond._raypick_b(raypick_data, raypickable, category)
 	
-	cdef void _collect_raypickables(self, Chunk* items, float* rsphere, float* sphere):
+	cdef void _collect_raypickables(self, Chunk* items, float* rsphere, float* sphere, int category):
 		if self._option & OBJECT_NON_SOLID: return
 
 		cdef CoordSyst child
@@ -391,7 +391,7 @@ portal.beyond from memory (with 'portal.beyond = None')."""
 		s[3] = length_by_matrix(rsphere[3], matrix)
 		
 		if vector_length(s) < s[3] + 0.5: # Else, it is too far
-			self._beyond._collect_raypickables(items, rsphere, sphere)
+			self._beyond._collect_raypickables(items, rsphere, sphere, category)
 		
 		
 	def has_passed_through(self, Position old_pos, Position new_pos):

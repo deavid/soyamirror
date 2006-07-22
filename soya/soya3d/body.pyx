@@ -71,21 +71,19 @@ cdef class _Body(CoordSyst):
 		if not self._data is None: return self._data._shadow(self, light)
 		return 0
 	
-	cdef void _raypick(self, RaypickData raypick_data, CoordSyst raypickable):
-		#if (self._model is None) or (self._option & NON_SOLID): return
-		#self._model._raypick(raypick_data, self)
-		if (self._data is None) or (self._option & NON_SOLID): return
+	cdef void _raypick(self, RaypickData raypick_data, CoordSyst raypickable, int category):
+		#if (self._data is None) or (self._option & NON_SOLID): return
+		if (self._data is None) or not (self._category_bitfield & category): return
 		self._data._raypick(raypick_data, self)
 		
-	cdef int _raypick_b(self, RaypickData raypick_data, CoordSyst raypickable):
-		#if (self._model is None) or (self._option & NON_SOLID): return 0
-		#return self._model._raypick_b(raypick_data, self)
-		if (self._data is None) or (self._option & NON_SOLID): return 0
+	cdef int _raypick_b(self, RaypickData raypick_data, CoordSyst raypickable, int category):
+		#if (self._data is None) or (self._option & NON_SOLID): return 0
+		if (self._data is None) or not (self._category_bitfield & category): return 0
 		return self._data._raypick_b(raypick_data, self)
 	
-	cdef void _collect_raypickables(self, Chunk* items, float* rsphere, float* sphere):
-		#if (self._model is None) or (self._option & NON_SOLID): return
-		if (self._data is None) or (self._option & NON_SOLID): return
+	cdef void _collect_raypickables(self, Chunk* items, float* rsphere, float* sphere, int category):
+		#if (self._data is None) or (self._option & NON_SOLID): return
+		if (self._data is None) or not (self._category_bitfield & category): return
 		
 		cdef float* matrix
 		cdef float  s[4]

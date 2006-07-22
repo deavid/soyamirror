@@ -43,17 +43,6 @@ cdef class _World(_Body):
 		
 	cdef __getcstate__(self):
 		return CoordSyst.__getcstate__(self), self._model, self._filename, self.children, self._atmosphere, self._model_builder, self._data
-	
-# 	cdef void __setcstate__(self, cstate):
-# 		if len(cstate) == 6: # Old format, without _data
-# 			cstate2, self._model, self._filename, self.children, self._atmosphere, self._model_builder = cstate
-# 		else:
-# 			cstate2, self._model, self._filename, self.children, self._atmosphere, self._model_builder, self._data = cstate
-# 		if self._data is None: self._data = self._model
-		
-# 		CoordSyst.__setcstate__(self, cstate2)
-# 		cdef CoordSyst child
-# 		for child in self.children: child._parent = self
 		
 	cdef void __setcstate__(self, cstate):
 		self._filename      = cstate[2]
@@ -118,18 +107,20 @@ cdef class _World(_Body):
 		return result
 	
 	
-	cdef void _raypick(self, RaypickData raypick_data, CoordSyst raypickable):
+	cdef void _raypick(self, RaypickData raypick_data, CoordSyst raypickable, int category):
 		cdef CoordSyst child
-		if self._option & NON_SOLID: return
+		#if self._option & NON_SOLID: return
+		if not (self._category_bitfield & category): return
 		if not self._model is None: self._model._raypick(raypick_data, self)
-		for child in self.children: child._raypick(raypick_data, self)
+		for child in self.children: child._raypick(raypick_data, self, category)
 		
-	cdef int _raypick_b(self, RaypickData raypick_data, CoordSyst raypickable):
+	cdef int _raypick_b(self, RaypickData raypick_data, CoordSyst raypickable, int category):
 		cdef CoordSyst child
-		if self._option & NON_SOLID: return 0
+		#if self._option & NON_SOLID: return 0
+		if not (self._category_bitfield & category): return 0
 		if (not self._model is None) and (self._model._raypick_b(raypick_data, self) == 1): return 1
 		for child in self.children:
-			if child._raypick_b(raypick_data, self) == 1: return 1
+			if child._raypick_b(raypick_data, self, category) == 1: return 1
 		return 0
 	
 	cdef int _contains(self, _CObj obj):
@@ -159,8 +150,8 @@ cdef class _World(_Body):
 		cdef CoordSyst child
 		for child in self.children: child._get_box(box, matrix2)
 		
-	def raypick(self, Position origin not None, _Vector direction not None, float distance = -1.0, int half_line = 1, int cull_face = 1, _Point p = None, _Vector v = None):
-		"""World.raypick(ORIGIN, DIRECTION, DISTANCE = -1.0, HALF_LINE = 1, CULL_FACE = 1, P = None, V = None) -> None or (Point, Vector)
+	def raypick(self, Position origin not None, _Vector direction not None, float distance = -1.0, int half_line = 1, int cull_face = 1, _Point p = None, _Vector v = None, int category = 1):
+		"""World.raypick(ORIGIN, DIRECTION, DISTANCE = -1.0, HALF_LINE = 1, CULL_FACE = 1, P = None, V = None, CATEGORY = 1) -> None or (Point, Vector)
 
 Performs a raypicking, i.e. send an invisible ray and returns what the ray hits.
 Raypicking is a collision detection method.
@@ -182,6 +173,8 @@ visible side. If false, both side are take into account.
 P and V are a Point and a Vector that are re-used in the return value, if given (for speed up purpose).
 By default, a new Point and a new Vector are created.
 
+CATEGORY is a 32 bit wide bitfield identifying witch categories the methode should take into account (see "solid"  attribute). Only objects witch belong to these categories will be raypicked.
+
 The return value is None if the ray hits nothing, or a (COLLISION, NORMAL) tuple.
 COLLISION is a Point located where the collision occured, and COLLISION.parent is the
 object hit.
@@ -198,7 +191,7 @@ NORMAL is the normal of the object at the impact point.
 		data.root_data[6] = distance
 		data.option       = RAYPICK_CULL_FACE * cull_face + RAYPICK_HALF_LINE * half_line
 		
-		self._raypick(data, None)
+		self._raypick(data, None, category)
 		if data.result_coordsyst is None: d = NULL
 		else:                             d = data.result_coordsyst._raypick_data(data)
 		
@@ -210,8 +203,8 @@ NORMAL is the normal of the object at the impact point.
 			coordsyst.__raypick_data = -1
 		return make_raypick_result(d, data.result, data.normal, data.result_coordsyst, p, v)
 	
-	def raypick_b(self, Position origin not None, _Vector direction not None, float distance = -1.0, int half_line = 1, int cull_face = 1):
-		"""World.raypick_b(ORIGIN, DIRECTION, DISTANCE = -1.0, HALF_LINE = 1, CULL_FACE = 1) -> bool
+	def raypick_b(self, Position origin not None, _Vector direction not None, float distance = -1.0, int half_line = 1, int cull_face = 1, int category = 1):
+		"""World.raypick_b(ORIGIN, DIRECTION, DISTANCE = -1.0, HALF_LINE = 1, CULL_FACE = 1, CATEGORY = 1) -> bool
 
 Performs a raypicking, i.e. send an invisible ray and returns true if something was hit.
 Raypicking is a collision detection method.
@@ -231,6 +224,8 @@ DIRECTION and -DIRECTION.
 
 If CULL_FACE is true (default value), non double-sided face are only raypicked on their
 visible side. If false, both side are take into account.
+
+CATEGORY is a 32 bit wide bitfield identifying witch categories the methode should take into account (see "solid"  attribute). Only objects witch belong to these categories will be raypicked.
 """
 		cdef RaypickData data
 		cdef _World      root
@@ -243,7 +238,7 @@ visible side. If false, both side are take into account.
 		data.root_data[6] = distance
 		data.option       = RAYPICK_CULL_FACE * cull_face + RAYPICK_HALF_LINE * half_line
 		
-		result = self._raypick_b(data, None)
+		result = self._raypick_b(data, None, category)
 		
 		cdef int max
 		max = data.raypicked.nb
@@ -378,8 +373,8 @@ PREDICATE must be a callable of the form PREDICATE(CoordSyst) -> bool."""
 			if predicat(item): result.append(item)
 			if isinstance(item, _World): (<_World> (item))._search_all(predicat, result)
 			
-	def RaypickContext(self, Position center not None, float radius, RaypickContext rc = None, items = None):
-		"""RaypickContext(center, radius, rc = None, items = None) -> RaypickContext
+	def RaypickContext(self, Position center not None, float radius, RaypickContext rc = None, items = None, int category = 1):
+		"""RaypickContext(center, radius, rc = None, items = None, category = 1) -> RaypickContext
 
 Creates a RaypickContext. RaypickContext allows to raypick only on a subset of the items
 that are inside the World.
@@ -389,6 +384,8 @@ CoordSyst), or computed as being the list of all items in a sphere. The sphere i
 by the CENTER and RADIUS arguments.
 
 RC is an optional RaypickContext that will be re-used if given (for speed up purpose).
+
+CATEGORY is a 32 bit wide bitfield identifying witch categories the methode should take into account (see "solid"  attribute). Only objects witch belong to these categories will be listed inside the raypick context.
 
 The returned RaypickContext has raypick and raypick_b method similar to the World's one.
 """
@@ -407,15 +404,16 @@ The returned RaypickContext has raypick and raypick_b method similar to the Worl
 		sphere[3] = radius
 
 		if items is None:
-			self._collect_raypickables(rc._items, sphere, sphere)
+			self._collect_raypickables(rc._items, sphere, sphere, category)
 		else:
 			for item in items:
 				chunk_add_ptr(rc._items, <void*> item)
 				
 		return rc
 	
-	cdef void _collect_raypickables(self, Chunk* items, float* rsphere, float* sphere):
-		if self._option & NON_SOLID: return
+	cdef void _collect_raypickables(self, Chunk* items, float* rsphere, float* sphere, int category):
+		#if self._option & NON_SOLID: return
+		if not (self._category_bitfield & category): return
 		
 		cdef CoordSyst child
 		cdef float* matrix
@@ -427,7 +425,7 @@ The returned RaypickContext has raypick and raypick_b method similar to the Worl
 		s[3] = length_by_matrix(rsphere[3], matrix)
 		if not self._model is None: self._model._collect_raypickables(items, rsphere, s, self)
 		for child in self.children:
-			child._collect_raypickables(items, rsphere, s)
+			child._collect_raypickables(items, rsphere, s, category)
 			
 			
 	def begin_round(self):

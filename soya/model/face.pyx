@@ -366,7 +366,7 @@ Returns true if the Face has at least one alpha blended Vertex."""
 			if coord[1] > box[4]: box[4] = coord[1]
 			if coord[2] > box[5]: box[5] = coord[2]
 			
-	cdef void _raypick(self, RaypickData data, CoordSyst parent):
+	cdef void _raypick(self, RaypickData data, CoordSyst parent, int category):
 		cdef float* p, r, root_r
 		cdef float  normal[3]
 		cdef int    nb_vertices, i, option
@@ -404,7 +404,7 @@ Returns true if the Face has at least one alpha blended Vertex."""
 					
 		free(p)
 		
-	cdef int _raypick_b(self, RaypickData data, CoordSyst parent):
+	cdef int _raypick_b(self, RaypickData data, CoordSyst parent, int category):
 		cdef float* p, r
 		cdef float  normal[3]
 		cdef int    nb_vertices, i, option
@@ -427,8 +427,9 @@ Returns true if the Face has at least one alpha blended Vertex."""
 		free(p)
 		return i
 	
-	cdef void _collect_raypickables(self, Chunk* items, float* rsphere, float* sphere):
-		if self._option & NON_SOLID: return
+	cdef void _collect_raypickables(self, Chunk* items, float* rsphere, float* sphere, int category):
+		#if self._option & NON_SOLID: return
+		if not (self._category_bitfield & category): return
 		
 		# XXX not really implemented -- no selection
 		chunk_add_ptr(items, <void*> self)

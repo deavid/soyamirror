@@ -74,8 +74,8 @@ cdef class RaypickContext:
 	def __dealloc__(self):
 		drop_chunk(self._items)
 		
-	def raypick(self, Position origin not None, _Vector direction not None, float distance = -1.0, int half_line = 1, int cull_face = 1, _Point p = None, _Vector v = None):
-		"""raypick(origin, direction, distance = -1.0, half_line = 1, cull_face = 1, p = None, v = None) -> None or (Point, Vector)
+	def raypick(self, Position origin not None, _Vector direction not None, float distance = -1.0, int half_line = 1, int cull_face = 1, _Point p = None, _Vector v = None, int category = 0xffffffff):
+		"""raypick(origin, direction, distance = -1.0, half_line = 1, cull_face = 1, p = None, v = None, int category = 1) -> None or (Point, Vector)
 
 See World.raypick"""
 		cdef Chunk*      items
@@ -99,8 +99,10 @@ See World.raypick"""
 		items.nb = 0
 		while items.nb < max:
 			obj = <_CObj> chunk_get_ptr(items)
-			if isinstance(obj, _TreeModel): (<_TreeModel> obj)._raypick_from_context(data, items)
-			else:                           (<CoordSyst>  obj)._raypick(data, (<CoordSyst> obj)._parent)
+			if isinstance(obj, _TreeModel):
+				(<_TreeModel> obj)._raypick_from_context(data, items)
+			else:
+				(<CoordSyst> obj)._raypick(data, (<CoordSyst> obj)._parent, category)
 			
 		if data.result_coordsyst is None: d = NULL
 		else:                             d = data.result_coordsyst._raypick_data(data)
@@ -113,8 +115,8 @@ See World.raypick"""
 			
 		return make_raypick_result(d, data.result, data.normal, data.result_coordsyst, p, v)
 		
-	def raypick_b(self, Position origin not None, _Vector direction not None, float distance = -1.0, int half_line = 1, int cull_face = 1, _Point p = None, _Vector v = None):
-		"""raypick_b(origin, direction, distance = -1.0, half_line = 1, cull_face = 1, p = None, v = None) -> bool
+	def raypick_b(self, Position origin not None, _Vector direction not None, float distance = -1.0, int half_line = 1, int cull_face = 1, _Point p = None, _Vector v = None, int category = 0xffffffff):
+		"""raypick_b(origin, direction, distance = -1.0, half_line = 1, cull_face = 1, p = None, v = None, category = 1) -> bool
 
 See World.raypick_b"""
 		cdef Chunk*      items
@@ -139,7 +141,7 @@ See World.raypick_b"""
 			if isinstance(obj, _TreeModel):
 				if (<_TreeModel> obj)._raypick_from_context_b(data, items): result = 1; break
 			else:
-				if (<CoordSyst>  obj)._raypick_b(data, (<CoordSyst> obj)._parent) : result = 1; break
+				if (<CoordSyst>  obj)._raypick_b(data, (<CoordSyst> obj)._parent, category): result = 1; break
 		else: result = 0
 		
 		max = data.raypicked.nb
@@ -150,8 +152,19 @@ See World.raypick_b"""
 			
 		return result
 	
-
+	def get_items(self):
+		"""Return a list of all items inside the raypick context"""
+		cdef Chunk* items
+		cdef _CObj obj
+		cdef int max
 		
-
-	
-
+		items = self._items
+		if items.nb == 0:
+			return None
+		result = list()
+		max = items.nb
+		items.nb = 0
+		while items.nb < max:
+			obj = <_CObj> chunk_get_ptr(items)
+			result.append(obj)
+		return result

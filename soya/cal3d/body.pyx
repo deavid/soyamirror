@@ -80,7 +80,6 @@ mesh names."""
 		CoordSyst.__init__(self, parent)
 		self._attached_meshes     = []
 		self._attached_coordsysts = []
-		
 		if model:
 			self.set_model(model, attached_meshes)
 			
@@ -355,16 +354,19 @@ It also resets the cycle animation time : i.e. cycles will restart from their be
 		if not self._model is None: return self._model._shadow(self, light)
 		return 0
 	
-	cdef void _raypick(self, RaypickData raypick_data, CoordSyst raypickable):
-		if (self._model is None) or (self._option & NON_SOLID): return
+	cdef void _raypick(self, RaypickData raypick_data, CoordSyst raypickable, int category):
+		#if (self._model is None) or (self._option & NON_SOLID): return
+		if (self._model is None) or not (self._category_bitfield & category): return
 		self._model._raypick(raypick_data, self)
 		
-	cdef int _raypick_b(self, RaypickData raypick_data, CoordSyst raypickable):
-		if (self._model is None) or (self._option & NON_SOLID): return 0
+	cdef int _raypick_b(self, RaypickData raypick_data, CoordSyst raypickable, int category):
+		#if (self._model is None) or (self._option & NON_SOLID): return 0
+		if (self._model is None) or not (self._category_bitfield & category): return 0
 		return self._model._raypick_b(raypick_data, self)
 	
-	cdef void _collect_raypickables(self, Chunk* items, float* rsphere, float* sphere):
-		if self._option & NON_SOLID: return
+	cdef void _collect_raypickables(self, Chunk* items, float* rsphere, float* sphere, int category):
+		#if self._option & NON_SOLID: return
+		if not (self._category_bitfield & category): return
 		
 		cdef float* matrix
 		cdef float  s[4]
@@ -373,4 +375,4 @@ It also resets the cycle animation time : i.e. cycles will restart from their be
 		matrix = self._inverted_root_matrix()
 		point_by_matrix_copy(s, rsphere, matrix)
 		s[3] = length_by_matrix(rsphere[3], matrix)
-		if not self._model is None: self._model._collect_raypickables(items, rsphere, s, self)
+		if not self._model is None:  self._model._collect_raypickables(items, rsphere, s, self)

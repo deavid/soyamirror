@@ -260,3 +260,12 @@
     * Bugfix on shadows on AnimatedModel: soya was segfaulting if the
       model was culled on the first rendering
 
+* August 2006 : Soya3D 0.13
+  * CoordSyst.solid is no longer boolean, but a 32-bit-length bitfield
+    (thanks Souvarine)
+  * Add RaypickContext.get_item() (thanks Souvarine)
+  * Better font loading under MacOS X (thanks Greg Ewing)
+  * Bugfixes:
+    * Fixes crash on keycodes > 255, and allows Delete as well as
+      Backspace for erasing characters, in pudding (thanks Greg Ewing)
+

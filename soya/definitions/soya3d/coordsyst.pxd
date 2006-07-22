@@ -10,15 +10,16 @@ cdef class CoordSyst(Position):
 	cdef int __raypick_data
 	cdef int _option
 	cdef int _auto_static_count
+	cdef int _category_bitfield
 
 	cdef __getcstate__(self)
 	cdef void __setcstate__(self, cstate)
 	cdef void _batch(self, CoordSyst coord_syst)
 	cdef void _render(self, CoordSyst coord_syst)
 	cdef int _shadow(self, CoordSyst coord_syst, _Light light)
-	cdef void _raypick(self, RaypickData raypick_data, CoordSyst raypickable)
-	cdef int _raypick_b(self, RaypickData raypick_data, CoordSyst raypickable)
-	cdef void _collect_raypickables(self, Chunk* items, float* rsphere, float* sphere)
+	cdef void _raypick(self, RaypickData raypick_data, CoordSyst raypickable, int category)
+	cdef int _raypick_b(self, RaypickData raypick_data, CoordSyst raypickable, int category)
+	cdef void _collect_raypickables(self, Chunk* items, float* rsphere, float* sphere, int category)
 	cdef int _contains(self, _CObj obj)
 	cdef float* _raypick_data(self, RaypickData data)
 	cdef float _distance_out(self, float distance)

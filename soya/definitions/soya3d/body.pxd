@@ -27,9 +27,9 @@ cdef class _Body(CoordSyst):
 	cdef void __setcstate__(self, object cstate)
 	cdef void _batch(self, CoordSyst coordsyst)
 	cdef int _shadow(self, CoordSyst coordsyst, _Light light)
-	cdef void _raypick(self, RaypickData raypick_data, CoordSyst raypickable)
-	cdef int _raypick_b(self, RaypickData raypick_data, CoordSyst raypickable)
-	cdef void _collect_raypickables(self, Chunk* items, float* rsphere, float* sphere)
+	cdef void _raypick(self, RaypickData raypick_data, CoordSyst raypickable, int category)
+	cdef int _raypick_b(self, RaypickData raypick_data, CoordSyst raypickable, int category)
+	cdef void _collect_raypickables(self, Chunk* items, float* rsphere, float* sphere, int category)
 	cdef int _contains(self, _CObj obj)
 	cdef void _get_box(self, float* box, float* matrix)
 

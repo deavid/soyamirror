@@ -40,7 +40,7 @@ cdef class _Face(CoordSyst):
 	cdef void _batch(self, CoordSyst coord_syst)
 	cdef void _render(self, CoordSyst coord_syst)
 	cdef void _get_box(self, float* box, float* matrix)
-	cdef void _raypick(self, RaypickData data, CoordSyst parent)
-	cdef int _raypick_b(self, RaypickData data, CoordSyst parent)
-	cdef void _collect_raypickables(self, Chunk* items, float* rsphere, float* sphere)
+	cdef void _raypick(self, RaypickData data, CoordSyst parent, int category)
+	cdef int _raypick_b(self, RaypickData data, CoordSyst parent, int category)
+	cdef void _collect_raypickables(self, Chunk* items, float* rsphere, float* sphere, int category)
 

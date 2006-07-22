@@ -1297,8 +1297,9 @@ You MUST call this method after the terrain have been modified manually
 				p = p + 1
 			p0 = p0 + self._nb_vertex_width
 
-	cdef void _raypick(self, RaypickData raypick_data, CoordSyst raypickable):
-		if self._option & NON_SOLID: return
+	cdef void _raypick(self, RaypickData raypick_data, CoordSyst raypickable, int category):
+		#if self._option & NON_SOLID: return
+		if not (self._category_bitfield & category): return
 		
 		cdef int        i, x, z
 		cdef TerrainPatch* patch
@@ -1426,8 +1427,9 @@ You MUST call this method after the terrain have been modified manually
 			p0 = p0 + self._nb_vertex_width
 		return 0
 
-	cdef int _raypick_b(self, RaypickData raypick_data, CoordSyst raypickable):
-		if self._option & NON_SOLID: return 0
+	cdef int _raypick_b(self, RaypickData raypick_data, CoordSyst raypickable, int category):
+		#if self._option & NON_SOLID: return 0
+		if not (self._category_bitfield & category): return 0
 		
 		cdef int        i, x, z
 		cdef TerrainPatch* patch
@@ -1498,8 +1500,9 @@ You MUST call this method after the terrain have been modified manually
 					return self._full_raypick_rect_b(<int> x1, <int> z1, <int> x2, <int> z2, data, raypick_data.option)
 		return 0
 	
-	cdef void _collect_raypickables(self, Chunk* items, float* rsphere, float* sphere):
-		if self._option & NON_SOLID: return
+	cdef void _collect_raypickables(self, Chunk* items, float* rsphere, float* sphere, int category):
+		#if self._option & NON_SOLID: return
+		if not (self._category_bitfield & category): return
 		
 		# XXX not implemented -- no selection
 		chunk_add_ptr(items, <void*> self)
@@ -1596,6 +1599,7 @@ You MUST call this method after the terrain have been modified manually
 		
 		chunk = get_chunk()
 		chunk_add_int_endian_safe   (chunk, self._option & ~TERRAIN_INITED)
+		chunk_add_int_endian_safe   (chunk, self._category_bitfield)
 		chunk_add_floats_endian_safe(chunk, self._matrix, 19)
 		chunk_add_int_endian_safe   (chunk, self._nb_vertex_width)
 		chunk_add_int_endian_safe   (chunk, self._nb_vertex_depth)
@@ -1659,7 +1663,12 @@ You MUST call this method after the terrain have been modified manually
 				v.pack = (<_Material> (self._materials[temp]))._pack(FACE_TRIANGLE)
 			self._normals = <float*> malloc((self._nb_vertex_width - 1) * (self._nb_vertex_depth - 1) * 6 * sizeof(float))
 		else: self._vertices = self._normals = NULL
-		
+
+		if len(cstate[0]) > chunk.nb:
+			chunk_get_int_endian_safe(chunk, &self._category_bitfield)
+		else:
+			self._category_bitfield = 1 # For backward compatibility
+			
 		drop_chunk(chunk)
 		self._compute_coords()
 		

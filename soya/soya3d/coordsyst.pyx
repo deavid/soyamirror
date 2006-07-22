@@ -92,6 +92,7 @@ Creates a new CoordSyst in the World PARENT."""
 		self._matrix[0] = self._matrix[5] = self._matrix[10] = self._matrix[15] = 1.0
 		self._matrix[16] = self._matrix[17] = self._matrix[18] = 1.0
 		if parent: parent.add(self)
+		self._category_bitfield = 1
 		
 	cdef __getcstate__(self):
 		#return struct.pack("<ifffffffffffffffffff", self._option, self._matrix[0], self._matrix[1], self._matrix[2], self._matrix[3], self._matrix[4], self._matrix[5], self._matrix[6], self._matrix[7], self._matrix[8], self._matrix[9], self._matrix[10], self._matrix[11], self._matrix[12], self._matrix[13], self._matrix[14], self._matrix[15], self._matrix[16], self._matrix[17], self._matrix[18])
@@ -99,6 +100,7 @@ Creates a new CoordSyst in the World PARENT."""
 		chunk = get_chunk()
 		chunk_add_int_endian_safe   (chunk, self._option)
 		chunk_add_floats_endian_safe(chunk, self._matrix, 19)
+		chunk_add_int_endian_safe   (chunk, self._category_bitfield)
 		return drop_chunk_to_string(chunk)
 	
 	cdef void __setcstate__(self, cstate):
@@ -107,8 +109,11 @@ Creates a new CoordSyst in the World PARENT."""
 		
 		cdef Chunk* chunk
 		chunk = string_to_chunk(cstate)
-		chunk_get_int_endian_safe(chunk, &self._option)
-		chunk_get_floats_endian_safe(chunk, self._matrix, 19)
+		chunk_get_int_endian_safe   (chunk, &self._option)
+		chunk_get_floats_endian_safe(chunk,  self._matrix, 19)
+		print len(cstate)
+		if len(cstate) >= 84: chunk_get_int_endian_safe(chunk, &self._category_bitfield)
+		else:                 self._category_bitfield = 1 # For backward compatibility
 		drop_chunk(chunk)
 		
 	cdef void _into(self, CoordSyst coordsyst, float* result):
@@ -131,13 +136,13 @@ Creates a new CoordSyst in the World PARENT."""
 	cdef int _shadow(self, CoordSyst coord_syst, _Light light):
 		pass
 	
-	cdef void _raypick(self, RaypickData raypick_data, CoordSyst raypickable):
+	cdef void _raypick(self, RaypickData raypick_data, CoordSyst raypickable, int category):
 		pass
 	
-	cdef int _raypick_b(self, RaypickData raypick_data, CoordSyst raypickable):
+	cdef int _raypick_b(self, RaypickData raypick_data, CoordSyst raypickable, int category):
 		return 0
 	
-	cdef void _collect_raypickables(self, Chunk* items, float* rsphere, float* sphere):
+	cdef void _collect_raypickables(self, Chunk* items, float* rsphere, float* sphere, int category):
 		pass
 	
 	cdef int _contains(self, _CObj obj):
@@ -278,14 +283,17 @@ PROPORTION is the proportion of the current round's time that has passed (1.0 fo
 		def __set__(self, int x):
 			if x: self._option = self._option & ~HIDDEN
 			else: self._option = self._option |  HIDDEN
-			
+	
 	property solid:
 		def __get__(self):
-			return not(self._option & NON_SOLID)
-		def __set__(self, int x):
-			if x: self._option = self._option & ~NON_SOLID
-			else: self._option = self._option |  NON_SOLID
-			
+			return self._category_bitfield
+		def __set__(self, x):
+			if isinstance(x, int):
+				self._category_bitfield = x
+			else:
+				if x: self._category_bitfield = 1
+				else: self._category_bitfield = 0
+	
 	property static:
 		def __get__(self):
 			return self._option & COORDSYS_STATIC
