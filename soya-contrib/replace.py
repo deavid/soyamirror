@@ -30,7 +30,7 @@ def replace_all(SRC, DST):
       os.unlink(name)
 
       s    = s   .replace(SRC, DST)
-      name = os.path.join(basename.replace(SRC, DST))
+      name = os.path.join(dirname,basename.replace(SRC, DST))
       print name
 
       open(name, "w").write(s)
