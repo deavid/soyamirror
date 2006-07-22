@@ -104,31 +104,32 @@ def initsysfonts_win32():
 
 
 def initsysfonts_darwin():
-	 """ read of the fonts on osx """
-
-	 paths = ['/Library/Fonts',
-				'~/Library/Fonts',
-				'/Local/Library/Fonts',
-				'/Network/Library/Fonts']
-	 fonts = {}
-	 for p in paths:
-		 d = os.path.expanduser(p)
-		 if os.path.isdir(d):
-			 os.path.walk(d, _fontwalk_darwin, fonts)
-	 return fonts
+	""" read of the fonts on osx """
+	paths = ['/System/Library/Fonts',
+					 '/Library/Fonts',
+					 '~/Library/Fonts',
+					 '/Local/Library/Fonts',
+					 '/Network/Library/Fonts']
+	fonts = {}
+	for p in paths:
+		d = os.path.expanduser(p)
+		if os.path.isdir(d):
+			os.path.walk(d, _fontwalk_darwin, fonts)
+	fonts["sans"     ] = fonts["Helvetica"   ]
+	fonts["serif"    ] = fonts["Times"       ]
+	fonts["fixed"    ] = fonts["Courier"     ]
+	fonts["wingdings"] = fonts["ZapfDingbats"]
+	return fonts
 
 def _fontwalk_darwin(fonts, path, files):
-	 """ walk the path directory trees """
-	 for font in files:
-		 if font[-4:].lower() != '.ttf':
-			 continue
-		 name = font[:-4]
-		 font = os.path.join( path, font )
-		 bold = 0
-		 italic = 0
-		 _addfont(name, bold, italic, font, fonts)
-
-
+	""" walk the path directory trees """
+	for font in files:
+		name, ext = os.path.splitext(font)
+		if ext in (".ttf", ".dfont"):
+			font   = os.path.join(path, font)
+			bold   = 0
+			italic = 0
+			_addfont(name, bold, italic, font, fonts)
 
 
 def read_unix_fontscache(dir, file, fonts):
