@@ -1599,7 +1599,6 @@ You MUST call this method after the terrain have been modified manually
 		
 		chunk = get_chunk()
 		chunk_add_int_endian_safe   (chunk, self._option & ~TERRAIN_INITED)
-		chunk_add_int_endian_safe   (chunk, self._category_bitfield)
 		chunk_add_floats_endian_safe(chunk, self._matrix, 19)
 		chunk_add_int_endian_safe   (chunk, self._nb_vertex_width)
 		chunk_add_int_endian_safe   (chunk, self._nb_vertex_depth)
@@ -1620,6 +1619,7 @@ You MUST call this method after the terrain have been modified manually
 			chunk_add_float_endian_safe(chunk, v.coord[1])
 			chunk_add_int_endian_safe  (chunk, material_id2index[<_Material> (v.pack.material_id)])
 			
+		chunk_add_int_endian_safe   (chunk, self._category_bitfield)
 		return drop_chunk_to_string(chunk), self._materials
 	
 	cdef void __setcstate__(self, cstate):
