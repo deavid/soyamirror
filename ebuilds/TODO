@@ -1,14 +1,4 @@
-# *:
-  - Fix some dependency (I think we can remove some of balazar
-    and balazar-brother witch come from soya)
-
 # Balazar:
   - Installation work, the game started, but apparently it bug,
     installation problem or balazar problem ?
-
-# Soya:
-  - Put back the tutorial
-  - Check for the dependency against ode
-
-I also have a problem with soya, I don't understand why soya doesn't use
-the python bindings for cal3D or for ode, but this is another story
+  - same for BB
