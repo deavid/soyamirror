@@ -83,8 +83,7 @@ class TestSides(unittest.TestCase):
     
   def test_client_or_server__single_side(self):
     set_mode("single")
-    self.local_player_mobile.client_or_server()
-    assert self.tasks_done == []
+    assert not hasattr(self.local_player_mobile, "client_or_server")
     
     
   def test_both_client_server__server_side(self):
@@ -96,7 +95,7 @@ class TestSides(unittest.TestCase):
     set_mode("client")
     self.local_player_mobile.both_client_server()
     assert self.tasks_done == ["server", "client"]
-
+    
     
   def test_both_client_server_and_client__server_side(self):
     set_mode("server")
@@ -105,7 +104,6 @@ class TestSides(unittest.TestCase):
     
   def test_both_client_server_and_client__client_side(self):
     set_mode("client")
-    print self.local_player_mobile.both_client_server_and_client.im_func
     self.local_player_mobile.both_client_server_and_client()
     assert self.tasks_done == ["server", "client", "client"]
     
