@@ -16,10 +16,11 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 import sys, os, os.path
-import soya, tofu_udp, cerealizer, soya.cerealizer4soya, soya.sdlconst as sdlconst
+import soya, tofu_udp, cerealizer, soya.cerealizer4soya, soya.sdlconst as sdlconst, soya.widget
 
 HERE = os.path.dirname(sys.argv[0])
 soya.path.append(os.path.join(HERE, "data"))
+soya.AUTO_EXPORTERS_ENABLED = 0
 
 mode = sys.argv[1][2:]
 tofu_udp.set_side(mode)
@@ -191,7 +192,10 @@ class Mobile(tofu_udp.InterpolatedAnimatedMobile):
     if not getattr(soya.MAIN_LOOP, "camera", None):
       soya.MAIN_LOOP.camera = soya.TravelingCamera(soya.MAIN_LOOP.scenes[0])
       soya.MAIN_LOOP.camera.back = 70.0
-      soya.set_root_widget(soya.MAIN_LOOP.camera)
+      group = soya.widget.Group()
+      group.add(soya.MAIN_LOOP.camera)
+      soya.widget.FPSLabel(group)
+      soya.set_root_widget(group)
       
     traveling = soya.ThirdPersonTraveling(self)
     traveling.distance = 5.0

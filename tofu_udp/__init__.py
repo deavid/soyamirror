@@ -58,14 +58,33 @@ class PacketSocket(object):
     self.current_packet_size = -1
     self.closed              = 0
     
+    self.current_writing = ""
+    self.writen          = 0
+    
   def fileno(self): return self.sock.fileno()
   
   def write(self, s):
-    self.sock.sendall(struct.pack("!I", len(s)) + s)
+    self.current_writing += struct.pack("!I", len(s)) + s
+    try:
+      nb = self.sock.send(self.current_writing)
+    except: pass
+    else:
+      self.current_writing = self.current_writing[nb:]
+    if self.current_writing: soya.MAIN_LOOP.socks_writing.append(self)
     
+  def _write(self):
+    try:
+      nb = self.sock.send(self.current_writing)
+    except: pass
+    else:
+      self.current_writing = self.current_writing[nb:]
+      if not self.current_writing: soya.MAIN_LOOP.socks_writing.remove(self)
+      
   def read(self):
     if self.current_packet_size == -1:
-      data = self.sock.recv(4, socket.MSG_PEEK)
+      try:
+        data = self.sock.recv(4, socket.MSG_PEEK)
+      except: return
       if len(data) < 4:
         if len(data) == 0:
           print "* Tofu * Socket from %s:%s seems closed." % self.sock.getpeername()
@@ -75,7 +94,9 @@ class PacketSocket(object):
       self.current_packet_size = struct.unpack("!I", data)[0]
       
     while self.current_packet_size > len(self.current_packet):
-      data = self.sock.recv(min(8192, self.current_packet_size - len(self.current_packet)))
+      try:
+        data = self.sock.recv(min(8192, self.current_packet_size - len(self.current_packet)))
+      except: return
       if not data: return
       self.current_packet += data
       
@@ -116,6 +137,7 @@ class MainLoop(soya.MainLoop, Multisided):
     self.udp.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
     self.udp.bind((HOST, PORT + 1))
     self.socks = [self.tcp, self.udp]
+    self.socks_writing = []
     
   @side("server")
   def main_loop(self):
@@ -130,10 +152,9 @@ class MainLoop(soya.MainLoop, Multisided):
   @side("server")
   def poll(self):
     while 1:
-      socks, dropit, dropit = select.select(self.socks, [], [], 0.0)
-      if not socks: break
+      readable_socks, writeable_socks, dropit = select.select(self.socks, self.socks_writing, [], 0.0)
       
-      for sock in socks:
+      for sock in readable_socks:
         if   sock is self.udp:
           data, address = self.udp.recvfrom(65000)
           if not data: continue
@@ -199,6 +220,11 @@ class MainLoop(soya.MainLoop, Multisided):
             sock.write("""%s%s: %s""" % (CODE_ERROR, sys.exc_info()[0], sys.exc_info()[1]))
             sock.close()
             
+      for sock in writeable_socks:
+        sock._write()
+        
+      if not readable_socks: break
+      
   @side("server")
   def begin_round(self):
     self.poll()
@@ -217,7 +243,6 @@ class MainLoop(soya.MainLoop, Multisided):
     self.socks = [self.tcp, self.udp]
     
     self.udp.sendto(CODE_NOOP, self.udp_server_address)
-    
     self.tcp.write("""%s%s\n%s\n%s%s\n%s%s""" % (
       CODE_LOGIN_PLAYER,
       self.udp.getsockname()[1],
