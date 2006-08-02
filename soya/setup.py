@@ -39,7 +39,7 @@ INCDIR = [
 	"/usr/include/cal3d",
 	"/usr/local/include/cal3d",
 	"/sw/include", # For Mac OS X "fink"
-    "/opt/local/include", # For Mac OS X "darwin port"
+	"/opt/local/include", # For Mac OS X "darwin port"
 	]
 LIBDIR = [
 	"ode-0.5/lib",

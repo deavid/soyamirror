@@ -94,4 +94,15 @@ soya.root_widget.add(widget.FPSLabel())
 
 soya.Light(scene).set_xyz(5.0, 5.0, 2.0)
 
+
+import time
+main_loop = soya.MainLoop(scene)
+for i in range(3):
+	for j in range(10):
+		time.sleep(0.1)
+		main_loop.update()
+	soya.render()
+	print "."
+	soya.screenshot().resize((320, 240)).save(os.path.join(os.path.dirname(sys.argv[0]), "results", os.path.basename(sys.argv[0])[:-3] + "_%s.jpeg" % i))
+
 soya.MainLoop(scene).main_loop()

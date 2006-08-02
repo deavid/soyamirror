@@ -651,7 +651,7 @@ class ChoiceInput:
 
 class ChoiceList(Widget):
 
-	def __init__(self, master = None, choices = [], font = None, color = (1.0, 0.5, 0.5, 1.0), highlight = (1.0, 1.0, 0.0, 1.0), cancel = None,align=1):
+	def __init__(self, master = None, choices = [], font = None, color = (1.0, 0.5, 0.5, 1.0), highlight = (1.0, 1.0, 0.0, 1.0), cancel = None, align=1):
 		self.x_percent = 0.0
 		self.y_percent = 0.0
 		self.w_percent = 1.0
@@ -705,7 +705,7 @@ class ChoiceList(Widget):
 		else: self.choices[self.selected].key_down(key_id, mods)
 		
 	def mouse_move(self, x, y):
-		if (x >= self.left and x <= self.left + self.width):
+		if (x >= self.left) and (x <= self.left + self.width):
 			i = 0
 			nb = len(self.choices)
 			h1 = int (self.height / nb)
@@ -717,6 +717,8 @@ class ChoiceList(Widget):
 					break
 				t = t + h1
 				i = i + 1
+#			else: self.selected = -1
+#		else: self.selected = -1
 				
 	def render(self):
 		if self.visible:

@@ -111,7 +111,6 @@ Creates a new CoordSyst in the World PARENT."""
 		chunk = string_to_chunk(cstate)
 		chunk_get_int_endian_safe   (chunk, &self._option)
 		chunk_get_floats_endian_safe(chunk,  self._matrix, 19)
-		print len(cstate)
 		if len(cstate) >= 84: chunk_get_int_endian_safe(chunk, &self._category_bitfield)
 		else:                 self._category_bitfield = 1 # For backward compatibility
 		drop_chunk(chunk)
@@ -831,16 +830,9 @@ states(0.0 => STATE1, 1.0 => STATE2)."""
 		state2._check_state_validity()
 		factor1 = 1.0 - factor
 		
-		#print "q1", state1._quaternion[0], state1._quaternion[1], state1._quaternion[2], state1._quaternion[3]
-		#print "q2", state2._quaternion[0], state2._quaternion[1], state2._quaternion[2], state2._quaternion[3]
-		
 		quaternion_slerp(q, state1._quaternion, state2._quaternion, factor, factor1)
 		
-		#print "q ", q[0], q[1], q[2], q[3]
-		
 		matrix_from_quaternion(self._matrix, q)
-		
-		#print "m ", self._matrix[0], self._matrix[1], self._matrix[2], self._matrix[3], self._matrix[4], self._matrix[5], self._matrix[6], self._matrix[7], self._matrix[8], self._matrix[9], self._matrix[10], self._matrix[11], self._matrix[12], self._matrix[13], self._matrix[14], self._matrix[15]
 		
 		self._matrix[12] = factor1 * state1._matrix[12] + factor * state2._matrix[12]
 		self._matrix[13] = factor1 * state1._matrix[13] + factor * state2._matrix[13]
@@ -850,6 +842,42 @@ states(0.0 => STATE1, 1.0 => STATE2)."""
 		self._matrix[18] = factor1 * state1._matrix[18] + factor * state2._matrix[18]
 		if (self._matrix[16] != 1.0) or (self._matrix[17] != 1.0) or (self._matrix[18] != 1.0):
 			matrix_scale(self._matrix, self._matrix[16], self._matrix[17], self._matrix[18])
+		self._invalidate()
+		
+# 	def interpolate_add(self, CoordSystState state1, CoordSystState state2):
+# 		"""CoordSyst.interpolate_add(state1, state2)
+
+# """
+# 		cdef float q [4]
+# 		cdef float m [19]
+# 		cdef float m2[19]
+# 		cdef float factor1
+# 		state1._check_state_validity()
+# 		state2._check_state_validity()
+# 		factor1 = 1.0 - factor
+		
+# 		#quaternion_slerp(q, state1._quaternion, state2._quaternion, factor, factor1)
+# 		#matrix_from_quaternion(m, q)
+# 		#matrix_copy(m2, self._matrix)
+# 		#multiply_matrix(self._matrix, m, m2)
+		
+# 		self._matrix[12] = factor1 * state1._matrix[12] + factor * state2._matrix[12]
+# 		self._matrix[13] = factor1 * state1._matrix[13] + factor * state2._matrix[13]
+# 		self._matrix[14] = factor1 * state1._matrix[14] + factor * state2._matrix[14]
+# 		self._matrix[16] = factor1 * state1._matrix[16] + factor * state2._matrix[16]
+# 		self._matrix[17] = factor1 * state1._matrix[17] + factor * state2._matrix[17]
+# 		self._matrix[18] = factor1 * state1._matrix[18] + factor * state2._matrix[18]
+# 		if (self._matrix[16] != 1.0) or (self._matrix[17] != 1.0) or (self._matrix[18] != 1.0):
+# 			matrix_scale(self._matrix, self._matrix[16], self._matrix[17], self._matrix[18])
+# 		self._invalidate()
+		
+	def add_speed(self, CoordSystSpeed speed):
+		"""CoordSyst.add_speed(speed)
+
+"""
+		cdef float m2[19]
+		matrix_copy(m2, self._matrix)
+		multiply_matrix(self._matrix, m2, speed._matrix)
 		self._invalidate()
 		
 		
@@ -892,6 +920,33 @@ Creates a new CoordSystState, with the same position, rotation and scaling than 
 			self._option = self._option | COORDSYST_STATE_VALID
 			self._quaternion[0], self._quaternion[1], self._quaternion[2], self._quaternion[3] = q
 			
+
+cdef class CoordSystSpeed(CoordSyst):
+	"""CoordSystSpeed
+
+A Coordinate System "speed" / derivation, taking into account position, rotation and scaling.
+
+CoordSystSpeed extend CoordSyst, and thus have similar method (e.g. set_xyz, rotate_*,
+scale, ...)"""
+	
+	def __init__(self, CoordSyst coord_syst):
+		"""CoordSystSpeed(coord_syst) -> CoordSystSpeed
+
+Creates a new CoordSystSpeed, for the given COORD_SYST."""
+		self._matrix[0] = self._matrix[5] = self._matrix[10] = self._matrix[15] = 1.0
+		self._matrix[16] = self._matrix[17] = self._matrix[18] = 1.0
+		if not coord_syst is None:
+			self.added_into(coord_syst.parent) # Hack !
+
+	def reset_orientation_scaling(self):
+		self._matrix[1] = self._matrix[2] = self._matrix[3] = self._matrix[4] = 0.0
+		self._matrix[6] = self._matrix[7] = self._matrix[8] = self._matrix[9] = 0.0
+		self._matrix[11] = 0.0
+		self._matrix[0] = self._matrix[5] = self._matrix[10] = self._matrix[15] = 1.0
+		self._matrix[16] = self._matrix[17] = self._matrix[18] = 1.0
+		self._invalidate()
+		
+		
 
 cdef class PythonCoordSyst(CoordSyst):
 	"""A CoordSyst whose rendering part is implemented in Python.

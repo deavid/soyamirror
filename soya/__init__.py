@@ -185,10 +185,9 @@ If SOURCE_DIRNAME is None, the exported object is up-to-date.
 If SOURCE_DIRNAME is one of SOURCE_DIRNAMES, the source object of this directory have been
 modified more recently that the exported one, and SOURCE_FULL_FILENAME is the complete
 filename of the source that needs to be re-exported."""
-		if not os.path.exists(os.path.join(path[0], klass.DIRNAME)): # Backward compatibility
+		if (not os.path.exists(os.path.join(path[0], klass.DIRNAME))) and os.path.exists(os.path.join(path[0], "shapes")): # Backward compatibility
 			if   klass.DIRNAME == "models"         : klass.DIRNAME = "shapes"
 			elif klass.DIRNAME == "animated_models": klass.DIRNAME = "shapes"
-			#elif klass.DIRNAME == "worlds"         : klass.DIRNAME = "groups"
 			
 		filename = filename.replace("/", os.sep)
 		for p in path:
@@ -232,15 +231,16 @@ Raise ValueError if the file is not found in soya.path."""
 		for p in path:
 			file = os.path.join(p, klass.DIRNAME, filename + ".data")
 			if os.path.exists(file):
-				obj = klass._alls[filename] = loads(open(file, "rb").read())
+				obj = loads(open(file, "rb").read())
 				obj.loaded()
 				return obj
 		raise ValueError("No %s named %s" % (klass.__name__, filename))
 	load = classmethod(load)
 	_reffed = get
 	
-	def loaded(self): pass
-	
+	def loaded(self):
+		if self.filename: self._alls[self.filename] = self
+		
 	def save(self, filename = None):
 		"""SavedInAPath.save(filename = None)
 
@@ -248,7 +248,7 @@ Saves this object. If no FILENAME is given, the object is saved in the path,
 using its filename attribute. If FILENAME is given, it is saved at this
 location."""
 		if ".." in self.filename: raise ValueError("Cannot have .. in filename (security reason)!", filename)
-		if not os.path.exists(os.path.join(path[0], self.DIRNAME)): # Backward compatibility
+		if (not os.path.exists(os.path.join(path[0], self.DIRNAME))) and os.path.exists(os.path.join(path[0], "shapes")): # Backward compatibility
 			if   self.DIRNAME == "models"         : self.__class__.DIRNAME = "shapes"
 			elif self.DIRNAME == "animated_models": self.__class__.DIRNAME = "shapes"
 			#elif self.DIRNAME == "worlds"         : self.__class__.DIRNAME = "groups"
@@ -542,8 +542,10 @@ Attributes are (see also Body, CoordSyst and SavedInAPath for inherited attribut
 	_alls = weakref.WeakValueDictionary()
 	
 	def loaded(self):
+		SavedInAPath.loaded(self)
 		for i in self:
 			if hasattr(i, "loaded"): i.loaded()
+				
 	def load(klass, filename):
 		global path
 		
@@ -1011,16 +1013,21 @@ inited = 0
 
 # Backward compatibility
 
-Idler            = MainLoop
-Volume           = Body
-Cal3dVolume      = Body
-Shape            = Model
-SimpleShape      = SimpleModel
-SolidShape       = SolidModel
-CellShadingShape = CellShadingModel
-TreeShape        = TreeModel
-Cal3dShape       = AnimatedModel
-Land             = Terrain
+Idler                = MainLoop
+Volume               = Body
+Cal3dVolume          = Body
+Shape                = Model
+SimpleShape          = SimpleModel
+SolidShape           = SolidModel
+CellShadingShape     = CellShadingModel
+TreeShape            = TreeModel
+Cal3dShape           = AnimatedModel
+Land                 = Terrain
+
+_soya.SimpleShapifier      = SimpleModelBuilder
+_soya.CellShadingShapifier = CellShadingModelBuilder
+_soya.SolidShapifier       = SolidModelBuilder
+_soya.TreeShapifier        = TreeModelBuilder
 
 Body.set_shape = Body.set_model
 Body.shape     = Body.model

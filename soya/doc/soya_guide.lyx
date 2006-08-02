@@ -3939,15 +3939,16 @@ sorcerer.shape = sorcerer_shape
 Attaching meshes
 \layout Standard
 
-A Cal3D model can be composed of several meshes, that can be attached or
- not.
- The lists of avaiblabe meshes' names is given by the AnimatedModel.meshes
- atributes.
+A Cal3D model can be composed of several meshes, that can be attached (i.e.
+ displayed) or not.
+ Non-attached meshes are not visible.
+ The AnimatedModel.meshes attribute is a dict mapping mesh names to their
+ numerical ID.
  By default, all meshes are attached, but you can detach or attach some
  of them, as following:
 \layout LyX-Code
 
-print "Available meshes' names:", sorcerer_shape.meshes
+print "Available mesh names:", sorcerer_shape.meshes.keys()
 \layout LyX-Code
 
 sorcerer.detach("helmet")
@@ -3956,7 +3957,102 @@ sorcerer.detach("helmet")
 sorcerer.attach("armor")
 \layout Section
 
-Playing animation
+Playing animations
+\layout Standard
+
+An AnimatedModel can have several animations ; the AnimatedModel.animations
+ attribute is a dict mapping animation names to their numerical ID:
+\layout LyX-Code
+
+print "Available animation names:", sorcerer_shape.animations.keys()
+\layout Standard
+
+To start playing an animation in loop, use the animate_blend_cycle(animation_nam
+e, weight = 1.0, fade_in = 0.2) method (see tutorial character-animation-1.py).
+\layout LyX-Code
+
+sorcerer.animate_blend_cycle("walk")
+\layout Standard
+\align center 
+
+\begin_inset Graphics
+	filename /home/jiba/src/soya/tutorial/results/character-animation-1_0.jpeg
+	lyxscale 50
+	width 15text%
+
+\end_inset 
+
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+
+\begin_inset Graphics
+	filename /home/jiba/src/soya/tutorial/results/character-animation-1_1.jpeg
+	lyxscale 50
+	width 15text%
+
+\end_inset 
+
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+
+\begin_inset Graphics
+	filename /home/jiba/src/soya/tutorial/results/character-animation-1_2.jpeg
+	lyxscale 50
+	width 15text%
+
+\end_inset 
+
+
+\layout Standard
+
+Notice that several animation can be played simultaneously, and blended
+ together.
+ The weight argument indicate the weight of the animation ; it defaults
+ to 1.0 but may be changed if there are several simultaneous animations.
+ The fade_in argument is the time (in second) to reach the full weight (in
+ order to avoid a brutal transition, which corresponds to fade_in = 0.0).
+\layout Standard
+
+Then, the animation can be stopped by the animate_clear_cycle(animation_name,
+ fade_out = 0.2) method.
+ The fade_out argument is the time (in second) required to fully stop the
+ animation.
+\layout LyX-Code
+
+sorcerer.animate_clear_cycle("walk")
+\layout Description
+
+Hint: When you start playing an animation with animate_blend_cycle, the
+ animation may not start at the beginning, but at the current Cal3D internal
+ counter value.
+ The animate_reset() method can be used to reset this internal counter,
+ so as cycled animations starts at their beginning.
+\layout LyX-Code
+
+sorcerer.animate_reset() # Ensure we start the walking animation at its beginning
+\layout LyX-Code
+
+sorcerer.animate_blend_cycle("walk")
+\layout Standard
+
+Finally, a last method exists for animation: animate_execute_action(animation_na
+me, fade_in = 0.2, fade_out = 0.2).
+ It plays an animation once, without the possibility to blend several animation
+ at the same time.
+ However, I use it rarely, since it is not possible to interrupt the animation
+ before its end.
 \layout Section
 
 
@@ -3965,6 +4061,24 @@ Playing animation
 \end_inset 
 
 Attaching objects to bones
+\layout Standard
+
+Soya allows you to attach Soya CoordSyst to the animated bones.
+ This is 
+\layout Standard
+
+(see tutorial character-animation-2.py).
+\layout Standard
+\align center 
+
+\begin_inset Graphics
+	filename /home/jiba/src/soya/tutorial/results/character-animation-2.jpeg
+	lyxscale 50
+	width 15text%
+
+\end_inset 
+
+
 \layout Section
 
 Object reference
@@ -4114,8 +4228,16 @@ e.g.
 Hint: Soya automatically check if the texture image has an alpha channel
  or not; however The Gimp (as well as other painting programs) sometimes
  automatically add an undesired alpha channel.
- Since alpha texture are slower that non-alpha one, ,and possibly buggy
- when two of them overlap, you should ensure it is not the case.
+ Since alpha texture are slower that non-alpha one, and possibly buggy when
+ two of them overlap (see 
+\begin_inset Quotes eld
+\end_inset 
+
+known bug
+\begin_inset Quotes erd
+\end_inset 
+
+ below), you should ensure it is not the case.
  If needed, remove the alpha channel (
 \begin_inset Quotes eld
 \end_inset 
@@ -4132,6 +4254,47 @@ Hint: In Blender, the length of the name given to a texture is limited to
  As the exporter assume that this name is the name of the corresponding
  image file (which is the default value in Blender), you should avoid long
  filenames for textures.
+\layout Description
+
+Known\SpecialChar ~
+bug: When two semi-transparent objects overlap, because one of them
+ is in front of the other, Soya may not render them well, i.e.
+ the farther object in front of the other one.
+ There are two possible workaround for this bug:
+\layout Itemize
+
+For objects like a grid, an herbage or grass, use a texture with a 
+\begin_inset Quotes eld
+\end_inset 
+
+mask
+\begin_inset Quotes erd
+\end_inset 
+
+, instead of a semi-transparent texture.
+ A texture with a 
+\begin_inset Quotes eld
+\end_inset 
+
+mask
+\begin_inset Quotes erd
+\end_inset 
+
+ can have transparency, but not semi-transparency.
+ Soya automatically uses a mask for texture with an alpha channel, with
+ all alpha values being either 0.0 or 1.0 (255 in the Gimp integer notation).
+\layout Itemize
+
+For special effects like spells or explosion, use additive blending (see
+ section 
+\begin_inset LatexCommand \ref{sec:Materials}
+
+\end_inset 
+
+).
+ In facts, which object is rendered first as no impact with additive blending,
+ as a consequence the bug is now harmless.
+ Moreover, additive blending often makes explosions or spells more impressive.
 \layout Standard
 
 When an UV image is mapped to a face in Blender, Soya automatically exports
@@ -5373,6 +5536,11 @@ Deform
 Modeling
 \layout Section
 
+
+\begin_inset LatexCommand \label{sec:Materials}
+
+\end_inset 
+
 Materials
 \layout Section
 
@@ -5571,4 +5739,13 @@ You can propose patches on the Soya mailing list.
 \layout Standard
 
 Do not hesitate to ask for Subversion write access, too.
+\layout Description
+
+Hint: Compiling Soya takes quite a long time.
+ However, you can speed up the compilation by disabling GCC's optimization,
+ as following:
+\begin_deeper 
+\layout LyX-Code
+
+export CFLAGS=-O0
 \the_end

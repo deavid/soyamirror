@@ -46,4 +46,7 @@ cdef class CoordSystState(CoordSyst):
 	cdef void _check_state_validity(self)
 	cdef void __setcstate__(self, object cstate)
 	
+cdef class CoordSystSpeed(CoordSyst):
+	pass
+
 
