@@ -126,7 +126,7 @@ class MainLoop(soya.MainLoop, Multisided):
     
   @side("server")
   def __init__(self, scene):
-    self.action_queues      = {}
+    self.action_queues      = weakref.WeakKeyDictionary()
     self.sock2player        = {}
     self.udp_address2player = {}
     self.tcp = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -192,8 +192,8 @@ class MainLoop(soya.MainLoop, Multisided):
           try:
             if   code == CODE_ACTION:
               action = LOAD_ACTION(data[1:])
-              queue = self.action_queues.get(action.mobile_uid)
-              if not queue: queue = self.action_queues[action.mobile_uid] = []
+              queue = self.action_queues.get(Unique.undumpsuid(action.mobile_uid))
+              if not queue: queue = self.action_queues[Unique.undumpsuid(action.mobile_uid)] = []
               queue.append(action)
               
             elif code == CODE_LOGIN_PLAYER:
@@ -239,6 +239,7 @@ class MainLoop(soya.MainLoop, Multisided):
     self.tcp.setblocking(0)
     self.tcp = PacketSocket(self.tcp)
     self.udp = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    self.udp.setblocking(0)
     self.udp_server_address = (HOST, PORT + 1)
     self.socks = [self.tcp, self.udp]
     
@@ -366,7 +367,7 @@ class Player(soya._CObj, soya.SavedInAPath, Multisided):
     uids = self.states_sent.pop((uid, round), None)
     if uids:
       for uid in uids: self.mobiles_states_ack[uid] = round
-      print "ACK UID", uid, "round", round
+      #print "ACK UID", uid, "round", round
       
   @side("single", "server")
   def login(self, sock, udp_address):
@@ -610,9 +611,10 @@ Level._reffed = Level.get
 
 
 class Action(Multisided):
-  def __init__(self, mobile):
-    self.mobile_uid = mobile.uid
-    self.round      = mobile.level.round
+  def __init__(self, mobile, round = None):
+    self.mobile_uid = mobile.dumpsuid()
+    if round is None: self.round = mobile.level.round
+    else:             self.round = round
     
   def dumps(self): return cerealizer.dumps(self)
   
@@ -670,7 +672,7 @@ class Mobile(soya.World, Unique):
   def begin_round(self):
     if self.bot and self.local: self.compute_action()
     else:
-      queue = soya.MAIN_LOOP.action_queues.get(self.uid)
+      queue = soya.MAIN_LOOP.action_queues.get(self)
       if queue:
         round = queue[0].round
         while queue and (queue[0].round == round): self.do_action(queue.pop(0))

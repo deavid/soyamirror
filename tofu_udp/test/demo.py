@@ -15,7 +15,7 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-import sys, os, os.path
+import sys, os, os.path, struct
 import soya, tofu_udp, cerealizer, soya.cerealizer4soya, soya.sdlconst as sdlconst, soya.widget
 
 HERE = os.path.dirname(sys.argv[0])
@@ -87,11 +87,13 @@ ACTION_TURN_RIGHT    = ">"
 ACTION_JUMP          = "J"
 
 class Action(tofu_udp.Action):
-  def __init__(self, mobile, action):
-    tofu_udp.Action.__init__(self, mobile)
+  def __init__(self, mobile, action, round = None):
+    tofu_udp.Action.__init__(self, mobile, round)
     self.action = action
     
-
+  def dumps(self): return self.mobile_uid + self.action + struct.pack("!q", self.round)
+  
+tofu_udp.LOAD_ACTION = lambda s: Action(tofu_udp.Unique.undumpsuid(s[:4]), s[4], struct.unpack("!q", s[5:])[0])
 
 class Mobile(tofu_udp.InterpolatedAnimatedMobile):
   def __init__(self):
@@ -126,7 +128,7 @@ class Mobile(tofu_udp.InterpolatedAnimatedMobile):
         elif event[1] == sdlconst.K_RIGHT: self.plan_action(Action(self, ACTION_STOP_TURNING))
         
   def do_action(self, action):
-    print action.action
+    #print action.action
     animation = ""
     if   action.action == ACTION_MOVE_FORWARD : self.speed.z = -0.35; animation = "marche"
     elif action.action == ACTION_STOP_MOVING  : self.speed.z =  0.0 ; animation = "attente"
@@ -209,23 +211,25 @@ cerealizer.register(Level , soya.cerealizer4soya.SavedInAPathHandler(Level ))
 cerealizer.register(Player, soya.cerealizer4soya.SavedInAPathHandler(Player))
 
 if   mode == "server":
-  LEVEL = Level()
-  LEVEL.filename = "demo"
-  LEVEL.save()
+  #LEVEL = Level()
+  #LEVEL.filename = "demo"
+  #LEVEL.save()
+  pass
   
 elif mode == "client":
-  soya.init("Soya & Tofu demo", 320, 240)
+  soya.init("Soya & Tofu demo", 640, 480)
   tofu_udp.LOGIN    = sys.argv[2]
   tofu_udp.PASSWORD = "test"
   if len(sys.argv) >= 4: tofu_udp.HOST = sys.argv[3]
   
 elif mode == "single":
-  LEVEL = Level()
-  LEVEL.filename = "demo"
-  LEVEL.save()
+  #LEVEL = Level()
+  #LEVEL.filename = "demo"
+  #LEVEL.save()
   
-  soya.init("Soya & Tofu demo", 320, 240)
+  soya.init("Soya & Tofu demo", 640, 480)
   tofu_udp.LOGIN = sys.argv[2]
+  tofu_udp.PASSWORD = "test"
 
 main_loop = tofu_udp.MainLoop(soya.World())
 main_loop.main_loop()
