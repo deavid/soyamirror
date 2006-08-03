@@ -165,7 +165,7 @@ class MainLoop(soya.MainLoop, Multisided):
             #if random.random() < 0.0: continue
             
             player = self.udp_address2player.get(address)
-            if player: player.ack_state(struct.unpack("!I", data[1:5])[0], struct.unpack("!q", data[5:13])[0])              
+            if player: player.ack_state(struct.unpack("!I", data[1:5])[0], struct.unpack("!q", data[5:13])[0])
             
           elif code == CODE_NOOP: pass
           
@@ -239,11 +239,12 @@ class MainLoop(soya.MainLoop, Multisided):
     self.tcp.setblocking(0)
     self.tcp = PacketSocket(self.tcp)
     self.udp = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    self.udp.setblocking(0)
-    self.udp_server_address = (HOST, PORT + 1)
+    self.udp.connect((HOST, PORT + 1))
     self.socks = [self.tcp, self.udp]
     
-    self.udp.sendto(CODE_NOOP, self.udp_server_address)
+    self.udp.send(CODE_NOOP)
+    self.udp.setblocking(0)
+    
     self.tcp.write("""%s%s\n%s\n%s%s\n%s%s""" % (
       CODE_LOGIN_PLAYER,
       self.udp.getsockname()[1],
@@ -286,7 +287,7 @@ class MainLoop(soya.MainLoop, Multisided):
             #import random
             #if random.random() < 0.0: continue
             
-            self.udp.sendto(CODE_ACK_STATE + data[1:13], self.udp_server_address)
+            self.udp.send(CODE_ACK_STATE + data[1:13])
             
             if self.state_queues.has_key(uid) and (round <= self.state_queues[uid][0]): continue
             self.state_queues[uid] = round, data[13:]
@@ -325,10 +326,9 @@ class MainLoop(soya.MainLoop, Multisided):
             print "* Tofu * Server say: ERROR: %s" % error
             raise NetworkError(error)
           
-          elif code == CODE_NOOP: pass
-          
           else: raise ValueError("Unknown code '%s'!" % code)
   
+    
   @side("client")
   def begin_round(self):
     self.poll()

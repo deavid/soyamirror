@@ -76,18 +76,3 @@ class SidesManager(object):
 _side_manager = SidesManager()
 set_side = _side_manager.set_side
 side     = _side_manager.Decorator
-
-
-
-if __name__ == "__main__":
-  class C(Multisided):
-    @side("server")
-    def test(self): print "server !"
-    
-    @side("client")
-    def test(self): print "client !"
-
-  set_side("server")
-  
-  c = C()
-  c.test()
