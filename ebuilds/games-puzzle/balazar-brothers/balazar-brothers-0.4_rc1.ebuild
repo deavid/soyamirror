@@ -20,3 +20,10 @@ DEPEND="media-libs/openal
 	>=dev-python/soya-0.11.2
 	>=dev-python/tofu-0.5
 	>=dev-python/cerealizer-0.4"
+
+src_compile() {
+        sed  s/models/shapes/ setup.py > setup2.py
+	mv setup2.py setup.py
+	distutils_src_compile
+}
+
