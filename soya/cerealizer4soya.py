@@ -24,7 +24,7 @@ Import this module to make Soya's objects cerealizable.
 
 import sys
 import cerealizer
-import soya, soya.cursor, soya.laser, soya.ray, soya.spc_material
+import soya, soya.cursor, soya.laser, soya.ray, soya.spc_material, soya.label3d
 _soya = sys.modules["soya._soya"]
 
 
@@ -87,12 +87,14 @@ cerealizer.register_class(soya.Body)
 #cerealizer.register_class(soya.SavedInAPath)
 cerealizer.register_class(soya.ThirdPersonTraveling)
 cerealizer.register_class(soya.cursor.Cursor)
+cerealizer.register_class(soya.label3d.Label3D)
 cerealizer.register_class(soya.laser.Laser)
 cerealizer.register_class(soya.ray.Ray)
 cerealizer.register_class(soya.ray.HalfRay)
 cerealizer.register_class(soya.spc_material.ZoomingMaterial, SavedInAPathHandler(soya.spc_material.ZoomingMaterial))
 cerealizer.register_class(soya.spc_material.MovingMaterial, SavedInAPathHandler(soya.spc_material.MovingMaterial))
 cerealizer.register_class(soya.spc_material.RotatingMaterial, SavedInAPathHandler(soya.spc_material.RotatingMaterial))
+cerealizer.register_class(soya.Font, SavedInAPathHandler(soya.Font))
 
 cerealizer.register_class(_soya.SimpleModelBuilder)
 cerealizer.register_class(_soya.CellShadingModelBuilder)

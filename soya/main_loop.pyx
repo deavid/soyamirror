@@ -17,7 +17,7 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-import weakref
+import weakref, time
 
 MAIN_LOOP = None
 IDLER = None # Backward compatibility
@@ -108,12 +108,19 @@ MainLoop.stop() causes MainLoop.main_loop() to returns ; VALUE is the (optionnal
 		
 	def idle(self): return self.main_loop() # Backward compatibility
 	
+	def wait(self, duration):
+		"""MainLoop.wait(duration)
+
+Wait DURATION seconds. The default implementation calls time.sleep.
+You may override this method, e.g. for polling network instead of sleeping.
+Notice that, if the desired DURATION has not been waited, wait() will be called again
+immediately."""
+		time.sleep(duration)
+		
 	def main_loop(self):
 		"""MainLoop.main_loop()
 
 Starts idling with the current thread. This method never finishes, until you call MainLoop.stop()."""
-		import time
-		
 		# for time computation, double precision is needed
 		cdef double last_fps_computation_time, current, delta, spent_time
 		cdef int    nb_frame
@@ -132,7 +139,7 @@ Starts idling with the current thread. This method never finishes, until you cal
 					current = time.time()
 					delta   = current - self._time
 					if delta > self.min_frame_duration: break
-					time.sleep(self.min_frame_duration - delta)
+					self.wait(self.min_frame_duration - delta)
 					
 				self._time = current
 				

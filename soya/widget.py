@@ -26,6 +26,7 @@ WIDGET_RESIZE_MAXIMIZE = ('maximize', )
 
 
 default_font = soya.Font(os.path.join(soya.DATADIR, "FreeSans.ttf"), 25, 30)
+default_font.filename = "DEFAULT_FONT"
 
 # for font_filename in (
 #   # FreeFont

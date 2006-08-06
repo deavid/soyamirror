@@ -194,18 +194,20 @@ filename of the source that needs to be re-exported."""
 			file = os.path.join(p, klass.DIRNAME , exported_filename)
 			
 			if   os.path.exists(file):
-				for source_dirname, source_filename in source_dirnames:
-					source_file = os.path.join(p, source_dirname, source_filename)
-					if os.path.exists(source_file) and (os.path.getmtime(file) < os.path.getmtime(source_file)):
-						print "* Soya * Converting %s to %s..." % (source_file, klass.__name__)
-						return source_dirname, source_file, file
+				if AUTO_EXPORTERS_ENABLED:
+					for source_dirname, source_filename in source_dirnames:
+						source_file = os.path.join(p, source_dirname, source_filename)
+						if os.path.exists(source_file) and (os.path.getmtime(file) < os.path.getmtime(source_file)):
+							print "* Soya * Converting %s to %s..." % (source_file, klass.__name__)
+							return source_dirname, source_file, file
 				return None, None, file
 			else:
-				for source_dirname, source_filename in source_dirnames:
-					source_file = os.path.join(p, source_dirname, source_filename)
-					if os.path.exists(source_file):
-						print "* Soya * Converting %s to %s..." % (source_file, klass.__name__)
-						return source_dirname, source_file, file
+				if AUTO_EXPORTERS_ENABLED:
+					for source_dirname, source_filename in source_dirnames:
+						source_file = os.path.join(p, source_dirname, source_filename)
+						if os.path.exists(source_file):
+							print "* Soya * Converting %s to %s..." % (source_file, klass.__name__)
+							return source_dirname, source_file, file
 					
 		raise ValueError("No %s or %s named %s" % (klass.__name__, source_dirnames, filename))
 	_check_export = classmethod(_check_export)
@@ -926,7 +928,11 @@ if hasattr(_soya, "_Sound"):
 class Font(SavedInAPath, _soya._Font):
 	DIRNAME = "fonts"
 	_alls = weakref.WeakValueDictionary()
-	
+
+	def __init__(self, filename, width = 20, height = 30):
+		_soya._Font.__init__(self, filename, width, height)
+		self._filename = ""
+		
 	def load(klass, filename):
 		width  = 20
 		height = 30

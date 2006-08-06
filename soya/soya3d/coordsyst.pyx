@@ -920,6 +920,46 @@ Creates a new CoordSystState, with the same position, rotation and scaling than 
 			self._option = self._option | COORDSYST_STATE_VALID
 			self._quaternion[0], self._quaternion[1], self._quaternion[2], self._quaternion[3] = q
 			
+	def _get_network_state(self):
+		cdef Chunk* chunk
+		chunk = get_chunk()
+		chunk_add_float_endian_safe(chunk, self._matrix[ 0])
+		chunk_add_float_endian_safe(chunk, self._matrix[ 1])
+		chunk_add_float_endian_safe(chunk, self._matrix[ 2])
+		chunk_add_float_endian_safe(chunk, self._matrix[ 4])
+		chunk_add_float_endian_safe(chunk, self._matrix[ 5])
+		chunk_add_float_endian_safe(chunk, self._matrix[ 6])
+		chunk_add_float_endian_safe(chunk, self._matrix[ 8])
+		chunk_add_float_endian_safe(chunk, self._matrix[ 9])
+		chunk_add_float_endian_safe(chunk, self._matrix[10])
+		chunk_add_float_endian_safe(chunk, self._matrix[12])
+		chunk_add_float_endian_safe(chunk, self._matrix[13])
+		chunk_add_float_endian_safe(chunk, self._matrix[14])
+		chunk_add_float_endian_safe(chunk, self._matrix[16])
+		chunk_add_float_endian_safe(chunk, self._matrix[17])
+		chunk_add_float_endian_safe(chunk, self._matrix[18])
+		return drop_chunk_to_string(chunk)
+		
+	def _read_network_state(self, f):
+		cdef Chunk* chunk
+		chunk = string_to_chunk(f.read(60))
+		chunk_get_float_endian_safe(chunk, &self._matrix[ 0])
+		chunk_get_float_endian_safe(chunk, &self._matrix[ 1])
+		chunk_get_float_endian_safe(chunk, &self._matrix[ 2])
+		chunk_get_float_endian_safe(chunk, &self._matrix[ 4])
+		chunk_get_float_endian_safe(chunk, &self._matrix[ 5])
+		chunk_get_float_endian_safe(chunk, &self._matrix[ 6])
+		chunk_get_float_endian_safe(chunk, &self._matrix[ 8])
+		chunk_get_float_endian_safe(chunk, &self._matrix[ 9])
+		chunk_get_float_endian_safe(chunk, &self._matrix[10])
+		chunk_get_float_endian_safe(chunk, &self._matrix[12])
+		chunk_get_float_endian_safe(chunk, &self._matrix[13])
+		chunk_get_float_endian_safe(chunk, &self._matrix[14])
+		chunk_get_float_endian_safe(chunk, &self._matrix[16])
+		chunk_get_float_endian_safe(chunk, &self._matrix[17])
+		chunk_get_float_endian_safe(chunk, &self._matrix[18])
+		drop_chunk(chunk)
+		
 
 cdef class CoordSystSpeed(CoordSyst):
 	"""CoordSystSpeed
@@ -945,6 +985,46 @@ Creates a new CoordSystSpeed, for the given COORD_SYST."""
 		self._matrix[0] = self._matrix[5] = self._matrix[10] = self._matrix[15] = 1.0
 		self._matrix[16] = self._matrix[17] = self._matrix[18] = 1.0
 		self._invalidate()
+		
+	def _get_network_state(self):
+		cdef Chunk* chunk
+		chunk = get_chunk()
+		chunk_add_float_endian_safe(chunk, self._matrix[ 0])
+		chunk_add_float_endian_safe(chunk, self._matrix[ 1])
+		chunk_add_float_endian_safe(chunk, self._matrix[ 2])
+		chunk_add_float_endian_safe(chunk, self._matrix[ 4])
+		chunk_add_float_endian_safe(chunk, self._matrix[ 5])
+		chunk_add_float_endian_safe(chunk, self._matrix[ 6])
+		chunk_add_float_endian_safe(chunk, self._matrix[ 8])
+		chunk_add_float_endian_safe(chunk, self._matrix[ 9])
+		chunk_add_float_endian_safe(chunk, self._matrix[10])
+		chunk_add_float_endian_safe(chunk, self._matrix[12])
+		chunk_add_float_endian_safe(chunk, self._matrix[13])
+		chunk_add_float_endian_safe(chunk, self._matrix[14])
+		chunk_add_float_endian_safe(chunk, self._matrix[16])
+		chunk_add_float_endian_safe(chunk, self._matrix[17])
+		chunk_add_float_endian_safe(chunk, self._matrix[18])
+		return drop_chunk_to_string(chunk)
+		
+	def _read_network_state(self, f):
+		cdef Chunk* chunk
+		chunk = string_to_chunk(f.read(60))
+		chunk_get_float_endian_safe(chunk, &self._matrix[ 0])
+		chunk_get_float_endian_safe(chunk, &self._matrix[ 1])
+		chunk_get_float_endian_safe(chunk, &self._matrix[ 2])
+		chunk_get_float_endian_safe(chunk, &self._matrix[ 4])
+		chunk_get_float_endian_safe(chunk, &self._matrix[ 5])
+		chunk_get_float_endian_safe(chunk, &self._matrix[ 6])
+		chunk_get_float_endian_safe(chunk, &self._matrix[ 8])
+		chunk_get_float_endian_safe(chunk, &self._matrix[ 9])
+		chunk_get_float_endian_safe(chunk, &self._matrix[10])
+		chunk_get_float_endian_safe(chunk, &self._matrix[12])
+		chunk_get_float_endian_safe(chunk, &self._matrix[13])
+		chunk_get_float_endian_safe(chunk, &self._matrix[14])
+		chunk_get_float_endian_safe(chunk, &self._matrix[16])
+		chunk_get_float_endian_safe(chunk, &self._matrix[17])
+		chunk_get_float_endian_safe(chunk, &self._matrix[18])
+		drop_chunk(chunk)
 		
 		
 
