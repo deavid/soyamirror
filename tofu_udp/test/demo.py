@@ -34,7 +34,6 @@ class Player(tofu_udp.Player):
     
     mobile = Mobile()
     mobile.set_xyz(108.0, -6.0, 107.0)
-    mobile.x += 2 * len(level.mobiles)
     level.add_mobile(mobile)
     self.add_mobile(mobile)
     
@@ -44,39 +43,50 @@ tofu_udp.CREATE_PLAYER = Player
 class Level(tofu_udp.Level):
   def __init__(self):
     tofu_udp.Level.__init__(self)
-    
-    self.terrain = soya.Terrain(self)
-    self.terrain.from_image(soya.Image.get("map.png"))
-    self.terrain.multiply_height(50.0)
-    self.terrain.scale_factor = 1.5
-    self.terrain.texture_factor = 1.0
-    self.terrain.y = -35.0
-    self.terrain.set_material_layer(soya.Material.get("grass" ),  0.0,  15.0)
-    self.terrain.set_material_layer(soya.Material.get("ground"), 15.0,  25.0)
-    self.terrain.set_material_layer(soya.Material.get("snow"  ), 25.0,  50.0)
-    
-    self.house1 = soya.Body(self, soya.Model.get("ferme"))
-    self.house1.set_xyz(125.0, -7.2, 91.0)
-    
-    self.house2 = soya.Body(self, soya.Model.get("ferme"))
-    self.house2.set_xyz(108.0, -11.25, 100.0)
-    self.house2.rotate_y(100.0)
-    
-    self.sun = soya.Light(self)
-    self.sun.directional = 1
-    self.sun.diffuse = (1.0, 0.8, 0.4, 1.0)
-    self.sun.rotate_x(-45.0)
-    
-    self.atmosphere = soya.SkyAtmosphere()
-    self.atmosphere.ambient = (0.3, 0.3, 0.4, 1.0)
-    self.atmosphere.fog = 1
-    self.atmosphere.fog_type  = 0
-    self.atmosphere.fog_start = 40.0
-    self.atmosphere.fog_end   = 50.0
-    self.atmosphere.fog_color = self.atmosphere.bg_color = (0.2, 0.5, 0.7, 1.0)
-    self.atmosphere.skyplane  = 1
-    self.atmosphere.sky_color = (1.5, 1.0, 0.8, 1.0)
-    
+
+def create_demo_level():
+  level = Level()
+  level.static_part = static_part = soya.World(level)
+  
+  terrain = soya.Terrain(static_part)
+  terrain.from_image(soya.Image.get("map.png"))
+  terrain.multiply_height(50.0)
+  terrain.scale_factor = 1.5
+  terrain.texture_factor = 1.0
+  terrain.y = -35.0
+  terrain.set_material_layer(soya.Material.get("grass" ),  0.0,  15.0)
+  terrain.set_material_layer(soya.Material.get("ground"), 15.0,  25.0)
+  terrain.set_material_layer(soya.Material.get("snow"  ), 25.0,  50.0)
+
+  house1 = soya.Body(static_part, soya.Model.get("ferme"))
+  house1.set_xyz(125.0, -7.2, 91.0)
+
+  house2 = soya.Body(static_part, soya.Model.get("ferme"))
+  house2.set_xyz(108.0, -11.25, 100.0)
+  house2.rotate_y(100.0)
+
+  sun = soya.Light(static_part)
+  sun.directional = 1
+  sun.diffuse = (1.0, 0.8, 0.4, 1.0)
+  sun.rotate_x(-45.0)
+
+  level.atmosphere = soya.SkyAtmosphere()
+  level.atmosphere.ambient = (0.3, 0.3, 0.4, 1.0)
+  level.atmosphere.fog = 1
+  level.atmosphere.fog_type  = 0
+  level.atmosphere.fog_start = 40.0
+  level.atmosphere.fog_end   = 50.0
+  level.atmosphere.fog_color = level.atmosphere.bg_color = (0.2, 0.5, 0.7, 1.0)
+  level.atmosphere.skyplane  = 1
+  level.atmosphere.sky_color = (1.5, 1.0, 0.8, 1.0)
+
+  #level.bot = Bot()
+  #level.add_mobile(level.bot)
+  #level.bot.set_xyz(128.0, 6.0, 107.0)
+  
+  static_part.filename = "demo_static_part"#; static_part.save()
+  level      .filename = "demo"            ; level      .save()
+  
 
 ACTION_MOVE_FORWARD  = "^"
 ACTION_STOP_MOVING   = "-"
@@ -87,14 +97,12 @@ ACTION_TURN_RIGHT    = ">"
 ACTION_JUMP          = "J"
 
 class Action(tofu_udp.Action):
-  def __init__(self, mobile, action, round = None):
-    tofu_udp.Action.__init__(self, mobile, round)
+  def __init__(self, mobile, action):
+    tofu_udp.Action.__init__(self, mobile)
     self.action = action
     
-  def dumps(self): return self.mobile_uid + self.action + struct.pack("!q", self.round)
+  def dumps(self): return self.action
   
-tofu_udp.LOAD_ACTION = lambda s: Action(tofu_udp.Unique.undumpsuid(s[:4]), s[4], struct.unpack("!q", s[5:])[0])
-
 class Mobile(tofu_udp.InterpolatedAnimatedMobile):
   def __init__(self):
     tofu_udp.InterpolatedAnimatedMobile.__init__(self)
@@ -110,6 +118,8 @@ class Mobile(tofu_udp.InterpolatedAnimatedMobile):
     self.up     = soya.Vector(self,  0.0,  1.0,  0.0)
     self.front  = soya.Vector(self,  0.0,  0.0, -1.0)
     self.back   = soya.Vector(self,  0.0,  0.0,  1.0)
+    
+    self.counter = 0
     
   def compute_action(self):
     for event in soya.process_event():
@@ -127,8 +137,22 @@ class Mobile(tofu_udp.InterpolatedAnimatedMobile):
         elif event[1] == sdlconst.K_LEFT:  self.plan_action(Action(self, ACTION_STOP_TURNING))
         elif event[1] == sdlconst.K_RIGHT: self.plan_action(Action(self, ACTION_STOP_TURNING))
         
+#     if not "jiba" in tofu_udp.LOGIN:
+#       import random
+#       if random.random() < 0.02: self.plan_action(Action(self, ACTION_MOVE_FORWARD))
+#       if random.random() < 0.02: self.plan_action(Action(self, ACTION_MOVE_BACKWARD))
+#       if random.random() < 0.02: self.plan_action(Action(self, ACTION_STOP_MOVING))
+#       if random.random() < 0.02: self.plan_action(Action(self, ACTION_TURN_LEFT))
+#       if random.random() < 0.02: self.plan_action(Action(self, ACTION_TURN_RIGHT))
+#       if random.random() < 0.02: self.plan_action(Action(self, ACTION_STOP_TURNING))
+#       if random.random() < 0.02: self.plan_action(Action(self, ACTION_JUMP))
+      
+#       import random
+#       if random.random() < 0.01: soya.MAIN_LOOP.stop()
+        
+  def load_action(self, s): return Action(self, s)
+  
   def do_action(self, action):
-    #print action.action
     animation = ""
     if   action.action == ACTION_MOVE_FORWARD : self.speed.z = -0.35; animation = "marche"
     elif action.action == ACTION_STOP_MOVING  : self.speed.z =  0.0 ; animation = "attente"
@@ -204,17 +228,26 @@ class Mobile(tofu_udp.InterpolatedAnimatedMobile):
     soya.MAIN_LOOP.camera.add_traveling(traveling)
     soya.MAIN_LOOP.camera.zap()
     
+
+class Bot(Mobile):
+  def __init__(self):
+    Mobile.__init__(self)
+    self.counter = 0
     
-cerealizer.register(Action)
+  def compute_action(self):
+    
+    self.counter += 1
+    if   self.counter == 35: self.plan_action(Action(self, ACTION_MOVE_FORWARD))
+    elif self.counter == 55: self.plan_action(Action(self, ACTION_MOVE_BACKWARD)); self.counter = 0
+    
+
 cerealizer.register(Mobile)
+cerealizer.register(Bot)
 cerealizer.register(Level , soya.cerealizer4soya.SavedInAPathHandler(Level ))
 cerealizer.register(Player, soya.cerealizer4soya.SavedInAPathHandler(Player))
 
 if   mode == "server":
-  #LEVEL = Level()
-  #LEVEL.filename = "demo"
-  #LEVEL.save()
-  pass
+  create_demo_level()
   
 elif mode == "client":
   soya.init("Soya & Tofu demo", 640, 480)
@@ -223,14 +256,18 @@ elif mode == "client":
   if len(sys.argv) >= 4: tofu_udp.HOST = sys.argv[3]
   
 elif mode == "single":
-  #LEVEL = Level()
-  #LEVEL.filename = "demo"
-  #LEVEL.save()
+  create_demo_level()
   
   soya.init("Soya & Tofu demo", 640, 480)
   tofu_udp.LOGIN = sys.argv[2]
   tofu_udp.PASSWORD = "test"
 
+
 main_loop = tofu_udp.MainLoop(soya.World())
 main_loop.main_loop()
 
+# while 1:
+#   import time, random
+#   time.sleep(random.random())
+#   main_loop = tofu_udp.MainLoop(soya.World())
+#   main_loop.main_loop()

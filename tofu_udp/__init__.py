@@ -26,13 +26,13 @@ VERSION = "0.1"
 
 CODE_LOGIN_PLAYER  = ">"
 CODE_ERROR         = "E"
-CODE_ENTER_LEVEL   = "L"
+CODE_RECEIVE       = "R"
 CODE_OWN_CONTROL   = "+"
-CODE_ADD_MOBILE    = "M"
-CODE_REMOVE_MOBILE = "m"
+CODE_REMOVE_MOBILE = "-"
 CODE_ACTION        = "A"
 CODE_STATE         = "S"
 CODE_ACK_STATE     = "!"
+CODE_MESSAGE       = "M"
 CODE_NOOP          = " "
 
 PORT     = 6902
@@ -45,23 +45,23 @@ soya.set_file_format(cerealizer, cerealizer)
 
 class NetworkError(StandardError): pass
 
-def _sendallto(sock, s, address):
-  i = 0
-  i += sock.sendto(s, address)
-  while i < len(s):
-    i += sock.sendto(s, address[i:])
-
 class PacketSocket(object):
   def __init__(self, sock):
-    self.sock                = sock
-    self.current_packet      = ""
-    self.current_packet_size = -1
-    self.closed              = 0
+    self.sock                     = sock
+    self.current_packet           = ""
+    self.current_packet_size      = -1
+    self.current_packet_size_part = ""
+    self.closed                   = 0
     
     self.current_writing = ""
     self.writen          = 0
     
-  def fileno(self): return self.sock.fileno()
+  def fileno(self):
+    try: return self.sock.fileno()
+    except:
+      print "bad fileno!"
+      self.closed = 1
+      return None
   
   def write(self, s):
     self.current_writing += struct.pack("!I", len(s)) + s
@@ -81,30 +81,43 @@ class PacketSocket(object):
       if not self.current_writing: soya.MAIN_LOOP.socks_writing.remove(self)
       
   def read(self):
+    if (len(self.current_packet_size_part) == 4) and (self.current_packet_size == -1): oepjf
+    nothing_read = 1
     if self.current_packet_size == -1:
-      try:
-        data = self.sock.recv(4, socket.MSG_PEEK)
+      try: data = self.sock.recv(4 - len(self.current_packet_size_part))
       except: return
-      if len(data) < 4:
-        if len(data) == 0:
-          print "* Tofu * Socket from %s:%s seems closed." % self.sock.getpeername()
-          self.closed = 1
+      if len(data) == 0:
+        print "* Tofu * Socket from %s:%s seems closed." % self.getpeername()
+        self.closed = 1
         return
-      data = self.sock.recv(4)
-      self.current_packet_size = struct.unpack("!I", data)[0]
+      nothing_read = 0
+      self.current_packet_size_part += data
+      if len(self.current_packet_size_part) == 4:
+        self.current_packet_size = struct.unpack("!I", self.current_packet_size_part)[0]
+      else: return
       
     while self.current_packet_size > len(self.current_packet):
       try:
         data = self.sock.recv(min(8192, self.current_packet_size - len(self.current_packet)))
       except: return
-      if not data: return
+      nothing_read = 0
+      if not data:
+        if nothing_read:
+          print "* Tofu * Socket from %s:%s seems closed." % self.getpeername()
+          self.closed = 1
+        return
       self.current_packet += data
       
     packet = self.current_packet
-    self.current_packet_size = -1
-    self.current_packet      = ""
+    self.current_packet_size      = -1
+    self.current_packet_size_part = ""
+    self.current_packet           = ""
     return packet
   
+  def getpeername(self):
+    try: return self.sock.getpeername()
+    except: return ("???", 0)
+    
   def close(self):
     self.closed = 1
     self.sock.shutdown(2)
@@ -148,11 +161,23 @@ class MainLoop(soya.MainLoop, Multisided):
       self.tcp.shutdown(2)
       self.tcp.close()
       self.udp.close()
-      
   @side("server")
-  def poll(self):
-    while 1:
-      readable_socks, writeable_socks, dropit = select.select(self.socks, self.socks_writing, [], 0.0)
+  def sock_closed(self, sock):
+    if self.sock2player.get(sock):
+      player = self.sock2player[sock]
+      del self.udp_address2player[player.udp_address]
+      del self.sock2player[sock]
+      player.logout()
+    self.socks.remove(sock)
+    
+  @side("server")
+  def wait(self, duration):
+    if 1:
+      try: readable_socks, writeable_socks, dropit = select.select(self.socks, self.socks_writing, [], duration)
+      except TypeError: # A PacketSocket is closed
+        for sock in self.socks:
+          if isinstance(sock, PacketSocket) and sock.closed: self.sock_closed(sock)
+        return
       
       for sock in readable_socks:
         if   sock is self.udp:
@@ -162,10 +187,10 @@ class MainLoop(soya.MainLoop, Multisided):
           
           if   code == CODE_ACK_STATE:
             #import random
-            #if random.random() < 0.0: continue
+            #if random.random() < 0.2: continue
             
             player = self.udp_address2player.get(address)
-            if player: player.ack_state(struct.unpack("!I", data[1:5])[0], struct.unpack("!q", data[5:13])[0])
+            if player: player.ack_state(Unique.undumpsuid(data[1:3]), struct.unpack("!Q", data[3:11])[0])
             
           elif code == CODE_NOOP: pass
           
@@ -179,23 +204,23 @@ class MainLoop(soya.MainLoop, Multisided):
         else:
           data = sock.read()
           if not data:
-            if sock.closed:
-              if self.sock2player.get(sock):
-                player = self.sock2player[sock]
-                del self.udp_address2player[player.udp_address]
-                del self.sock2player[sock]
-                player.logout()
-              self.socks.remove(sock)
+            if sock.closed: self.sock_closed(sock)
             continue
-          
+            
           code = data[0]
           try:
             if   code == CODE_ACTION:
-              action = LOAD_ACTION(data[1:])
-              queue = self.action_queues.get(Unique.undumpsuid(action.mobile_uid))
-              if not queue: queue = self.action_queues[Unique.undumpsuid(action.mobile_uid)] = []
-              queue.append(action)
-              
+              mobile = Unique.undumpsuid(data[1:3])
+              round  = struct.unpack("!Q", data[3:11])[0]
+              player = self.sock2player.get(sock)
+              if mobile and player:
+                if not mobile in player.mobiles: raise ValueError("Player %s cannot send action for mobile %s!" % (player, mobile))
+                action = mobile.load_action(data[11:])
+                action.round  = round
+                queue = self.action_queues.get(mobile)
+                if queue: queue.append(action)
+                else:     self.action_queues[mobile] = [action]
+                
             elif code == CODE_LOGIN_PLAYER:
               if self.sock2player.get(sock): raise ValueError("Cannot log twice!")
               data2 = data[1:]
@@ -214,26 +239,23 @@ class MainLoop(soya.MainLoop, Multisided):
               
             else: raise ValueError("Unkown code '%s'!" % code)
             
-          except :
+          except:
             sys.excepthook(*sys.exc_info())
-            print "* Tofu * Error while receiving from %s %s code:%s" % (self.sock2player.get(sock), sock.sock.getpeername(), code)
+            print "* Tofu * Error while receiving from %s %s code:%s" % (self.sock2player.get(sock), sock.getpeername(), code)
             sock.write("""%s%s: %s""" % (CODE_ERROR, sys.exc_info()[0], sys.exc_info()[1]))
             sock.close()
             
       for sock in writeable_socks:
         sock._write()
-        
-      if not readable_socks: break
       
   @side("server")
   def begin_round(self):
-    self.poll()
     soya.MainLoop.begin_round(self)
     
     
   @side("client")
   def __init__(self, scene):
-    self.state_queues = {}
+    #self.state_queues = {}
     self.tcp = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     self.tcp.connect((HOST, PORT))
     self.tcp.setblocking(0)
@@ -248,50 +270,52 @@ class MainLoop(soya.MainLoop, Multisided):
     self.tcp.write("""%s%s\n%s\n%s%s\n%s%s""" % (
       CODE_LOGIN_PLAYER,
       self.udp.getsockname()[1],
-      len(LOGIN   ), LOGIN,
-      len(PASSWORD), PASSWORD,
-      OPT_DATA,
-      ))
+      len(LOGIN   ), LOGIN, len(PASSWORD), PASSWORD, OPT_DATA,))
     
   @side("client")
   def main_loop(self):
     
-    self.nb_round = self.nb_state = 0
+    self.nb_round = self.nb_state = self.nb_byte = 0
     
     try: soya.MainLoop.main_loop(self)
     finally:
       self.tcp.close()
       self.udp.close()
-      print "STAT: %s states in %s rounds (%s states per second)" % (self.nb_state, self.nb_round, self.nb_state / (0.03 * self.nb_round))
+      print "STAT: %s states received in %s rounds (%s states per second)" % (self.nb_state, self.nb_round, self.nb_state / (0.03 * self.nb_round))
+      print "STAT: %s bytes sent in %s rounds (%s bytes per second)" % (self.nb_byte, self.nb_round, self.nb_byte / (0.03 * self.nb_round))
       
+      for unique in Unique._alls.values(): unique.discard()
       
   @side("client")
-  def poll(self):
-    
-    self.nb_round += 1
-    
-    while 1:
-      socks, dropit, dropit = select.select(self.socks, [], [], 0.0)
-      if not socks: break
+  def wait(self, duration):
+    if 1:
+      socks, dropit, dropit = select.select(self.socks, [], [], duration)
+      if not socks: return
       
       for sock in socks:
         if   sock is self.udp:
-          self.nb_state += 1
-          
           data = self.udp.recv(65000)
           code = data[0]
+          
+          self.nb_byte  += len(data) + 8 # 8 is for UDP header
+          
+          
           if   code == CODE_STATE:
-            uid   = struct.unpack("!I", data[1:5])[0]
-            round = struct.unpack("!q", data[5:13])[0]
+            
+            self.nb_state += 1
             
             #import random
-            #if random.random() < 0.0: continue
+            #if random.random() < 0.2: continue
             
             self.udp.send(CODE_ACK_STATE + data[1:13])
             
-            if self.state_queues.has_key(uid) and (round <= self.state_queues[uid][0]): continue
-            self.state_queues[uid] = round, data[13:]
+            level = Unique.undumpsuid(data[1:3])
+            round = struct.unpack("!Q", data[3:11])[0]
             
+            if level and level.queued_state_round < round:
+              level.queued_state       = data[11:]
+              level.queued_state_round = round
+              
           else: raise NetworkError("Unknown code '%s'!" % code)
           
         elif sock is self.tcp:
@@ -300,25 +324,30 @@ class MainLoop(soya.MainLoop, Multisided):
             if sock.closed: raise NetworkError("Connexion to server closed!")
             continue
           
+          self.nb_byte  += 4 + len(data) + 8
+          
+          
           print "DATA", len(data), "'%s'" % data[0]
           code = data[0]
-          if   code == CODE_ADD_MOBILE: # XXX looks the same than CODE_ENTER_LEVEL
-            mobile = soya.loads(data[1:])
-            mobile.loaded() # This calls level.add_mobile as needed
-            print "* Tofu * %s added in %s." % (mobile, mobile.level)
+          if   code == CODE_MESSAGE:
+            obj = Unique.undumpsuid(data[1:3])
+            obj.message_received(data[3:])
+            
+          elif code == CODE_RECEIVE:
+            obj = soya.loads(data[1:])
+            obj.loaded() # This calls level.add_mobile if needed
+            if   isinstance(obj, Mobile): print "* Tofu * %s received in level %s." % (obj, obj.level)
+            elif isinstance(obj, Level ): print "* Tofu * %s received with %s." % (level, ", ".join([repr(mobile) for mobile in level.mobiles]))
+            else:                         print "* Tofu * %s received." % obj
             
           elif code == CODE_REMOVE_MOBILE:
-            mobile = Unique.undumpsuid(data[1:5])
-            mobile.level.remove(mobile)
+            mobile = Unique.undumpsuid(data[1:3])
             print "* Tofu * %s removed from %s." % (mobile, mobile.level)
-            
-          elif code == CODE_ENTER_LEVEL:
-            level = soya.loads(data[1:])
-            level.loaded()
-            print "* Tofu * %s received with %s." % (level, ", ".join([repr(mobile) for mobile in level.mobiles]))
+            mobile.level.remove_mobile(mobile)
+            mobile.discard()
             
           elif code == CODE_OWN_CONTROL:
-            mobile = Unique.undumpsuid(data[1:5])
+            mobile = Unique.undumpsuid(data[1:3])
             mobile.control_owned()
             
           elif code == CODE_ERROR:
@@ -331,8 +360,10 @@ class MainLoop(soya.MainLoop, Multisided):
     
   @side("client")
   def begin_round(self):
-    self.poll()
     soya.MainLoop.begin_round(self)
+
+    
+    self.nb_round += 1
 
 
 class Player(soya._CObj, soya.SavedInAPath, Multisided):
@@ -358,17 +389,11 @@ class Player(soya._CObj, soya.SavedInAPath, Multisided):
     self.mobiles     = []
     self.sock        = None
     self.udp_address = None
-    self.mobiles_states_ack = {} # Map mobile UID to the last round their states were acknoledged by the player
-    self.levels_states_sent = {} # Map mobile UID to the last round their states were sent to the player
-    self.states_sent        = {} # Map (level UID, round) to mobile UID the state contains
     
   @side("server")
-  def ack_state(self, uid, round):
-    uids = self.states_sent.pop((uid, round), None)
-    if uids:
-      for uid in uids: self.mobiles_states_ack[uid] = round
-      #print "ACK UID", uid, "round", round
-      
+  def ack_state(self, level, round):
+    for mobile in self.states_sent.pop((level, round), ()): self.mobiles_states_ack[mobile] = round
+    
   @side("single", "server")
   def login(self, sock, udp_address):
     print "* Tofu * Player %s login." % self.filename
@@ -386,6 +411,10 @@ class Player(soya._CObj, soya.SavedInAPath, Multisided):
       
   @side("server")
   def login(self, sock, udp_port):
+    self.mobiles_states_ack = weakref.WeakKeyDictionary() # Map mobile to the last round their states were acknoledged by the player
+    self.levels_states_sent = weakref.WeakKeyDictionary() # Map mobile to the last round their states were sent to the player
+    self.states_sent        = {}                          # Map (level, round) to mobile UID the state contains
+    
     levels = set([mobile.level for mobile in self.mobiles])
     
     for level in levels:
@@ -404,13 +433,12 @@ class Player(soya._CObj, soya.SavedInAPath, Multisided):
       
       self.sock        = None
       self.udp_address = None
-      self.mobiles_states_ack = {}
-      self.levels_states_sent = {}
-      self.states_sent        = {}
+      self.mobiles_states_ack = None
+      self.levels_states_sent = None
+      self.states_sent        = None
       if save: self.save()
       
-      # Do this AFTER discard => when discard saves the player's mobiles, the mobiles still have their level, and so the level is saved.
-      for mobile in self.mobiles:
+      for mobile in self.mobiles: # Do this AFTER discard => when discard saves the player's mobiles, the mobiles still have their level, and so the level is saved.
         if mobile.level: mobile.level.remove_mobile(mobile)
         
       self.filename = "" # Discard the player
@@ -440,10 +468,10 @@ class Unique(Multisided):
     i = 1
     while Unique._alls.has_key(i): i += 1
     self.uid = i
+    Unique._alls[self.uid] = self
     
   def __init__(self):
     self.gen_uid()
-    Unique._alls[self.uid] = self
     
   @staticmethod
   def getbyuid(uid):
@@ -455,9 +483,9 @@ This static method returns the object of the given UID (or None if it doesn't ex
   @side("single", "server")
   def loaded(self):
     self.gen_uid()
-    Unique._alls[self.uid] = self
   @side("client")
   def loaded(self):
+    if Unique._alls.has_key(self.uid): raise ValueError("Cannot load %s: already have a Unique with the same UID: %s!" % (self, Unique._alls[self.uid]))
     Unique._alls[self.uid] = self
     
   def discard(self):
@@ -465,8 +493,8 @@ This static method returns the object of the given UID (or None if it doesn't ex
     except: pass
     
   @staticmethod
-  def undumpsuid(data): return Unique.getbyuid(struct.unpack("!I", data)[0])
-  def dumpsuid  (self): return struct.pack("!I", self.uid)
+  def undumpsuid(data): return Unique.getbyuid(struct.unpack("!H", data)[0])
+  def dumpsuid  (self): return struct.pack("!H", self.uid)
   
   def __repr__(self): return "<%s UID:%s>" % (self.__class__.__name__, self.uid)
   
@@ -492,10 +520,16 @@ class Level(soya.World, Unique):
     self.round         = 0
     self.state_counter = 0
     
+  @side("single", "server", "client")
   def loaded(self):
     self.active = 0
     Unique.loaded(self)
     soya.World.loaded(self)
+    
+  @side("client")
+  def loaded(self):
+    self.queued_state       = ""
+    self.queued_state_round = -1
     
   def discard(self):
     Unique.discard(self)
@@ -507,7 +541,7 @@ class Level(soya.World, Unique):
   def get_players(self): return set([Player.get(i.player_name) for i in self.mobiles if i.player_name and Player.get(i.player_name).sock])
   
   @side("client")
-  def save(self): raise TypeError("Cannot save level on the client-side!")
+  def save(self): pass
   
   @side("single", "server", "client")
   def add_mobile(self, mobile):
@@ -568,34 +602,34 @@ class Level(soya.World, Unique):
       
       mobile2state = {}
       for player in self.get_players():
-        if player.levels_states_sent.get(self.uid, 0) > self.round - MIN_ROUNDS_PER_STATE: continue
+        if player.levels_states_sent.get(self, 0) > self.round - MIN_ROUNDS_PER_STATE: continue
         msg  = ""
-        uids = []
+        mobiles = []
         for mobile in self.mobiles:
-          ack  = player.mobiles_states_ack .get(mobile.uid, 0)
+          ack  = player.mobiles_states_ack.get(mobile, 0)
           if ((ack < mobile.last_important_round) or
              ((ack < mobile.last_noticeable_round - MAX_ROUNDS_PER_STATE) and sync) ):
             msg = msg + (mobile2state.get(mobile) or mobile2state.setdefault(mobile, mobile.dumpsuid() + mobile.get_network_state()))
-            uids.append(mobile.uid)
+            mobiles.append(mobile)
             
         if msg:
-          msg = CODE_STATE + self.dumpsuid() + struct.pack("!q", self.round) + msg
+          msg = CODE_STATE + self.dumpsuid() + struct.pack("!Q", self.round) + msg
           soya.MAIN_LOOP.udp.sendto(msg, player.udp_address)
-          player.states_sent[self.uid, self.round] = uids
-          player.levels_states_sent[self.uid] = self.round
+          player.states_sent[self, self.round] = mobiles
+          player.levels_states_sent[self] = self.round
           
   @side("client")
   def begin_round(self):
     if self.active:
-      round, state = soya.MAIN_LOOP.state_queues.pop(self.uid, (0, None))
-      if state:
-        self.round = round
-        f = StringIO(state)
+      if self.queued_state:
+        self.round = self.queued_state_round
+        f = StringIO(self.queued_state)
         while 1:
-          uid = f.read(4)
+          uid = f.read(2)
           if not uid: break # End of the state
           mobile = Unique.undumpsuid(uid)
           mobile.read_network_state(f)
+        self.queued_state = ""
       soya.World.begin_round(self)
       
       
@@ -604,7 +638,7 @@ class Level(soya.World, Unique):
       
   def end_round(self):
     if self.active: soya.World.end_round(self)
-      
+    
   def __repr__(self): return "<%s %s UID:%s>" % (self.__class__.__name__, self.filename, self.uid)
   
 Level._reffed = Level.get
@@ -612,14 +646,12 @@ Level._reffed = Level.get
 
 class Action(Multisided):
   def __init__(self, mobile, round = None):
-    self.mobile_uid = mobile.dumpsuid()
+    self.mobile = mobile
     if round is None: self.round = mobile.level.round
     else:             self.round = round
     
-  def dumps(self): return cerealizer.dumps(self)
+  def dumps(self): raise NotImplementedError("You must override this method!")
   
-LOAD_ACTION = cerealizer.loads
-
 
 class Mobile(soya.World, Unique):
   def __init__(self):
@@ -652,8 +684,10 @@ class Mobile(soya.World, Unique):
   @side("single", "server")
   def plan_action(self, action): return self.do_action(action)
   @side("client")
-  def plan_action(self, action): soya.MAIN_LOOP.tcp.write(CODE_ACTION + action.dumps())
-      
+  def plan_action(self, action): soya.MAIN_LOOP.tcp.write(CODE_ACTION + self.dumpsuid() + struct.pack("!Q", action.round) + action.dumps())
+  
+  def load_action(self, s): raise NotImplementedError("You must override this method!")
+  
   def do_action    (self, action): pass
   def do_physics   (self): pass
   def do_collisions(self): pass
@@ -696,11 +730,26 @@ class Mobile(soya.World, Unique):
     
   def __repr__(self): return "<%s UID:%s>" % (self.__class__.__name__, self.uid)
   
+  @side("single", "server", "client")
   def loaded(self):
     Unique.loaded(self)
     soya.World.loaded(self)
     if self.level and not self in self.level.mobiles: self.level.add_mobile(self)
-
+    
+  @side("client")
+  def loaded(self):
+    if self.bot: self.local = 0
+    
+  @state("single")
+  def send_message(self, s): self.message_received(s)
+  @state("server")
+  def send_message(self, s):
+    msg = CODE_MESSAGE + self.dumpsuid() + s
+    for player in self.level.players(): player.sock.write(msg)
+    self.message_received(s)
+    
+  def message_received(self, s): raise NotImplementedError("You must override this method if you want to send message to this object!") 
+  
 
 class InterpolatedMobile(Mobile):
   def __init__(self):
@@ -718,7 +767,7 @@ class InterpolatedMobile(Mobile):
     self.network_last_state       = soya.CoordSystState(self)
     
   def get_network_state(self):
-    return struct.pack("!" + 19 * "f", *self.next_state.matrix) + struct.pack("!" + 19 * "f", *self.speed.matrix)
+    return self.next_state._get_network_state() + self.speed._get_network_state()
   
   def read_network_state(self, f):
     self.network_last_state_round = self.network_next_state_round
@@ -726,8 +775,8 @@ class InterpolatedMobile(Mobile):
     print self.network_next_state_round - self.network_last_state_round
     
     self.network_last_state = soya.CoordSystState(self)
-    self.network_last_state.matrix = struct.unpack("!" + 19 * "f", f.read(76))
-    self.speed.matrix = struct.unpack("!" + 19 * "f", f.read(76))
+    self.network_last_state._read_network_state(f)
+    self.speed._read_network_state(f)
     
   @side("single", "server")
   def begin_round(self):
@@ -757,7 +806,7 @@ class InterpolatedMobile(Mobile):
 
 class AnimatedMobile(Mobile):
   def __init__(self):
-    Mobile.__init__(self)
+    super(AnimatedMobile, self).__init__()
     self.current_animation = ""
     
   def set_animation(self, animation):
@@ -780,8 +829,7 @@ class AnimatedMobile(Mobile):
         
 class InterpolatedAnimatedMobile(InterpolatedMobile, AnimatedMobile):
   def __init__(self):
-    InterpolatedMobile.__init__(self)
-    self.current_animation = ""
+    AnimatedMobile.__init__(self)
     
   def get_network_state(self):
     return InterpolatedMobile.get_network_state(self) + AnimatedMobile.get_network_state(self)
