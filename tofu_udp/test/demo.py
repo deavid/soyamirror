@@ -96,13 +96,6 @@ ACTION_STOP_TURNING  = "|"
 ACTION_TURN_RIGHT    = ">"
 ACTION_JUMP          = "J"
 
-class Action(tofu_udp.Action):
-  def __init__(self, mobile, action):
-    tofu_udp.Action.__init__(self, mobile)
-    self.action = action
-    
-  def dumps(self): return self.action
-  
 class Mobile(tofu_udp.InterpolatedAnimatedMobile):
   def __init__(self):
     tofu_udp.InterpolatedAnimatedMobile.__init__(self)
@@ -125,17 +118,17 @@ class Mobile(tofu_udp.InterpolatedAnimatedMobile):
     for event in soya.process_event():
       if   event[0] == sdlconst.KEYDOWN:
         if   (event[1] == sdlconst.K_q) or (event[1] == sdlconst.K_ESCAPE): soya.MAIN_LOOP.stop()
-        elif event[1] == sdlconst.K_UP:     self.plan_action(Action(self, ACTION_MOVE_FORWARD))
-        elif event[1] == sdlconst.K_DOWN:   self.plan_action(Action(self, ACTION_MOVE_BACKWARD))
-        elif event[1] == sdlconst.K_LEFT:   self.plan_action(Action(self, ACTION_TURN_LEFT))
-        elif event[1] == sdlconst.K_RIGHT:  self.plan_action(Action(self, ACTION_TURN_RIGHT))
-        elif event[1] == sdlconst.K_LSHIFT: self.plan_action(Action(self, ACTION_JUMP))
+        elif event[1] == sdlconst.K_UP:     self.send_action(ACTION_MOVE_FORWARD)
+        elif event[1] == sdlconst.K_DOWN:   self.send_action(ACTION_MOVE_BACKWARD)
+        elif event[1] == sdlconst.K_LEFT:   self.send_action(ACTION_TURN_LEFT)
+        elif event[1] == sdlconst.K_RIGHT:  self.send_action(ACTION_TURN_RIGHT)
+        elif event[1] == sdlconst.K_LSHIFT: self.send_action(ACTION_JUMP)
         
       elif event[0] == sdlconst.KEYUP:
-        if   event[1] == sdlconst.K_UP:    self.plan_action(Action(self, ACTION_STOP_MOVING))
-        elif event[1] == sdlconst.K_DOWN:  self.plan_action(Action(self, ACTION_STOP_MOVING))
-        elif event[1] == sdlconst.K_LEFT:  self.plan_action(Action(self, ACTION_STOP_TURNING))
-        elif event[1] == sdlconst.K_RIGHT: self.plan_action(Action(self, ACTION_STOP_TURNING))
+        if   event[1] == sdlconst.K_UP:    self.send_action(ACTION_STOP_MOVING)
+        elif event[1] == sdlconst.K_DOWN:  self.send_action(ACTION_STOP_MOVING)
+        elif event[1] == sdlconst.K_LEFT:  self.send_action(ACTION_STOP_TURNING)
+        elif event[1] == sdlconst.K_RIGHT: self.send_action(ACTION_STOP_TURNING)
         
 #     if not "jiba" in tofu_udp.LOGIN:
 #       import random

@@ -215,11 +215,10 @@ class MainLoop(soya.MainLoop, Multisided):
               player = self.sock2player.get(sock)
               if mobile and player:
                 if not mobile in player.mobiles: raise ValueError("Player %s cannot send action for mobile %s!" % (player, mobile))
-                action = mobile.load_action(data[11:])
-                action.round  = round
+                action = data[11:]
                 queue = self.action_queues.get(mobile)
-                if queue: queue.append(action)
-                else:     self.action_queues[mobile] = [action]
+                if queue: queue.append((round, action))
+                else:     self.action_queues[mobile] = [(round, action)]
                 
             elif code == CODE_LOGIN_PLAYER:
               if self.sock2player.get(sock): raise ValueError("Cannot log twice!")
@@ -682,11 +681,9 @@ class Mobile(soya.World, Unique):
   def compute_action(self): pass
   
   @side("single", "server")
-  def plan_action(self, action): return self.do_action(action)
+  def send_action(self, action): return self.do_action(action)
   @side("client")
-  def plan_action(self, action): soya.MAIN_LOOP.tcp.write(CODE_ACTION + self.dumpsuid() + struct.pack("!Q", action.round) + action.dumps())
-  
-  def load_action(self, s): raise NotImplementedError("You must override this method!")
+  def send_action(self, action): soya.MAIN_LOOP.tcp.write(CODE_ACTION + self.dumpsuid() + struct.pack("!Q", action.round) + action)
   
   def do_action    (self, action): pass
   def do_physics   (self): pass
@@ -708,8 +705,8 @@ class Mobile(soya.World, Unique):
     else:
       queue = soya.MAIN_LOOP.action_queues.get(self)
       if queue:
-        round = queue[0].round
-        while queue and (queue[0].round == round): self.do_action(queue.pop(0))
+        round = queue[0][0]
+        while queue and (queue[0][0] == round): self.do_action(queue.pop(0)[1])
         
     self.do_physics()
     self.do_collisions()
@@ -740,15 +737,15 @@ class Mobile(soya.World, Unique):
   def loaded(self):
     if self.bot: self.local = 0
     
-  @state("single")
-  def send_message(self, s): self.message_received(s)
-  @state("server")
+  @side("single")
+  def send_message(self, s): self.do_message(s)
+  @side("server")
   def send_message(self, s):
     msg = CODE_MESSAGE + self.dumpsuid() + s
     for player in self.level.players(): player.sock.write(msg)
-    self.message_received(s)
+    self.do_message(s)
     
-  def message_received(self, s): raise NotImplementedError("You must override this method if you want to send message to this object!") 
+  def do_message(self, s): raise NotImplementedError("You must override this method if you want to send message to this object!") 
   
 
 class InterpolatedMobile(Mobile):
