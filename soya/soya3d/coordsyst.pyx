@@ -819,7 +819,7 @@ The axis is defined by a two point (X1, Y1, Z1) and (X2, Y2, Z2)."""
 		return p[0], p[1], p[2]
 	
 	
-	def interpolate(self, CoordSystState state1, CoordSystState state2, float factor):
+	def interpolate(self, _CoordSystState state1, _CoordSystState state2, float factor):
 		"""CoordSyst.interpolate(state1, state2, factor)
 
 Interpolates between STATE1 and STATE2. FACTOR determine the importance of the two
@@ -844,34 +844,7 @@ states(0.0 => STATE1, 1.0 => STATE2)."""
 			matrix_scale(self._matrix, self._matrix[16], self._matrix[17], self._matrix[18])
 		self._invalidate()
 		
-# 	def interpolate_add(self, CoordSystState state1, CoordSystState state2):
-# 		"""CoordSyst.interpolate_add(state1, state2)
-
-# """
-# 		cdef float q [4]
-# 		cdef float m [19]
-# 		cdef float m2[19]
-# 		cdef float factor1
-# 		state1._check_state_validity()
-# 		state2._check_state_validity()
-# 		factor1 = 1.0 - factor
-		
-# 		#quaternion_slerp(q, state1._quaternion, state2._quaternion, factor, factor1)
-# 		#matrix_from_quaternion(m, q)
-# 		#matrix_copy(m2, self._matrix)
-# 		#multiply_matrix(self._matrix, m, m2)
-		
-# 		self._matrix[12] = factor1 * state1._matrix[12] + factor * state2._matrix[12]
-# 		self._matrix[13] = factor1 * state1._matrix[13] + factor * state2._matrix[13]
-# 		self._matrix[14] = factor1 * state1._matrix[14] + factor * state2._matrix[14]
-# 		self._matrix[16] = factor1 * state1._matrix[16] + factor * state2._matrix[16]
-# 		self._matrix[17] = factor1 * state1._matrix[17] + factor * state2._matrix[17]
-# 		self._matrix[18] = factor1 * state1._matrix[18] + factor * state2._matrix[18]
-# 		if (self._matrix[16] != 1.0) or (self._matrix[17] != 1.0) or (self._matrix[18] != 1.0):
-# 			matrix_scale(self._matrix, self._matrix[16], self._matrix[17], self._matrix[18])
-# 		self._invalidate()
-		
-	def add_speed(self, CoordSystSpeed speed):
+	def add_speed(self, _CoordSystSpeed speed):
 		"""CoordSyst.add_speed(speed)
 
 """
@@ -881,14 +854,7 @@ states(0.0 => STATE1, 1.0 => STATE2)."""
 		self._invalidate()
 		
 		
-cdef class CoordSystState(CoordSyst):
-	"""CoordSystState
-
-A State that take care of CoordSyst position, rotation and scaling.
-
-CoordSystState extend CoordSyst, and thus have similar method (e.g. set_xyz, rotate_*,
-scale, ...)"""
-	
+cdef class _CoordSystState(CoordSyst):
 	#cdef float _quaternion[4]
 	
 	def __init__(self, CoordSyst coord_syst):
@@ -961,14 +927,7 @@ Creates a new CoordSystState, with the same position, rotation and scaling than 
 		drop_chunk(chunk)
 		
 
-cdef class CoordSystSpeed(CoordSyst):
-	"""CoordSystSpeed
-
-A Coordinate System "speed" / derivation, taking into account position, rotation and scaling.
-
-CoordSystSpeed extend CoordSyst, and thus have similar method (e.g. set_xyz, rotate_*,
-scale, ...)"""
-	
+cdef class _CoordSystSpeed(CoordSyst):
 	def __init__(self, CoordSyst coord_syst):
 		"""CoordSystSpeed(coord_syst) -> CoordSystSpeed
 

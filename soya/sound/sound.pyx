@@ -233,9 +233,12 @@ cdef class _OGGVorbisSound(_Sound):
 		elif self._format == AL_FORMAT_MONO16  : size = 16384
 		elif self._format == AL_FORMAT_STEREO8 : size = 16384
 		elif self._format == AL_FORMAT_MONO8   : size = 16384 / 2
-		
-		try:    self._file.pcm_seek(i * 8192)
-		except: return "" # End of file
+
+		# Catching exception seems to memory leak in pyrex
+		#try:    self._file.pcm_seek(i * 8192)
+		#except: return "" # End of file
+		if i * 8192 > self._file.pcm_total(0): return "" # End of file
+		self._file.pcm_seek(i * 8192)
 		
 		s = StringIO.StringIO()
 		length = size

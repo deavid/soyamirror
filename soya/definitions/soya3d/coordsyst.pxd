@@ -40,13 +40,13 @@ cdef class PythonCoordSyst(CoordSyst):
 	cdef int _shadow(self, CoordSyst coordsyst, _Light light)
 
 
-cdef class CoordSystState(CoordSyst):
+cdef class _CoordSystState(CoordSyst):
 	cdef float _quaternion[4]
 	
 	cdef void _check_state_validity(self)
 	cdef void __setcstate__(self, object cstate)
 	
-cdef class CoordSystSpeed(CoordSyst):
+cdef class _CoordSystSpeed(CoordSyst):
 	pass
 
 

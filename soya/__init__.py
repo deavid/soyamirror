@@ -841,6 +841,22 @@ class AnimatedModel(Model, _soya._AnimatedModel):
 		return parse_cal3d_cfg_file(file)
 	load = classmethod(load)
 
+class CoordSystState(_soya._CoordSystState):
+	"""CoordSystState
+
+A State that take care of CoordSyst position, rotation and scaling.
+
+CoordSystState extend CoordSyst, and thus have similar method (e.g. set_xyz, rotate_*,
+scale, ...)"""
+class CoordSystSpeed(_soya._CoordSystSpeed):
+	"""CoordSystSpeed
+
+A Coordinate System "speed" / derivation, taking into account position, rotation and scaling.
+
+CoordSystSpeed extend CoordSyst, and thus have similar method (e.g. set_xyz, rotate_*,
+scale, ...)"""
+	
+
 if hasattr(_soya, "_Sound"):
 	# Has sound / OpenAL support
 

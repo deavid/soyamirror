@@ -69,10 +69,10 @@ def parse_cal3d_cfg_file(filename):
 			if len(parts) == 2:
 				key, value = parts
 				value = value.rstrip()
-				try: value = int(value)
-				except:
-					try: value = float(value)
-					except: pass
+				#try: value = int(value)
+				#except:
+				#	try: value = float(value)
+				#	except: pass
 				
 				if already_done.get((key, value)): continue
 				already_done[key, value] = 1
@@ -85,7 +85,7 @@ def parse_cal3d_cfg_file(filename):
 				elif key == "double_sided": model.double_sided = int(value)
 				elif key == "sphere"      : model.sphere       = map(float, value.split())
 				elif key == "cellshading"                    :
-					if value: model.set_cellshading()
+					if int(value): model.set_cellshading()
 				elif key == "cellshading_shader"             : model._shader = soya.Material.get(value)
 				elif key == "cellshading_outline_width"      : model._outline_width       = float(value)
 				elif key == "cellshading_outline_attenuation": model._outline_attenuation = float(value)
@@ -709,18 +709,22 @@ cdef class _AnimatedModel(_Model):
 	cdef _Material _get_material_4_cal3d(self, image_filename, float diffuse_r, float diffuse_g, float diffuse_b, float diffuse_a, float specular_r, float specular_g, float specular_b, float specular_a, float shininess):
 		material_name = os.path.basename(image_filename)
 		material_name = material_name[:material_name.find(".")]
-		try:
-			return Material.get(material_name) # Check for a Soya material with the same name
-		except ValueError: # Not a Soya material
-			return self._create_material_4_cal3d(image_filename, diffuse_r, diffuse_g, diffuse_b, diffuse_a, specular_r, specular_g, specular_b, specular_a, shininess)
+		if material_name in Material.availables(): return Material.get(material_name)
+		else: return self._create_material_4_cal3d(image_filename, diffuse_r, diffuse_g, diffuse_b, diffuse_a, specular_r, specular_g, specular_b, specular_a, shininess)
+
+		#try:
+		#	return Material.get(material_name) # Check for a Soya material with the same name
+		#except ValueError: # Not a Soya material
+		#	return self._create_material_4_cal3d(image_filename, diffuse_r, diffuse_g, diffuse_b, diffuse_a, specular_r, specular_g, specular_b, specular_a, shininess)
 		
 	cdef _Material _create_material_4_cal3d(self, image_filename, float diffuse_r, float diffuse_g, float diffuse_b, float diffuse_a, float specular_r, float specular_g, float specular_b, float specular_a, float shininess):
 		material_name = "__cal3dmaterial_texture_%s_diffuse_%s_%s_%s_%s_specular_%s_%s_%s_%s_shininess_%s__" % (image_filename, diffuse_r , diffuse_g , diffuse_b , diffuse_a, specular_r, specular_g, specular_b, specular_a, shininess)
+		if material_name in Material.availables(): return Material.get(material_name)
 		
-		try:
-			return Material.get(material_name) # Check for an already created material with the same name
-		except ValueError: # Not a Soya material
-			pass
+		#try:
+		#	return Material.get(material_name) # Check for an already created material with the same name
+		#except ValueError: # Not a Soya material
+		#	pass
 		
 		cdef _Material material
 		material = Material()
