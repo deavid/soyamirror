@@ -16,7 +16,7 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 import sys, os, os.path, struct
-import soya, tofu_udp, cerealizer, soya.cerealizer4soya, soya.sdlconst as sdlconst, soya.widget
+import soya, tofu_udp, cerealizer, soya.cerealizer4soya, soya.sdlconst as sdlconst, soya.widget, soya.label3d
 
 HERE = os.path.dirname(sys.argv[0])
 soya.path.append(os.path.join(HERE, "data"))
@@ -34,8 +34,13 @@ class Player(tofu_udp.Player):
     
     mobile = Mobile()
     mobile.set_xyz(108.0, -6.0, 107.0)
+    label = soya.label3d.Label3D(mobile, filename)
+    label.y = 3
+    label.lit = 0
+    label.auto_flip = 1
     level.add_mobile(mobile)
     self.add_mobile(mobile)
+
     
 tofu_udp.CREATE_PLAYER = Player
 
@@ -48,45 +53,53 @@ def create_demo_level():
   level = Level()
   level.static_part = static_part = soya.World(level)
   
-  terrain = soya.Terrain(static_part)
-  terrain.from_image(soya.Image.get("map.png"))
-  terrain.multiply_height(50.0)
-  terrain.scale_factor = 1.5
-  terrain.texture_factor = 1.0
-  terrain.y = -35.0
-  terrain.set_material_layer(soya.Material.get("grass" ),  0.0,  15.0)
-  terrain.set_material_layer(soya.Material.get("ground"), 15.0,  25.0)
-  terrain.set_material_layer(soya.Material.get("snow"  ), 25.0,  50.0)
+#   terrain = soya.Terrain(static_part)
+#   terrain.from_image(soya.Image.get("map.png"))
+#   terrain.multiply_height(50.0)
+#   terrain.scale_factor = 1.5
+#   terrain.texture_factor = 1.0
+#   terrain.y = -35.0
+#   terrain.set_material_layer(soya.Material.get("grass" ),  0.0,  15.0)
+#   terrain.set_material_layer(soya.Material.get("ground"), 15.0,  25.0)
+#   terrain.set_material_layer(soya.Material.get("snow"  ), 25.0,  50.0)
 
-  house1 = soya.Body(static_part, soya.Model.get("ferme"))
-  house1.set_xyz(125.0, -7.2, 91.0)
+#   house1 = soya.Body(static_part, soya.Model.get("ferme"))
+#   house1.set_xyz(125.0, -7.2, 91.0)
 
-  house2 = soya.Body(static_part, soya.Model.get("ferme"))
-  house2.set_xyz(108.0, -11.25, 100.0)
-  house2.rotate_y(100.0)
+#   house2 = soya.Body(static_part, soya.Model.get("ferme"))
+#   house2.set_xyz(108.0, -11.25, 100.0)
+#   house2.rotate_y(100.0)
 
-  sun = soya.Light(static_part)
-  sun.directional = 1
-  sun.diffuse = (1.0, 0.8, 0.4, 1.0)
-  sun.rotate_x(-45.0)
+#   sun = soya.Light(static_part)
+#   sun.directional = 1
+#   sun.diffuse = (1.0, 0.8, 0.4, 1.0)
+#   sun.rotate_x(-45.0)
 
-  level.atmosphere = soya.SkyAtmosphere()
-  level.atmosphere.ambient = (0.3, 0.3, 0.4, 1.0)
-  level.atmosphere.fog = 1
-  level.atmosphere.fog_type  = 0
-  level.atmosphere.fog_start = 40.0
-  level.atmosphere.fog_end   = 50.0
-  level.atmosphere.fog_color = level.atmosphere.bg_color = (0.2, 0.5, 0.7, 1.0)
-  level.atmosphere.skyplane  = 1
-  level.atmosphere.sky_color = (1.5, 1.0, 0.8, 1.0)
+#   level.atmosphere = soya.SkyAtmosphere()
+#   level.atmosphere.ambient = (0.3, 0.3, 0.4, 1.0)
+#   level.atmosphere.fog = 1
+#   level.atmosphere.fog_type  = 0
+#   level.atmosphere.fog_start = 40.0
+#   level.atmosphere.fog_end   = 50.0
+#   level.atmosphere.fog_color = level.atmosphere.bg_color = (0.2, 0.5, 0.7, 1.0)
+#   level.atmosphere.skyplane  = 1
+#   level.atmosphere.sky_color = (1.5, 1.0, 0.8, 1.0)
 
   #level.bot = Bot()
   #level.add_mobile(level.bot)
   #level.bot.set_xyz(128.0, 6.0, 107.0)
   
-  static_part.filename = "demo_static_part"#; static_part.save()
+#  static_part.filename = "demo_static_part"#; static_part.save()
   level      .filename = "demo"            ; level      .save()
-  
+  level.discard()
+
+  level = None
+  import gc
+  gc.collect()
+  gc.collect()
+  gc.collect()
+  gc.collect()
+  print gc.garbage
 
 ACTION_MOVE_FORWARD  = "^"
 ACTION_STOP_MOVING   = "-"
@@ -114,7 +127,7 @@ class Mobile(tofu_udp.InterpolatedAnimatedMobile):
     
     self.counter = 0
     
-  def compute_action(self):
+  def generate_action(self):
     for event in soya.process_event():
       if   event[0] == sdlconst.KEYDOWN:
         if   (event[1] == sdlconst.K_q) or (event[1] == sdlconst.K_ESCAPE): soya.MAIN_LOOP.stop()
@@ -147,23 +160,23 @@ class Mobile(tofu_udp.InterpolatedAnimatedMobile):
   
   def do_action(self, action):
     animation = ""
-    if   action.action == ACTION_MOVE_FORWARD : self.speed.z = -0.35; animation = "marche"
-    elif action.action == ACTION_STOP_MOVING  : self.speed.z =  0.0 ; animation = "attente"
-    elif action.action == ACTION_MOVE_BACKWARD: self.speed.z =  0.2 ; animation = "recule"
+    if   action == ACTION_MOVE_FORWARD : self.speed.z = -0.35; animation = "marche"
+    elif action == ACTION_STOP_MOVING  : self.speed.z =  0.0 ; animation = "attente"
+    elif action == ACTION_MOVE_BACKWARD: self.speed.z =  0.2 ; animation = "recule"
     
-    elif action.action == ACTION_TURN_LEFT:
+    elif action == ACTION_TURN_LEFT:
       self.speed.rotate_lateral( 5.0)
       if self.speed.z == 0.0: animation = "tourneG"
       
-    elif action.action == ACTION_STOP_TURNING :
+    elif action == ACTION_STOP_TURNING :
       self.speed.reset_orientation_scaling()
       if self.speed.z == 0.0: animation = "attente"
       
-    elif action.action == ACTION_TURN_RIGHT:
+    elif action == ACTION_TURN_RIGHT:
       self.speed.rotate_lateral(-5.0)
       if self.speed.z == 0.0: animation = "tourneD"
       
-    elif action.action == ACTION_JUMP:
+    elif action == ACTION_JUMP:
       if self.speed.y == 0.0: self.speed.y = 0.6
       
     if self.speed.y: animation = "chute"
@@ -227,8 +240,7 @@ class Bot(Mobile):
     Mobile.__init__(self)
     self.counter = 0
     
-  def compute_action(self):
-    
+  def generate_action(self):
     self.counter += 1
     if   self.counter == 35: self.plan_action(Action(self, ACTION_MOVE_FORWARD))
     elif self.counter == 55: self.plan_action(Action(self, ACTION_MOVE_BACKWARD)); self.counter = 0
