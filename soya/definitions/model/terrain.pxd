@@ -82,7 +82,6 @@ cdef class _Terrain(CoordSyst):
 	cdef TerrainVertex* _get_vertex(self, int x, int z)
 	cdef void _check_size(self)
 	cdef void _free_patchs(self)
-	cdef void __del__(self)
 	cdef void _add_material(self, _Material material)
 	cdef float _get_height(self, int x, int z)
 	cdef void _set_height (self, int x, int z, float height)

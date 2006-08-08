@@ -378,7 +378,7 @@ cdef class _Terrain(CoordSyst):
 		self._patchs = NULL
 		
 		
-	cdef void __del__(self):
+	def __dealloc__(self):
 		self._free_patchs()
 		self._materials.__imul__(0)
 		free(self._vertices)
