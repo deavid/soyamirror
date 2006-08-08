@@ -265,7 +265,10 @@
     (thanks Souvarine)
   * Add RaypickContext.get_item() (thanks Souvarine)
   * Better font loading under MacOS X (thanks Greg Ewing)
+  * CoordSystSpeed added
   * Bugfixes:
     * Fixes crash on keycodes > 255, and allows Delete as well as
       Backspace for erasing characters, in pudding (thanks Greg Ewing)
-
+    * Severals memory leaks have been fixed (in particular on Terrains
+      and CoordSystStates)
+    * soya.widget.default_font can now be saved as any other fonts.
