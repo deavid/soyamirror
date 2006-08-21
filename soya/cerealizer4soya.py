@@ -111,6 +111,7 @@ cerealizer.register_class(_soya.FlagSubFire)
 #cerealizer.register_class(_soya.Position)
 #cerealizer.register_class(_soya.ModelBuilder)
 #cerealizer.register_class(_soya._CObj)
+cerealizer.register_class(soya.DisplayList)
 
 if hasattr(soya, "Sound"):
 	# Has sound / OpenAL support
@@ -130,9 +131,13 @@ cerealizer.register_alias(soya.TreeModel              , "soya.TreeShape")
 cerealizer.register_alias(soya.AnimatedModel          , "soya.Cal3dShape")
 cerealizer.register_alias(soya.Terrain                , "soya.Land")
 cerealizer.register_alias(soya.SimpleModelBuilder     , "soya.SimpleShapifier")
+cerealizer.register_alias(soya.SimpleModelBuilder     , "_soya.SimpleShapifier")
 cerealizer.register_alias(soya.SolidModelBuilder      , "soya.SolidShapifier")
+cerealizer.register_alias(soya.SolidModelBuilder      , "_soya.SolidShapifier")
 cerealizer.register_alias(soya.CellShadingModelBuilder, "soya.CellShadingShapifier")
+cerealizer.register_alias(soya.CellShadingModelBuilder, "_soya.CellShadingShapifier")
 cerealizer.register_alias(soya.TreeModelBuilder       , "soya.TreeShapifier")
+cerealizer.register_alias(soya.TreeModelBuilder       , "_soya.TreeShapifier")
 
 if __name__ == "__main__": # Testing stuff
 	class W(soya.World):

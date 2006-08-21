@@ -3566,7 +3566,16 @@ And, if you want your objects to be saved in the directory <data>/your_worlds/
  instead of <data>/worlds/, do:
 \layout LyX-Code
 
-YourWorld.DIRNAME = "your_worlds"
+class YourWorld(soya.World):
+\layout LyX-Code
+
+    DIRNAME = "your_worlds"
+\layout LyX-Code
+
+    _alls = weakref.WeakValueDictionary()
+\layout LyX-Code
+
+    ...
 \layout Section
 
 Saving objects
@@ -3918,7 +3927,24 @@ AnimatedModels are loaded as usual, excepted that the model is in the Cal3D
  Auto-exporter works as usual with Blender, and generates Cal3D model as
  required.
  For example to load the Cal3D model located in <data>/animated_models/balazar/
- (corresponding to <data>/blender/balazar.blend, if it exists):
+ (corresponding to <data>/blender/balazar.blend, if it exists
+\begin_inset Foot
+collapsed true
+
+\layout Standard
+
+
+\begin_inset Quotes eld
+\end_inset 
+
+Balazar
+\begin_inset Quotes erd
+\end_inset 
+
+ is just the name of my sorcerer!
+\end_inset 
+
+):
 \layout LyX-Code
 
 sorcerer_model = soya.AnimatedModel.get("balazar")
@@ -4064,10 +4090,83 @@ Attaching objects to bones
 \layout Standard
 
 Soya allows you to attach Soya CoordSyst to the animated bones.
- This is 
+ This is extremely usefull if you want to add items to an animated character,
+ like a sword.
+ It can also be used for manual collision detection, since it allows to
+ know where is located a part of the AnimatedModel.
+ We are going to add a sword to the sorcerer.
+ For that, we first need the sorcerer to be a World (instead of just a Body),
+ and then we create a World corresponding to the right hand of the sorcerer.
+ The right hand is added inside the sorcerer ; this is 
+\series bold 
+mandatory
+\series default 
+ for attaching objects to bone !
+\layout LyX-Code
+
+sorcerer = soya.World(scene, sorcerer_shape)
+\layout LyX-Code
+
+right_hand = soya.World(sorcerer)
 \layout Standard
 
-(see tutorial character-animation-2.py).
+Now, using the World.attach_to_bone(CoordSyst) method, we attach the right
+ hand to the sorcerer's bone named "right_hand" (this is the name given
+ to the bone in Blender).
+ This causes the righ hand World's position and orientation to be automatically
+ updated according to the bone's position and orientation.
+\layout LyX-Code
+
+sorcerer.attach_to_bone(right_hand, "right_hand")
+\layout Standard
+
+And finally, we create a sword Body in the right hand World :
+\layout LyX-Code
+
+sword = soya.Body(right_hand, soya.Model.get("sword"))
+\layout LyX-Code
+
+sword.rotate_z(180.0) # rotate and position the sword as needed
+\layout LyX-Code
+
+sword.set_xyz(0.05, 0.1, 0.0)
+\layout Standard
+
+The resulting scene tree is the following (see tutorial character-animation-2.py)
+:
+\layout LyX-Code
+
+World scene
+\layout LyX-Code
+
+  |
+\layout LyX-Code
+
+  +-- World sorcerer, displaying the Balazar AnimatedModel
+\layout LyX-Code
+
+  |     |
+\layout LyX-Code
+
+  |     +-- World right_hand, attached to the bone named "right_hand"
+\layout LyX-Code
+
+  |           |
+\layout LyX-Code
+
+  |           +-- Body sword, displaying the sword Model
+\layout LyX-Code
+
+  |
+\layout LyX-Code
+
+  +-- Light light
+\layout LyX-Code
+
+  |
+\layout LyX-Code
+
+  +-- Camera camera
 \layout Standard
 \align center 
 
@@ -4079,6 +4178,37 @@ Soya allows you to attach Soya CoordSyst to the animated bones.
 \end_inset 
 
 
+\layout Standard
+
+You can detach a CoordSyst from a bone using the World.detach_from_bone(CoordSyst
+) method.
+\layout Description
+
+Hint: objects that are attached to bone must always be parented to the World
+ that have the AnimatedModel, even if the bones are inserted one inside
+ the other in Blender.
+ For instance, you may have the following scene tree:
+\layout LyX-Code
+
+World scene
+\layout LyX-Code
+
+  |
+\layout LyX-Code
+
+  +-- World sorcerer, displaying the Balazar AnimatedModel
+\layout LyX-Code
+
+        |
+\layout LyX-Code
+
+        +-- World right_arm, attached to the bone named "right_arm"
+\layout LyX-Code
+
+        |
+\layout LyX-Code
+
+        +-- World right_hand, attached to the bone named "right_hand"
 \layout Section
 
 Object reference
@@ -5607,6 +5737,15 @@ Font
 Label3D
 \layout Chapter
 
+Tofu and Soya
+\layout Section
+
+Using the Tofu network engine
+\layout Section
+
+Object reference
+\layout Chapter
+
 Using Soya with...
 \layout Section
 
@@ -5748,4 +5887,28 @@ Hint: Compiling Soya takes quite a long time.
 \layout LyX-Code
 
 export CFLAGS=-O0
+\end_deeper 
+\layout Section
+
+Dealing with Segfaults
+\layout Standard
+
+Sometimes, Soya may crash and cause segmentation faults.
+ It corresponds to error occurring at the Pyrex level.
+ In this case, do as following to obtain a backtrace :
+\layout LyX-Code
+
+gdb python
+\layout LyX-Code
+
+run ./your_soya_script.py
+\layout LyX-Code
+
+[wait until the script crashes]
+\layout LyX-Code
+
+bt
+\layout LyX-Code
+
+[the backtrace is here]
 \the_end

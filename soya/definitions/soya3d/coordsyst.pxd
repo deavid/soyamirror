@@ -32,6 +32,7 @@ cdef class CoordSyst(Position):
 	cdef void _get_sphere(self, float* sphere)
 	cdef void _go_static(self)
 	cdef void _go_not_static(self)
+	cdef void _matrix_into(self, CoordSyst coordsyst, float* result)
 	
  
 cdef class PythonCoordSyst(CoordSyst):

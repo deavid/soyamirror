@@ -40,9 +40,10 @@ cdef class _Light(CoordSyst):
 
 	def __dealloc__(self):
 		cdef int displaylist
-		for displaylist in self._static_shadow_displaylists.values():
-			glDeleteLists(displaylist, 1)
-			
+		if self._static_shadow_displaylists:
+			for displaylist in self._static_shadow_displaylists.values():
+				glDeleteLists(displaylist, 1)
+				
 	def __init__(self, _World parent = None):
 		CoordSyst.__init__(self, parent)
 		self._w          = 1.0

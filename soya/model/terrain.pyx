@@ -380,7 +380,7 @@ cdef class _Terrain(CoordSyst):
 		
 	def __dealloc__(self):
 		self._free_patchs()
-		self._materials.__imul__(0)
+		if self._materials: self._materials.__imul__(0)
 		free(self._vertices)
 		free(self._colors)
 		free(self._normals)

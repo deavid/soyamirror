@@ -160,9 +160,10 @@ cdef class _Sound(_CObj):
 		
 	def __dealloc__(self):
 		cdef ALuint buffer
-		for buffer in self._buffers:
-			alDeleteBuffers(1, &buffer)
-			
+		if self._buffers:
+			for buffer in self._buffers:
+				alDeleteBuffers(1, &buffer)
+				
 	cdef ALuint _getbuffer(self, i): raise NotImplementedError()
 	
 	property stereo:

@@ -818,28 +818,65 @@ The axis is defined by a two point (X1, Y1, Z1) and (X2, Y2, Z2)."""
 		vector_by_matrix(p, self._inverted_root_matrix())
 		return p[0], p[1], p[2]
 	
-	
+	cdef void _matrix_into(self, CoordSyst coordsyst, float* result):
+		cdef float m2[19]
+		if (not self._parent is None) and (not coordsyst is None) and (not self._parent is coordsyst):
+			matrix_copy(m2, self._root_matrix())
+			multiply_matrix(result, coordsyst._inverted_root_matrix(), m2)
+		else:
+			matrix_copy(result, self._matrix)
+			
+# 	def interpolate(self, _CoordSystState state1, _CoordSystState state2, float factor):
+# 		"""CoordSyst.interpolate(state1, state2, factor)
+
+# Interpolates between STATE1 and STATE2. FACTOR determine the importance of the two
+# states(0.0 => STATE1, 1.0 => STATE2)."""
+# 		cdef float q[4]
+# 		cdef float factor1
+# 		state1._check_state_validity()
+# 		state2._check_state_validity()
+# 		factor1 = 1.0 - factor
+		
+# 		quaternion_slerp(q, state1._quaternion, state2._quaternion, factor, factor1)
+		
+# 		matrix_from_quaternion(self._matrix, q)
+		
+# 		self._matrix[12] = factor1 * state1._matrix[12] + factor * state2._matrix[12]
+# 		self._matrix[13] = factor1 * state1._matrix[13] + factor * state2._matrix[13]
+# 		self._matrix[14] = factor1 * state1._matrix[14] + factor * state2._matrix[14]
+# 		self._matrix[16] = factor1 * state1._matrix[16] + factor * state2._matrix[16]
+# 		self._matrix[17] = factor1 * state1._matrix[17] + factor * state2._matrix[17]
+# 		self._matrix[18] = factor1 * state1._matrix[18] + factor * state2._matrix[18]
+# 		if (self._matrix[16] != 1.0) or (self._matrix[17] != 1.0) or (self._matrix[18] != 1.0):
+# 			matrix_scale(self._matrix, self._matrix[16], self._matrix[17], self._matrix[18])
+# 		self._invalidate()
+		
 	def interpolate(self, _CoordSystState state1, _CoordSystState state2, float factor):
 		"""CoordSyst.interpolate(state1, state2, factor)
 
 Interpolates between STATE1 and STATE2. FACTOR determine the importance of the two
 states(0.0 => STATE1, 1.0 => STATE2)."""
-		cdef float q[4]
+		cdef float m1[19]
+		cdef float m2[19]
+		cdef float q [4]
+		cdef float q1[4]
+		cdef float q2[4]
 		cdef float factor1
-		state1._check_state_validity()
-		state2._check_state_validity()
 		factor1 = 1.0 - factor
 		
-		quaternion_slerp(q, state1._quaternion, state2._quaternion, factor, factor1)
-		
+		state1._matrix_into(self.parent, m1)
+		state2._matrix_into(self.parent, m2)
+		quaternion_from_matrix(q1, m1)
+		quaternion_from_matrix(q2, m2)
+		quaternion_slerp(q, q1, q2, factor, factor1)
 		matrix_from_quaternion(self._matrix, q)
 		
-		self._matrix[12] = factor1 * state1._matrix[12] + factor * state2._matrix[12]
-		self._matrix[13] = factor1 * state1._matrix[13] + factor * state2._matrix[13]
-		self._matrix[14] = factor1 * state1._matrix[14] + factor * state2._matrix[14]
-		self._matrix[16] = factor1 * state1._matrix[16] + factor * state2._matrix[16]
-		self._matrix[17] = factor1 * state1._matrix[17] + factor * state2._matrix[17]
-		self._matrix[18] = factor1 * state1._matrix[18] + factor * state2._matrix[18]
+		self._matrix[12] = factor1 * m1[12] + factor * m2[12]
+		self._matrix[13] = factor1 * m1[13] + factor * m2[13]
+		self._matrix[14] = factor1 * m1[14] + factor * m2[14]
+		self._matrix[16] = factor1 * m1[16] + factor * m2[16]
+		self._matrix[17] = factor1 * m1[17] + factor * m2[17]
+		self._matrix[18] = factor1 * m1[18] + factor * m2[18]
 		if (self._matrix[16] != 1.0) or (self._matrix[17] != 1.0) or (self._matrix[18] != 1.0):
 			matrix_scale(self._matrix, self._matrix[16], self._matrix[17], self._matrix[18])
 		self._invalidate()
@@ -849,11 +886,74 @@ states(0.0 => STATE1, 1.0 => STATE2)."""
 
 """
 		cdef float m2[19]
+		#cdef float m3[19]
 		matrix_copy(m2, self._matrix)
+		#speed._matrix_into(self, m3)
+		#multiply_matrix(self._matrix, m2, m3)
 		multiply_matrix(self._matrix, m2, speed._matrix)
 		self._invalidate()
 		
+	def _get_network_state(self):
+		cdef int    flag
+		cdef Chunk* chunk
+
+		flag = 0
+		if (self._matrix[12] != 0.0) or (self._matrix[13] != 0.0) or (self._matrix[14] != 0.0): flag = flag | NETWORK_STATE_HAS_POSITION
+		if (self._matrix[16] != 1.0) or (self._matrix[17] != 1.0) or (self._matrix[18] != 1.0): flag = flag | NETWORK_STATE_HAS_SCALING
+		chunk = get_chunk()
+		chunk_add_float_endian_safe(chunk, self._matrix[ 0])
+		chunk_add_float_endian_safe(chunk, self._matrix[ 1])
+		chunk_add_float_endian_safe(chunk, self._matrix[ 2])
+		chunk_add_float_endian_safe(chunk, self._matrix[ 4])
+		chunk_add_float_endian_safe(chunk, self._matrix[ 5])
+		chunk_add_float_endian_safe(chunk, self._matrix[ 6])
+		chunk_add_float_endian_safe(chunk, self._matrix[ 8])
+		chunk_add_float_endian_safe(chunk, self._matrix[ 9])
+		chunk_add_float_endian_safe(chunk, self._matrix[10])
+		if flag & NETWORK_STATE_HAS_POSITION:
+			chunk_add_float_endian_safe(chunk, self._matrix[12])
+			chunk_add_float_endian_safe(chunk, self._matrix[13])
+			chunk_add_float_endian_safe(chunk, self._matrix[14])
+		if flag & NETWORK_STATE_HAS_SCALING:
+			chunk_add_float_endian_safe(chunk, self._matrix[16])
+			chunk_add_float_endian_safe(chunk, self._matrix[17])
+			chunk_add_float_endian_safe(chunk, self._matrix[18])
+		return chr(flag) + drop_chunk_to_string(chunk)
 		
+	def _read_network_state(self, f):
+		cdef int    flag, size
+		cdef Chunk* chunk
+		
+		flag = ord(f.read(1))
+		size = 36
+		if flag & NETWORK_STATE_HAS_POSITION: size = size + 12
+		if flag & NETWORK_STATE_HAS_SCALING:  size = size + 12
+		
+		chunk = string_to_chunk(f.read(size))
+		chunk_get_float_endian_safe(chunk, &self._matrix[ 0])
+		chunk_get_float_endian_safe(chunk, &self._matrix[ 1])
+		chunk_get_float_endian_safe(chunk, &self._matrix[ 2])
+		chunk_get_float_endian_safe(chunk, &self._matrix[ 4])
+		chunk_get_float_endian_safe(chunk, &self._matrix[ 5])
+		chunk_get_float_endian_safe(chunk, &self._matrix[ 6])
+		chunk_get_float_endian_safe(chunk, &self._matrix[ 8])
+		chunk_get_float_endian_safe(chunk, &self._matrix[ 9])
+		chunk_get_float_endian_safe(chunk, &self._matrix[10])
+		if flag & NETWORK_STATE_HAS_POSITION:
+			chunk_get_float_endian_safe(chunk, &self._matrix[12])
+			chunk_get_float_endian_safe(chunk, &self._matrix[13])
+			chunk_get_float_endian_safe(chunk, &self._matrix[14])
+		else:
+			self._matrix[12] = self._matrix[13] = self._matrix[14] = 0.0
+		if flag & NETWORK_STATE_HAS_SCALING:
+			chunk_get_float_endian_safe(chunk, &self._matrix[16])
+			chunk_get_float_endian_safe(chunk, &self._matrix[17])
+			chunk_get_float_endian_safe(chunk, &self._matrix[18])
+		else:
+			self._matrix[16] = self._matrix[17] = self._matrix[18] = 1.0
+		drop_chunk(chunk)
+		
+				
 cdef class _CoordSystState(CoordSyst):
 	#cdef float _quaternion[4]
 	
@@ -865,6 +965,13 @@ Creates a new CoordSystState, with the same position, rotation and scaling than 
 			self.added_into(coord_syst.parent) # Hack !
 			matrix_copy(self._matrix, coord_syst._matrix)
 			
+	def convert_to(self, CoordSyst parent):
+		cdef float m2[19]
+		if (not self._parent is None) and (not parent is None) and (not self._parent is parent):
+			self._matrix_into(parent, self._matrix)
+		self._invalidate()
+		self.added_into(parent) # Hack !
+		
 	cdef void _invalidate(self):
 		self._validity = COORDSYS_INVALID
 		self._option   = self._option & ~COORDSYST_STATE_VALID
@@ -886,45 +993,6 @@ Creates a new CoordSystState, with the same position, rotation and scaling than 
 			self._option = self._option | COORDSYST_STATE_VALID
 			self._quaternion[0], self._quaternion[1], self._quaternion[2], self._quaternion[3] = q
 			
-	def _get_network_state(self):
-		cdef Chunk* chunk
-		chunk = get_chunk()
-		chunk_add_float_endian_safe(chunk, self._matrix[ 0])
-		chunk_add_float_endian_safe(chunk, self._matrix[ 1])
-		chunk_add_float_endian_safe(chunk, self._matrix[ 2])
-		chunk_add_float_endian_safe(chunk, self._matrix[ 4])
-		chunk_add_float_endian_safe(chunk, self._matrix[ 5])
-		chunk_add_float_endian_safe(chunk, self._matrix[ 6])
-		chunk_add_float_endian_safe(chunk, self._matrix[ 8])
-		chunk_add_float_endian_safe(chunk, self._matrix[ 9])
-		chunk_add_float_endian_safe(chunk, self._matrix[10])
-		chunk_add_float_endian_safe(chunk, self._matrix[12])
-		chunk_add_float_endian_safe(chunk, self._matrix[13])
-		chunk_add_float_endian_safe(chunk, self._matrix[14])
-		chunk_add_float_endian_safe(chunk, self._matrix[16])
-		chunk_add_float_endian_safe(chunk, self._matrix[17])
-		chunk_add_float_endian_safe(chunk, self._matrix[18])
-		return drop_chunk_to_string(chunk)
-		
-	def _read_network_state(self, f):
-		cdef Chunk* chunk
-		chunk = string_to_chunk(f.read(60))
-		chunk_get_float_endian_safe(chunk, &self._matrix[ 0])
-		chunk_get_float_endian_safe(chunk, &self._matrix[ 1])
-		chunk_get_float_endian_safe(chunk, &self._matrix[ 2])
-		chunk_get_float_endian_safe(chunk, &self._matrix[ 4])
-		chunk_get_float_endian_safe(chunk, &self._matrix[ 5])
-		chunk_get_float_endian_safe(chunk, &self._matrix[ 6])
-		chunk_get_float_endian_safe(chunk, &self._matrix[ 8])
-		chunk_get_float_endian_safe(chunk, &self._matrix[ 9])
-		chunk_get_float_endian_safe(chunk, &self._matrix[10])
-		chunk_get_float_endian_safe(chunk, &self._matrix[12])
-		chunk_get_float_endian_safe(chunk, &self._matrix[13])
-		chunk_get_float_endian_safe(chunk, &self._matrix[14])
-		chunk_get_float_endian_safe(chunk, &self._matrix[16])
-		chunk_get_float_endian_safe(chunk, &self._matrix[17])
-		chunk_get_float_endian_safe(chunk, &self._matrix[18])
-		drop_chunk(chunk)
 		
 
 cdef class _CoordSystSpeed(CoordSyst):
@@ -935,7 +1003,7 @@ Creates a new CoordSystSpeed, for the given COORD_SYST."""
 		self._matrix[0] = self._matrix[5] = self._matrix[10] = self._matrix[15] = 1.0
 		self._matrix[16] = self._matrix[17] = self._matrix[18] = 1.0
 		if not coord_syst is None:
-			self.added_into(coord_syst.parent) # Hack !
+			self.added_into(coord_syst) # Hack !
 
 	def reset_orientation_scaling(self):
 		self._matrix[1] = self._matrix[2] = self._matrix[3] = self._matrix[4] = 0.0
@@ -945,47 +1013,7 @@ Creates a new CoordSystSpeed, for the given COORD_SYST."""
 		self._matrix[16] = self._matrix[17] = self._matrix[18] = 1.0
 		self._invalidate()
 		
-	def _get_network_state(self):
-		cdef Chunk* chunk
-		chunk = get_chunk()
-		chunk_add_float_endian_safe(chunk, self._matrix[ 0])
-		chunk_add_float_endian_safe(chunk, self._matrix[ 1])
-		chunk_add_float_endian_safe(chunk, self._matrix[ 2])
-		chunk_add_float_endian_safe(chunk, self._matrix[ 4])
-		chunk_add_float_endian_safe(chunk, self._matrix[ 5])
-		chunk_add_float_endian_safe(chunk, self._matrix[ 6])
-		chunk_add_float_endian_safe(chunk, self._matrix[ 8])
-		chunk_add_float_endian_safe(chunk, self._matrix[ 9])
-		chunk_add_float_endian_safe(chunk, self._matrix[10])
-		chunk_add_float_endian_safe(chunk, self._matrix[12])
-		chunk_add_float_endian_safe(chunk, self._matrix[13])
-		chunk_add_float_endian_safe(chunk, self._matrix[14])
-		chunk_add_float_endian_safe(chunk, self._matrix[16])
-		chunk_add_float_endian_safe(chunk, self._matrix[17])
-		chunk_add_float_endian_safe(chunk, self._matrix[18])
-		return drop_chunk_to_string(chunk)
-		
-	def _read_network_state(self, f):
-		cdef Chunk* chunk
-		chunk = string_to_chunk(f.read(60))
-		chunk_get_float_endian_safe(chunk, &self._matrix[ 0])
-		chunk_get_float_endian_safe(chunk, &self._matrix[ 1])
-		chunk_get_float_endian_safe(chunk, &self._matrix[ 2])
-		chunk_get_float_endian_safe(chunk, &self._matrix[ 4])
-		chunk_get_float_endian_safe(chunk, &self._matrix[ 5])
-		chunk_get_float_endian_safe(chunk, &self._matrix[ 6])
-		chunk_get_float_endian_safe(chunk, &self._matrix[ 8])
-		chunk_get_float_endian_safe(chunk, &self._matrix[ 9])
-		chunk_get_float_endian_safe(chunk, &self._matrix[10])
-		chunk_get_float_endian_safe(chunk, &self._matrix[12])
-		chunk_get_float_endian_safe(chunk, &self._matrix[13])
-		chunk_get_float_endian_safe(chunk, &self._matrix[14])
-		chunk_get_float_endian_safe(chunk, &self._matrix[16])
-		chunk_get_float_endian_safe(chunk, &self._matrix[17])
-		chunk_get_float_endian_safe(chunk, &self._matrix[18])
-		drop_chunk(chunk)
-		
-		
+
 
 cdef class PythonCoordSyst(CoordSyst):
 	"""A CoordSyst whose rendering part is implemented in Python.

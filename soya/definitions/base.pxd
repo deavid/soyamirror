@@ -227,6 +227,9 @@ cdef enum:
 	CAL3D_INITED       = 1 <<  9
 	CAL3D_DOUBLE_SIDED = 1 << 10
 
+cdef enum:
+	NETWORK_STATE_HAS_POSITION = 1 << 0
+	NETWORK_STATE_HAS_SCALING  = 1 << 1
 
 ctypedef struct Frustum:
 ## Frustum

@@ -172,45 +172,105 @@ class SavedInAPath(object):
 Base class for all objects that can be saved in a path, such as Material,
 World,..."""
 	DIRNAME = ""
+	SRC_DIRNAMES_EXTS = []
 	
-	def _check_export(klass, exported_filename, filename, *source_dirnames):
-		"""_check_export(FILENAME, *(SOURCE_DIRNAME, SOURCE_FILENAME)) -> (SOURCE_DIRNAME, SOURCE_FULL_FILENAME, FULL_FILENAME)
-
-Search soya.path for a file FILENAME.data in the self.DIRNAME directory,
-and check if the file needs to be re-exporter from any of the SOURCE_DIRNAMES directory.
-
-Returned tuple :
-FULL_FILENAME is the complete filename of the object.
-If SOURCE_DIRNAME is None, the exported object is up-to-date.
-If SOURCE_DIRNAME is one of SOURCE_DIRNAMES, the source object of this directory have been
-modified more recently that the exported one, and SOURCE_FULL_FILENAME is the complete
-filename of the source that needs to be re-exported."""
-		if (not os.path.exists(os.path.join(path[0], klass.DIRNAME))) and os.path.exists(os.path.join(path[0], "shapes")): # Backward compatibility
-			if   klass.DIRNAME == "models"         : klass.DIRNAME = "shapes"
-			elif klass.DIRNAME == "animated_models": klass.DIRNAME = "shapes"
-			
-		filename = filename.replace("/", os.sep)
-		for p in path:
-			file = os.path.join(p, klass.DIRNAME , exported_filename)
-			
-			if   os.path.exists(file):
-				if AUTO_EXPORTERS_ENABLED:
-					for source_dirname, source_filename in source_dirnames:
-						source_file = os.path.join(p, source_dirname, source_filename)
-						if os.path.exists(source_file) and (os.path.getmtime(file) < os.path.getmtime(source_file)):
-							print "* Soya * Converting %s to %s..." % (source_file, klass.__name__)
-							return source_dirname, source_file, file
-				return None, None, file
+	def _get_directory_for_loading(klass, filename, ext = ".data"):
+		if os.pardir in filename: raise ValueError("Cannot have .. in filename (security reason)!", filename)
+		
+		if klass.DIRNAME in ("models", "animated_models"):
+			for p in path:
+				if os.path.exists(os.path.join(p, klass.DIRNAME)): break
 			else:
-				if AUTO_EXPORTERS_ENABLED:
-					for source_dirname, source_filename in source_dirnames:
-						source_file = os.path.join(p, source_dirname, source_filename)
-						if os.path.exists(source_file):
-							print "* Soya * Converting %s to %s..." % (source_file, klass.__name__)
-							return source_dirname, source_file, file
-					
-		raise ValueError("No %s or %s named %s" % (klass.__name__, source_dirnames, filename))
-	_check_export = classmethod(_check_export)
+				Model.DIRNAME = AnimatedModel.DIRNAME = "shapes"
+				return klass._get_directory_for_loading(filename, ext)
+			
+		src_filename = filename.split("@")[0]
+		for p in path:
+			d = os.path.join(p, klass.DIRNAME, filename + ext)
+			if os.path.exists(d): return p
+			for src_dirname, src_ext in klass.SRC_DIRNAMES_EXTS:
+				d = os.path.join(p, src_dirname, src_filename + src_ext)
+				if os.path.exists(d): return p
+				
+		raise ValueError("Cannot find a %s named %s!" % (klass, filename))
+			
+	_get_directory_for_loading = classmethod(_get_directory_for_loading)
+	
+	def _get_directory_for_saving(klass, filename, ext = ".data"):
+		if os.pardir in filename: raise ValueError("Cannot have .. in filename (security reason)!", filename)
+		
+		if klass.DIRNAME in ("models", "animated_models"):
+			for p in path:
+				if os.path.exists(os.path.join(p, klass.DIRNAME)): break
+			else:
+				Model.DIRNAME = AnimatedModel.DIRNAME = "shapes"
+				return klass._get_directory_for(filename, ext, raise_error)
+			
+		src_filename = filename.split("@")[0]
+		for p in path:
+			d = os.path.join(p, klass.DIRNAME)
+			if os.path.exists(d): return p				
+			
+	_get_directory_for_saving = classmethod(_get_directory_for_saving)
+	
+	def _get_directory_for_loading_and_check_export(klass, filename, ext = ".data"):
+		dirname = klass._get_directory_for_loading(filename, ext)
+		if AUTO_EXPORTERS_ENABLED:
+			src_filename  = filename.split("@")[0]
+			full_filename = os.path.join(dirname, klass.DIRNAME, filename + ext)
+			if os.path.exists(full_filename): exported_date = os.path.getmtime(full_filename)
+			else:                             exported_date = 0
+			for src_dirname, src_ext in klass.SRC_DIRNAMES_EXTS:
+				d = os.path.join(dirname, src_dirname, src_filename + src_ext)
+				if os.path.exists(d) and exported_date < os.path.getmtime(d):
+					print "* Soya * Converting %s to %s..." % (d, klass.__name__)
+					klass._export(d, filename)
+					break
+		return dirname
+	
+	_get_directory_for_loading_and_check_export = classmethod(_get_directory_for_loading_and_check_export)
+	
+	def _export(klass, src, filename): raise NotImplementedError
+	_export = classmethod(_export)
+	
+# 	def _check_export(klass, exported_filename, filename, *source_dirnames):
+# 		"""_check_export(FILENAME, *(SOURCE_DIRNAME, SOURCE_FILENAME)) -> (SOURCE_DIRNAME, SOURCE_FULL_FILENAME, FULL_FILENAME)
+
+# Search soya.path for a file FILENAME.data in the self.DIRNAME directory,
+# and check if the file needs to be re-exporter from any of the SOURCE_DIRNAMES directory.
+
+# Returned tuple :
+# FULL_FILENAME is the complete filename of the object.
+# If SOURCE_DIRNAME is None, the exported object is up-to-date.
+# If SOURCE_DIRNAME is one of SOURCE_DIRNAMES, the source object of this directory have been
+# modified more recently that the exported one, and SOURCE_FULL_FILENAME is the complete
+# filename of the source that needs to be re-exported."""
+# 		if (not os.path.exists(os.path.join(path[0], klass.DIRNAME))) and os.path.exists(os.path.join(path[0], "shapes")): # Backward compatibility
+# 			if   klass.DIRNAME == "models"         : klass.DIRNAME = "shapes"
+# 			elif klass.DIRNAME == "animated_models": klass.DIRNAME = "shapes"
+			
+# 		filename = filename.replace("/", os.sep)
+# 		for p in path:
+# 			file = os.path.join(p, klass.DIRNAME , exported_filename)
+			
+# 			if   os.path.exists(file):
+# 				if AUTO_EXPORTERS_ENABLED:
+# 					for source_dirname, source_filename in source_dirnames:
+# 						source_file = os.path.join(p, source_dirname, source_filename)
+# 						if os.path.exists(source_file) and (os.path.getmtime(file) < os.path.getmtime(source_file)):
+# 							print "* Soya * Converting %s to %s..." % (source_file, klass.__name__)
+# 							return source_dirname, source_file, file
+# 				return None, None, file
+# 			else:
+# 				if AUTO_EXPORTERS_ENABLED:
+# 					for source_dirname, source_filename in source_dirnames:
+# 						source_file = os.path.join(p, source_dirname, source_filename)
+# 						if os.path.exists(source_file):
+# 							print "* Soya * Converting %s to %s..." % (source_file, klass.__name__)
+# 							return source_dirname, source_file, file
+						
+# 		raise ValueError("No %s or %s named %s" % (klass.__name__, source_dirnames, filename))
+# 	_check_export = classmethod(_check_export)
 	
 	def get(klass, filename):
 		"""SavedInAPath.get(filename)
@@ -228,15 +288,11 @@ Raise ValueError if the file is not found in soya.path."""
 Loads the object of this class with the given FILENAME attribute.
 Contrary to get, load ALWAYS returns a new object.
 Raise ValueError if the file is not found in soya.path."""
-		if ".." in filename: raise ValueError("Cannot have .. in filename (security reason)!", filename)
+		dirname  = klass._get_directory_for_loading_and_check_export(filename)
 		filename = filename.replace("/", os.sep)
-		for p in path:
-			file = os.path.join(p, klass.DIRNAME, filename + ".data")
-			if os.path.exists(file):
-				obj = loads(open(file, "rb").read())
-				obj.loaded()
-				return obj
-		raise ValueError("No %s named %s" % (klass.__name__, filename))
+		obj = loads(open(os.path.join(dirname, klass.DIRNAME, filename + ".data"), "rb").read())
+		obj.loaded()
+		return obj
 	load = classmethod(load)
 	_reffed = get
 	
@@ -249,17 +305,14 @@ Raise ValueError if the file is not found in soya.path."""
 Saves this object. If no FILENAME is given, the object is saved in the path,
 using its filename attribute. If FILENAME is given, it is saved at this
 location."""
-		if ".." in self.filename: raise ValueError("Cannot have .. in filename (security reason)!", filename)
-		if (not os.path.exists(os.path.join(path[0], self.DIRNAME))) and os.path.exists(os.path.join(path[0], "shapes")): # Backward compatibility
-			if   self.DIRNAME == "models"         : self.__class__.DIRNAME = "shapes"
-			elif self.DIRNAME == "animated_models": self.__class__.DIRNAME = "shapes"
-			#elif self.DIRNAME == "worlds"         : self.__class__.DIRNAME = "groups"
-			
+		if os.pardir in self.filename: raise ValueError("Cannot have .. in filename (security reason)!", filename)
+		if not filename: filename = os.path.join(self._get_directory_for_saving(self.filename, ".data"), self.DIRNAME, self.filename + ".data")
+		
 		global _SAVING
 		try:
 			_SAVING = self # Hack !!
 			data = dumps(self, 1) # Avoid destroying the file if the serialization causes an error.
-			open(filename or os.path.join(path[0], self.DIRNAME, self.filename.replace("/", os.sep)) + ".data", "wb").write(data)
+			open(filename or os.path.join(p, self.filename.replace("/", os.sep)) + ".data", "wb").write(data)
 		finally:
 			_SAVING = None
 			
@@ -289,8 +342,10 @@ Returns the list of the filename all the objects available in the current path."
 		import dircache
 		filenames = dict(klass._alls)
 		for p in path:
-			for filename in dircache.listdir(os.path.join(p, klass.DIRNAME)):
-				if filename.endswith(".data"): filenames[filename[:-5]] = 1
+			p = os.path.join(p, klass.DIRNAME)
+			if os.path.exists(p):
+				for filename in dircache.listdir(p):
+					if filename.endswith(".data"): filenames[filename[:-5]] = 1
 		filenames = filenames.keys()
 		filenames.sort()
 		return filenames
@@ -385,29 +440,40 @@ Attributes are:
 """
 
 	DIRNAME = "materials"
+	SRC_DIRNAMES_EXTS = [("images", ".png"), ("images", ".jpeg")]
 	_alls = weakref.WeakValueDictionary()
 	
-	def load(klass, filename):
-		if ".." in filename: raise ValueError("Cannot have .. in filename (security reason)!", filename)
-		need_export, image_file, file = klass._check_export(filename + ".data", filename, (Image.DIRNAME, filename + ".png"), (Image.DIRNAME, filename + ".jpeg"))
-		if need_export and AUTO_EXPORTERS_ENABLED:
-			image = Image.get(os.path.basename(image_file))
-			if os.path.exists(file): material = loads(open(file, "rb").read())
-			else:
-				material = Material()
-				material._filename = filename
-			material.texture = image
-			try: material.save()
-			except:
-				sys.excepthook(*sys.exc_info())
-				print "* Soya * WARNING : can't save material %s!" % filename
-			return material
+	def _export(klass, src, filename):
+		image = Image.get(os.path.basename(src))
+		p = os.path.join(os.path.dirname(src), os.pardir, klass.DIRNAME, filename + ".data")
+		if os.path.exists(p): material = loads(open(p, "rb").read())
 		else:
-			obj = loads(open(file, "rb").read())
-			obj.loaded()
-			return obj
+			material = Material()
+			material.filename = filename
+		material.texture = image
+		material.save()
+	_export = classmethod(_export)
+# 	def load(klass, filename):
+# 		if ".." in filename: raise ValueError("Cannot have .. in filename (security reason)!", filename)
+# 		need_export, image_file, file = klass._check_export(filename + ".data", filename, (Image.DIRNAME, filename + ".png"), (Image.DIRNAME, filename + ".jpeg"))
+# 		if need_export and AUTO_EXPORTERS_ENABLED:
+# 			image = Image.get(os.path.basename(image_file))
+# 			if os.path.exists(file): material = loads(open(file, "rb").read())
+# 			else:
+# 				material = Material()
+# 				material._filename = filename
+# 			material.texture = image
+# 			try: material.save()
+# 			except:
+# 				sys.excepthook(*sys.exc_info())
+# 				print "* Soya * WARNING : can't save material %s!" % filename
+# 			return material
+# 		else:
+# 			obj = loads(open(file, "rb").read())
+# 			obj.loaded()
+# 			return obj
 
-	load = classmethod(load)
+# 	load = classmethod(load)
 
 class PythonMaterial(_soya._PythonMaterial, Material):
 	pass
@@ -422,24 +488,31 @@ A Model is an optimized model. Models cannot be modified, but they are rendered 
 quickly, and they can be used several time, e.g. if you want to 2 same cubes in a scene.
 Models are used in conjunction with Body."""
 	DIRNAME = "models"
+	SRC_DIRNAMES_EXTS = [("blender", ".blend"), ("obj", ".obj"), ("obj", ".mtl"), ("3ds", ".3ds"), ("worlds", ".data")]
 	_alls = weakref.WeakValueDictionary()
 	
-	def load(klass, filename):
-		if ".." in filename: raise ValueError("Cannot have .. in filename (security reason)!", filename)
-		need_export, world_file, file = klass._check_export(filename + ".data", filename, (World.DIRNAME, filename + ".data"), ("blender", filename.split("@")[0] + ".blend"), ("obj", filename + ".obj"), ("obj", filename + ".mtl"), ("3ds", filename + ".3ds"))
-		if need_export and AUTO_EXPORTERS_ENABLED:
-			model = World.get(filename).to_model()
-			model._filename = filename
-			try: model.save()
-			except:
-				sys.excepthook(*sys.exc_info())
-				print "* Soya * WARNING : can't save compiled model %s!" % filename
-			return model
-		else:
-			obj = loads(open(file, "rb").read())
-			obj.loaded()
-			return obj
-	load = classmethod(load)
+	def _export(klass, src, filename):
+		model = World.get(filename).to_model()
+		model.filename = filename
+		model.save()
+	_export = classmethod(_export)
+
+# 	def load(klass, filename):
+# 		if ".." in filename: raise ValueError("Cannot have .. in filename (security reason)!", filename)
+# 		need_export, world_file, file = klass._check_export(filename + ".data", filename, (World.DIRNAME, filename + ".data"), ("blender", filename.split("@")[0] + ".blend"), ("obj", filename + ".obj"), ("obj", filename + ".mtl"), ("3ds", filename + ".3ds"))
+# 		if need_export and AUTO_EXPORTERS_ENABLED:
+# 			model = World.get(filename).to_model()
+# 			model._filename = filename
+# 			try: model.save()
+# 			except:
+# 				sys.excepthook(*sys.exc_info())
+# 				print "* Soya * WARNING : can't save compiled model %s!" % filename
+# 			return model
+# 		else:
+# 			obj = loads(open(file, "rb").read())
+# 			obj.loaded()
+# 			return obj
+# 	load = classmethod(load)
 	
 	def availables(klass): return World.availables()
 	availables = classmethod(availables)
@@ -541,65 +614,94 @@ Attributes are (see also Body, CoordSyst and SavedInAPath for inherited attribut
 """
 
 	DIRNAME = "worlds"
+	SRC_DIRNAMES_EXTS = [("blender", ".blend"), ("obj", ".obj"), ("obj", ".mtl"), ("3ds", ".3ds")]
 	_alls = weakref.WeakValueDictionary()
 	
 	def loaded(self):
 		SavedInAPath.loaded(self)
 		for i in self:
 			if hasattr(i, "loaded"): i.loaded()
-				
-	def load(klass, filename):
-		global path
+			
+	def _export(klass, src, filename):
+		if   src.endswith(".blend"):
+			import tempfile
+			tmp_file = tempfile.mkstemp()[1]
+			do_cmd("blender %s -P %s FILENAME=%s TMP_FILE=%s %s" % (
+				src,
+				os.path.join(os.path.dirname(__file__), "blender2soya_batch.py"),
+				filename,
+				tmp_file,
+				(" CONFIG_TEXT=%s" % filename.split("@")[-1]) * bool("@" in filename),
+				))
+			code = open(tmp_file).read()
+			os.unlink(tmp_file)
+			exec code
+			
+		elif src.endswith(".obj") or src.endswith(".mtl"):
+			import soya.objmtl2soya
+			world = soya.objmtl2soya.loadObj(os.path.splitext(src)[0] + ".obj")
+			world.filename = filename
+			world.save()
+			
+		elif src.endswith(".3ds"):
+			import soya._3DS2soya
+			world = soya._3DS2soya.load_3ds(os.path.splitext(src)[0] + ".3ds")
+			world.filename = filename
+			world.save()
+	_export = classmethod(_export)
+	
+# 	def load(klass, filename):
+# 		global path
 		
-		if ".." in filename: raise ValueError("Cannot have .. in filename (security reason)!", filename)
-		need_export, source_file, file = klass._check_export(filename + ".data", filename, ("blender", filename.split("@")[0] + ".blend"), ("obj", filename + ".obj"), ("obj", filename + ".mtl"), ("3ds", filename + ".3ds"))
-		if need_export and AUTO_EXPORTERS_ENABLED:
-			if   need_export == "blender":
-				if dumps is pickle.dumps: file_format = "pickle"
-				else:                     file_format = "cerealizer"
+# 		if ".." in filename: raise ValueError("Cannot have .. in filename (security reason)!", filename)
+# 		need_export, source_file, file = klass._check_export(filename + ".data", filename, ("blender", filename.split("@")[0] + ".blend"), ("obj", filename + ".obj"), ("obj", filename + ".mtl"), ("3ds", filename + ".3ds"))
+# 		if need_export and AUTO_EXPORTERS_ENABLED:
+# 			if   need_export == "blender":
+# 				if dumps is pickle.dumps: file_format = "pickle"
+# 				else:                     file_format = "cerealizer"
 				
-				extra = ""
-				if "@" in filename:
-					extra += " CONFIG_TEXT=%s" % filename[filename.index("@") + 1:]
+# 				extra = ""
+# 				if "@" in filename:
+# 					extra += " CONFIG_TEXT=%s" % filename[filename.index("@") + 1:]
 
-				import tempfile
-				tmp_file = tempfile.mkstemp()[1]
-				do_cmd("blender %s -P %s --blender2soya FILENAME=%s FILE_FORMAT=%s TMP_FILE=%s %s" % (
-					source_file,
-					os.path.join(os.path.dirname(__file__), "blender2soya_batch.py"),
-					filename,
-					file_format,
-					tmp_file,
-					extra,
-					))
-				code = open(tmp_file).read()
-				os.unlink(tmp_file)
+# 				import tempfile
+# 				tmp_file = tempfile.mkstemp()[1]
+# 				do_cmd("blender %s -P %s --blender2soya FILENAME=%s FILE_FORMAT=%s TMP_FILE=%s %s" % (
+# 					source_file,
+# 					os.path.join(os.path.dirname(__file__), "blender2soya_batch.py"),
+# 					filename,
+# 					file_format,
+# 					tmp_file,
+# 					extra,
+# 					))
+# 				code = open(tmp_file).read()
+# 				os.unlink(tmp_file)
 				
-				old_path = path
+# 				old_path = path
 				
-				exec code
+# 				exec code
 				
-				path = old_path
+# 				path = old_path
 				
-			elif need_export == "obj":
-				import soya.objmtl2soya
-				world = soya.objmtl2soya.loadObj(os.path.splitext(source_file)[0] + ".obj")
-				world.filename = filename
-				world.save()
-				return world
+# 			elif need_export == "obj":
+# 				import soya.objmtl2soya
+# 				world = soya.objmtl2soya.loadObj(os.path.splitext(source_file)[0] + ".obj")
+# 				world.filename = filename
+# 				world.save()
+# 				return world
 			
-			elif need_export == "3ds":
-				import soya._3DS2soya
-				world = soya._3DS2soya.load_3ds(os.path.splitext(source_file)[0] + ".3ds")
-				world.filename = filename
-				world.save()
-				return world
+# 			elif need_export == "3ds":
+# 				import soya._3DS2soya
+# 				world = soya._3DS2soya.load_3ds(os.path.splitext(source_file)[0] + ".3ds")
+# 				world.filename = filename
+# 				world.save()
+# 				return world
 			
-		obj = loads(open(file, "rb").read())
-		obj.loaded()
-		return obj
-	load = classmethod(load)
-	_reffed = load
+# 		obj = loads(open(file, "rb").read())
+# 		obj.loaded()
+# 		return obj
+# 	load = classmethod(load)
+World._reffed = World.load
 	
 
 class Light(_soya._Light):
@@ -820,25 +922,23 @@ class FixTraveling(_soya._FixTraveling):
 
 class AnimatedModel(Model, _soya._AnimatedModel):
 	DIRNAME = "animated_models"
+	SRC_DIRNAMES_EXTS = [("blender", ".blend")]
 	_alls = weakref.WeakValueDictionary()
 	
+	def _export(klass, src, filename):
+		if   src.endswith(".blend"):
+			do_cmd("blender %s -P %s --blender2cal3d FILENAME=%s EXPORT_FOR_SOYA=1 XML=0 %s" % (
+				src,
+				os.path.join(os.path.dirname(__file__), "blender2cal3d.py"),
+				os.path.join(os.path.dirname(src), os.pardir, AnimatedModel.DIRNAME, filename, filename + ".cfg"),
+				(" CONFIG_TEXT=%s" % filename.split("@")[-1]) * bool("@" in filename),
+				))
+	_export = classmethod(_export)
+			
 	def load(klass, filename):
-		if ".." in filename: raise ValueError("Cannot have .. in filename (security reason)!", filename)
-		need_export, source_file, file = klass._check_export(os.path.join(filename, filename + ".cfg"), filename, ("blender", filename.split("@")[0] + ".blend"))
-		if need_export and AUTO_EXPORTERS_ENABLED:
-			if need_export == "blender":
-				extra = ""
-				if "@" in filename:
-					extra += "CONFIG_TEXT=%s" % filename[filename.index("@") + 1:]
-					
-				do_cmd("blender %s -P %s --blender2cal3d FILENAME=%s EXPORT_FOR_SOYA=1 XML=0 %s" % (
-					source_file,
-					os.path.join(os.path.dirname(__file__), "blender2cal3d.py"),
-					os.path.join(os.path.dirname(source_file), "..", AnimatedModel.DIRNAME, filename, filename + ".cfg"),
-					extra,
-					))
-				
-		return parse_cal3d_cfg_file(file)
+		filename = filename.replace("/", os.sep)
+		dirname  = klass._get_directory_for_loading_and_check_export(filename, os.sep + filename + ".cfg")
+		return parse_cal3d_cfg_file(os.path.join(dirname, klass.DIRNAME, filename, filename + ".cfg"))
 	load = classmethod(load)
 
 class CoordSystState(_soya._CoordSystState):
@@ -937,7 +1037,7 @@ if hasattr(_soya, "_Sound"):
 	The default implementation removes the SoundPlayer, if SoundPlayer.auto_remove is true."""
 			# Implemented in Python because of the lambda
 			if self.auto_remove:
-				MAIN_LOOP.next_round_tasks.append(lambda: self.parent.remove(self))
+				MAIN_LOOP.next_round_tasks.append(lambda: self.parent and self.parent.remove(self))
 		
 
 
@@ -983,6 +1083,9 @@ Returns the list of the filename all the objects available in the current path."
 		return filenames
 	availables = classmethod(availables)
 	
+
+class DisplayList(_soya._DisplayList):
+	pass
 
 _soya.Image            = Image
 _soya.Material         = Material

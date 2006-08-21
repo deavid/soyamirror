@@ -55,7 +55,6 @@ cdef class Renderer:
 	#cdef top_lights # contain top level activated lights
 	#cdef worlds_made  # list of world whose context has been made (used by portals to determine if a world must be batched or not)
 	#cdef portals  # a list of encountered portals to clear_part the atmosphere before any other rendering and to draw fog at the end
-	#cdef watercubes  #watercube must be rendered at last cause there is a hack with the depth buffer
 	
 	# mesh renderer
 	#cdef Chunk* data
@@ -74,7 +73,6 @@ cdef class Renderer:
 		self.top_lights    = []
 		self.worlds_made   = []
 		self.portals       = []
-		self.watercubes    = []
 		self.contexts      = []
 
 		self.opaque        = get_chunk()
@@ -154,7 +152,6 @@ cdef class Renderer:
 		self.top_lights .__imul__(0)
 		self.worlds_made.__imul__(0)
 		self.portals    .__imul__(0)
-		self.watercubes .__imul__(0)
 		self.opaque     .nb = 0
 		self.secondpass .nb = 0
 		self.alpha      .nb = 0
@@ -226,8 +223,6 @@ cdef class Renderer:
 		# render specials: objects that are not shadowed (sprite, particules)
 		self.state = RENDERER_STATE_SPECIAL
 		self._render_list (self.specials)
-		# render watercube
-		#for watercube in self.watercubes: watercube._render_watercube()
 			
 		# end of OpenGL rendering
 		glDepthMask(GL_TRUE)
@@ -426,3 +421,17 @@ Renders the 3D scene. Use set_root_widget() to choose which camera is used."""
 
 def get_screen_width (): return renderer.screen_width
 def get_screen_height(): return renderer.screen_height
+
+
+cdef class _DisplayList(_CObj):
+	cdef int _id
+	property id:
+		def __get__(self):
+			if self._id == 0: self._id = glGenLists(1)
+			return self._id
+		
+	def __dealloc__(self):
+		if not self._id == 0:
+			glDeleteLists(self._id, 1)
+			self._id = -1
+

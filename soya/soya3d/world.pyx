@@ -257,21 +257,15 @@ When the World is moved / rotated / scaled, all its children are moved / rotated
 with it.
 """
 		if isinstance(child, _World):
-			if self.is_inside(child):
-				raise ValueError("Cyclic addition!")
+			if self.is_inside(child):	raise ValueError("Cyclic addition!")
 			
 		cdef float* m
 		cdef float* p
 		if not child._parent is None:
-			m = <float*> malloc(19 * sizeof(float))
-			p = <float*> malloc( 3 * sizeof(float))
-			child._into(self, p)
-			matrix_copy(m, child._matrix); multiply_matrix(child._matrix, m, child._parent._root_matrix())
-			matrix_copy(m, child._matrix); multiply_matrix(child._matrix, m, self._inverted_root_matrix())
+			if child._parent is self: return
+			child._matrix_into(self, child._matrix)
+			child._invalidate()
 			child._parent.remove(child)
-			memcpy(child._matrix + 12, p, 3 * sizeof(float))
-			free(m)
-			free(p)
 		self.children.append(child)
 		child._invalidate()
 		

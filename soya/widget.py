@@ -216,16 +216,13 @@ class Label(Widget):
 		Widget.resize(self, parent_left, parent_top, parent_width, parent_height)
 		
 	def __init__(self, master = None, text = "", align = 0, color = (1.0, 1.0, 1.0, 1.0), font = None, resize_style = None):
-		self._text    = text
-		self._color   = color
-		self._font    = font or default_font
-		self._align   = align # align: 0 left, 1 center
-		self._changed = -2
-		self._id      = glGenList()
+		self._text         = text
+		self._color        = color
+		self._font         = font or default_font
+		self._align        = align # align: 0 left, 1 center
+		self._changed      = -2
+		self._display_list = soya.DisplayList()
 		Widget.__init__(self, master, resize_style)
-		
-	def __del__(self):
-		glDeleteList(self._id)
 		
 	def build_display_list(self):
 		"""Label.build_display_list()
@@ -242,12 +239,12 @@ It might call glyph tessellation that would be included in the display list !"""
 		if self._changed != self._font._pixels_height:
 			self._font.create_glyphs(self._text)
 			
-			glNewList(self._id, GL_COMPILE_AND_EXECUTE)
+			glNewList(self._display_list.id, GL_COMPILE_AND_EXECUTE)
 			self.build_display_list()
 			glEndList()
 			self._changed = self._font._pixels_height
 		else:
-			glCallList(self._id)
+			glCallList(self._display_list.id)
 			
 
 

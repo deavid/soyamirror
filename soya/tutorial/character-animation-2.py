@@ -63,7 +63,6 @@ sorcerer.attach_to_bone(right_hand, "mainD")
 #soya.Face(sword, [soya.Vertex(sword, 0.0, 0.0, 0.0), soya.Vertex(sword, 0.0, 1.0, 0.0), soya.Vertex(sword, 1.0, 0.0, 0.0)])
 #epee = soya.Body(scene, sword.to_model())
 
-right_hand_item = soya.Body(right_hand)
 right_hand_item = soya.Body(right_hand, soya.Model.get("sword"))
 right_hand_item.rotate_z(180.0)
 right_hand_item.set_xyz(0.05, 0.1, 0.0)

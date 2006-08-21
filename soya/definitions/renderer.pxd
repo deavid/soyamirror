@@ -52,7 +52,6 @@ cdef class Renderer:
 	cdef top_lights # contain top level activated lights
 	cdef worlds_made  # list of world whose context has been made (used by portals to determine if a world must be batched or not)
 	cdef portals  # a list of encountered portals to clear_part the atmosphere before any other rendering and to draw fog at the end
-	cdef watercubes  #watercube must be rendered at last cause there is a hack with the depth buffer
 	
 	# mesh renderer
 	cdef Chunk* data
@@ -76,4 +75,5 @@ cdef class Renderer:
 	cdef void _render_shadows(self)
 
 
+cdef class _DisplayList(_CObj)
 

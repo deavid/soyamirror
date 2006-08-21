@@ -54,26 +54,22 @@ Attributes :
 	def __init__(self, parent = None, text = "", font = None, size = 0.01):
 		soya.PythonCoordSyst.__init__(self, parent)
 		
-		self._text     = text
-		self._font     = font or widget.default_font
-		self.size      = 0.01
-		self._lit      = 1
-		self._color    = soya.WHITE
-		self._center_x = 0
-		self._center_y = 0
-		self.auto_flip = 1
+		self._text         = text
+		self._font         = font or widget.default_font
+		self._size         = size
+		self._lit          = 1
+		self._color        = soya.WHITE
+		self._center_x     = 0
+		self._center_y     = 0
+		self.auto_flip     = 1
 		
-		self._id       = opengl.glGenList()
-		self._changed  = -2
+		self._display_list = soya.DisplayList()
+		self._changed      = -2
 		
 	def __setstate__(self, state):
 		soya.PythonCoordSyst.__setstate__(self, state)
 		
-		self._id       = opengl.glGenList()
 		self._changed  = -2
-		
-	def __del__(self):
-		opengl.glDeleteList(self._id)
 		
 	def get_font     (self): return self._font
 	def set_font     (self, x): self._font  = x; self._changed = -2
@@ -104,24 +100,22 @@ Attributes :
 	
 	def render(self):
 		soya.DEFAULT_MATERIAL.activate()
-		#self.build_display_list()
-		#return
 		
 		if self._changed != self._font._pixels_height:
 			self._font.create_glyphs(self._text)
 			
-			opengl.glNewList(self._id, opengl.GL_COMPILE_AND_EXECUTE)
+			opengl.glNewList(self._display_list.id, opengl.GL_COMPILE_AND_EXECUTE)
 			self.build_display_list()
 			opengl.glEndList()
 			self._changed = self._font._pixels_height
 		else:
-			opengl.glCallList(self._id)
+			opengl.glCallList(self._display_list.id)
 			
 	def build_display_list(self):
 		if not self.lit: opengl.glDisable(opengl.GL_LIGHTING)
 		
 		opengl.glColor4f(*self._color)
-		opengl.glScalef(self.size, -self.size, 1.0)
+		opengl.glScalef(self._size, -self._size, 1.0)
 		
 		w, h = self._font.get_print_size(self._text)
 		if   self.center_x == 0: opengl.glTranslatef(-w / 2.0, 0.0, 0.0)

@@ -54,9 +54,6 @@ SCALE = 1.0
 # The maximum angle between two smooth-lit faces.
 MAX_FACE_ANGLE = 80.0
 
-# File format (currently, "pickle" or "cerealizer")
-FILE_FORMAT = "pickle"
-
 TMP_FILE = ""
 
 PARAMS_NAMES = [attr for attr in globals().keys() if (attr[0] in string.uppercase) and (attr[1] in string.uppercase)]
@@ -138,7 +135,7 @@ class Blender2Soya:
 		already_warned      = []
 		nb_points_and_lines = 0
 		
-		print >> self.f, """soya.path.insert(0, '%s') # insert at index 0 => save in this path.""" % os.path.abspath(self.path)
+		#print >> self.f, """soya.path.insert(0, '%s') # insert at index 0 => save in this path.""" % os.path.abspath(self.path)
 		print >> self.f, """root_world = soya.World()"""
 		print >> self.f, """root_world.filename = '%s'""" % self.filename
 		print >> self.f
@@ -226,10 +223,7 @@ class Blender2Soya:
 		print >> self.f, """root_world.save()"""
 		
 
-if "--blender2soya" in sys.argv: # Check for batch mode
-	args = sys.argv[sys.argv.index("--blender2soya") + 1:]
-	
-	exporter = Blender2Soya(args)
-	exporter.export()
-	
-	Blender.Quit()
+exporter = Blender2Soya(args)
+exporter.export()
+
+Blender.Quit()

@@ -54,9 +54,12 @@ cdef class _TravelingCamera(_Camera):
 	def remove_traveling(self, Traveling traveling):
 		self._travelings.remove(traveling)
 		if self._traveling is traveling:
-			self._traveling = self._travelings[-1]
-			self._traveling_changed()
-			
+			if self._travelings:
+				self._traveling = self._travelings[-1]
+				self._traveling_changed()
+			else:
+				self._traveling = None
+				
 	cdef void _traveling_changed(self):
 		cdef float v[3], up[3]
 		cdef float angle

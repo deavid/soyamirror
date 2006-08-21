@@ -285,7 +285,8 @@ Gets the height of the rendering screen, in pixel."""
 		frustum_coordsyst_into(renderer.root_frustum, self._frustum, self._root_matrix(), NULL)
 		
 		renderer._render()
-
+		renderer.current_camera = None # Avoid a potential memory leak
+		
 	cdef void _render_scene(self):
 		glPushAttrib(GL_VIEWPORT)
 		glMatrixMode(GL_PROJECTION)
