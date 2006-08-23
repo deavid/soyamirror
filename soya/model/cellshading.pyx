@@ -23,6 +23,19 @@ cdef class _CellShadingModel(_SimpleModel):
 	#cdef float     _outline_color[4]
 	#cdef float     _outline_width, _outline_attenuation
 	
+	cdef _Model _create_deformed_data(self):
+		cdef _CellShadingModel data
+		data = _SimpleModel._create_deformed_data(self)
+		data._shader              = self._shader
+		data._outline_width       = self._outline_width
+		data._outline_attenuation = self._outline_attenuation
+		memcpy(data._outline_color, self._outline_color, 4 * sizeof(float))
+		return data
+		
+	property shader:
+		def __get__(self):
+			return self._shader
+		
 	cdef __getcstate__(self):
 		cdef Chunk* chunk
 		chunk = get_chunk()
@@ -40,6 +53,7 @@ cdef class _CellShadingModel(_SimpleModel):
 		chunk_get_float_endian_safe (chunk, &self._outline_attenuation)
 		chunk_get_floats_endian_safe(chunk,  self._outline_color, 4)
 		drop_chunk(chunk)
+		
 		self._shader = cstate[2]
 		
 		# Build the display list data, but don't create the corresponding OpenGL display list
@@ -47,6 +61,7 @@ cdef class _CellShadingModel(_SimpleModel):
 		
 	cdef void _build_cellshading(self, _Material shader, outline_color, float outline_width, float outline_attenuation):
 		cdef int i
+		
 		self._shader              = shader
 		self._outline_width       = outline_width
 		self._outline_attenuation = outline_attenuation
@@ -174,7 +189,9 @@ cdef class _CellShadingModel(_SimpleModel):
 				
 			# Activate shader texture
 			glActiveTextureARB(GL_TEXTURE1)
-			if self._shader._id == 0: self._shader._init_texture()
+			
+			if self._shader._id == 0:	self._shader._init_texture()
+			
 			glEnable          (GL_TEXTURE_2D)
 			glTexEnvi         (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL)
 			glBindTexture     (GL_TEXTURE_2D, self._shader._id)
