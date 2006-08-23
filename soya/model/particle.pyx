@@ -138,7 +138,10 @@ cdef class _Particles(CoordSyst):
 			
 	def __init__(self, _World parent = None, _Material material = None, int nb_max_particles = 50, int removable = 0):
 		CoordSyst.__init__(self, parent)
-		self._material                = material or _PARTICLE_DEFAULT_MATERIAL
+		if material is None:
+			self._material            = _PARTICLE_DEFAULT_MATERIAL
+		else:
+			self._material            = material
 		self._particle_size           = 11
 		self._nb_sizes                = 1
 		self._sizes                   = <float*> malloc(2 * sizeof(float))
@@ -355,7 +358,7 @@ cdef class _Particles(CoordSyst):
 		pass
 	
 	def set_particle(self, int index, float life, float speed_x, float speed_y, float speed_z, float accel_x, float accel_y, float accel_z, float dir_x = 0.0, float dir_y = 0.0, float dir_z = 0.0):
-		# args are: (index, life, speed x, y, z, acceleration x, y, z, [direction x, y, z])
+		"""args are: (index, life, speed x, y, z, acceleration x, y, z, [direction x, y, z])"""
 		cdef int    i
 		cdef float* particle
 		particle = self._generate(index, life)
@@ -374,7 +377,7 @@ cdef class _Particles(CoordSyst):
 			particle[i + 2] = dir_z
 		
 	def set_particle2(self, int index, float life, float x, float y, float z, float speed_x, float speed_y, float speed_z, float accel_x, float accel_y, float accel_z, float dir_x = 0.0, float dir_y = 0.0, float dir_z = 0.0):
-		# args are: (index, life, position x, y, z, speed x, y, z, acceleration x, y, z, [direction x, y, z])
+		"""args are: (index, life, position x, y, z, speed x, y, z, acceleration x, y, z, [direction x, y, z])"""
 		cdef int    i
 		cdef float* particle
 		particle = self._particles + index * self._particle_size
@@ -492,15 +495,50 @@ cdef class Smoke(_Particles):
 		#self.set_colors((0.3, 0.3, 0.3, 1.0), (0.1, 0.1, 0.1, 0.0))
 		self.set_colors((0.1, 0.1, 0.1, 1.0), (0.3, 0.3, 0.3, 1.0), (0.3, 0.3, 0.3, 1.0), (0.1, 0.1, 0.1, 1.0))
 		self.set_sizes ((0.25, 0.25), (1.0, 1.0))
+		self._life_base = 1.0
+		self._life_function = random.random
+		self._speed_factor = 1.0
+		self._acceleration = 0.0
 		
 	def generate(self, int index):
 		cdef float sx, sy, sz, l
 		sx = random.random() - 0.5
 		sy = random.random() - 0.5
 		sz = random.random() - 0.5
-		l  = (0.2 * (1.0 + random.random())) / sqrt(sx * sx + sy * sy + sz * sz) * 0.4 * self._matrix[16]
-		self.set_particle(index, 1.0 + random.random(), sx * l, sy * l, sz * l, 0.0, 0.0, 0.0)
+		l  = self._speed_factor * (0.2 * (1.0 + random.random())) / sqrt(sx * sx + sy * sy + sz * sz) * 0.4 * self._matrix[16]
+		lb  = self._life_base
+		lf = self._life_function
+		a = self._acceleration
+		sx=sx*l
+		sy=sy*l
+		sz=sz*l
+		self.set_particle(index, (1 + lf())*lb, sx, sy, sz, sx*a, sy*a, sz*a)
 		
+	property life:
+		"""the life time of a particle (life of a particle = life*(1+life_function)"""
+		def __get__(self):
+			return self._life_base
+		def __set__(self, float value):
+			self._life_base = value
+	property life_function:
+		"""a function modify the life of a particle (life of a particle = (life_function+1)*life_base) default is 1"""
+		def __get__(self):
+			return self._life_function
+		def __set__(self, float value):
+			self._life_function = value
+	property speed:
+		"""a function modify the life of a particle (life of a particle = (life_function()+1)*life_base) default is random"""
+		def __get__(self):
+			return self._speed_factor
+		def __set__(self, float value):
+			self._speed_factor = value
+	property acceleration:
+		"""a function modify the life of a particle (life of a particle = (life_function()+1)*life_base) default is random"""
+		def __get__(self):
+			return self._acceleration
+		def __set__(self, float value):
+			self._acceleration = value
+	
 		
 cdef class FlagSubFire(_Particles):
 	def __init__(self, _World parent = None, _Material material = None, int nb_particles = 12, int removable = 0):

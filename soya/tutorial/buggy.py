@@ -279,7 +279,6 @@ def near_callback(g1, g2):
 				joint = ode.ContactJoint(scene, contactgroup, contact)
 				joint.attach(g1.body, g2.body)
 
-		
 class BuggyMainLoop(soya.MainLoop):
 		"""Idle with collision testing"""
 

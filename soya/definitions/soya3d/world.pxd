@@ -23,7 +23,12 @@ cdef class _World(_Body):
 	cdef readonly         children
 	cdef _Atmosphere      _atmosphere
 	cdef public           _filename
-	cdef ModelBuilder        _model_builder
+	cdef ModelBuilder     _model_builder
+	cdef dWorldID         _OdeWorldID
+	cdef _Space           _space
+	cdef _JointGroup _contact_group
+	#_contact_group = _JointGroup()
+	
 	
 	cdef __getcstate__(self)
 	cdef void __setcstate__(self, object cstate)
@@ -37,4 +42,9 @@ cdef class _World(_Body):
 	cdef void _get_box(self, float* box, float* matrix)
 	cdef void _search_all(self, predicat, result)
 	cdef void _collect_raypickables(self, Chunk* items, float* rsphere, float* sphere, int category)
-
+	
+	#ode
+	cdef void _activate_ode_world(self)
+	cdef void _deactivate_ode_world(self)
+	
+	#cdef void _add_space(self)

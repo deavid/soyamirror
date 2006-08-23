@@ -27,7 +27,15 @@ cdef class _Body(CoordSyst):
 		if not model is None:
 			self._model = model
 			model._instanced(self, opt)
+		self._ode_parent = None
+		self.joints = []
+		self._option = self._option | BODY_PUSHABLE
 		CoordSyst.__init__(self, parent)
+		
+	def __del__(self):
+		if self._option & BODY_HAS_ODE:
+			self._option = self._option & ~ BODY_HAS_ODE
+			dBodyDestroy(self._OdeBodyID)
 		
 	property model:
 		def __get__(self):
@@ -284,10 +292,137 @@ It also resets the cycle animation time : i.e. cycles will restart from their be
 		if self._data: self._data._set_lod_level(lod_level)
 		else: raise TypeError("This type of model doesn't support LOD!")
 		
+	cdef void _activate_ode_body(_Body self):
+		self._activate_ode_body_with(self.parent)
+	cdef void _activate_ode_body_with(_Body self,_World world):	
+		if not self._option & BODY_HAS_ODE:
+			world = _find_or_create_most_probable_ode_parent_from(world)
+			self._OdeBodyID = dBodyCreate(world._OdeWorldID)
+			self._option = self._option | BODY_HAS_ODE + BODY_ODE_INVALIDE_POS
+			self._ode_parent = world
+			world.ode_children[self] = None
+		
+	cdef void _deactivate_ode_body(self):
+		if self._option & BODY_HAS_ODE:
+			dBodyDestroy(self._OdeBodyID)
+			self._option = self._option &~BODY_HAS_ODE
+			del self.ode_parent.ode_children[self]
+			self._ode_parent = None
+		else:
+			raise RuntimeWarning("trying to Disable ODE support on a Body which is not ODE managed")
+	cdef _World _find_or_create_most_probable_ode_parent(self):
+		return self._find_or_create_most_probable_ode_parent_from(self._parent)
+			
+	property ode:
+		def __get__(self):
+			return self._option & BODY_HAS_ODE
+		def __set__(self,mode):
+			if mode:
+				self._activate_ode_body()
+			else:
+				self._deactivate_ode_body()
+	property pushable:
+		def __get__(self):
+				return self._option & BODY_PUSHABLE
+		def __set__(self, value):
+			if value:
+				self._option = self._option | BODY_PUSHABLE
+			else:
+				self._option = self._option & ~BODY_PUSHABLE
+			
+	property ode_parent:
+		def __get__(self):
+			return self._ode_parent
+		def __set__(self,_World ode_parent):
+			if not self._option & BODY_HAS_ODE:
+				if ode_parent is None:
+					self._ode_parent = None
+				else:
+					if not ode_parent & WORLD_HAS_ODE:
+						ode_parent._activate_ode_world()
+					self._activate_ode_body_with(ode_parent)
+			else:
+				raise RuntimeError("Unable to reassign a new ODE parent")
+	property geom:
+		def __get__(self):
+			return self._geom
+		def __set__(self, _PlaceableGeom geom):
+			if geom is not self._geom:
+				if self._geom is not None:
+					self._geom.body = None
+				self._geom = geom
+				if geom is not None:
+					if geom._body is not self:
+						geom.body = self
+	cdef void _sync_ode_position(self):
+		cdef GLfloat * m
+		cdef dMatrix3  R
+		cdef dReal * q
+		
+		if self.parent is self.ode_parent:
+			m = self._matrix
+		else:
+			multiply_matrix(m, self._ode_parent._inverted_root_matrix(), self._root_matrix())
+		R[0]  = m[0]
+		R[1]  = m[4]
+		R[2]  = m[8]
+		R[3]  = 0.0
+		R[4]  = m[1]
+		R[5]  = m[5]
+		R[6]  = m[9]
+		R[7]  = 0.0
+		R[8]  = m[2]
+		R[9]  = m[6]
+		R[10] = m[10]
+		R[11] = 0.0
+
+		# XXX Overriding the movement methods would be faster due to the fact
+		# that we wouldn't have to copy the rotation matrix as well
+		dBodySetPosition(self._OdeBodyID, m[12], m[13], m[14])
+		dBodySetRotation(self._OdeBodyID, R)
+		
+		q = dBodyGetQuaternion(self._OdeBodyID)
+		self._q[0] = q[1]
+		self._q[1] = q[2]
+		self._q[2] = q[3]
+		self._q[3] = q[0]
+
+		q = dBodyGetPosition(self._OdeBodyID)
+		self._p[0] = q[0]
+		self._p[1] = q[1]
+		self._p[2] = q[2]
+		
+
+		# Mark the previous position and quaternion as valide
+		self._option = self._option & ~BODY_ODE_INVALIDE_POS
+		CoordSyst._invalidate(self)
+			
+	cdef void _invalidate(self):
+		"""Set the ODE position as invalide after after invalidating the root and inverted
+		root matrices. We do this here because all movement methods must
+		call this."""
+		CoordSyst._invalidate(self)
+		self._option = self._option | BODY_ODE_INVALIDE_POS
 	def begin_round(self):
-		
-		# XXX copied from CoordSyst.begin_round
-		
+		cdef dReal * q
+		if self._option & BODY_HAS_ODE:
+			self._t = 0
+			if self._option & BODY_ODE_INVALIDE_POS:
+				self._sync_ode_position()
+			q = dBodyGetQuaternion(self._OdeBodyID)
+			self._q[0] = q[1]
+			self._q[1] = q[2]
+			self._q[2] = q[3]
+			self._q[3] = q[0]
+	
+			q = dBodyGetPosition(self._OdeBodyID)
+			self._p[0] = q[0]
+			self._p[1] = q[1]
+			self._p[2] = q[2]
+
+			
+			
+		#deformation stuff
 		if (self._option & COORDSYS_NON_AUTO_STATIC) == 0:
 			if self._auto_static_count == 0:
 				if not (self._option & COORDSYS_STATIC): self._go_static()
@@ -295,6 +430,394 @@ It also resets the cycle animation time : i.e. cycles will restart from their be
 				self._auto_static_count = self._auto_static_count - 1
 				
 		if self._data: self._data._begin_round()
-		
+			
+			
+			
 	def advance_time(self, float proportion):
-		if self._data: self._data._advance_time(proportion)
+		"""Interpolate between the last two quaternions"""
+		cdef GLfloat q[4]
+		cdef dReal *r, *p
+		cdef float t
+		cdef float next_pos[19]
+		cdef float tmp_pos[19]
+		cdef float zoom[3]
+
+		self._t = self._t + proportion
+		if self._option & BODY_HAS_ODE: 
+			if dBodyIsEnabled(self._OdeBodyID):
+				if (self._option & BODY_ODE_INVALIDE_POS):
+					self._sync_ode_position()
+				else:
+					#saving the scale of the object
+					#XXX optimisable
+					memcpy(zoom,&self._matrix[16],3*sizeof(float))
+					r = dBodyGetQuaternion(self._OdeBodyID)
+					p = dBodyGetPosition(self._OdeBodyID)
+					t = 1.0 - self._t
+		
+					# Linearly interpolate between the current quaternion and the last
+					# one
+					q[0] = t * self._q[0] + self._t * r[1]
+					q[1] = t * self._q[1] + self._t * r[2]
+					q[2] = t * self._q[2] + self._t * r[3]
+					q[3] = t * self._q[3] + self._t * r[0]
+				
+					# Convert the quaternion to a matrix (also normalizes)
+					matrix_from_quaternion(next_pos, q)
+					#matrix_from_quaternion(self._matrix, q)
+					
+					# Interpolate the position, too
+			
+					
+					next_pos[12] = t * self._p[0] + self._t * p[0]
+					next_pos[13] = t * self._p[1] + self._t * p[1]
+					next_pos[14] = t * self._p[2] + self._t * p[2]
+					#self._matrix[12] = t * self._p[0] + self._t * p[0]
+					#self._matrix[13] = t * self._p[1] + self._t * p[1]
+					#self._matrix[14] = t * self._p[2] + self._t * p[2]
+					
+					
+					# convert to the right CoordSyst
+					if self.parent is not self.ode_parent:
+						multiply_matrix(tmp_pos,self._ode_parent._root_matrix(),next_pos)
+						multiply_matrix(self._matrix,self._parent._inverted_root_matrix(),tmp_pos)
+					else:
+						matrix_copy(self._matrix,next_pos)
+					
+					matrix_scale(self._matrix,zoom[0],zoom[1],zoom[2])
+					#memcpy(&self._matrix[16],zoom,3*sizeof(float))
+					# Call _soya._World's _invalidate since we override _invalidate
+					# to detect when the position is updated externally
+					CoordSyst._invalidate(self)
+	
+			# Make sure advance_time is called on all our children
+			CoordSyst.advance_time(self, proportion)
+			
+			#deformation stuff
+			if self._data: self._data._advance_time(proportion)
+			
+	property linear_velocity:
+		def __set__(self,_Vector vel):
+			cdef float v[3]
+			if not (self._option & BODY_HAS_ODE):
+				self._activate_ode_body()
+			vel._into(self._ode_parent, v)
+			dBodySetLinearVel(self._OdeBodyID, v[0], v[1], v[2])
+
+
+		def __get__(self):
+			cdef dReal* p
+			if not (self._option & BODY_HAS_ODE):
+				return None
+			p = <dReal*>dBodyGetLinearVel(self._OdeBodyID)
+			return Vector(self._ode_parent,p[0], p[1], p[2])
+
+	property angular_velocity:
+		def __set__(self, _Vector vel):
+			"""setAngularVel(vel)
+
+			Set the angular velocity of the body.
+	
+			@param vel: New angular velocity
+			@type vel: Vector
+			"""
+			cdef float v[3]
+			if not (self._option & BODY_HAS_ODE):
+				self._activate_ode_body()
+			vel._into(self._ode_parent, v)
+			dBodySetAngularVel(self._OdeBodyID, v[0], v[1], v[2])
+
+		def __get__(self):
+			"""getAngularVel() -> 3-tuple
+
+			Get the current angular velocity of the body.
+			"""
+			cdef dReal* p
+			if not (self._option & BODY_HAS_ODE):
+				return None
+			
+			# The "const" in the original return value is cast away
+			p = <dReal*>dBodyGetAngularVel(self._OdeBodyID)
+			return Vector(self._ode_parent,p[0],p[1],p[2])
+	
+	property mass:
+		def __set__(self, Mass mass):
+			"""setMass(mass)
+	
+			Set the mass properties of the body. The argument mass must be
+			an instance of a Mass object.
+	
+			@param mass: Mass properties
+			@type mass: Mass
+			"""
+			if not (self._option & BODY_HAS_ODE):
+				self._activate_ode_body()
+			dBodySetMass(self._OdeBodyID, &mass._mass)
+	
+		def __get__(self):
+			if not (self._option & BODY_HAS_ODE):
+				return None
+			"""getMass() -> mass
+	
+			Return the mass properties as a Mass object.
+			"""
+			cdef Mass m
+			m=Mass()
+			dBodyGetMass(self._OdeBodyID, &m._mass)
+			return m
+
+	# addForce
+	def add_force(self,_Vector force,_Point pos=None):
+		cdef float f[3]
+		cdef float p[3]
+		if not (self._option & BODY_HAS_ODE):
+				self._activate_ode_body()
+		force._into(self._ode_parent, f)
+		if pos is None:
+			dBodyAddForce(self._OdeBodyID, f[0], f[1], f[2])
+		else:
+			pos._into(self.ode_parent,p)
+			dBodyAddForceAtPos(self._OdeBodyID,f[0],f[1],f[2],p[0],p[1],p[2])
+	#def add_force_xyz(self, int x, int y, int z,int px=0, int py=0, int pz=0):
+	#	if not (self._option & BODY_HAS_ODE):
+	#		self._activate_ode_body()
+	#	if px or py or pz:
+	#		dBodyAddRelForceAtRelPos(self._OdeBodyID,x,y,z,px,py,pz)
+	#	else:
+	#		dBodyAddRelForce(self._OdeBodyID,x,y,z)
+		
+	# addTorque
+	def add_torque(self,_Vector torque,_Point pos=None):
+		"""addTorque(t)
+
+		Add an external torque t given in absolute coordinates.
+
+		@param t: Torque
+		@type t: 3-sequence of floats
+		"""
+		cdef float t[3]
+		cdef float p[3]
+		if not (self._option & BODY_HAS_ODE):
+				self._activate_ode_body()
+		
+		torque._into(self._ode_parent, t)
+		if pos is None:
+			dBodyAddTorque(self._OdeBodyID, t[0], t[1], t[2])
+		else:
+			pos._into(self.ode_parent,p)
+			dBodyAddTorqueAtPos(t[0],t[1],t[2],p[0],p[1],p[2])
+
+		#dBodyAddTorque(self._OdeBodyID, t[0], t[1], t[2])
+
+	
+
+	property force:
+		# getForce
+		def __get__(self):
+			"""getForce() -> 3-tuple
+	
+			Return the current accumulated force.
+			"""
+			cdef dReal* f
+			if not (self._option & BODY_HAS_ODE):
+				return None
+			# The "const" in the original return value is cast away
+			f = <dReal*>dBodyGetForce(self._OdeBodyID)
+			return Vector(self._ode_parent,f[0],f[1],f[2])
+	
+			
+		# setForce
+		def __set__(self,_Vector force):
+			"""setForce(f)
+	
+			Set the body force accumulation vector.
+	
+			@param f: Force
+			@type f: 3-tuple of floats
+			"""
+			cdef float f[3]
+			if not (self._option & BODY_HAS_ODE):
+				self._activate_ode_body()
+			force._into(self._ode_parent, f)
+			dBodySetForce(self._OdeBodyID, f[0], f[1], f[2])
+
+	property torque:
+	# getTorque
+		def __get__(self):
+			"""getTorque() -> 3-tuple
+	
+			Return the current accumulated torque.
+			"""
+			cdef dReal* f
+			if not (self._option & BODY_HAS_ODE):
+				return None
+			# The "const" in the original return value is cast away
+			f = <dReal*>dBodyGetTorque(self._OdeBodyID)
+			return Vector(self._ode_parent,f[0],f[1],f[2])
+			# setTorque
+		def __set__(self,_Vector torque):
+				"""setTorque(t)
+		
+				Set the body torque accumulation vector.
+		
+				@param t: Torque
+				@type t: 3-tuple of floats
+				"""
+				cdef float t[3]
+				if not (self._option & BODY_HAS_ODE):
+					self._activate_ode_body()
+				torque._into(self._ode_parent, t)
+				dBodySetTorque(self._OdeBodyID, t[0], t[1], t[2])
+
+	
+
+	# getRelPointVel
+	def get_point_vel(self, _Point pos):
+		if not (self._option & BODY_HAS_ODE):
+			None
+		"""getRelPointVel(p) -> 3-tuple
+
+		Utility function that takes a point p on a body and returns
+		that point's velocity in global coordinates. The point p
+		must be given in body relative coordinates.
+
+		@param p: Body point (local coordinates)
+		@type p: 3-sequence of floats
+		"""
+		cdef dVector3 res 
+		cdef dVector3 p
+		pos._into(self,p)
+		dBodyGetRelPointVel(self._OdeBodyID, p[0], p[1], p[2], res)
+		return (res[0], res[1], res[2])
+
+
+		
+		
+	property enabled:
+		def __set__(self, flag):
+			if not (self._option & BODY_HAS_ODE):
+				self._activate_ode_body()
+			"""enable()
+	
+			Manually enable a body.
+			"""
+			
+			if flag:
+				dBodyEnable(self._OdeBodyID)
+			else:
+				dBodyDisable(self._OdeBodyID)
+			
+		def __get__(self):
+			if not (self._option & BODY_HAS_ODE):
+				None
+			"""isEnabled() -> bool
+	
+			Check if a body is currently enabled.
+			"""
+			return dBodyIsEnabled(self._OdeBodyID)
+			
+	property finite_rotation_mode:
+		def __set__(self, mode):
+			if not (self._option & BODY_HAS_ODE):
+				self.activate_ode_body()
+			"""setFiniteRotationMode(mode)
+	
+			This function controls the way a body's orientation is updated at
+			each time step. The mode argument can be:
+			
+			 - 0: An "infinitesimal" orientation update is used. This is
+				 fast to compute, but it can occasionally cause inaccuracies
+				 for bodies that are rotating at high speed, especially when
+				 those bodies are joined to other bodies. This is the default
+				 for every new body that is created.
+			
+			 - 1: A "finite" orientation update is used. This is more
+				 costly to compute, but will be more accurate for high speed
+				 rotations. Note however that high speed rotations can result
+				 in many types of error in a world, and this mode will
+				 only fix one of those sources of error.
+	
+			@param mode: Rotation mode (0/1)
+			@type mode: int
+			"""
+			dBodySetFiniteRotationMode(self._OdeBodyID, mode)
+		
+		def __get__(self):
+			if not (self._option & BODY_HAS_ODE):
+				return None
+			"""getFiniteRotationMode() -> mode (0/1)
+	
+			Return the current finite rotation mode of a body (0 or 1).
+			See setFiniteRotationMode().
+			"""
+			return dBodyGetFiniteRotationMode(self._OdeBodyID)
+
+	property finite_rotation_axis:
+		def __set__(self, _Vector axis):
+			if not (self._option & BODY_HAS_ODE):
+				self._activate_ode_body()
+			"""setFiniteRotationAxis(a)
+
+			Set the finite rotation axis of the body.  This axis only has a
+			meaning when the finite rotation mode is set
+			(see setFiniteRotationMode()).
+			
+			@param a: Axis
+			@type a: Vector
+			"""
+			cdef float a[3]
+			axis._into(self._ode_parent,a)
+			dBodySetFiniteRotationAxis(self._OdeBodyID, a[0], a[1], a[2])
+
+		def __get__(self):
+			if not (self._option & BODY_HAS_ODE):
+				raise TypeError("This Body is not yet ODE managed. Use Body.activate_ode_body() to turn ODE management on.")
+			"""getFiniteRotationAxis() -> 3-tuple
+	
+			Return the current finite rotation axis of the body.
+			"""
+			cdef dVector3 p
+			# The "const" in the original return value is cast away
+			dBodyGetFiniteRotationAxis(self._OdeBodyID, p)
+			return Vector(self.ode_parent,p[0],p[1],p[2])
+		
+	property num_joints:
+		def __get__(self):
+			if not (self._option & BODY_HAS_ODE):
+				raise TypeError("This Body is not yet ODE managed. Use Body.activate_ode_body() to turn ODE management on.")
+			"""getNumJoints() -> int
+
+			Return the number of joints that are attached to this body.
+			"""
+			return dBodyGetNumJoints(self._OdeBodyID)
+
+	property gravity_mode:
+		def __set__(self, mode):
+			if not (self._option & BODY_HAS_ODE):
+				self._activate_ode_body()
+			"""setGravityMode(mode)
+	
+			Set whether the body is influenced by the world's gravity
+			or not. If mode is True it is, otherwise it isn't.
+			Newly created bodies are always influenced by the world's gravity.
+	
+			@param mode: Gravity mode
+			@type mode: bool
+			"""
+			dBodySetGravityMode(self._OdeBodyID, mode)
+		
+		def __get__(self):
+			if not (self._option & BODY_HAS_ODE):
+				None
+			"""getGravityMode() -> bool
+	
+			Return True if the body is influenced by the world's gravity.
+			"""
+			return dBodyGetGravityMode(self._OdeBodyID)
+			
+	# why it is function ?
+	cdef void _add_joint(self, Joint joint):
+		self.joints.append(joint)
+
+	cdef void _remove_joint(self, Joint joint):
+		self.joints.remove(joint)

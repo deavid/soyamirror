@@ -34,6 +34,18 @@ include "math3d.pyx"
 include "renderer.pyx"
 include "main_loop.pyx"
 
+#ode stuff
+include "ode/utils.pyx"
+include "ode/mass.pyx"
+include "ode/joints.pyx"
+include "ode/geom.pyx"
+include "ode/space.pyx"
+include "ode/collision.pyx"
+include "ode/contact.pyx"
+include "ode/geom-primitive.pyx"
+include "ode/geom-terrain.pyx"
+
+
 include "soya3d/atmosphere.pyx"
 include "soya3d/raypick.pyx"
 include "soya3d/coordsyst.pyx"
@@ -70,3 +82,14 @@ include "config.pyx"
 #include "shader/shader.pyx"
 
 include "model/deform.pyx"
+
+
+def _close_ode():
+		"""CloseODE()
+		Deallocate some extra memory used by ODE that can not be deallocated
+		using the normal destroy functions.
+		"""
+		dCloseODE()
+
+import atexit
+atexit.register(_close_ode)

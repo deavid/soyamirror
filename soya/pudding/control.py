@@ -475,14 +475,14 @@ class Input(Box):
 
 		if key == sdl.K_RETURN:
 			self.on_return()
-		elif key == sdl.K_BACKSPACE or key == sdl.K_DELETE:
+		elif key == sdl.K_BACKSPACE:
 			self.value = self.value[:-1]
 			self.on_value_changed()
-		elif 0 < key <= 255:
+		elif key != 0:
 			if chr(key) in string.printable:
 				self.value += chr(key)
 				self.on_value_changed()
-				
+
 		return True
 
 	def on_resize(self):

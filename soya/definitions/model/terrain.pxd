@@ -121,6 +121,9 @@ cdef class _Terrain(CoordSyst):
 	
 	# For Blam terrain
 	cdef void _vertex_render_special(self, TerrainVertex* vertex)
+	
+	### ODE collision
+	cdef _GeomTerrain _geom
 
 	
 

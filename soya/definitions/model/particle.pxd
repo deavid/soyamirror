@@ -40,12 +40,14 @@ cdef class _Particles(CoordSyst):
 	cdef float* _generate(self, int index, float life)
 
 
-#cdef class Fountain(_Particles)
+#cdef class Fountain(_Particles):
 
 
-#cdef class Smoke(_Particles)
-		
-		
+cdef class Smoke(_Particles):
+	cdef float  _life_base
+	cdef object _life_function
+	cdef float  _speed_factor
+	cdef float  _acceleration
 #cdef class FlagSubFire(_Particles)
 
 

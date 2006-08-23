@@ -17,13 +17,10 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
+import soya
 
-	
+
 cdef class _World(_Body):
-	#cdef readonly         children
-	#cdef _Atmosphere      _atmosphere
-	#cdef public           _filename
-	#cdef ModelBuilder        _model_builder
 	
 	property model_builder:
 		def __get__(self):
@@ -36,10 +33,33 @@ cdef class _World(_Body):
 			return self._atmosphere
 		def __set__(self, _Atmosphere atmosphere):
 			self._atmosphere = atmosphere
+	property space:
+		def __get__(self):
+			return self._space
+			
+	property has_space:
+		def __get__(self):
+			return self._space is not None
+		def __set__(self,value):
+			if value != self._space is not None:
+				if value:
+					SimpleSpace(world=self)
+				else:
+					raise NotImplementedError("There is currently no way to remove a space from a world")
 			
 	def __init__(self, _World parent = None, _Model model = None, opt = None):
 		self.children = []
+		self.ode_children = {}
 		_Body.__init__(self, parent, model, opt)
+		self._space = None
+		self._contact_group = _JointGroup()
+		
+	def __dealloc__(self):
+		if self._option & WORLD_HAS_ODE:
+			dWorldDestroy(self._OdeWorldID)
+			for children in self.ode_children: #XXX add .values some day
+				children._option = children._option &~BODY_HAS_ODE
+				self.ode_parent = None
 		
 	cdef __getcstate__(self):
 		return CoordSyst.__getcstate__(self), self._model, self._filename, self.children, self._atmosphere, self._model_builder, self._data
@@ -434,12 +454,22 @@ Called (by the main_loop) when a new round begins; default implementation calls 
 				if not (self._option & COORDSYS_STATIC): self._go_static()
 			else:
 				self._auto_static_count = self._auto_static_count - 1
-				
 		if self._data: self._data._begin_round()
 		
 		cdef CoordSyst child
 		for child in self.children: child.begin_round()
 		
+		if self._space is not None:
+			#print "I'm a world, I will call collide"
+			self._space.collide()
+		if self._option & WORLD_HAS_ODE:
+			#print "Gonna Step"
+			#print len(self._contact_group), "contacts this round"
+			dWorldQuickStep(self._OdeWorldID,soya.MAIN_LOOP.round_duration)
+			#print "Have  Step"
+			self._contact_group.empty()
+			#print "Have Clean"
+			
 	def end_round(self):
 		"""World.end_round()
 
@@ -468,3 +498,294 @@ See World.model_builder and ModelBuilder if you want to customize this process (
 trees, cell-shading or shadow)."""
 		if self.model_builder is None: return _DEFAULT_MODEL_BUILDER._to_model(self)
 		else:                      return self._model_builder   ._to_model(self)
+		if self.shapifier is None: return _DEFAULT_SHAPIFIER._shapify(self)
+		else:                      return self._shapifier   ._shapify(self)
+		
+		
+	### ODE STUFF
+	cdef void _activate_ode_world(self):
+		if not (self._option & WORLD_HAS_ODE):
+			self._OdeWorldID = dWorldCreate()
+			self._option = self._option | WORLD_HAS_ODE
+
+	cdef void _deactivate_ode_world(self):
+		if self._option & WORLD_HAS_ODE:
+			dWorldDestroy(self._OdeWorldID)
+			self._option = self._option & ~WORLD_HAS_ODE
+			for key,children in self.ode_children.items():
+				del self.ode_children[key]
+				children.geom = None
+				children._option = children._option &~BODY_HAS_ODE
+				children._ode_parent = None
+		
+	property odeWorld:
+		def __get__(self):
+			return self._option & WORLD_HAS_ODE
+				
+		def __set__(self,value):
+			if value:
+				self._activate_ode_world()
+			else:
+				self._deactivate_ode_world()
+				
+		
+	property gravity:
+		"""setGravity(gravity)
+
+		Set the world's global gravity vector.
+
+		@param gravity: Gravity vector
+		@type gravity: 3-sequence of floats
+		"""
+		def __set__(self, _Vector gravity):
+			cdef float g[3]
+			if not (self._option & WORLD_HAS_ODE):
+				self._activate_ode_world()
+			gravity._into(self,g)
+			dWorldSetGravity(self._OdeWorldID, g[0], g[1], g[2])
+
+		def __get__(self):
+			cdef dVector3 g
+			if not (self._option & WORLD_HAS_ODE):
+				return None		
+			dWorldGetGravity(self._OdeWorldID, g)
+			return Vector(self,g[0],g[1],g[2])
+
+	property erp:
+		"""setERP(erp)
+
+		Set the global ERP value, that controls how much error
+		correction is performed in each time step. Typical values are
+		in the range 0.1-0.8. The default is 0.2.
+
+		@param erp: Global ERP value
+		@type erp: float
+		"""
+		def __set__(self, erp):
+			if not (self._option & WORLD_HAS_ODE):
+				self._activate_ode_world()
+			dWorldSetERP(self._OdeWorldID, erp)
+
+		def __get__(self):
+			if not (self._option & WORLD_HAS_ODE):
+				return None
+			return dWorldGetERP(self._OdeWorldID)
+
+	property cfm:
+		"""setCFM(cfm)
+
+		Set the global CFM (constraint force mixing) value. Typical
+		values are in the range 10E-9 - 1. The default is 10E-5 if
+		single precision is being used, or 10E-10 if double precision
+		is being used.
+
+		@param cfm: Constraint force mixing value
+		@type cfm: float
+		"""
+		def __set__(self, cfm):
+			if not (self._option & WORLD_HAS_ODE):
+				self._activate_ode_world()
+			dWorldSetCFM(self._OdeWorldID, cfm)
+
+		def __get__(self):
+			if not (self._option & WORLD_HAS_ODE):
+				return None
+			return dWorldGetCFM(self._OdeWorldID)
+	
+		
+		
+	property quickstep_num_iterations:
+		"""setQuickStepNumIterations(num)
+		
+		Set the number of iterations that the QuickStep method
+		performs per step. More iterations will give a more accurate
+		solution, but will take longer to compute. The default is 20
+		iterations.
+
+		@param num: Number of iterations
+		@type num: int
+		"""
+		def __set__(self, num):
+			if not (self._option & WORLD_HAS_ODE):
+				self._activate_ode_world()
+			dWorldSetQuickStepNumIterations(self._OdeWorldID, num)
+		def __get__(self):
+			if not (self._option & WORLD_HAS_ODE):
+				return None
+			return dWorldGetQuickStepNumIterations(self._OdeWorldID)
+
+	property contact_max_correcting_velocity:
+		"""setContactMaxCorrectingVel(vel)
+
+		Set the maximum correcting velocity that contacts are allowed
+		to generate. The default value is infinity (i.e. no
+		limit). Reducing this value can help prevent "popping" of
+		deeply embedded objects.
+
+		@param vel: Maximum correcting velocity
+		@type vel: float
+		"""
+		def __set__(self, vel):
+			if not (self._option & WORLD_HAS_ODE):
+				self._activate_ode_world()
+			dWorldSetContactMaxCorrectingVel(self._OdeWorldID, vel)
+
+		def __get__(self):
+			if not (self._option & WORLD_HAS_ODE):
+				return None
+			return dWorldGetContactMaxCorrectingVel(self._OdeWorldID)
+
+	property contact_surface_layer:
+		"""setContactSurfaceLayer(depth)
+
+		Set the depth of the surface layer around all geometry
+		objects. Contacts are allowed to sink into the surface layer
+		up to the given depth before coming to rest. The default value
+		is zero. Increasing this to some small value (e.g. 0.001) can
+		help prevent jittering problems due to contacts being
+		repeatedly made and broken.
+
+		@param depth: Surface layer depth
+		@type depth: float
+		"""
+		def __set__(self, depth):
+			if not (self._option & WORLD_HAS_ODE):
+				self._activate_ode_world()
+			dWorldSetContactSurfaceLayer(self._OdeWorldID, depth)
+
+		def __get__(self):
+			if not (self._option & WORLD_HAS_ODE):
+				return None
+			return dWorldGetContactSurfaceLayer(self._OdeWorldID)
+
+	property auto_disable:
+		"""setAutoDisableFlag(flag)
+		
+		Set the default auto-disable flag for newly created bodies.
+
+		@param flag: True = Do auto disable
+		@type flag: bool
+		"""
+		def __set__(self, flag):
+			if not (self._option & WORLD_HAS_ODE):
+				self._activate_ode_world()
+			dWorldSetAutoDisableFlag(self._OdeWorldID, flag)
+		
+		def __get__(self):
+			if not (self._option & WORLD_HAS_ODE):
+				return None
+			return dWorldGetAutoDisableFlag(self._OdeWorldID)
+
+	property auto_disable_linear_threshold:
+		"""setAutoDisableLinearThreshold(threshold)
+		
+		Set the default auto-disable linear threshold for newly created
+		bodies.
+
+		@param threshold: Linear threshold
+		@type threshold: float
+		"""
+		def __set__(self, threshold):
+			if not (self._option & WORLD_HAS_ODE):
+				self._activate_ode_world()
+			dWorldSetAutoDisableLinearThreshold(self._OdeWorldID, threshold)
+
+		def __get__(self):
+			if not (self._option & WORLD_HAS_ODE):
+				return None
+			return dWorldGetAutoDisableLinearThreshold(self._OdeWorldID)
+
+	property auto_disable_angular_threshold:
+			"""setAutoDisableAngularThreshold(threshold)
+			
+			Set the default auto-disable angular threshold for newly created
+			bodies.
+
+			@param threshold: Angular threshold
+			@type threshold: float
+			"""
+			def __set__(self, threshold):
+				if not (self._option & WORLD_HAS_ODE):
+					self._activate_ode_world()
+				dWorldSetAutoDisableAngularThreshold(self._OdeWorldID, threshold)
+
+
+			def __get__(self):
+				if not (self._option & WORLD_HAS_ODE):
+					return None
+				return dWorldGetAutoDisableAngularThreshold(self._OdeWorldID)
+
+
+	property auto_disable_steps:
+		"""setAutoDisableSteps(steps)
+		
+		Set the default auto-disable steps for newly created bodies.
+
+		@param steps: Auto disable steps
+		@type steps: int
+		"""
+		def __set__(self, steps):
+			if not (self._option & WORLD_HAS_ODE):
+				self._activate_ode_world()
+			dWorldSetAutoDisableSteps(self._OdeWorldID, steps)
+
+
+		def __get__(self):
+			
+			return dWorldGetAutoDisableSteps(self._OdeWorldID)
+
+
+	property auto_disable_time:
+			"""setAutoDisableTime(time)
+			
+			Set the default auto-disable time for newly created bodies.
+
+			@param time: Auto disable time
+			@type time: float
+			"""
+			def __set__(self, time):
+				if not (self._option & WORLD_HAS_ODE):
+					self._activate_ode_world()
+				dWorldSetAutoDisableTime(self._OdeWorldID, time)
+
+			def __get__(self):
+				if not (self._option & WORLD_HAS_ODE):
+					return None
+				return dWorldGetAutoDisableTime(self._OdeWorldID)
+
+	# impulseToForce
+	def impulse_to_force(self, stepsize, impulse):
+			"""impulse_to_force(stepsize, impulse) -> 3-tuple
+
+			If you want to apply a linear or angular impulse to a rigid
+			body, instead of a force or a torque, then you can use this
+			function to convert the desired impulse into a force/torque
+			vector before calling the dBodyAdd... function.
+
+			@param stepsize: Time step
+			@param impulse: Impulse vector
+			@type stepsize: float
+			@type impulse: 3-tuple of floats
+			"""
+			cdef dVector3 force
+			dWorldImpulseToForce(self._OdeWorldID, stepsize, impulse[0], impulse[1], impulse[2], force)
+			return (force[0], force[1], force[2])
+	
+	#cdef _add_space(self):
+	#	if self._space is None:
+	#		# find the ode_root (or create it is None exist)
+	#		way = []
+	#		ode_root = self
+	#		while not (ode_root._ or ode_root.parent is None):
+	#			way.append(ode_root)
+	#			ode_root = ode_root.parent
+	#		if not ode_root._option & WORLD_HAS_ODE:
+	#			ode_root._activate_ode_world()
+	#		# create space
+	#		way.append(ode_root)
+	#		way.revert()
+	#		for i in 
+	#		if ode_root._space is None:
+	#			SimpleSpace(world=ode_root)
+	#		previous = ode_root
+	#		while previous is not self:

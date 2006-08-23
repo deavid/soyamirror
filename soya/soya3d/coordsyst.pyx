@@ -257,6 +257,7 @@ Called (by the MainLoop) when a new round begins; default implementation does no
 			else:
 				self._auto_static_count = self._auto_static_count - 1
 				
+				
 	def end_round(self):
 		"""CoordSyst.end_round()
 
@@ -268,7 +269,9 @@ Called (by the MainLoop) when a round is finished; default implementation does n
 
 Called (by the MainLoop) when a piece of a round is achieved; default implementation does nothing.
 PROPORTION is the proportion of the current round's time that has passed (1.0 for an entire round)."""
-		pass
+		#if self._movement is not None:
+		#	self.add_mul_vector( self._movement, proportion)
+			#self.
 	
 	property parent:
 		def __get__(self):
@@ -308,7 +311,13 @@ PROPORTION is the proportion of the current round's time that has passed (1.0 fo
 		def __set__(self, int x):
 			if x: self._option = self._option & ~COORDSYS_NON_AUTO_STATIC
 			else: self._option = self._option |  COORDSYS_NON_AUTO_STATIC
-
+			
+	#property movement:
+	#	def __get__(self):
+	#		return _movement
+	#	def __set__(self,_Movement movement):
+	#		self._movement = movement
+	
 	cdef void _go_static(self):
 		self._option = self._option |  COORDSYS_STATIC
 		

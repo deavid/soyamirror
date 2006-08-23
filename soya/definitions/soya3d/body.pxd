@@ -32,4 +32,26 @@ cdef class _Body(CoordSyst):
 	cdef void _collect_raypickables(self, Chunk* items, float* rsphere, float* sphere, int category)
 	cdef int _contains(self, _CObj obj)
 	cdef void _get_box(self, float* box, float* matrix)
+	
+	#ode
+	cdef dBodyID _OdeBodyID
+	cdef _World _ode_parent
+	cdef readonly joints
+	
+	cdef GLfloat _q[4] # Previous quaternion (into ode_parent coord sys)
+	cdef GLfloat _p[4] # Previous position   (into ode_parent coord sys)
+	cdef float _t # Cumulative round time
+	cdef int _valid # Is the previous quaternion/position valid?
+	cdef _PlaceableGeom _geom
+	
+	
+	cdef void _activate_ode_body(_Body self)
+	cdef void _activate_ode_body_with(_Body self,_World world)
+	cdef void _deactivate_ode_body(self)
+	cdef _World _find_or_create_most_probable_ode_parent(self)
+	cdef void _sync_ode_position(self)
+	cdef void _add_joint(self, Joint joint)
+	cdef void _remove_joint(self, Joint joint)
 
+	
+	

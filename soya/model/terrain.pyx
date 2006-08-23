@@ -1689,6 +1689,19 @@ You MUST call this method after the terrain have been modified manually
 			for i from 0 <= i < nb: self._vertex_colors[i] = my_white
 		if 1.0 - color[3] > EPSILON: self._check_vertex_options() # need vertex option to stock vertex alpha
 		return self._register_color(color)
+		
+	property geom:
+		def __get__(self):
+			return self._geom is not None
+		def __set__(self,value):
+			print 'calling terrain.geom property'
+			if value and self._geom is None:
+				print 'adding a geom'
+				self._geom = _GeomTerrain(self)
+			if (not value) and (self._geom is not None):
+				print 'remove the geom'
+				self._geom = None
+		
 
 	
 # XXX FX

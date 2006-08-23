@@ -106,29 +106,35 @@ cdef enum:
 	PACK_SPECIAL    = 1 << 3
 	
 cdef enum:
-	HIDDEN                = 1 << 0
-	LEFTHANDED            = 1 << 3
-	NON_SOLID             = 1 << 4
-	WORLD_BATCHED         = 1 << 6
-	BONUS_BATCHED         = 1 << 6
-	WORLD_PORTAL_LINKED   = 1 << 7
-	LIGHT_TOP_LEVEL       = 1 << 7
-	LIGHT_DIRECTIONAL     = 1 << 8
-	LIGHT_NO_SHADOW       = 1 << 9
-	LIGHT_SHADOW_COLOR    = 1 << 10
-	LIGHT_STATIC          = 1 << 11
-	LIGHT_INVALID         = 1 << 6
-	CAMERA_PARTIAL        = 1 << 5
-	CAMERA_ORTHO          = 1 << 6
-	CAMERA_NO_LISTENER    = 1 << 7
-	SOUND_PLAY_IN_3D      = 1 << 6
-	SOUND_AUTO_REMOVE     = 1 << 7
-	SOUND_LOOP            = 1 << 8
-	FACE2_LIT             = 1 << 12 # FACE2_* constants are for soya.Face 
-	FACE2_SMOOTH_LIT      = 1 << 13 # FACE_* are for the ModelFace structure used by models
-	FACE2_STATIC_LIT      = 1 << 14 # They have equivalent meanings, but are not used for
-	FACE2_DOUBLE_SIDED    = 1 << 15 # the same objects.
-	COORDSYST_STATE_VALID = 1 << 16
+	HIDDEN                  = 1 << 0
+	LEFTHANDED              = 1 << 3
+	NON_SOLID               = 1 << 4
+	WORLD_BATCHED           = 1 << 6
+	BONUS_BATCHED           = 1 << 6
+	BODY_HAS_ODE            = 1 << 8  # Volume is or not ODE managed
+	BODY_ODE_INVALIDE_POS   = 1 << 9  # Indicate that the position current position or the previous position and orientation is invalid
+	WORLD_HAS_ODE           = 1 << 10 # World can or not managed ODE Body
+	WORLD_HAS_ODE_SPACE     = 1 << 11
+	BODY_PUSHABLE       = 1 << 12  # Indicate that the position current position or the previous position and orientation is invalid
+	WORLD_PORTAL_LINKED     = 1 << 7
+	LIGHT_TOP_LEVEL         = 1 << 7
+	LIGHT_DIRECTIONAL       = 1 << 8
+	LIGHT_NO_SHADOW         = 1 << 9
+	LIGHT_SHADOW_COLOR      = 1 << 10
+	LIGHT_STATIC            = 1 << 11
+	LIGHT_INVALID           = 1 << 6
+	CAMERA_PARTIAL          = 1 << 5
+	CAMERA_ORTHO            = 1 << 6
+	CAMERA_NO_LISTENER      = 1 << 7
+	SOUND_PLAY_IN_3D        = 1 << 6
+	SOUND_AUTO_REMOVE       = 1 << 7
+	SOUND_LOOP             = 1 << 8
+	FACE2_LIT               = 1 << 12 # FACE2_* constants are for soya.Face 
+	FACE2_SMOOTH_LIT        = 1 << 13 # FACE_* are for the ShapeFace structure used by shapes
+	FACE2_STATIC_LIT        = 1 << 14 # They have equivalent meanings, but are not used for
+	FACE2_DOUBLE_SIDED      = 1 << 15 # the same objects.
+	COORDSYST_STATE_VALID   = 1 << 16
+
 	
 cdef enum:
 	PORTAL_USE_4_CLIP_PLANES = 1 << 5 # the part of world beyond that is out of the portal rectangle is not rendered

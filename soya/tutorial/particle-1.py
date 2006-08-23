@@ -50,11 +50,11 @@ scene = soya.World()
 
 # here we use the built in FireWork system. auto_generate_particle is 
 # on by default so this will continue forever
-fountain = particle.FlagFirework(scene, nb_particles=4, nb_sub_particles=10)
+#fountain = particle.FlagFirework(scene, nb_particles=4, nb_sub_particles=10)
 
 # this is slightly more dull
 # you will notice that this doesnt automatically set auto_generate_particle
-#smoke=particle.Smoke(scene)
+smoke=particle.Smoke(scene)
 
 # here we use the same smoke particle system but set auto_generate_particle
 # so that it continues

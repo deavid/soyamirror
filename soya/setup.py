@@ -21,16 +21,13 @@
 
 
 # Modify the following if needed :
-USE_ODE = 1     # use ODE
-#USE_ODE = 0
-
-USE_OPENAL = 1     # use OpenAL
-#USE_OPENAL = 0
+#USE_OPENAL = 1     # use OpenAL
+USE_OPENAL = 0
 
 	
 
 INCDIR = [
-	"ode-0.5/include",
+	#"ode-0.5/include",
 	"/usr/include",
 	"/usr/local/include",
 	"/usr/X11R6/include",
@@ -40,22 +37,25 @@ INCDIR = [
 	"/usr/local/include/cal3d",
 	"/sw/include", # For Mac OS X "fink"
 	"/opt/local/include", # For Mac OS X "darwin port"
+	#"/System/Library/Frameworks/OpenAL.framework/Headers/",
 	]
 LIBDIR = [
-	"ode-0.5/lib",
+	#"ode-0.5/lib",
 	"/usr/lib",
 	"/usr/local/lib",
 	"/opt/local/lib", # For Mac OS X "darwin port"
 	"/usr/X11R6/lib",
 	"/sw/lib/", # For Mac OS X
+	#"/System/Library/Frameworks/OpenAL.framework/"
+	]
+	
+COMPILE_ARGS = [
+	"-w",  # with GCC ; disable (Pyrex-dependant) warning
 	]
 
 
 import os, os.path, sys, glob, distutils.core, distutils.sysconfig
 from distutils.core import setup, Extension
-
-HERE = os.path.dirname(sys.argv[0])
-ODE_DIR = os.path.join(HERE, "ode-0.5")
 
 BUILDING = ("build" in sys.argv[1:]) and not ("--help" in sys.argv[1:])
 SDISTING = ("sdist" in sys.argv[1:]) and not ("--help" in sys.argv[1:])
@@ -67,6 +67,9 @@ try:
 except:
 	HAVE_PYREX = 0
 
+HERE = os.path.dirname(sys.argv[0])
+#ODE_DIR = os.path.join(HERE, "ode-0.5")
+
 endian = sys.byteorder
 if endian == "big":
 	DEFINES = [("SOYA_BIG_ENDIAN", endian)]
@@ -76,11 +79,10 @@ else:
 #from config import *
 
 if sys.platform[:3] == "win":
-	#LIBS = ["m", "glew32", "SDL", "SDL_mixer", "freetype", "cal3d", "stdc++"]
-	LIBS = ["m", "glew32", "opengl32" , "glu32", "SDL" , "freetype", "cal3d", "stdc++"]
+	LIBS = ["m", "glew32", "SDL", "SDL_mixer", "freetype", "cal3d", "stdc++","ode"]
 else:
 	#LIBS = ["m", "GLEW", "GL", "GLU", "SDL", "SDL_mixer", "freetype", "cal3d", "stdc++"]
-	LIBS = ["m", "GLEW", "SDL", "freetype", "cal3d", "stdc++"]
+	LIBS = ["m", "GLEW", "SDL", "freetype", "cal3d", "stdc++","ode"]
 
 SOYA_PYREX_SOURCES  = ["_soya.pyx", "matrix.c", "chunk.c" ]
 SOYA_C_SOURCES      = ["_soya.c"  , "matrix.c", "chunk.c" ]
@@ -98,17 +100,20 @@ if BUILDING:
 """)
 	if USE_OPENAL:
 		print "Sound support (with OpenAL) enabled..."
-		if sys.platform[:3] == "win":
-                    LIBS.append("openal32")
-                else:
-                    LIBS.append("openal")
+
 		CONFIG_PXD_FILE.write("""include "sound/al.pxd"\n""")
 		CONFIG_PYX_FILE.write("""include "sound/sound.pyx"\n""")
 	else:
 		print "Sound support (with OpenAL) disabled..."
 		CONFIG_PYX_FILE.write("""include "sound/nosound.pyx"\n""")
 
-
+if USE_OPENAL:
+	if False  and sys.platform == 'darwin' and os.path.exists("/System/Library/Frameworks/OpenAL.framework/"):
+		COMPILE_ARGS.append("-framework OpenAL")
+		print "using Tiger OpenAl.framework"
+	else:
+		LIBS.append("openal")
+		
 
 # Taken from Twisted ; thanks to Christopher Armstrong :
 #   make sure data files are installed in twisted package
@@ -128,22 +133,6 @@ def do(command):
 		sys.exit(1)
 		
 		
-if USE_ODE:
-	if BUILDING:
-		if "--dont-build-ode" in sys.argv: sys.argv.remove("--dont-build-ode")
-		elif os.path.exists(os.path.join(ODE_DIR, "lib", "libode.a")):
-			# XXX Works only for Linux / Unix
-			print "ODE and OPCODE have already been compiled; if you want to recompile them do:  cd %s ; make clean" % ODE_DIR
-		else:
-			print "Building ODE and OPCODE from %s" % ODE_DIR
-			do("cd %s ; make clean" % ODE_DIR)
-			do("cd %s ; make configure" % ODE_DIR)
-			do("cd %s ; make" % ODE_DIR)
-			print "ODE and OPCODE built successfully !"
-			
-	elif SDISTING:
-		# Clean ODE, to remove configuration files and binaries
-		do("cd %s ; make clean" % ODE_DIR)
 	
 	
 if HAVE_PYREX:
@@ -161,17 +150,17 @@ if HAVE_PYREX:
 		Extension("soya._soya", SOYA_PYREX_SOURCES,
 							include_dirs=INCDIR, library_dirs=LIBDIR,
 							libraries=LIBS, define_macros=DEFINES,
-							extra_compile_args = ["-w"], # with GCC ; disable (Pyrex-dependant) warning
+							extra_compile_args = COMPILE_ARGS, 
 							),
 		Extension("soya.opengl",   ["opengl.pyx"],
 							include_dirs=INCDIR, library_dirs=LIBDIR,
 							libraries=LIBS, define_macros=DEFINES,
-							extra_compile_args = ["-w"], # with GCC ; disable (Pyrex-dependant) warning
+							extra_compile_args = COMPILE_ARGS, 
 							),
 		Extension("soya.sdlconst", ["sdlconst.pyx"],
 							include_dirs=INCDIR, library_dirs=LIBDIR,
 							libraries=LIBS, define_macros=DEFINES,
-							extra_compile_args = ["-w"], # with GCC ; disable (Pyrex-dependant) warning
+							extra_compile_args = COMPILE_ARGS, 
 							),
 		],
 		"cmdclass" : {
@@ -180,13 +169,6 @@ if HAVE_PYREX:
 				},
 		}
 
-	if USE_ODE:
-			KARGS["ext_modules"].append(
-					Extension("soya._ode", ["_ode.pyx", "matrix.c"],
-							include_dirs=INCDIR, library_dirs=LIBDIR,
-							libraries=LIBS + ["ode","stdc++"], define_macros=DEFINES,
-							extra_compile_args = ["-w"], # with GCC ; disable (Pyrex-dependant) warning
-			))
 	
 else:
 	print
@@ -201,17 +183,17 @@ else:
 		Extension("soya._soya", SOYA_C_SOURCES,
 							include_dirs=INCDIR, library_dirs=LIBDIR,
 							libraries=LIBS, define_macros=DEFINES,
-							extra_compile_args = ["-w"], # with GCC ; disable (Pyrex-dependant) warning
+							extra_compile_args = COMPILE_ARGS, 
 							),
 		Extension("soya.opengl",   ["opengl.c"],
 							include_dirs=INCDIR, library_dirs=LIBDIR,
 							libraries=LIBS, define_macros=DEFINES,
-							extra_compile_args = ["-w"], # with GCC ; disable (Pyrex-dependant) warning
+							extra_compile_args = COMPILE_ARGS, 
 							),
 		Extension("soya.sdlconst", ["sdlconst.c"],
 							include_dirs=INCDIR, library_dirs=LIBDIR,
 							libraries=LIBS, define_macros=DEFINES,
-							extra_compile_args = ["-w"], # with GCC ; disable (Pyrex-dependant) warning
+							extra_compile_args = COMPILE_ARGS, 
 							)
 		],
 		"cmdclass" : {
@@ -219,17 +201,7 @@ else:
 				},
 		}
 
-	if USE_ODE:
-			KARGS["ext_modules"].append(
-					Extension("soya._ode", ["_ode.c", "matrix.c"],
-							include_dirs=INCDIR, library_dirs=LIBDIR,
-							libraries=LIBS + ["ode","stdc++"], define_macros=DEFINES,
-							extra_compile_args = ["-w"], # with GCC ; disable (Pyrex-dependant) warning
-			))
-
-if BUILDING:
-	CONFIG_PXD_FILE.close()
-	CONFIG_PYX_FILE.close()
+	
 
 setup(
 	name         = "Soya",
