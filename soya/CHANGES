@@ -274,3 +274,4 @@
     * Severals memory leaks have been fixed (in particular on Terrains
       and CoordSystStates)
     * soya.widget.default_font can now be saved as any other fonts.
+    * mesh deformation were buged on cellshaded models
