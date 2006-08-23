@@ -84,7 +84,9 @@ head_c = Head(scene)
 #head_c.add_force(soya.Vector(scene,-131,-134,-130))
 head_c.set_xyz(79, terrain_height+10, 18)
 
-head_c.bounce=0.5
+head_c.bounce=1
+head_b.bounce=1
+head_a.bounce=1
 
 scene.gravity = soya.Vector(scene,0,-19,0)
 
