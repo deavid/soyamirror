@@ -113,5 +113,24 @@ print "scene built"
 print scene.space.geoms
 
 soya.set_root_widget(main)
-ml = soya.MainLoop(scene)
-ml.main_loop()
+class MainLoop(soya.MainLoop):
+	def __init__(self,world):
+		soya.MainLoop.__init__(self,world)
+		self.prob = -0.005
+	def begin_round(self):
+		soya.MainLoop.begin_round(self)
+
+		# wait for any keystoke to quit
+		#for e in soya.process_event():
+		#	if e[0]==sdlconst.KEYDOWN and e[1]!=0:
+		if random() < self.prob:
+			print "let's add another one \o/"
+			head = Head(scene)
+			head.set_xyz(98+4*random(), 5*terrain_height/6, 5+4*random())
+			head.add_force(Vector(scene,-600-random()*2000,0,150+random()*500))
+			self.prob -=0.03
+		else:
+			#print self.prob
+			self.prob += 0.0003
+
+MainLoop(scene).main_loop()
