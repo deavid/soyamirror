@@ -10,13 +10,20 @@
 
 import sys, os
 from random import choice, gauss as normalvariate, randint, random, expovariate
-from math import sqrt
+from math import sqrt, pi
 import soya
 import soya.widget
-from soya import Vector
+import soya.sphere
+import soya.laser
+from soya import Vector, Point
 
-soya.init("first ODE test",width=1024,height=768)
-
+if '-f' in sys.argv:
+	soya.init("first ODE test",width=1280,height=854,fullscreen=True)
+	soya.cursor_set_visible(False)
+	soya.set_mouse_pos(1280/2,854/2)
+	soya.process_event()
+else:
+	soya.init("first ODE test",width=1024,height=768)
 soya.path.append(os.path.join(os.path.dirname(sys.argv[0]), "data"))
 scene = soya.World()
 
@@ -45,14 +52,28 @@ class Nova(soya.Smoke):
 		sz=sz*l
 		#print sz
 		self.set_particle(index, (1 + lf())*lb, sx, sy, sz, sx*a, sy*a, sz*a)
-		
+materials = (	
+	(soya.Material(soya.Image.get("block2.png")), (0.188235,0.141176,0.086275)),
+	(soya.Material(soya.Image.get("metal1.png")), (0.329412,0.321569,0.345098)),
+	(soya.Material(soya.Image.get( "grass.png")), (0.231373,0.380392,0.149020)),
+	(soya.Material(soya.Image.get("ground.png")), (0.768627,0.654902,0.443137)),
+	(soya.Material(soya.Image.get(  "snow.png")), (0.886275,0.901961,0.894118)),
+	(soya.Material(soya.Image.get(  "lava.png")), (0.894118,0.184314,0.011765)),
+	#(soya.Material(soya.Image.get(  "soustoit.png")), (0.5,0.5,0.5)),
+)
+models = []
+for material,color in materials:
+	models.append((soya.sphere.Sphere(None,material).shapify(),color))
 
 
-class BouncingHead(soya.Body):
-	head_model = soya.Model.get("caterpillar_head")
+class Ball(soya.Body):
+	#ball_model = soya.Model.get("caterpillar_head")
+	ball_model = ball_world = soya.sphere.Sphere(None).shapify()
 	tmp_vect = Vector(scene)
 	def __init__(self,parent):
-		soya.Body.__init__(self,parent,self.head_model)
+		model,color=choice(models)
+		soya.Body.__init__(self,parent,model)
+		self.dust_color = color
 	def begin_round(self):
 		soya.Body.begin_round(self)
 		self.tmp_vect.set_xyz(-self.x,-self.y,-self.z)
@@ -75,14 +96,16 @@ class BouncingHead(soya.Body):
 			p.speed = es
 			p.life  = l
 			p.acceleration = a
-			p.set_sizes((0.2, 0.2), (0.3, 0.3))
-			p.set_colors((0.9,0.9,0.35,0.9),(0.95,0.95,0.40,0))
+			p.set_sizes((0.15, 0.15), (0.2, 0.2))
+			p.set_colors(self.dust_color+(0.9,),self.dust_color+(0,))
 
 heads = []
 for i in range(100):
-	b = BouncingHead(scene)
-	b.mass = soya.SphericalMass((3+random()*15)**3,1,"total_mass")
-	soya.GeomSphere(b,1.2).bounce = random()
+	r = (0.4+abs(normalvariate(0.7,0.7)))
+	b = Ball(scene)
+	b.mass = soya.SphericalMass(20*4*pi*(r**2),1,"total_mass")
+	b.scale(r,r,r)
+	soya.GeomSphere(b,1.2*r).bounce = random()
 	b.set_xyz(normalvariate(0,150),normalvariate(0,150),normalvariate(0,150))
 	b.look_at(scene)
 	heads.append(b)
@@ -91,9 +114,107 @@ for i in range(100):
 light = soya.Light(scene)
 light.set_xyz(30,30,30)
 
+
+
+class LaserCamera(soya.Camera):
+	def __init__(self, parent):
+		soya.Camera.__init__(self, parent)
+		
+		self.speed = soya.Vector(self)
+		self.mouse_sensivity =2
+		self.laser_vector = Vector(self,0,0.01,-1)
+		self.laser_pos = Point(self,0,-1,0)
+		self.laser = soya.laser.Laser(self.parent)
+		self.laser_on = False
+		self.laser_power = 1000
+		
+	def begin_round(self):
+		soya.Camera.begin_round(self)
+		events = soya.process_event()
+		
+		for evenement in soya.coalesce_motion_event(events) :
+			# mouvement de la souris
+			if  evenement[0] == soya.sdlconst.MOUSEMOTION  and (evenement[1] != self.get_screen_width()/2 and evenement[2] != self.get_screen_height()/2):
+				left = (evenement[1] - self.get_screen_width()/2) * (self.mouse_sensivity) + evenement[1]
+				top = (evenement[2] - self.get_screen_height()/2) * (self.mouse_sensivity) + evenement[2]
+				self.look_at(self.coord2d_to_3d( left, top ))
+				soya.set_mouse_pos(self.get_screen_width()/2,self.get_screen_height()/2)
+		
+		for event in events:
+			if event[0] == soya.sdlconst.KEYDOWN:
+				if   event[1] == soya.sdlconst.K_UP:     self.speed.z = -1.0
+				elif event[1] == soya.sdlconst.K_DOWN:   self.speed.z =  1.0
+				elif event[1] == soya.sdlconst.K_LEFT:   self.speed.x = -1.0
+				elif event[1] == soya.sdlconst.K_RIGHT:  self.speed.x =  1.0
+				elif event[1] == soya.sdlconst.K_SPACE:  self.speed.y =  1.0
+				elif event[1] == soya.sdlconst.K_LCTRL:  self.speed.y =  -1.0
+				elif event[1] == soya.sdlconst.K_q:      soya.MAIN_LOOP.stop()
+				elif event[1] == soya.sdlconst.K_ESCAPE: soya.MAIN_LOOP.stop()
+				elif event[1] == soya.sdlconst.K_RETURN:
+					self.set_xyz(0,0,70),
+					self.look_at(Point(self.parent,0,0,0))
+			elif event[0] == soya.sdlconst.KEYUP:
+				if   event[1] == soya.sdlconst.K_UP:     self.speed.z = 0.0
+				elif event[1] == soya.sdlconst.K_DOWN:   self.speed.z = 0.0
+				elif event[1] == soya.sdlconst.K_LEFT:   self.speed.x = 0.0
+				elif event[1] == soya.sdlconst.K_RIGHT:  self.speed.x = 0.0
+				elif event[1] == soya.sdlconst.K_SPACE:  self.speed.y = 0.0
+				elif event[1] == soya.sdlconst.K_LCTRL:  self.speed.y = 0.0
+			elif event[0] == soya.sdlconst.MOUSEBUTTONDOWN:
+				self.laser_on = True
+				self.laser.visible = True
+				if event[1] == soya.sdlconst.BUTTON_RIGHT:
+					self.laser_power=10000
+			elif event[0] == soya.sdlconst.MOUSEBUTTONUP:
+				self.laser_on = False
+				self.laser.visible = False
+				
+		if self.laser_on:
+			if self.laser_on:
+				self.laser.move(self.laser_pos)
+				self.laser.look_at(self.laser_vector)
+			result = self.parent.raypick(self.laser_pos, self.laser_vector)
+			if result:
+				impact,normal = result
+				#apply force
+				target = impact.parent
+				target.add_force(self.laser_vector*self.laser_power,impact)
+				#reset the laser power
+				self.laser_power = 1000
+				#create particle
+				# first corresponding to the dust of the planet
+				s = soya.Smoke(self.parent)
+				s.move(impact)
+				s.removable = True
+				s.set_colors(target.dust_color+(0.5,),target.dust_color+(0,))
+				s.set_sizes((0.3, 0.3), (0.7, 0.7))
+				s.life = 1
+				#second the lazer beam
+				s = soya.Smoke(self.parent)
+				s.move(impact)
+				s.removable = True
+				s.life = 0.4
+				s.speed = 1
+				s.set_colors((0.121569,0.431373,0.792157,0.8),(0.121569,0.431373,0.792157,0.5))
+				s.set_sizes((0.2, 0.2), (0, 0))
+				
+				
+				
+				
+	def advance_time(self, proportion):
+		self.add_mul_vector(proportion, self.speed)
+		if self.laser_on:
+			self.laser.move(self.laser_pos)
+			self.laser.look_at(self.laser_vector)
+		
+
+
+
+
+
 main = soya.widget.Group()
-camera = soya.Camera(scene)
-camera.set_xyz(0,0,70)
+camera = LaserCamera(scene)
+camera.set_xyz(0,0,100)
 camera.back = 300
 fps = soya.widget.FPSLabel(main)
 print fps.get_color()

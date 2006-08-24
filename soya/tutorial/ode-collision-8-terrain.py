@@ -116,7 +116,7 @@ soya.set_root_widget(main)
 class MainLoop(soya.MainLoop):
 	def __init__(self,world):
 		soya.MainLoop.__init__(self,world)
-		self.prob = -0.005
+		self.prob = -0.03
 	def begin_round(self):
 		soya.MainLoop.begin_round(self)
 
