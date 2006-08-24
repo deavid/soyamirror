@@ -8,8 +8,10 @@
 # have many usefull attribut descripting the Contact. This time We are using the
 # pos attribut to find the position of the contact and create some particule
 
-print 'arrows: for moving'
-print 'espace: for up, left control for down'
+print 'arrows: move'
+print 'espace: up'
+print 'left:   down'
+print 'mouse:  look'
 print 'clic:   firing laser'
 print 'right:  clic for stronger single shot'
 print "return: center the camera when you're lost"
