@@ -21,8 +21,8 @@
 
 
 # Modify the following if needed :
-#USE_OPENAL = 1     # use OpenAL
-USE_OPENAL = 0
+USE_OPENAL = 1     # use OpenAL
+#USE_OPENAL = 0
 
 	
 
