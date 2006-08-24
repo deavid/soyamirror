@@ -8,6 +8,13 @@
 # have many usefull attribut descripting the Contact. This time We are using the
 # pos attribut to find the position of the contact and create some particule
 
+print 'arrows: for moving'
+print 'espace: for up, left control for down'
+print 'clic:   firing laser'
+print 'right:  clic for stronger single shot'
+print "return: center the camera when you're lost"
+print 'escape: quit'
+
 import sys, os
 from random import choice, gauss as normalvariate, randint, random, expovariate
 from math import sqrt, pi
@@ -96,12 +103,12 @@ class Ball(soya.Body):
 			p.speed = es
 			p.life  = l
 			p.acceleration = a
-			p.set_sizes((0.15, 0.15), (0.2, 0.2))
+			p.set_sizes((0.1, 0.1), (0.15, 0.15))
 			p.set_colors(self.dust_color+(0.9,),self.dust_color+(0,))
 
 heads = []
 for i in range(100):
-	r = (0.4+abs(normalvariate(0.7,0.7)))
+	r = (0.4+abs(normalvariate(0.7,1)))
 	b = Ball(scene)
 	b.mass = soya.SphericalMass(20*4*pi*(r**2),1,"total_mass")
 	b.scale(r,r,r)
@@ -125,8 +132,9 @@ class LaserCamera(soya.Camera):
 		self.laser_vector = Vector(self,0,0.01,-1)
 		self.laser_pos = Point(self,0,-1,0)
 		self.laser = soya.laser.Laser(self.parent)
-		self.laser_on = False
+		self.laser.visible = self.laser_on = False
 		self.laser_power = 1000
+		self.single_blast = False
 		
 	def begin_round(self):
 		soya.Camera.begin_round(self)
@@ -135,8 +143,8 @@ class LaserCamera(soya.Camera):
 		for evenement in soya.coalesce_motion_event(events) :
 			# mouvement de la souris
 			if  evenement[0] == soya.sdlconst.MOUSEMOTION  and (evenement[1] != self.get_screen_width()/2 and evenement[2] != self.get_screen_height()/2):
-				left = (evenement[1] - self.get_screen_width()/2) * (self.mouse_sensivity) + evenement[1]
-				top = (evenement[2] - self.get_screen_height()/2) * (self.mouse_sensivity) + evenement[2]
+				left = (evenement[1] - self.get_screen_width()/2) * (self.mouse_sensivity-1) + evenement[1]
+				top = (evenement[2] - self.get_screen_height()/2) * (self.mouse_sensivity-1) + evenement[2]
 				self.look_at(self.coord2d_to_3d( left, top ))
 				soya.set_mouse_pos(self.get_screen_width()/2,self.get_screen_height()/2)
 		
@@ -165,6 +173,7 @@ class LaserCamera(soya.Camera):
 				self.laser.visible = True
 				if event[1] == soya.sdlconst.BUTTON_RIGHT:
 					self.laser_power=10000
+					self.single_blast = True
 			elif event[0] == soya.sdlconst.MOUSEBUTTONUP:
 				self.laser_on = False
 				self.laser.visible = False
@@ -179,6 +188,8 @@ class LaserCamera(soya.Camera):
 				#apply force
 				target = impact.parent
 				target.add_force(self.laser_vector*self.laser_power,impact)
+				
+				l = self.laser_power/1000.
 				#reset the laser power
 				self.laser_power = 1000
 				#create particle
@@ -193,11 +204,12 @@ class LaserCamera(soya.Camera):
 				s = soya.Smoke(self.parent)
 				s.move(impact)
 				s.removable = True
-				s.life = 0.4
+				s.life = 0.4*l
 				s.speed = 1
-				s.set_colors((0.121569,0.431373,0.792157,0.8),(0.121569,0.431373,0.792157,0.5))
+				s.set_colors((0.121569,0.431373,0.792157,0.8),(0.121569,0.431373,0.792157,0.5+l/20.))
 				s.set_sizes((0.2, 0.2), (0, 0))
-				
+
+		
 				
 				
 				
@@ -207,6 +219,11 @@ class LaserCamera(soya.Camera):
 			self.laser.move(self.laser_pos)
 			self.laser.look_at(self.laser_vector)
 		
+	def end_round(self):
+		if self.single_blast:
+			self.laser_on = False
+			self.laser.visible = False
+			self.single_blast = False
 
 
 
@@ -215,7 +232,7 @@ class LaserCamera(soya.Camera):
 main = soya.widget.Group()
 camera = LaserCamera(scene)
 camera.set_xyz(0,0,100)
-camera.back = 300
+camera.back = 500
 fps = soya.widget.FPSLabel(main)
 print fps.get_color()
 fps.set_color((0.5,0.5,0.5,0.5))
