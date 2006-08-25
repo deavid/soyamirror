@@ -18,7 +18,7 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 
-cdef extern from "AL/al.h":
+cdef extern from "include_al.h":
 	ctypedef int        		ALenum
 	ctypedef char           ALboolean
 	ctypedef void						ALvoid
@@ -183,7 +183,7 @@ cdef extern from "AL/al.h":
 
 
 	
-cdef extern from "AL/alc.h":
+cdef extern from "include_alc.h":
 	ctypedef char           ALCboolean
 	ctypedef char           ALCchar
 	ctypedef char           ALCbyte
