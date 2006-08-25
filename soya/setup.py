@@ -88,13 +88,14 @@ SOYA_PYREX_SOURCES  = ["_soya.pyx", "matrix.c", "chunk.c" ]
 SOYA_C_SOURCES      = ["_soya.c"  , "matrix.c", "chunk.c" ]
 
 
+print "BUILDING", BUILDING
 # Generate config.pxd and config.pyx
 if BUILDING:
-	CONFIG_PXD_FILE = open(os.path.join(HERE,"config.pxd"), "w")
+	CONFIG_PXD_FILE = open(os.path.join(HERE,"config.pxd"), "w", 0)
 	CONFIG_PXD_FILE.write("""# Machine-generated file, DO NOT EDIT!
 
 """)
-	CONFIG_PYX_FILE = open(os.path.join(HERE,"config.pyx"), "w")
+	CONFIG_PYX_FILE = open(os.path.join(HERE,"config.pyx"), "w", 0)
 	CONFIG_PYX_FILE.write("""# Machine-generated file, DO NOT EDIT!
 
 """)
