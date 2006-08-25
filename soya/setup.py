@@ -69,12 +69,10 @@ except:
 
 HERE = os.path.dirname(sys.argv[0])
 #ODE_DIR = os.path.join(HERE, "ode-0.5")
-
+DEFINES = []
 endian = sys.byteorder
 if endian == "big":
-	DEFINES = [("SOYA_BIG_ENDIAN", endian)]
-else:
-	DEFINES = []
+	DEFINES.append(("SOYA_BIG_ENDIAN", endian))
 
 #from config import *
 
@@ -109,11 +107,11 @@ if BUILDING:
 		CONFIG_PYX_FILE.write("""include "sound/nosound.pyx"\n""")
 
 if USE_OPENAL:
-	if False  and sys.platform == 'darwin' and os.path.exists("/System/Library/Frameworks/OpenAL.framework/"):
-		COMPILE_ARGS.append("-framework OpenAL")
-		print "using Tiger OpenAl.framework"
-	else:
-		LIBS.append("openal")
+	if sys.platform == 'darwin':# and os.path.exists("/System/Library/Frameworks/OpenAL.framework/"):
+		#COMPILE_ARGS.append("-framework OpenAL")
+		#print "using Tiger OpenAl.framework"
+		DEFINES.append(('SOYA_MACOSX',1))
+	LIBS.append("openal")
 		
 
 # Taken from Twisted ; thanks to Christopher Armstrong :
