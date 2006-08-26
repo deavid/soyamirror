@@ -438,9 +438,9 @@ It also resets the cycle animation time : i.e. cycles will restart from their be
 				self._auto_static_count = self._auto_static_count - 1
 				
 		if self._data: self._data._begin_round()
-			
-			
-			
+		
+		
+		
 	def advance_time(self, float proportion):
 		"""Interpolate between the last two quaternions"""
 		cdef GLfloat q[4]
@@ -500,9 +500,10 @@ It also resets the cycle animation time : i.e. cycles will restart from their be
 	
 			# Make sure advance_time is called on all our children
 			CoordSyst.advance_time(self, proportion)
-			
-			#deformation stuff
-			if self._data: self._data._advance_time(proportion)
+
+
+		#deformation stuff
+		if self._data: self._data._advance_time(proportion)
 			
 	property linear_velocity:
 		def __set__(self,_Vector vel):

@@ -392,7 +392,7 @@ cdef class _AnimatedModel(_Model):
 		cal_renderer = CalModel_GetRenderer(data._cal_model)
 		
 		if (CalRenderer_BeginRendering(cal_renderer) == 0):
-			print "erreur 1", CalError_GetLastErrorDescription()
+			print "error 1", CalError_GetLastErrorDescription()
 			raise RuntimeError("CalRenderer_BeginRendering failed: %s" % CalError_GetLastErrorDescription())
 		
 		if self._option & CAL3D_DOUBLE_SIDED: glDisable (GL_CULL_FACE)
@@ -482,7 +482,7 @@ cdef class _AnimatedModel(_Model):
 		cal_renderer = CalModel_GetRenderer(data._cal_model)
 		
 		if (CalRenderer_BeginRendering(cal_renderer) == 0):
-			print "erreur 1", CalError_GetLastErrorDescription()
+			print "error 1", CalError_GetLastErrorDescription()
 			raise RuntimeError("CalRenderer_BeginRendering failed: %s" % CalError_GetLastErrorDescription())
 		
 		for submesh in self._submeshes:
@@ -1165,13 +1165,13 @@ cdef class _AnimatedModelData(_ModelData):
 		
 		self._cal_model = CalModel_New(self._model._core_model)
 		if self._cal_model == NULL:
-			print "erreur CalModel_Create", CalError_GetLastErrorDescription()
+			print "error CalModel_Create", CalError_GetLastErrorDescription()
 			raise RuntimeError("CalModel_Create failed: %s" % CalError_GetLastErrorDescription())
 
 		for i from 0 <= i < len(self._attached_meshes):
 			if self._attached_meshes[i] == 1:
 				if CalModel_AttachMesh(self._cal_model, i) == 0:
-					print "erreur CalModel_AttachMesh", CalError_GetLastErrorDescription()
+					print "error CalModel_AttachMesh", CalError_GetLastErrorDescription()
 					raise RuntimeError("CalModel_AttachMesh failed: %s" % CalError_GetLastErrorDescription())
 		self._build_submeshes()
 		
@@ -1214,7 +1214,7 @@ cdef class _AnimatedModelData(_ModelData):
 			i = self._model.meshes[mesh_name]
 			if self._attached_meshes[i] == 0:
 				if CalModel_AttachMesh(self._cal_model, i) == 0:
-					print "erreur CalModel_AttachMesh", CalError_GetLastErrorDescription()
+					print "error CalModel_AttachMesh", CalError_GetLastErrorDescription()
 					raise RuntimeError("CalModel_AttachMesh failed: %s" % CalError_GetLastErrorDescription())
 
 				self._attached_meshes[i] = 1
@@ -1226,7 +1226,7 @@ cdef class _AnimatedModelData(_ModelData):
 			i = self._model.meshes[mesh_name]
 			if self._attached_meshes[i] == 1:
 				if CalModel_DetachMesh(self._cal_model, i) == 0:
-					print "erreur CalModel_DetachMesh", CalError_GetLastErrorDescription()
+					print "error CalModel_DetachMesh", CalError_GetLastErrorDescription()
 					raise RuntimeError("CalModel_DetachMesh failed: %s" % CalError_GetLastErrorDescription())
 				self._attached_meshes[i] = 0
 		self._build_submeshes()
@@ -1236,7 +1236,7 @@ cdef class _AnimatedModelData(_ModelData):
 		for i from 0 <= i < len(self._attached_meshes):
 			if self._attached_meshes[i] == 0:
 				if CalModel_AttachMesh(self._cal_model, i) == 0:
-					print "erreur CalModel_AttachMesh", CalError_GetLastErrorDescription()
+					print "error CalModel_AttachMesh", CalError_GetLastErrorDescription()
 					raise RuntimeError("CalModel_AttachMesh failed: %s" % CalError_GetLastErrorDescription())
 				self._attached_meshes[i] = 1
 		self._build_submeshes()
@@ -1286,20 +1286,18 @@ cdef class _AnimatedModelData(_ModelData):
 	cdef void _begin_round(self):
 		self._vertex_ok     = self._vertex_ok     - 1
 		self._face_plane_ok = self._face_plane_ok - 1
-		
 		if self._vertex_ok <= 0: self._build_vertices(0)
 		
 	cdef void _advance_time(self, float proportion):
 		import soya # XXX optimizable! probably slow!
 		self._delta_time = self._delta_time + proportion * soya.MAIN_LOOP.round_duration
 		
-		
 	cdef void _build_vertices(self, int vertices):
 		cdef int       bone_id, option
 		cdef CalBone*  bone
 		cdef CoordSyst csyst
 		cdef float*    trans, *quat
-		
+
 		CalModel_Update(self._cal_model, self._delta_time)
 		self._delta_time = 0.0
 		
