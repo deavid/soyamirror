@@ -312,7 +312,7 @@ It also resets the cycle animation time : i.e. cycles will restart from their be
 			raise RuntimeWarning("trying to Disable ODE support on a Body which is not ODE managed")
 	cdef _World _find_or_create_most_probable_ode_parent(self):
 		return self._find_or_create_most_probable_ode_parent_from(self._parent)
-			
+	
 	property ode:
 		def __get__(self):
 			return self._option & BODY_HAS_ODE
@@ -354,6 +354,14 @@ It also resets the cycle animation time : i.e. cycles will restart from their be
 				if geom is not None:
 					if geom._body is not self:
 						geom.body = self
+	def added_into(self, _World new_parent):
+		CoordSyst.added_into(self,new_parent)
+		if self._geom is not None:
+			if self._parent._space is None:
+				self._parent._space = self._geom._space.__class__(self._parent)
+			self._geom.space = self._parent._space
+			
+						
 	cdef void _sync_ode_position(self):
 		cdef GLfloat * m
 		cdef dMatrix3  R
