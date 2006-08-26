@@ -276,8 +276,9 @@ PROPORTION is the proportion of the current round's time that has passed (1.0 fo
 	property parent:
 		def __get__(self):
 			return self._parent
-#    def __set__(self, _World parent):
-#      self._parent = parent
+		#def __set__(self, _World new_parent):
+			#new_parent.add(self)
+		
 			
 	property visible:
 		def __get__(self):

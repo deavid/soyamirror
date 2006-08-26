@@ -28,11 +28,12 @@ from soya import Vector, Point
 
 if '-f' in sys.argv:
 	soya.init("first ODE test",width=1280,height=854,fullscreen=True)
-	soya.cursor_set_visible(False)
-	soya.set_mouse_pos(1280/2,854/2)
-	soya.process_event()
 else:
 	soya.init("first ODE test",width=1024,height=768)
+soya.cursor_set_visible(False)
+soya.set_mouse_pos(1280/2,854/2)
+soya.process_event()
+
 soya.path.append(os.path.join(os.path.dirname(sys.argv[0]), "data"))
 scene = soya.World()
 
@@ -68,6 +69,7 @@ materials = (
 	(soya.Material(soya.Image.get("ground.png")), (0.768627,0.654902,0.443137)),
 	(soya.Material(soya.Image.get(  "snow.png")), (0.886275,0.901961,0.894118)),
 	(soya.Material(soya.Image.get(  "lava.png")), (0.894118,0.184314,0.011765)),
+	#(soya.Material(soya.Image.get( "blood.png")), (0.141186,0.000000,0.000000)),
 	#(soya.Material(soya.Image.get(  "soustoit.png")), (0.5,0.5,0.5)),
 )
 models = []
@@ -110,11 +112,11 @@ class Ball(soya.Body):
 
 heads = []
 for i in range(100):
-	r = (0.4+abs(normalvariate(0.7,1)))
+	r = (0.4+abs(normalvariate(1,1)))
 	b = Ball(scene)
 	b.mass = soya.SphericalMass(20*4*pi*(r**2),1,"total_mass")
 	b.scale(r,r,r)
-	soya.GeomSphere(b,1.2*r).bounce = random()
+	soya.GeomSphere(b,r)#.bounce = random()
 	b.set_xyz(normalvariate(0,150),normalvariate(0,150),normalvariate(0,150))
 	b.look_at(scene)
 	heads.append(b)
@@ -137,6 +139,7 @@ class LaserCamera(soya.Camera):
 		self.laser.visible = self.laser_on = False
 		self.laser_power = 1000
 		self.single_blast = False
+		self.laser.color=(1,0,0,0.5)
 		
 	def begin_round(self):
 		soya.Camera.begin_round(self)
@@ -174,8 +177,9 @@ class LaserCamera(soya.Camera):
 				self.laser_on = True
 				self.laser.visible = True
 				if event[1] == soya.sdlconst.BUTTON_RIGHT:
-					self.laser_power=10000
+					self.laser_power=100000
 					self.single_blast = True
+					self.laser.color=(0,0.4,1,0.9)
 			elif event[0] == soya.sdlconst.MOUSEBUTTONUP:
 				self.laser_on = False
 				self.laser.visible = False
@@ -191,19 +195,18 @@ class LaserCamera(soya.Camera):
 				target = impact.parent
 				target.add_force(self.laser_vector*self.laser_power,impact)
 				
-				l = self.laser_power/1000.
-				#reset the laser power
-				self.laser_power = 1000
+				l = sqrt(self.laser_power/1000.)
+				nl = sqrt(l)
 				#create particle
 				# first corresponding to the dust of the planet
-				s = soya.Smoke(self.parent)
+				s = soya.Smoke(self.parent,nb_particles=12*nl)
 				s.move(impact)
 				s.removable = True
 				s.set_colors(target.dust_color+(0.5,),target.dust_color+(0,))
 				s.set_sizes((0.3, 0.3), (0.7, 0.7))
 				s.life = 1
 				#second the lazer beam
-				s = soya.Smoke(self.parent)
+				s = soya.Smoke(self.parent,nb_particles=12*nl)
 				s.move(impact)
 				s.removable = True
 				s.life = 0.4*l
@@ -226,6 +229,8 @@ class LaserCamera(soya.Camera):
 			self.laser_on = False
 			self.laser.visible = False
 			self.single_blast = False
+			self.laser_power = 1000
+			self.laser.color=(1,0,0,0.5)
 
 
 
