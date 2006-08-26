@@ -12,6 +12,9 @@
 # Copyright (c) 2001-2003, Russell L. Smith.
 # All rights reserved. 
 ####################################################################
+# author:
+#	edited by Marmoute - Pierre-Yves David - marmoute@nekeme.net
+
 
 cdef extern from "ode/ode.h":
 

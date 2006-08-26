@@ -3,7 +3,7 @@
 # Join class Definition.
 
 # author:
-#	modified by Marmoute - Pierre-Yves David - marmoute@nekeme.net
+#	edited by Marmoute - Pierre-Yves David - marmoute@nekeme.net
 
 cdef class _JointGroup:
 	cdef dJointGroupID _OdeGroupJoinID
