@@ -226,7 +226,11 @@ ground, and if not it make him stat falling."""
 scene = soya.World()
 
 # Loads the level, and put it in the scene
-level = soya.World.get("level_demo")
+try:
+	level = soya.World.get("level_demo")
+except ValueError:
+	print>>sys.stderr, 'the level of this demo is not yet generated, please run the game_skel-1.py tutorial'
+	sys.exit(1)
 scene.add(level)
 
 # Creates a character in the level, with a keyboard controller
