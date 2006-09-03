@@ -51,6 +51,7 @@ LIBDIR = [
 	
 COMPILE_ARGS = [
 	"-w",  # with GCC ; disable (Pyrex-dependant) warning
+	"-fsigned-char", # On Mac, char are unsigned by default, contrary to Linux or Windows.
 	]
 
 

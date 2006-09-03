@@ -1,7 +1,7 @@
 # -*- indent-tabs-mode: t -*-
 
 # Soya 3D
-# Copyright (C) 2001-2004 Jean-Baptiste LAMY -- jiba@tuxfamily.org
+# Copyright (C) 2006 Jean-Baptiste LAMY -- jiba@tuxfamily.org
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -933,8 +933,19 @@ class AnimatedModel(Model, _soya._AnimatedModel):
 				os.path.join(os.path.dirname(src), os.pardir, AnimatedModel.DIRNAME, filename, filename + ".cfg"),
 				(" CONFIG_TEXT=%s" % filename.split("@")[-1]) * bool("@" in filename),
 				))
-	_export = classmethod(_export)
 			
+# 	def _export(klass, src, filename):
+# 		if   src.endswith(".blend"):
+# 			if "@" in filename: config_text = filename.split("@")[-1]
+# 			else:               config_text = "-"
+# 			do_cmd("blender %s -P %s %s %s" % (
+# 				src,
+# 				os.path.join(os.path.dirname(__file__), "blender2cal3d_call.py"),
+# 				os.path.join(os.path.dirname(src), os.pardir, AnimatedModel.DIRNAME, filename, filename + ".cfg"),
+# 				config_text,
+# 				))
+	_export = classmethod(_export)
+	
 	def load(klass, filename):
 		filename = filename.replace("/", os.sep)
 		dirname  = klass._get_directory_for_loading_and_check_export(filename, os.sep + filename + ".cfg")
