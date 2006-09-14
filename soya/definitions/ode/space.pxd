@@ -8,4 +8,3 @@ cdef class _Space(_Geom):
 	
 cdef class SimpleSpace(_Space)
 	#cdef void _create(self, _Space space)
-	

@@ -17,6 +17,7 @@ from soya import Vector
 
 
 soya.init("first ODE test",width=1024,height=768)
+soya.process_event()
 soya.path.append(os.path.join(os.path.dirname(sys.argv[0]), "data"))
 scene = soya.World()
 
