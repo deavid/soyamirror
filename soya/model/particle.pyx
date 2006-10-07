@@ -177,6 +177,9 @@ cdef class _Particles(CoordSyst):
 	def begin_round(self):
 		if self._option & PARTICLES_AUTO_GENERATE and (self._nb_creatable_particles < self._max_particles_per_round):
 			self._nb_creatable_particles = self._max_particles_per_round
+		if self._nb_creatable_particles > (self._nb_max_particles - self._nb_particles):
+			self._nb_creatable_particles = self._nb_max_particles - self._nb_particles
+		#print self._nb_creatable_particles, self._nb_max_particles, self._nb_particles
 			
 	def advance_time(self, float proportion):
 		self._delta_time = self._delta_time + proportion
@@ -192,7 +195,7 @@ cdef class _Particles(CoordSyst):
 			particle[0] = particle[0] + decay
 			if particle[0] < 0.0: # particle is dead
 				#if (not(self._option & PARTICLES_AUTO_GENERATE)) or (self.generator(i) == 1): # remove the particle
-				if (self._nb_creatable_particles != 0) and (self.generate(i) != 1): # Replace the dead particle by a new one
+				if (self._nb_creatable_particles > 0) and (self.generate(i) != 1): # Replace the dead particle by a new one
 					self._nb_creatable_particles = self._nb_creatable_particles - 1
 				else: # Delete particle
 					self._nb_particles = self._nb_particles - 1
@@ -226,6 +229,7 @@ cdef class _Particles(CoordSyst):
 			i = i + 1
 			
 		if (self._nb_particles < self._nb_max_particles) and (self._nb_creatable_particles > 0):
+			
 			self.regenerate(self._nb_creatable_particles)
 			self._nb_creatable_particles = 0
 			
