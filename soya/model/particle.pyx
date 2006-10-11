@@ -155,11 +155,17 @@ cdef class _Particles(CoordSyst):
 		if removable != 0: self._option = self._option | PARTICLES_REMOVABLE
 		
 	cdef void _reinit(self):
+		cdef int size
 		self._particle_size = 11
 		if self._option & PARTICLES_MULTI_COLOR: self._particle_size = self._particle_size + 4
 		if self._option & PARTICLES_MULTI_SIZE:  self._particle_size = self._particle_size + 2
 		if self._option & PARTICLES_CYLINDER:    self._particle_size = self._particle_size + 3
-		self._particles = <float*> realloc(self._particles, self._nb_max_particles * self._particle_size * sizeof(float))
+		size = self._nb_max_particles * self._particle_size
+		if size == 0:
+			size = 1
+		self._particles = <float*> realloc(self._particles, size * sizeof(float))
+		if self._nb_particles > self._nb_max_particles:
+			self._nb_particles = self._nb_max_particles
 		
 	def __dealloc__(self):
 		free(self._particles)
@@ -191,6 +197,10 @@ cdef class _Particles(CoordSyst):
 		decay = - 0.05 * proportion
 		particle = self._particles
 		i = 0
+		#nb = self._nb_particles
+		#if nb > self._nb_max_particles:
+		#	self._nb_particles = self._nb_max_particles
+		#	nb = self._nb_max_particles
 		while i < self._nb_particles:
 			particle[0] = particle[0] + decay
 			if particle[0] < 0.0: # particle is dead
@@ -277,6 +287,9 @@ cdef class _Particles(CoordSyst):
 		particle = self._particles
 		
 		glBegin(GL_QUADS)
+		#nb = self._nb_particles
+		#if nb > self._nb_max_particles:
+		#	nb = self._nb_max_particles
 		for i from 0 <= i < self._nb_particles:
 			if self._option & PARTICLES_MULTI_COLOR:
 				glColor4fv(particle + 11)
@@ -475,6 +488,7 @@ import random
 # and
 #   Particles.set_colors((0.5, 0.5, 0.5, 1.0), (1.0, 1.0, 1.0, 1.0), (0.0, 0.0, 0.0, 1.0))
 # are equivalent with additive blending, but the last one doesn't bug on radeon 7500.
+
 
 cdef class Fountain(_Particles):
 	def __init__(self, _World parent = None, _Material material = None, int nb_particles = 12, int removable = 0):
