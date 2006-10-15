@@ -49,7 +49,7 @@ cdef class _World(_Body):
 			
 	def __init__(self, _World parent = None, _Model model = None, opt = None):
 		self.children = []
-		self.ode_children = {}
+		self.ode_children = []
 		_Body.__init__(self, parent, model, opt)
 		self._space = None
 		self._contact_group = _JointGroup()
@@ -62,20 +62,104 @@ cdef class _World(_Body):
 				self.ode_parent = None
 		
 	cdef __getcstate__(self):
-		return CoordSyst.__getcstate__(self), self._model, self._filename, self.children, self._atmosphere, self._model_builder, self._data
+		#ode part
+		cdef Chunk* ode_chunk
+		cdef dVector3 vector
+		if self._option & WORLD_HAS_ODE:
+			ode_chunk = get_chunk()
+			print "getting vector of %i"%(<int>self._OdeWorldID)
+			dWorldGetGravity(self._OdeWorldID, vector)
+			print "adding vector (%i,%i,%i)"%(vector[0],vector[1],vector[2])
+			#chunk_add_floats_endian_safe(ode_chunk, vector, 3)
+			chunk_add_float_endian_safe(ode_chunk, vector[0])
+			chunk_add_float_endian_safe(ode_chunk, vector[1])
+			chunk_add_float_endian_safe(ode_chunk, vector[2])
+			print "adding ERP"
+			chunk_add_float_endian_safe(ode_chunk, dWorldGetERP(self._OdeWorldID))
+			print "adding CFM"
+			chunk_add_float_endian_safe(ode_chunk, dWorldGetCFM(self._OdeWorldID))
+			print "adding Auto Disable Flag"
+			chunk_add_int_endian_safe(ode_chunk, dWorldGetAutoDisableFlag(self._OdeWorldID))
+			print "adding Auto Disable Linear"
+			chunk_add_float_endian_safe(ode_chunk, dWorldGetAutoDisableLinearThreshold(self._OdeWorldID))
+			print "adding Auto Disable Angular"
+			chunk_add_float_endian_safe(ode_chunk, dWorldGetAutoDisableAngularThreshold(self._OdeWorldID))
+			print "adding Auto Disable Step"
+			chunk_add_int_endian_safe(ode_chunk, dWorldGetAutoDisableSteps(self._OdeWorldID))
+			print "adding Auto Disable Time"
+			chunk_add_float_endian_safe(ode_chunk, dWorldGetAutoDisableTime(self._OdeWorldID))
+			print "adding Num Step"
+			chunk_add_int_endian_safe(ode_chunk, dWorldGetQuickStepNumIterations(self._OdeWorldID))
+			print "adding Contact Max correcting Vel"
+			chunk_add_float_endian_safe(ode_chunk, dWorldGetContactMaxCorrectingVel(self._OdeWorldID))
+			print "adding Contact Surface Layer"
+			chunk_add_float_endian_safe(ode_chunk, dWorldGetContactSurfaceLayer(self._OdeWorldID))
+			ode_info = drop_chunk_to_string(ode_chunk)
+		else:
+			ode_info = None
+		return CoordSyst.__getcstate__(self), self._model, self._filename, self.children, self._atmosphere, self._model_builder, self._data, ode_info, self.ode_children
 		
 	cdef void __setcstate__(self, cstate):
+		cdef Chunk* ode_chunk
+		cdef dVector3 vector
+		cdef int i
+		cdef float f
+		cdef dWorldID wid
 		self._filename      = cstate[2]
 		self.children       = cstate[3]
 		self._atmosphere    = cstate[4]
 		self._model_builder = cstate[5]
 		
-		if len(cstate) == 6: data = None
-		else:                data = cstate[6]
+		if len(cstate) == 6:
+			data = None
+		else:
+			data = cstate[6]
 		_Body.__setcstate__(self, (cstate[0], cstate[1], data))
-		
+		if self._option & WORLD_HAS_ODE:
+			ode_chunk = string_to_chunk(cstate[7])
+			wid = self._OdeWorldID = dWorldCreate()
+			vector[0] = 0
+			vector[1] = 0
+			vector[2] = 56
+			chunk_get_float_endian_safe(ode_chunk,&vector[0])
+			chunk_get_float_endian_safe(ode_chunk,&vector[1])
+			chunk_get_float_endian_safe(ode_chunk,&vector[2])
+			#print "f =",f
+			#vector[2]=f
+			print "out the chunk vector is : (%i,%i,%i)"%(vector[0],vector[1],vector[2])
+			dWorldSetGravity (wid, vector[0], vector[1], vector[2])
+			chunk_get_float_endian_safe(ode_chunk,&f) #ERP
+			dWorldSetERP(wid, f)
+			chunk_get_float_endian_safe(ode_chunk,&f) #CFM
+			dWorldSetCFM(wid, f)
+			chunk_get_int_endian_safe(ode_chunk,&i) #Auto Disable Flag
+			dWorldSetAutoDisableFlag(wid, i)
+			chunk_get_float_endian_safe(ode_chunk,&f) #Auto Disable Linear Threshold
+			dWorldSetAutoDisableLinearThreshold(wid, f)
+			chunk_get_float_endian_safe(ode_chunk,&f) #Auto Disable Angular Threshold
+			dWorldSetAutoDisableAngularThreshold(wid, f)
+			chunk_get_int_endian_safe(ode_chunk,&i) #Auto Disable Step
+			dWorldSetAutoDisableSteps(wid, i)
+			chunk_get_float_endian_safe(ode_chunk,&f) #Auto Disable Time
+			dWorldSetAutoDisableTime(wid, f)
+			chunk_get_int_endian_safe(ode_chunk,&i) #Quick Step Num Iterations
+			dWorldSetQuickStepNumIterations(wid, i)
+			chunk_get_float_endian_safe(ode_chunk,&f) # Contact Max Correction Vel
+			dWorldSetContactMaxCorrectingVel(wid, f)
+			chunk_get_float_endian_safe(ode_chunk,&f) #Contact Surface layer
+			dWorldSetContactSurfaceLayer(wid, f)
+			drop_chunk(ode_chunk)
+			self.ode_children = cstate[8]
+		else:
+			self.ode_children = []
 		cdef CoordSyst child
 		for child in self.children: child._parent = self
+	def loaded(self):
+		cdef _Body ode_child
+		print "World.loaded is called"
+		for ode_child in self.ode_children:
+			print "a children is found"
+			ode_child._reactivate_ode_body(self)
 		
 	def get_root(self):
 		cdef _World root
@@ -512,11 +596,12 @@ trees, cell-shading or shadow)."""
 		if self._option & WORLD_HAS_ODE:
 			dWorldDestroy(self._OdeWorldID)
 			self._option = self._option & ~WORLD_HAS_ODE
-			for key,children in self.ode_children.items():
-				del self.ode_children[key]
+			while self.ode_children:
+				children = self.ode_children[-1]
 				children.geom = None
 				children._option = children._option &~BODY_HAS_ODE
 				children._ode_parent = None
+				self.ode_children.pop(-1)
 		
 	property odeWorld:
 		def __get__(self):

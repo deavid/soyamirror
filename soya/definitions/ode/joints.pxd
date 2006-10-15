@@ -10,7 +10,8 @@ cdef class _JointGroup:
 	# A list of Python joints that were added to the group
 	cdef object jointlist
 	
-cdef class Joint:
+Joint = None
+cdef class _Joint:
 	"""Base class for all joint classes."""
 
 		
@@ -29,3 +30,6 @@ cdef class Joint:
 	cdef void _destroyed(self)
 	cdef void _setParam(self, int param, dReal value)
 	cdef dReal _getParam(self, int param)
+	
+	cdef __getcstate__(self)
+	cdef void __setcstate__(self,cstate)

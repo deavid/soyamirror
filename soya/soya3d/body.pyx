@@ -32,6 +32,7 @@ cdef class _Body(CoordSyst):
 			self._model = model
 			model._instanced(self, opt)
 		self._ode_parent = None
+		self.__ode_data = None
 		self.joints = []
 		self._option = self._option | BODY_PUSHABLE
 		CoordSyst.__init__(self, parent)
@@ -55,7 +56,41 @@ cdef class _Body(CoordSyst):
 		else:             model._instanced(self, opt)
 		
 	cdef __getcstate__(self):
-		return CoordSyst.__getcstate__(self), self._model, self._data
+		cdef Chunk* ode_chunk
+		cdef dVector3 vector
+		cdef dQuaternion q
+		cdef dMass    mass
+		cdef dBodyID  bid
+		cdef dReal *  v
+		ode_data = None
+		if self._option & BODY_HAS_ODE:
+			bid = self._OdeBodyID
+			ode_chunk = get_chunk()
+			# pos            vector (3)   # XXX ignored for the moment
+			# quaternion     quaternion   # XXX use a self-relativ cordinate later
+			# linear speed   vector (3)   # XXX idem
+			v = dBodyGetLinearVel(bid)
+			vector_by_matrix(vector, self._ode_parent._root_matrix())
+			vector_by_matrix(vector, self._inverted_root_matrix())
+			chunk_add_floats_endian_safe(ode_chunk,v,3)
+			# angular speed  vector (3)   # XXX idem
+			v = dBodyGetAngularVel(bid)
+			vector_by_matrix(v, self._ode_parent._root_matrix())
+			vector_by_matrix(v, self._inverted_root_matrix())
+			chunk_add_floats_endian_safe(ode_chunk,v,3)
+			chunk_add_int_endian_safe(ode_chunk, dBodyGetAutoDisableFlag(self._OdeBodyID))
+			chunk_add_float_endian_safe(ode_chunk, dBodyGetAutoDisableLinearThreshold(self._OdeBodyID))
+			chunk_add_float_endian_safe(ode_chunk, dBodyGetAutoDisableAngularThreshold(self._OdeBodyID))
+			chunk_add_int_endian_safe(ode_chunk, dBodyGetAutoDisableSteps(self._OdeBodyID))
+			chunk_add_float_endian_safe(ode_chunk, dBodyGetAutoDisableTime(self._OdeBodyID))
+			# getting mass
+			dBodyGetMass(self._OdeBodyID, &mass); 
+			chunk_add_float_endian_safe(ode_chunk,mass.mass)
+			chunk_add_floats_endian_safe(ode_chunk,mass.c,4)
+			chunk_add_floats_endian_safe(ode_chunk,mass.I,12)
+			ode_data = drop_chunk_to_string(ode_chunk)
+			
+		return CoordSyst.__getcstate__(self), self._model, self._data, ode_data, self.joints
 	
 	cdef void __setcstate__(self, cstate):
 		CoordSyst.__setcstate__(self, cstate[0])
@@ -69,6 +104,14 @@ cdef class _Body(CoordSyst):
 				
 			else: # New (Soya >= 0.12) Body
 				self._data = cstate[2]
+			if len(cstate)>=4:
+				if self._option & BODY_HAS_ODE:
+					self.__ode_data = cstate[3]
+					self.joints = cstate[4]
+					self._option & BODY_HAS_ODE
+					self._option = self._option & ~BODY_HAS_ODE
+				else:
+					self.__ode_data = None
 		if self._data is None: self._data = self._model
 		
 	cdef void _batch(self, CoordSyst coordsyst):
@@ -302,10 +345,62 @@ It also resets the cycle animation time : i.e. cycles will restart from their be
 		if not self._option & BODY_HAS_ODE:
 			world = _find_or_create_most_probable_ode_parent_from(world)
 			self._OdeBodyID = dBodyCreate(world._OdeWorldID)
+			dBodySetData(self._OdeBodyID,<void*> self) 
 			self._option = self._option | BODY_HAS_ODE + BODY_ODE_INVALIDE_POS
 			self._ode_parent = world
-			world.ode_children[self] = None
+			world.ode_children.append(self)
+	cdef void _reactivate_ode_body(_Body self,_World world):
+		cdef Chunk * ode_chunk
+		cdef int i
+		cdef float f
+		cdef dVector3 v
+		cdef dBodyID bid
+		cdef dMass   mass
 		
+		print "Reactivated"
+		
+		if not (world._option & WORLD_HAS_ODE):
+			raise TypeError("cant reactive on %s, %s is not and Ode Manager"%(self,world))
+		bid = self._OdeBodyID = dBodyCreate(world._OdeWorldID)
+		dBodySetData(self._OdeBodyID,<void*> self) 
+		self._option = self._option | BODY_HAS_ODE + BODY_ODE_INVALIDE_POS
+		self._ode_parent = world
+		if self.__ode_data is None:
+			raise ValueError("there is no ode_data stored")
+		
+		ode_chunk = string_to_chunk(self.__ode_data)
+		# Auto Disable Flag
+		chunk_get_floats_endian_safe(ode_chunk,v,3)
+		vector_by_matrix(v, self._root_matrix())
+		vector_by_matrix(v, self._ode_parent._inverted_root_matrix())
+		dBodySetLinearVel(bid,v[0],v[1],v[2])
+		vector_by_matrix(v, self._root_matrix())
+		vector_by_matrix(v, self._ode_parent._inverted_root_matrix())
+		chunk_get_floats_endian_safe(ode_chunk,v,3)
+		dBodySetAngularVel(bid,v[0],v[1],v[2])
+		chunk_get_int_endian_safe(ode_chunk,&i) #Auto Disable Flag
+		dBodySetAutoDisableFlag(bid, i)
+		chunk_get_float_endian_safe(ode_chunk,&f) #Auto Disable Linear Threshold
+		dBodySetAutoDisableLinearThreshold(bid, f)
+		chunk_get_float_endian_safe(ode_chunk,&f) #Auto Disable Angular Threshold
+		dBodySetAutoDisableAngularThreshold(bid, f)
+		chunk_get_int_endian_safe(ode_chunk,&i) #Auto Disable Step
+		dBodySetAutoDisableSteps(bid, i)
+		chunk_get_float_endian_safe(ode_chunk,&f) #Auto Disable Time
+		dBodySetAutoDisableTime(bid, f)
+		#mass
+		chunk_get_float_endian_safe(ode_chunk,&mass.mass)
+		chunk_get_floats_endian_safe(ode_chunk,mass.c,4)
+		chunk_get_floats_endian_safe(ode_chunk,mass.I,12)
+		dBodySetMass(self._OdeBodyID,&mass)
+		drop_chunk(ode_chunk)
+		
+		
+		
+		self.__ode_data = None
+			
+		# Wake the joints up.
+			
 	cdef void _deactivate_ode_body(self):
 		if self._option & BODY_HAS_ODE:
 			dBodyDestroy(self._OdeBodyID)
@@ -554,7 +649,7 @@ It also resets the cycle animation time : i.e. cycles will restart from their be
 			return Vector(self._ode_parent,p[0],p[1],p[2])
 	
 	property mass:
-		def __set__(self, Mass mass):
+		def __set__(self, _Mass mass):
 			"""setMass(mass)
 	
 			Set the mass properties of the body. The argument mass must be
@@ -574,9 +669,12 @@ It also resets the cycle animation time : i.e. cycles will restart from their be
 	
 			Return the mass properties as a Mass object.
 			"""
-			cdef Mass m
+			cdef _Mass m
+			print "sapin"
 			m=Mass()
+			print "linge of %i" % <int>self._OdeBodyID
 			dBodyGetMass(self._OdeBodyID, &m._mass)
+			print "orange"
 			return m
 
 	# addForce
@@ -829,8 +927,8 @@ It also resets the cycle animation time : i.e. cycles will restart from their be
 			return dBodyGetGravityMode(self._OdeBodyID)
 			
 	# why it is function ?
-	cdef void _add_joint(self, Joint joint):
+	cdef void _add_joint(self, _Joint joint):
 		self.joints.append(joint)
 
-	cdef void _remove_joint(self, Joint joint):
+	cdef void _remove_joint(self, _Joint joint):
 		self.joints.remove(joint)

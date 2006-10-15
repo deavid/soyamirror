@@ -49,7 +49,7 @@ cdef class _JointGroup:
 
 				Destroy all joints in the group.
 				"""
-				cdef Joint j
+				cdef _Joint j
 				#print "gonna empty at the ode side"
 				dJointGroupEmpty(self._OdeGroupJoinID)
 				#print "have empty"
@@ -85,7 +85,7 @@ cdef class _JointGroup:
 ######################################################################
 
 # Joint
-cdef class Joint:
+cdef class _Joint:
 	"""Base class for all joint classes."""
 
 	# Joint id as returned by dJointCreateXxx()
@@ -109,6 +109,12 @@ cdef class Joint:
 
 	def __init__(self, *a, **kw):
 		raise NotImplementedError, "The Joint base class can't be used directly."
+		
+	cdef __getcstate__(self):
+		return self._body1,self._body2
+	cdef void __setcstate__(self,cstate):
+		self._body1,self._body2 = cstate[0:2]
+		
 		
 	def __getitem__(self,index):
 		if index == 0:
@@ -418,7 +424,7 @@ cdef class Joint:
 ######################################################################
 
 # BallJoint
-cdef class BallJoint(Joint):
+cdef class BallJoint(_Joint):
 	"""Ball joint.
 
 	"""
@@ -492,7 +498,7 @@ cdef class BallJoint(Joint):
 			
  
 # HingeJoint
-cdef class HingeJoint(Joint):
+cdef class HingeJoint(_Joint):
 	"""Hinge joint.
 
 	"""
@@ -640,7 +646,7 @@ cdef class HingeJoint(Joint):
 			
 			
 # SliderJoint
-cdef class SliderJoint(Joint):
+cdef class SliderJoint(_Joint):
 	"""Slider joint.
 	
 	"""
@@ -722,7 +728,7 @@ cdef class SliderJoint(Joint):
 			
 	
 # UniversalJoint
-cdef class UniversalJoint(Joint):
+cdef class UniversalJoint(_Joint):
 	"""Universal joint."""
 
 	#def __new__(self, _World world not None, jointgroup=None, *args, **kw):
@@ -832,7 +838,7 @@ cdef class UniversalJoint(Joint):
 
 	
 # Hinge2Joint
-cdef class Hinge2Joint(Joint):
+cdef class Hinge2Joint(_Joint):
 	"""Hinge2 joint.
 
 	"""
@@ -977,7 +983,7 @@ cdef class Hinge2Joint(Joint):
 
 	
 # FixedJoint
-cdef class FixedJoint(Joint):
+cdef class FixedJoint(_Joint):
 	"""Fixed joint.
 
 	"""
@@ -1023,7 +1029,7 @@ cdef class FixedJoint(Joint):
 
 			
 # AMotor
-cdef class AngularMotor(Joint):
+cdef class AngularMotor(_Joint):
 	"""AMotor joint.
 	
 	"""
@@ -1056,6 +1062,7 @@ cdef class AngularMotor(Joint):
 		self._OdeJointID = dJointCreateAMotor(world._OdeWorldID,gid)
 		self.world = world
 		self.attach(body1, body2)
+		
 					
 	property mode:
 			"""setMode(mode)

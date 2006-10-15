@@ -37,6 +37,8 @@ cdef class _Body(CoordSyst):
 	cdef dBodyID _OdeBodyID
 	cdef _World _ode_parent
 	cdef readonly joints
+	cdef readonly __ode_data     #some data about ODE state load when deserealisation
+	                        # but not yet used
 	
 	cdef GLfloat _q[4] # Previous quaternion (into ode_parent coord sys)
 	cdef GLfloat _p[4] # Previous position   (into ode_parent coord sys)
@@ -47,11 +49,12 @@ cdef class _Body(CoordSyst):
 	
 	cdef void _activate_ode_body(_Body self)
 	cdef void _activate_ode_body_with(_Body self,_World world)
+	cdef void _reactivate_ode_body(_Body self,_World world)
 	cdef void _deactivate_ode_body(self)
 	cdef _World _find_or_create_most_probable_ode_parent(self)
 	cdef void _sync_ode_position(self)
-	cdef void _add_joint(self, Joint joint)
-	cdef void _remove_joint(self, Joint joint)
+	cdef void _add_joint(self, _Joint joint)
+	cdef void _remove_joint(self, _Joint joint)
 
 	
 	

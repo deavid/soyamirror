@@ -1,8 +1,8 @@
 # -*- indent-tabs-mode: t -*-
 
 # Mass class.
-
-cdef class Mass: # XXX make total for all XXX make class method for all
+Mass = None
+cdef class _Mass: # XXX make total for all XXX make class method for all
 	"""Mass parameters of a rigid body.
 
 	This class stores mass parameters of a rigid body which can be
@@ -26,13 +26,28 @@ cdef class Mass: # XXX make total for all XXX make class method for all
 	def __new__(self, *args, **kw):
 		dMassSetZero(&self._mass)
 		
-	def setZero(self):
+	cdef __getcstate__(self):
+		cdef Chunk* chunk
+		chunk = get_chunk()
+		chunk_add_float_endian_safe(chunk,self._mass.mass)
+		chunk_add_floats_endian_safe(chunk,self._mass.c,4)
+		chunk_add_floats_endian_safe(chunk,self._mass.I,12)
+		return drop_chunk_to_string(chunk)
+	cdef __setcstate__(self,cstate):
+		cdef Chunk* chunk
+		chunk = string_to_chunk(cstate)
+		chunk_get_float_endian_safe(chunk,&self._mass.mass)
+		chunk_get_floats_endian_safe(chunk,self._mass.c,4)
+		chunk_get_floats_endian_safe(chunk,self._mass.I,12)
+		drop_chunk(chunk)
+		
+	def set_zero(self):
 		"""setZero()
 
 		Set all the mass parameters to zero."""
 		dMassSetZero(&self._mass)
 
-	def setParameters(self, mass, cgx, cgy, cgz, I11, I22, I33, I12, I13, I23):
+	def set_parameters(self, mass, cgx, cgy, cgz, I11, I22, I33, I12, I13, I23):
 		"""setParameters(mass, cgx, cgy, cgz, I11, I22, I33, I12, I13, I23)
 
 		Set the mass parameters to the given values.
@@ -60,7 +75,7 @@ cdef class Mass: # XXX make total for all XXX make class method for all
 		"""
 		dMassSetParameters(&self._mass, mass, cgx, cgy, cgz, I11, I22, I33, I12, I13, I23)
 
-	def setSphere(self, density, radius):
+	def set_sphere(self, density, radius):
 		"""setSphere(density, radius)
 		
 		Set the mass parameters to represent a sphere of the given radius
@@ -72,7 +87,7 @@ cdef class Mass: # XXX make total for all XXX make class method for all
 		@type radius: float
 		"""
 		dMassSetSphere(&self._mass, density, radius)
-	def setSphereTotal(self,total_mass,radius):
+	def set_sphere_total(self,total_mass,radius):
 		"""setSphere(density, radius)
 		
 		Set the mass parameters to represent a sphere of the given radius
@@ -85,7 +100,7 @@ cdef class Mass: # XXX make total for all XXX make class method for all
 		"""
 		dMassSetSphereTotal(&self._mass, total_mass, radius)
 
-	def setCappedCylinder(self, density, direction, r, h):
+	def set_capped_cylinder(self, density, direction, r, h):
 		"""setCappedCylinder(density, direction, r, h)
 		
 		Set the mass parameters to represent a capped cylinder of the
@@ -107,7 +122,7 @@ cdef class Mass: # XXX make total for all XXX make class method for all
 		"""
 		dMassSetCappedCylinder(&self._mass, density, direction, r, h)
 		
-	def setCappedCylinderTotal(self, total_mass, direction, r, h):
+	def set_capped_cylinderTotal(self, total_mass, direction, r, h):
 		"""setCappedCylinderToal(total_mass, direction, r, h)
 		
 		Set the mass parameters to represent a capped cylinder of the
@@ -129,7 +144,7 @@ cdef class Mass: # XXX make total for all XXX make class method for all
 		"""
 		dMassSetCappedCylinderTotal(&self._mass, total_mass, direction, r, h)
 
-	def setCylinderTotal(self, total_mass, direction, r, h):
+	def set_cylinder_total(self, total_mass, direction, r, h):
 		"""setCylinder(total_mass, direction, r, h)
 		
 		Set the mass parameters to represent a flat-ended cylinder of
@@ -149,7 +164,7 @@ cdef class Mass: # XXX make total for all XXX make class method for all
 		@type h: float
 		"""
 		dMassSetCylinderTotal(&self._mass, total_mass, direction, r, h)
-	def setCylinder(self, density, direction, r, h):
+	def set_cylinder(self, density, direction, r, h):
 		"""setCylinder(density, direction, r, h)
 		
 		Set the mass parameters to represent a flat-ended cylinder of
@@ -172,7 +187,7 @@ cdef class Mass: # XXX make total for all XXX make class method for all
 
 		
 
-	def setBox(self, density, lx, ly, lz):
+	def set_box(self, density, lx, ly, lz):
 		"""setBox(density, lx, ly, lz)
 
 		Set the mass parameters to represent a box of the given
@@ -191,7 +206,7 @@ cdef class Mass: # XXX make total for all XXX make class method for all
 		"""
 		dMassSetBox(&self._mass, density, lx, ly, lz)
 
-	def setBoxTotal(self, total_mass, lx, ly, lz):
+	def set_box_total(self, total_mass, lx, ly, lz):
 		"""setBox(total_mass, lx, ly, lz)
 
 		Set the mass parameters to represent a box of the given
@@ -256,7 +271,7 @@ cdef class Mass: # XXX make total for all XXX make class method for all
 		
 		dMassRotate(&self._mass, r)
 
-	def add(self, Mass b):
+	def add(self, _Mass b):
 		"""add(b)
 
 		Add the mass b to the mass object. Masses can also be added using
@@ -289,11 +304,11 @@ cdef class Mass: # XXX make total for all XXX make class method for all
 		else:
 			raise AttributeError,"Mass object has no attribute '"+name+"'"
 
-	def __iadd__(self, Mass b):
+	def __iadd__(self, _Mass b):
 		self.add(b)
 		return self
 		
-	def __add__(self, Mass b):
+	def __add__(self, _Mass b):
 		new = Mass()
 		new.__iadd__(self)
 		new.__iadd__(b)
@@ -337,9 +352,9 @@ def CappedCylindricalMass(value, direction, r, h,mode="density"):
 	"""
 	sph = Mass()
 	if mode == "density":
-		sph.setCappedCylinder(value,radius)
+		sph.set_capped_cylinder(value,radius)
 	elif mode == "total_mass":
-		sph.setCappedCylinderTotal(value,radius)
+		sph.set_capped_cylinderTotal(value,radius)
 	else:
 		raise ValueError("Unsupported CappedCylindricalMass Mode : %s"%mode)
 	return sph
@@ -365,9 +380,9 @@ def CylindricalMass(value, direction, r, h,mode="density"):
 	"""
 	sph = Mass()
 	if mode == "density":
-		sph.setCylinder(value, direction, r, h)
+		sph.set_cylinder(value, direction, r, h)
 	elif mode == "total_mass":
-		sph.setCylinderTotal(value, direction, r, h)
+		sph.set_cylinder_total(value, direction, r, h)
 	else:
 		raise ValueError("Unsupported CylindricalMass Mode : %s"%mode)
 	return sph
@@ -391,9 +406,9 @@ def BoxedMass(value, lx, ly, lz,mode="density"):
 	"""
 	sph = Mass()
 	if mode == "density":
-		sph.setBox(value, lx, ly, lz)
+		sph.set_box(value, lx, ly, lz)
 	elif mode == "total_mass":
-		sph.setBoxTotal(value, lx, ly, lz)
+		sph.set_box_total(value, lx, ly, lz)
 	else:
 		raise ValueError("Unsupported MassSphere Mode : %s"%mode)
 	return sph
@@ -410,9 +425,9 @@ def SphericalMass(value=1, radius=1,mode="density"):
 	"""
 	sph = Mass()
 	if mode == "density":
-		sph.setSphere(value,radius)
+		sph.set_sphere(value,radius)
 	elif mode == "total_mass":
-		sph.setSphereTotal(value,radius)
+		sph.set_sphere_total(value,radius)
 	else:
 		raise ValueError("Unsupported MassSphere Mode : %s"%mode)
 	return sph

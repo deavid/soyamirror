@@ -84,12 +84,12 @@ include "config.pyx"
 include "model/deform.pyx"
 
 
-def _close_ode():
-		"""CloseODE()
-		Deallocate some extra memory used by ODE that can not be deallocated
-		using the normal destroy functions.
-		"""
-		dCloseODE()
+#def _close_ode():
+#		"""CloseODE()
+#		Deallocate some extra memory used by ODE that can not be deallocated
+#		using the normal destroy functions.
+#		"""
+#		dCloseODE()
 
-import atexit
-atexit.register(_close_ode)
+#import atexit
+#atexit.register(_close_ode)

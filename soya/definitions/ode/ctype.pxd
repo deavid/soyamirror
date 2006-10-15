@@ -151,6 +151,24 @@ cdef extern from "ode/ode.h":
 		dReal * dBodyGetQuaternion (dBodyID)
 		dReal * dBodyGetLinearVel  (dBodyID)
 		dReal * dBodyGetAngularVel (dBodyID)
+		
+		void  dBodySetAutoDisableFlag(dBodyID, int do_auto_disable) 
+		int   dBodyGetAutoDisableFlag(dBodyID)
+		
+		void  dBodySetAutoDisableLinearThreshold(dBodyID, dReal linear_threshold)
+		dReal dBodyGetAutoDisableLinearThreshold(dBodyID)
+		
+		void  dBodySetAutoDisableAngularThreshold(dBodyID, dReal angular_threshold)
+		dReal dBodyGetAutoDisableAngularThreshold(dBodyID)
+
+		void  dBodySetAutoDisableSteps (dBodyID, int steps)
+		int   dBodyGetAutoDisableSteps (dBodyID)
+
+		void  dBodySetAutoDisableTime (dBodyID, dReal time)
+		dReal dBodyGetAutoDisableTime (dBodyID)
+
+		void  dBodySetAutoDisableDefaults (dBodyID)
+		
 
 		void dBodySetMass (dBodyID, dMass *mass)
 		void dBodyGetMass (dBodyID, dMass *mass)

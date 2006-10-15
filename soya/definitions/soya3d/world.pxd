@@ -25,6 +25,7 @@ cdef class _World(_Body):
 	cdef public           _filename
 	cdef ModelBuilder     _model_builder
 	cdef dWorldID         _OdeWorldID
+	cdef readonly         ode_children
 	cdef _Space           _space
 	cdef _JointGroup _contact_group
 	#_contact_group = _JointGroup()

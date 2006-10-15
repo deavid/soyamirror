@@ -2,7 +2,7 @@
 #
 # Mass class Definition.
 
-cdef class Mass:
+cdef class _Mass:
 	"""Mass parameters of a rigid body.
 
 	This class stores mass parameters of a rigid body which can be
@@ -22,3 +22,6 @@ cdef class Mass:
 	@type I: 3-tuple of 3-tuples of floats 
 	"""
 	cdef dMass _mass
+	
+	cdef __getcstate__(self)
+	cdef __setcstate__(self,cstate)

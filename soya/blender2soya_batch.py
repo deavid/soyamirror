@@ -71,6 +71,7 @@ class Blender2Soya:
 		except: pass
 		
 		self.parse_args(args)
+		self.file_format = "pickle"
 		
 		self.f = open(self.tmp_file, "w")
 		
@@ -223,7 +224,7 @@ class Blender2Soya:
 		print >> self.f, """root_world.save()"""
 		
 
-exporter = Blender2Soya(args)
+exporter = Blender2Soya(sys.argv)
 exporter.export()
 
 Blender.Quit()

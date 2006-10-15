@@ -209,7 +209,9 @@ World,..."""
 		src_filename = filename.split("@")[0]
 		for p in path:
 			d = os.path.join(p, klass.DIRNAME)
-			if os.path.exists(d): return p				
+			print d
+			if os.path.exists(d): return p
+		raise RuntimeError("Unable to find a %s directory to save %s"%(klass.DIRNAME,filename))
 			
 	_get_directory_for_saving = classmethod(_get_directory_for_saving)
 	
@@ -306,6 +308,9 @@ Saves this object. If no FILENAME is given, the object is saved in the path,
 using its filename attribute. If FILENAME is given, it is saved at this
 location."""
 		if os.pardir in self.filename: raise ValueError("Cannot have .. in filename (security reason)!", filename)
+		print "###############################"
+		print self._get_directory_for_saving(self.filename, ".data"), self.DIRNAME, self.filename + ".data"
+		print "###############################"
 		if not filename: filename = os.path.join(self._get_directory_for_saving(self.filename, ".data"), self.DIRNAME, self.filename + ".data")
 		
 		global _SAVING
@@ -619,6 +624,7 @@ Attributes are (see also Body, CoordSyst and SavedInAPath for inherited attribut
 	
 	def loaded(self):
 		SavedInAPath.loaded(self)
+		_soya._World.loaded(self)
 		for i in self:
 			if hasattr(i, "loaded"): i.loaded()
 			
@@ -967,6 +973,11 @@ A Coordinate System "speed" / derivation, taking into account position, rotation
 CoordSystSpeed extend CoordSyst, and thus have similar method (e.g. set_xyz, rotate_*,
 scale, ...)"""
 	
+#ODE addition
+class Mass(SavedInAPath, _soya._Mass):
+	pass
+class Joint(_soya._Joint,object):
+	pass
 
 if hasattr(_soya, "_Sound"):
 	# Has sound / OpenAL support
@@ -1118,6 +1129,8 @@ _soya.Atmosphere       = Atmosphere
 _soya.Portal           = Portal
 _soya.Terrain          = Terrain
 _soya.Particles        = Particles
+_soya.Mass             = Mass
+_soya.Joint            = Joint
 
 DEFAULT_MATERIAL = Material()
 DEFAULT_MATERIAL.filename  = "__DEFAULT_MATERIAL__"

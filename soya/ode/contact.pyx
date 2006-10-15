@@ -171,7 +171,7 @@ cdef class Contact:
 				def __set__(self, depth):
 						self._contact.geom.depth = depth
 
-cdef class ContactJoint(Joint):
+cdef class ContactJoint(_Joint):
 		"""Contact joint.
 
 		Constructor::
