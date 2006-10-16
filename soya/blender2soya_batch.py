@@ -54,6 +54,10 @@ SCALE = 1.0
 # The maximum angle between two smooth-lit faces.
 MAX_FACE_ANGLE = 80.0
 
+# File format (currently, "pickle" or "cerealizer")
+FILE_FORMAT = "pickle"
+
+
 TMP_FILE = ""
 
 PARAMS_NAMES = [attr for attr in globals().keys() if (attr[0] in string.uppercase) and (attr[1] in string.uppercase)]
@@ -223,8 +227,11 @@ class Blender2Soya:
 		print >> self.f
 		print >> self.f, """root_world.save()"""
 		
+		self.f.flush()
+		self.f.close()
 
-exporter = Blender2Soya(sys.argv)
+args = sys.argv[sys.argv.index("-P") + 2:]
+exporter = Blender2Soya(args)
 exporter.export()
 
 Blender.Quit()
