@@ -261,6 +261,7 @@
       model was culled on the first rendering
 
 * August 2006 : Soya3D 0.13
+  * new ODE integration (thanks Marmoute!)
   * CoordSyst.solid is no longer boolean, but a 32-bit-length bitfield
     (thanks Souvarine)
   * Add RaypickContext.get_item() (thanks Souvarine)
