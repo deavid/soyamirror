@@ -607,16 +607,14 @@ It also resets the cycle animation time : i.e. cycles will restart from their be
 	property linear_velocity:
 		def __set__(self,_Vector vel):
 			cdef float v[3]
-			if not (self._option & BODY_HAS_ODE):
-				self._activate_ode_body()
+			if not (self._option & BODY_HAS_ODE): self._activate_ode_body()
 			vel._into(self._ode_parent, v)
 			dBodySetLinearVel(self._OdeBodyID, v[0], v[1], v[2])
 
 
 		def __get__(self):
 			cdef dReal* p
-			if not (self._option & BODY_HAS_ODE):
-				return None
+			if not (self._option & BODY_HAS_ODE): return None
 			p = <dReal*>dBodyGetLinearVel(self._OdeBodyID)
 			return Vector(self._ode_parent,p[0], p[1], p[2])
 
@@ -641,8 +639,7 @@ It also resets the cycle animation time : i.e. cycles will restart from their be
 			Get the current angular velocity of the body.
 			"""
 			cdef dReal* p
-			if not (self._option & BODY_HAS_ODE):
-				return None
+			if not (self._option & BODY_HAS_ODE): return None
 			
 			# The "const" in the original return value is cast away
 			p = <dReal*>dBodyGetAngularVel(self._OdeBodyID)
@@ -658,17 +655,15 @@ It also resets the cycle animation time : i.e. cycles will restart from their be
 			@param mass: Mass properties
 			@type mass: Mass
 			"""
-			if not (self._option & BODY_HAS_ODE):
-				self._activate_ode_body()
+			if not (self._option & BODY_HAS_ODE): self._activate_ode_body()
 			dBodySetMass(self._OdeBodyID, &mass._mass)
 	
 		def __get__(self):
-			if not (self._option & BODY_HAS_ODE):
-				return None
 			"""getMass() -> mass
 	
 			Return the mass properties as a Mass object.
 			"""
+			if not (self._option & BODY_HAS_ODE): return None
 			cdef _Mass m
 			print "sapin"
 			m=Mass()
@@ -681,8 +676,7 @@ It also resets the cycle animation time : i.e. cycles will restart from their be
 	def add_force(self,_Vector force,_Point pos=None):
 		cdef float f[3]
 		cdef float p[3]
-		if not (self._option & BODY_HAS_ODE):
-				self._activate_ode_body()
+		if not (self._option & BODY_HAS_ODE): self._activate_ode_body()
 		force._into(self._ode_parent, f)
 		if pos is None:
 			dBodyAddForce(self._OdeBodyID, f[0], f[1], f[2])
@@ -708,8 +702,7 @@ It also resets the cycle animation time : i.e. cycles will restart from their be
 		"""
 		cdef float t[3]
 		cdef float p[3]
-		if not (self._option & BODY_HAS_ODE):
-				self._activate_ode_body()
+		if not (self._option & BODY_HAS_ODE): self._activate_ode_body()
 		
 		torque._into(self._ode_parent, t)
 		if pos is None:
@@ -730,8 +723,7 @@ It also resets the cycle animation time : i.e. cycles will restart from their be
 			Return the current accumulated force.
 			"""
 			cdef dReal* f
-			if not (self._option & BODY_HAS_ODE):
-				return None
+			if not (self._option & BODY_HAS_ODE): return None
 			# The "const" in the original return value is cast away
 			f = <dReal*>dBodyGetForce(self._OdeBodyID)
 			return Vector(self._ode_parent,f[0],f[1],f[2])
@@ -760,8 +752,7 @@ It also resets the cycle animation time : i.e. cycles will restart from their be
 			Return the current accumulated torque.
 			"""
 			cdef dReal* f
-			if not (self._option & BODY_HAS_ODE):
-				return None
+			if not (self._option & BODY_HAS_ODE): return None
 			# The "const" in the original return value is cast away
 			f = <dReal*>dBodyGetTorque(self._OdeBodyID)
 			return Vector(self._ode_parent,f[0],f[1],f[2])
@@ -784,8 +775,6 @@ It also resets the cycle animation time : i.e. cycles will restart from their be
 
 	# getRelPointVel
 	def get_point_vel(self, _Point pos):
-		if not (self._option & BODY_HAS_ODE):
-			None
 		"""getRelPointVel(p) -> 3-tuple
 
 		Utility function that takes a point p on a body and returns
@@ -795,6 +784,7 @@ It also resets the cycle animation time : i.e. cycles will restart from their be
 		@param p: Body point (local coordinates)
 		@type p: 3-sequence of floats
 		"""
+		if not (self._option & BODY_HAS_ODE): return None
 		cdef dVector3 res 
 		cdef dVector3 p
 		pos._into(self,p)
@@ -806,12 +796,11 @@ It also resets the cycle animation time : i.e. cycles will restart from their be
 		
 	property enabled:
 		def __set__(self, flag):
-			if not (self._option & BODY_HAS_ODE):
-				self._activate_ode_body()
 			"""enable()
 	
 			Manually enable a body.
 			"""
+			if not (self._option & BODY_HAS_ODE): self._activate_ode_body()
 			
 			if flag:
 				dBodyEnable(self._OdeBodyID)
@@ -819,18 +808,15 @@ It also resets the cycle animation time : i.e. cycles will restart from their be
 				dBodyDisable(self._OdeBodyID)
 			
 		def __get__(self):
-			if not (self._option & BODY_HAS_ODE):
-				None
 			"""isEnabled() -> bool
 	
 			Check if a body is currently enabled.
 			"""
+			if not (self._option & BODY_HAS_ODE): return None
 			return dBodyIsEnabled(self._OdeBodyID)
 			
 	property finite_rotation_mode:
 		def __set__(self, mode):
-			if not (self._option & BODY_HAS_ODE):
-				self.activate_ode_body()
 			"""setFiniteRotationMode(mode)
 	
 			This function controls the way a body's orientation is updated at
@@ -851,22 +837,20 @@ It also resets the cycle animation time : i.e. cycles will restart from their be
 			@param mode: Rotation mode (0/1)
 			@type mode: int
 			"""
+			if not (self._option & BODY_HAS_ODE): self.activate_ode_body()
 			dBodySetFiniteRotationMode(self._OdeBodyID, mode)
 		
 		def __get__(self):
-			if not (self._option & BODY_HAS_ODE):
-				return None
 			"""getFiniteRotationMode() -> mode (0/1)
 	
 			Return the current finite rotation mode of a body (0 or 1).
 			See setFiniteRotationMode().
 			"""
+			if not (self._option & BODY_HAS_ODE): return None
 			return dBodyGetFiniteRotationMode(self._OdeBodyID)
 
 	property finite_rotation_axis:
 		def __set__(self, _Vector axis):
-			if not (self._option & BODY_HAS_ODE):
-				self._activate_ode_body()
 			"""setFiniteRotationAxis(a)
 
 			Set the finite rotation axis of the body.  This axis only has a
@@ -876,17 +860,19 @@ It also resets the cycle animation time : i.e. cycles will restart from their be
 			@param a: Axis
 			@type a: Vector
 			"""
+			if not (self._option & BODY_HAS_ODE): self._activate_ode_body()
 			cdef float a[3]
 			axis._into(self._ode_parent,a)
 			dBodySetFiniteRotationAxis(self._OdeBodyID, a[0], a[1], a[2])
 
 		def __get__(self):
-			if not (self._option & BODY_HAS_ODE):
-				raise TypeError("This Body is not yet ODE managed. Use Body.activate_ode_body() to turn ODE management on.")
 			"""getFiniteRotationAxis() -> 3-tuple
 	
 			Return the current finite rotation axis of the body.
 			"""
+			if not (self._option & BODY_HAS_ODE):
+				#raise TypeError("This Body is not yet ODE managed. Use Body.activate_ode_body() to turn ODE management on.")
+				return None
 			cdef dVector3 p
 			# The "const" in the original return value is cast away
 			dBodyGetFiniteRotationAxis(self._OdeBodyID, p)
@@ -894,18 +880,17 @@ It also resets the cycle animation time : i.e. cycles will restart from their be
 		
 	property num_joints:
 		def __get__(self):
-			if not (self._option & BODY_HAS_ODE):
-				raise TypeError("This Body is not yet ODE managed. Use Body.activate_ode_body() to turn ODE management on.")
 			"""getNumJoints() -> int
 
 			Return the number of joints that are attached to this body.
 			"""
+			if not (self._option & BODY_HAS_ODE):
+				#raise TypeError("This Body is not yet ODE managed. Use Body.activate_ode_body() to turn ODE management on.")
+				return None
 			return dBodyGetNumJoints(self._OdeBodyID)
 
 	property gravity_mode:
 		def __set__(self, mode):
-			if not (self._option & BODY_HAS_ODE):
-				self._activate_ode_body()
 			"""setGravityMode(mode)
 	
 			Set whether the body is influenced by the world's gravity
@@ -915,15 +900,15 @@ It also resets the cycle animation time : i.e. cycles will restart from their be
 			@param mode: Gravity mode
 			@type mode: bool
 			"""
+			if not (self._option & BODY_HAS_ODE): self._activate_ode_body()
 			dBodySetGravityMode(self._OdeBodyID, mode)
 		
 		def __get__(self):
-			if not (self._option & BODY_HAS_ODE):
-				None
 			"""getGravityMode() -> bool
 	
 			Return True if the body is influenced by the world's gravity.
 			"""
+			if not (self._option & BODY_HAS_ODE): return None
 			return dBodyGetGravityMode(self._OdeBodyID)
 			
 	# why it is function ?

@@ -156,11 +156,9 @@ cdef class _World(_Body):
 		for child in self.children: child._parent = self
 	def loaded(self):
 		cdef _Body ode_child
-		print "World.loaded is called"
 		for ode_child in self.ode_children:
-			print "a children is found"
 			ode_child._reactivate_ode_body(self)
-		
+			
 	def get_root(self):
 		cdef _World root
 		root = self
@@ -624,15 +622,13 @@ trees, cell-shading or shadow)."""
 		"""
 		def __set__(self, _Vector gravity):
 			cdef float g[3]
-			if not (self._option & WORLD_HAS_ODE):
-				self._activate_ode_world()
+			if not (self._option & WORLD_HAS_ODE): self._activate_ode_world()
 			gravity._into(self,g)
 			dWorldSetGravity(self._OdeWorldID, g[0], g[1], g[2])
 
 		def __get__(self):
 			cdef dVector3 g
-			if not (self._option & WORLD_HAS_ODE):
-				return None		
+			if not (self._option & WORLD_HAS_ODE): return None		
 			dWorldGetGravity(self._OdeWorldID, g)
 			return Vector(self,g[0],g[1],g[2])
 
@@ -647,13 +643,11 @@ trees, cell-shading or shadow)."""
 		@type erp: float
 		"""
 		def __set__(self, erp):
-			if not (self._option & WORLD_HAS_ODE):
-				self._activate_ode_world()
+			if not (self._option & WORLD_HAS_ODE): self._activate_ode_world()
 			dWorldSetERP(self._OdeWorldID, erp)
 
 		def __get__(self):
-			if not (self._option & WORLD_HAS_ODE):
-				return None
+			if not (self._option & WORLD_HAS_ODE): return None
 			return dWorldGetERP(self._OdeWorldID)
 
 	property cfm:
@@ -668,13 +662,11 @@ trees, cell-shading or shadow)."""
 		@type cfm: float
 		"""
 		def __set__(self, cfm):
-			if not (self._option & WORLD_HAS_ODE):
-				self._activate_ode_world()
+			if not (self._option & WORLD_HAS_ODE): self._activate_ode_world()
 			dWorldSetCFM(self._OdeWorldID, cfm)
 
 		def __get__(self):
-			if not (self._option & WORLD_HAS_ODE):
-				return None
+			if not (self._option & WORLD_HAS_ODE): return None
 			return dWorldGetCFM(self._OdeWorldID)
 	
 		
@@ -691,12 +683,10 @@ trees, cell-shading or shadow)."""
 		@type num: int
 		"""
 		def __set__(self, num):
-			if not (self._option & WORLD_HAS_ODE):
-				self._activate_ode_world()
+			if not (self._option & WORLD_HAS_ODE): self._activate_ode_world()
 			dWorldSetQuickStepNumIterations(self._OdeWorldID, num)
 		def __get__(self):
-			if not (self._option & WORLD_HAS_ODE):
-				return None
+			if not (self._option & WORLD_HAS_ODE): return None
 			return dWorldGetQuickStepNumIterations(self._OdeWorldID)
 
 	property contact_max_correcting_velocity:
@@ -711,13 +701,11 @@ trees, cell-shading or shadow)."""
 		@type vel: float
 		"""
 		def __set__(self, vel):
-			if not (self._option & WORLD_HAS_ODE):
-				self._activate_ode_world()
+			if not (self._option & WORLD_HAS_ODE): self._activate_ode_world()
 			dWorldSetContactMaxCorrectingVel(self._OdeWorldID, vel)
 
 		def __get__(self):
-			if not (self._option & WORLD_HAS_ODE):
-				return None
+			if not (self._option & WORLD_HAS_ODE): return None
 			return dWorldGetContactMaxCorrectingVel(self._OdeWorldID)
 
 	property contact_surface_layer:
@@ -734,13 +722,11 @@ trees, cell-shading or shadow)."""
 		@type depth: float
 		"""
 		def __set__(self, depth):
-			if not (self._option & WORLD_HAS_ODE):
-				self._activate_ode_world()
+			if not (self._option & WORLD_HAS_ODE): self._activate_ode_world()
 			dWorldSetContactSurfaceLayer(self._OdeWorldID, depth)
 
 		def __get__(self):
-			if not (self._option & WORLD_HAS_ODE):
-				return None
+			if not (self._option & WORLD_HAS_ODE): return None
 			return dWorldGetContactSurfaceLayer(self._OdeWorldID)
 
 	property auto_disable:
@@ -752,13 +738,11 @@ trees, cell-shading or shadow)."""
 		@type flag: bool
 		"""
 		def __set__(self, flag):
-			if not (self._option & WORLD_HAS_ODE):
-				self._activate_ode_world()
+			if not (self._option & WORLD_HAS_ODE): self._activate_ode_world()
 			dWorldSetAutoDisableFlag(self._OdeWorldID, flag)
 		
 		def __get__(self):
-			if not (self._option & WORLD_HAS_ODE):
-				return None
+			if not (self._option & WORLD_HAS_ODE): return None
 			return dWorldGetAutoDisableFlag(self._OdeWorldID)
 
 	property auto_disable_linear_threshold:
@@ -771,13 +755,11 @@ trees, cell-shading or shadow)."""
 		@type threshold: float
 		"""
 		def __set__(self, threshold):
-			if not (self._option & WORLD_HAS_ODE):
-				self._activate_ode_world()
+			if not (self._option & WORLD_HAS_ODE): self._activate_ode_world()
 			dWorldSetAutoDisableLinearThreshold(self._OdeWorldID, threshold)
 
 		def __get__(self):
-			if not (self._option & WORLD_HAS_ODE):
-				return None
+			if not (self._option & WORLD_HAS_ODE): return None
 			return dWorldGetAutoDisableLinearThreshold(self._OdeWorldID)
 
 	property auto_disable_angular_threshold:
@@ -790,14 +772,12 @@ trees, cell-shading or shadow)."""
 			@type threshold: float
 			"""
 			def __set__(self, threshold):
-				if not (self._option & WORLD_HAS_ODE):
-					self._activate_ode_world()
+				if not (self._option & WORLD_HAS_ODE): self._activate_ode_world()
 				dWorldSetAutoDisableAngularThreshold(self._OdeWorldID, threshold)
 
 
 			def __get__(self):
-				if not (self._option & WORLD_HAS_ODE):
-					return None
+				if not (self._option & WORLD_HAS_ODE): return None
 				return dWorldGetAutoDisableAngularThreshold(self._OdeWorldID)
 
 
@@ -810,13 +790,12 @@ trees, cell-shading or shadow)."""
 		@type steps: int
 		"""
 		def __set__(self, steps):
-			if not (self._option & WORLD_HAS_ODE):
-				self._activate_ode_world()
+			if not (self._option & WORLD_HAS_ODE): self._activate_ode_world()
 			dWorldSetAutoDisableSteps(self._OdeWorldID, steps)
 
 
 		def __get__(self):
-			
+			if not (self._option & WORLD_HAS_ODE): return None
 			return dWorldGetAutoDisableSteps(self._OdeWorldID)
 
 
@@ -829,13 +808,11 @@ trees, cell-shading or shadow)."""
 			@type time: float
 			"""
 			def __set__(self, time):
-				if not (self._option & WORLD_HAS_ODE):
-					self._activate_ode_world()
+				if not (self._option & WORLD_HAS_ODE): self._activate_ode_world()
 				dWorldSetAutoDisableTime(self._OdeWorldID, time)
 
 			def __get__(self):
-				if not (self._option & WORLD_HAS_ODE):
-					return None
+				if not (self._option & WORLD_HAS_ODE): return None
 				return dWorldGetAutoDisableTime(self._OdeWorldID)
 
 	# impulseToForce

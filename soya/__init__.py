@@ -209,7 +209,6 @@ World,..."""
 		src_filename = filename.split("@")[0]
 		for p in path:
 			d = os.path.join(p, klass.DIRNAME)
-			print d
 			if os.path.exists(d): return p
 		raise RuntimeError("Unable to find a %s directory to save %s"%(klass.DIRNAME,filename))
 			
@@ -308,9 +307,6 @@ Saves this object. If no FILENAME is given, the object is saved in the path,
 using its filename attribute. If FILENAME is given, it is saved at this
 location."""
 		if os.pardir in self.filename: raise ValueError("Cannot have .. in filename (security reason)!", filename)
-		print "###############################"
-		print self._get_directory_for_saving(self.filename, ".data"), self.DIRNAME, self.filename + ".data"
-		print "###############################"
 		if not filename: filename = os.path.join(self._get_directory_for_saving(self.filename, ".data"), self.DIRNAME, self.filename + ".data")
 		
 		global _SAVING
@@ -640,7 +636,8 @@ Attributes are (see also Body, CoordSyst and SavedInAPath for inherited attribut
 				(" CONFIG_TEXT=%s" % filename.split("@")[-1]) * bool("@" in filename),
 				))
 			code = open(tmp_file).read()
-			os.unlink(tmp_file)
+			try: os.unlink(tmp_file)
+			except: pass
 			exec code
 			
 		elif src.endswith(".obj") or src.endswith(".mtl"):
@@ -1122,7 +1119,7 @@ _soya.Camera           = Camera
 _soya.Light            = Light
 _soya.Body             = Body
 _soya.World            = World
-_soya.Cal3dBody        = Cal3dBody
+#_soya.Cal3dBody        = Cal3dBody
 _soya.AnimatedModel    = AnimatedModel
 _soya.Face             = Face
 _soya.Atmosphere       = Atmosphere
