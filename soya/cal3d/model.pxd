@@ -27,7 +27,7 @@ cdef class _Cal3dSubMesh:
 	cdef int*      _face_neighbors
 
 	cdef _build(self, _AnimatedModel model, CalRenderer* cal_renderer, CalCoreModel* cal_core_model, CalCoreMesh* cal_core_mesh, int mesh, int submesh)
-	cdef void _build_neighbors(self, cache_filename, float* coords)
+	cdef void _build_neighbors(self, full_filename, float* coords)
 		
 		
 cdef class _AnimatedModel(_Model):

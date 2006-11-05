@@ -144,7 +144,7 @@ cdef class _Cal3dSubMesh:
 		#CalRenderer_GetVertices(cal_renderer, vertices)
 		#free(vertices)
 		
-	cdef void _build_neighbors(self, cache_filename, float* coords):
+	cdef void _build_neighbors(self, full_filename, float* coords):
 		cdef int i, j, k, l, p1, p2
 		cdef float* coord1, *coord2
 		cdef Chunk* chunk
@@ -152,16 +152,18 @@ cdef class _Cal3dSubMesh:
 		self._option = self._option | CAL3D_NEIGHBORS
 
 		self._face_neighbors = <int*> malloc(self._nb_faces * 3 * sizeof(int))
-
+		
+		cache_filename = os.path.join(os.path.dirname(full_filename), "neighbors_%s-%s" % (self._mesh, self._submesh))
+		
 		# Read from the cache file, if it exist.
 		if os.path.exists(cache_filename):
-			file = open(cache_filename, "rb")
-			chunk = string_to_chunk(file.read())
-			chunk_get_ints_endian_safe(chunk, self._face_neighbors, 3 * self._nb_faces)
-			drop_chunk(chunk)
+			if os.path.getmtime(cache_filename) > os.path.getmtime(full_filename):
+				file = open(cache_filename, "rb")
+				chunk = string_to_chunk(file.read())
+				chunk_get_ints_endian_safe(chunk, self._face_neighbors, 3 * self._nb_faces)
+				drop_chunk(chunk)
+				return
 			
-			return
-		
 		print "* Soya * Computing neighbor for Cal3D model, and caching the result in file %s..." % cache_filename
 		
 		for i from 0 <= i < self._nb_faces:
@@ -421,7 +423,7 @@ cdef class _AnimatedModel(_Model):
 				
 				if self._option & CAL3D_CELL_SHADING:
 					if not (submesh._option & CAL3D_NEIGHBORS):
-						submesh._build_neighbors(os.path.join(os.path.dirname(self._full_filename), "neighbors_%s-%s" % (submesh._mesh, submesh._submesh)), ptrf)
+						submesh._build_neighbors(self._full_filename, ptrf)
 						
 					shades = cal3d_shades_array
 					self._prepare_cellshading(body, shades, submesh._nb_vertices, ptrf, ptrn)
@@ -450,7 +452,7 @@ cdef class _AnimatedModel(_Model):
 					
 				else:
 					if (self._option & CAL3D_SHADOW) and not (submesh._option & CAL3D_NEIGHBORS):
-						submesh._build_neighbors(os.path.join(os.path.dirname(self._full_filename), "neighbors_%s-%s" % (submesh._mesh, submesh._submesh)), ptrf)
+						submesh._build_neighbors(self._full_filename, ptrf)
 						
 					glBegin(GL_TRIANGLES)
 					for j from 0 <= j < submesh._nb_faces * 3:
