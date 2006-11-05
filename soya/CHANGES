@@ -260,7 +260,7 @@
     * Bugfix on shadows on AnimatedModel: soya was segfaulting if the
       model was culled on the first rendering
 
-* August 2006 : Soya3D 0.13
+* November 2006 : Soya3D 0.13
   * new ODE integration (thanks Marmoute!)
   * CoordSyst.solid is no longer boolean, but a 32-bit-length bitfield
     (thanks Souvarine)
@@ -276,4 +276,7 @@
       and CoordSystStates)
     * soya.widget.default_font can now be saved as any other fonts
     * Mesh deformation were buged on cellshaded models
-    * Compile with -fsigned-char because on Mac, chars are by default unsigned
+    * Compile with -fsigned-char because on Mac, chars are by default
+      unsigned
+    * The file caching neighbors was not cleaned when animated models
+      were modifed
