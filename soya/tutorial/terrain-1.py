@@ -92,6 +92,8 @@ terrain.texture_factor = 1.0
 terrain.scale_factor   = 1.0
 terrain.patch_size     = 8
 terrain.split_factor   = 2.0
+
+
 terrain.texture_factor = 0.25
 
 # Moves the terrain.
