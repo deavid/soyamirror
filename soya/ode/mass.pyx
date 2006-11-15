@@ -352,9 +352,9 @@ def CappedCylindricalMass(value, direction, r, h,mode="density"):
 	"""
 	sph = Mass()
 	if mode == "density":
-		sph.set_capped_cylinder(value,radius)
+		sph.set_capped_cylinder(value, r)
 	elif mode == "total_mass":
-		sph.set_capped_cylinderTotal(value,radius)
+		sph.set_capped_cylinderTotal(value, r)
 	else:
 		raise ValueError("Unsupported CappedCylindricalMass Mode : %s"%mode)
 	return sph
