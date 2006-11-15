@@ -387,7 +387,7 @@ def CylindricalMass(value, direction, r, h,mode="density"):
 		raise ValueError("Unsupported CylindricalMass Mode : %s"%mode)
 	return sph
 	
-def BoxedMass(value, lx, ly, lz,mode="density"):
+def BoxedMass(value=1, lx=1, ly=1, lz=1,mode="density"):
 	"""
 	Create a Mass representing a box of the given
 	dimensions, with the center of mass at (0,0,0)
@@ -410,7 +410,7 @@ def BoxedMass(value, lx, ly, lz,mode="density"):
 	elif mode == "total_mass":
 		sph.set_box_total(value, lx, ly, lz)
 	else:
-		raise ValueError("Unsupported MassSphere Mode : %s"%mode)
+		raise ValueError("Unsupported BoxedSphere Mode : %s"%mode)
 	return sph
 	
 def SphericalMass(value=1, radius=1,mode="density"):
