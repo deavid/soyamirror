@@ -12,11 +12,6 @@ import soya
 import soya.sphere, soya.cube
 
 #evil hack
-class Static(soya.Body):
-	def begin_round(self):
-		y=self.y
-		soya.Body.begin_round(self)
-		self.y=y
 
 soya.init("collision-1-base",width=1024,height=768)
 soya.path.append(os.path.join(os.path.dirname(sys.argv[0]), "data"))
@@ -33,8 +28,7 @@ m_ball = soya.sphere.Sphere(None,metal).shapify()
 m_cube = soya.cube.Cube(None, cube_mat,size=3).shapify()
 m_ground = soya.cube.Cube(None, ground,size=78).shapify()
 #creating Body
-ground = Static(scene,m_ground)
-#ground =soya.Body(scene,m_ground)
+ground = soya.Body(scene,m_ground)
 ball   = soya.Body(scene,m_ball)
 cubes = []
 for i in xrange(15):
@@ -42,7 +36,8 @@ for i in xrange(15):
 ## Adding a mass ##
 ball_density = 25000
 ground.pushable = False
-ground.mass     = soya.SphericalMass(0)
+ground.gravity_mode = False
+ground.mass     = soya.SphericalMass(1)
 ball.mass       =soya.SphericalMass(ball_density)
 for cube in cubes:
 	cube.mass =soya.BoxedMass(1, 3, 3, 3)
