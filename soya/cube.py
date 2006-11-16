@@ -20,7 +20,7 @@
 from soya import World, Face, Vertex
 
 
-def Cube(parent = None, material = None, insert_into = None):
+def Cube(parent = None, material = None, insert_into = None,size=1):
 	"""Cube(parent = None, material = None, insert_into = None) -> World
 
 Creates and returns a World in PARENT, containing a cube of 1 length centered
@@ -30,38 +30,38 @@ If INSERT_INTO is not None, the cube's faces are inserted into it, instead of
 creating a new world."""
 	
 	cube = insert_into or World(parent)
-	
-	Face(cube, [Vertex(cube,  0.5,  0.5,  0.5, 1.0, 1.0),
-							Vertex(cube, -0.5,  0.5,  0.5, 0.0, 1.0),
-							Vertex(cube, -0.5, -0.5,  0.5, 0.0, 0.0),
-							Vertex(cube,  0.5, -0.5,  0.5, 1.0, 0.0),
+	s=size
+	Face(cube, [Vertex(cube,  0.5*s,  0.5*s,  0.5*s, 1.0*s, 1.0*s),
+							Vertex(cube, -0.5*s,  0.5*s,  0.5*s, 0.0, 1.0*s),
+							Vertex(cube, -0.5*s, -0.5*s,  0.5*s, 0.0, 0.0),
+							Vertex(cube,  0.5*s, -0.5*s,  0.5*s, 1.0*s, 0.0),
 							], material)
-	Face(cube, [Vertex(cube,  0.5,  0.5, -0.5, 0.0, 1.0),
-							Vertex(cube,  0.5, -0.5, -0.5, 0.0, 0.0),
-							Vertex(cube, -0.5, -0.5, -0.5, 1.0, 0.0),
-							Vertex(cube, -0.5,  0.5, -0.5, 1.0, 1.0),
-							], material)
-	
-	Face(cube, [Vertex(cube,  0.5,  0.5,  0.5, 1.0, 0.0),
-							Vertex(cube,  0.5,  0.5, -0.5, 1.0, 1.0),
-							Vertex(cube, -0.5,  0.5, -0.5, 0.0, 1.0),
-							Vertex(cube, -0.5,  0.5,  0.5, 0.0, 0.0),
-							], material)
-	Face(cube, [Vertex(cube,  0.5, -0.5,  0.5, 1.0, 0.0),
-							Vertex(cube, -0.5, -0.5,  0.5, 1.0, 1.0),
-							Vertex(cube, -0.5, -0.5, -0.5, 0.0, 1.0),
-							Vertex(cube,  0.5, -0.5, -0.5, 0.0, 0.0),
+	Face(cube, [Vertex(cube,  0.5*s,  0.5*s, -0.5*s, 0.0, 1.0*s),
+							Vertex(cube,  0.5*s, -0.5*s, -0.5*s, 0.0, 0.0),
+							Vertex(cube, -0.5*s, -0.5*s, -0.5*s, 1.0*s, 0.0),
+							Vertex(cube, -0.5*s,  0.5*s, -0.5*s, 1.0*s, 1.0*s),
 							], material)
 	
-	Face(cube, [Vertex(cube,  0.5,  0.5,  0.5, 1.0, 1.0),
-							Vertex(cube,  0.5, -0.5,  0.5, 1.0, 0.0),
-							Vertex(cube,  0.5, -0.5, -0.5, 0.0, 0.0),
-							Vertex(cube,  0.5,  0.5, -0.5, 0.0, 1.0),
+	Face(cube, [Vertex(cube,  0.5*s,  0.5*s,  0.5*s, 1.0*s, 0.0),
+							Vertex(cube,  0.5*s,  0.5*s, -0.5*s, 1.0*s, 1.0*s),
+							Vertex(cube, -0.5*s,  0.5*s, -0.5*s, 0.0, 1.0*s),
+							Vertex(cube, -0.5*s,  0.5*s,  0.5*s, 0.0, 0.0),
 							], material)
-	Face(cube, [Vertex(cube, -0.5,  0.5,  0.5, 0.0, 1.0),
-							Vertex(cube, -0.5,  0.5, -0.5, 1.0, 1.0),
-							Vertex(cube, -0.5, -0.5, -0.5, 1.0, 0.0),
-							Vertex(cube, -0.5, -0.5,  0.5, 0.0, 0.0),
+	Face(cube, [Vertex(cube,  0.5*s, -0.5*s,  0.5*s, 1.0*s, 0.0),
+							Vertex(cube, -0.5*s, -0.5*s,  0.5*s, 1.0*s, 1.0*s),
+							Vertex(cube, -0.5*s, -0.5*s, -0.5*s, 0.0, 1.0*s),
+							Vertex(cube,  0.5*s, -0.5*s, -0.5*s, 0.0, 0.0),
+							], material)
+	
+	Face(cube, [Vertex(cube,  0.5*s,  0.5*s,  0.5*s, 1.0*s, 1.0*s),
+							Vertex(cube,  0.5*s, -0.5*s,  0.5*s, 1.0*s, 0.0),
+							Vertex(cube,  0.5*s, -0.5*s, -0.5*s, 0.0, 0.0),
+							Vertex(cube,  0.5*s,  0.5*s, -0.5*s, 0.0, 1.0*s),
+							], material)
+	Face(cube, [Vertex(cube, -0.5*s,  0.5*s,  0.5*s, 0.0, 1.0*s),
+							Vertex(cube, -0.5*s,  0.5*s, -0.5*s, 1.0*s, 1.0*s),
+							Vertex(cube, -0.5*s, -0.5*s, -0.5*s, 1.0*s, 0.0),
+							Vertex(cube, -0.5*s, -0.5*s,  0.5*s, 0.0, 0.0),
 							], material)
 	
 	return cube
