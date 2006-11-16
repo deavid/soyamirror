@@ -41,7 +41,7 @@ values."""
 	step2 = 3.14161 / stacks
 	
 	angle1 = 0.0
-	for i in range(slices):
+	for i in xrange(slices):
 		angle2 = 0.0
 		j = 0
 		
