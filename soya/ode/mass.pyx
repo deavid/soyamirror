@@ -271,7 +271,7 @@ cdef class _Mass: # XXX make total for all XXX make class method for all
 		
 		dMassRotate(&self._mass, r)
 
-	def add(self, _Mass b):
+	cdef _add(self, _Mass b):
 		"""add(b)
 
 		Add the mass b to the mass object. Masses can also be added using
@@ -288,32 +288,50 @@ cdef class _Mass: # XXX make total for all XXX make class method for all
 		elif name=="c":
 			return (self._mass.c[0], self._mass.c[1], self._mass.c[2])
 		elif name=="I":
+			raise AttributeError("use set_parameter to set I")
 			return ((self._mass.I[0],self._mass.I[1],self._mass.I[2]),
 					(self._mass.I[4],self._mass.I[5],self._mass.I[6]),
 					(self._mass.I[8],self._mass.I[9],self._mass.I[10]))
 		else:
-			raise AttributeError,"Mass object has no attribute '"+name+"'"
+			raise AttributeError,"Mass object has no attribute '%s'"%name
 
 	def __setattr__(self, name, value):
 		if name=="mass":
 			self.adjust(value)
 		elif name=="c":
-			raise AttributeError,"Use the setParameter() method to change c"
+			self._mass.c[0] = value[0]
+			self._mass.c[1] = value[1]
+			self._mass.c[2] = value[2]
 		elif name=="I":
-			raise AttributeError,"Use the setParameter() method to change I"
+			self._mass.I[ 0] = value[0][0]
+			self._mass.I[ 1] = value[0][1]
+			self._mass.I[ 2] = value[0][2]
+			self._mass.I[ 4] = value[1][0]
+			self._mass.I[ 5] = value[1][1]
+			self._mass.I[ 6] = value[1][2]
+			self._mass.I[ 8] = value[2][0]
+			self._mass.I[ 9] = value[2][1]
+			self._mass.I[10] = value[2][2]
 		else:
-			raise AttributeError,"Mass object has no attribute '"+name+"'"
+			raise AttributeError,"Mass object has no attribute '%s'"%name
 
 	def __iadd__(self, _Mass b):
-		self.add(b)
+		self._add(b)
 		return self
 		
 	def __add__(self, _Mass b):
 		new = Mass()
-		new.__iadd__(self)
-		new.__iadd__(b)
+		new._add(self)
+		new._add(b)
 		return new
-
+	def __cmp__(self,_Mass other):
+		"""compare the two mass of the two Mass object"""
+		return cmp(self._mass.mass,other._mass.mass)
+#	property mass:
+#		def __get__(self):
+#			return self._mass.mass
+#		def __set__(self,float value):
+#			self._mass.mass = value
 	def __str__(self):
 		m   = str(self._mass.mass)
 		sc0 = str(self._mass.c[0])

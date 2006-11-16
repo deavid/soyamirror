@@ -27,7 +27,7 @@ cdef class _Body(CoordSyst):
 	#cdef _Model _model
 	#cdef _Model _data
 	
-	def __init__(self, _World parent = None, _Model model = None, opt = None):
+	def __init__(self, _World parent = None, _Model model = None, opt = None,_Mass mass=None):
 		if not model is None:
 			self._model = model
 			model._instanced(self, opt)
@@ -36,6 +36,8 @@ cdef class _Body(CoordSyst):
 		self.joints = []
 		self._option = self._option | BODY_PUSHABLE
 		CoordSyst.__init__(self, parent)
+		if mass is not None:
+			self.mass = mass
 		
 	def __del__(self):
 		if self._option & BODY_HAS_ODE:
@@ -665,11 +667,8 @@ It also resets the cycle animation time : i.e. cycles will restart from their be
 			"""
 			if not (self._option & BODY_HAS_ODE): return None
 			cdef _Mass m
-			print "sapin"
 			m=Mass()
-			print "linge of %i" % <int>self._OdeBodyID
 			dBodyGetMass(self._OdeBodyID, &m._mass)
-			print "orange"
 			return m
 
 	# addForce
