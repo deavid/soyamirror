@@ -25,4 +25,3 @@ cdef class _Mass:
 	
 	cdef __getcstate__(self)
 	cdef __setcstate__(self,cstate)
-	cdef _add(self, _Mass b)

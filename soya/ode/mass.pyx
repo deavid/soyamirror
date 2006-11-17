@@ -21,33 +21,13 @@ cdef class _Mass: # XXX make total for all XXX make class method for all
 	@type c: 3-tuple of floats
 	@type I: 3-tuple of 3-tuples of floats 
 	"""
+	def __init__(self, float mass=0, float cgx=0, float cgy=0, float cgz=0,
+					  float I11=0,  float I22=0, float I33=0, float I12=0,
+					  float I13=0, float I23=0):
+		dMassSetParameters(&self._mass, mass, cgx, cgy, cgz, I11, I22, I33, I12, I13, I23)
+		
 	#cdef dMass _mass
-
-	def __new__(self, *args, **kw):
-		dMassSetZero(&self._mass)
-		
-	cdef __getcstate__(self):
-		cdef Chunk* chunk
-		chunk = get_chunk()
-		chunk_add_float_endian_safe(chunk,self._mass.mass)
-		chunk_add_floats_endian_safe(chunk,self._mass.c,4)
-		chunk_add_floats_endian_safe(chunk,self._mass.I,12)
-		return drop_chunk_to_string(chunk)
-	cdef __setcstate__(self,cstate):
-		cdef Chunk* chunk
-		chunk = string_to_chunk(cstate)
-		chunk_get_float_endian_safe(chunk,&self._mass.mass)
-		chunk_get_floats_endian_safe(chunk,self._mass.c,4)
-		chunk_get_floats_endian_safe(chunk,self._mass.I,12)
-		drop_chunk(chunk)
-		
-	def set_zero(self):
-		"""setZero()
-
-		Set all the mass parameters to zero."""
-		dMassSetZero(&self._mass)
-
-	def set_parameters(self, mass, cgx, cgy, cgz, I11, I22, I33, I12, I13, I23):
+	def set_parameters(self, float  mass, float  cgx, float  cgy, float  cgz, float  I11, float  I22, float  I33, float  I12, float  I13, float  I23):
 		"""setParameters(mass, cgx, cgy, cgz, I11, I22, I33, I12, I13, I23)
 
 		Set the mass parameters to the given values.
@@ -74,8 +54,103 @@ cdef class _Mass: # XXX make total for all XXX make class method for all
 		@type I23: float
 		"""
 		dMassSetParameters(&self._mass, mass, cgx, cgy, cgz, I11, I22, I33, I12, I13, I23)
+		
+	def set_inertia_tension(self, float  I11, float I22, float I33, float I12, float I13, float I23):
+		"""Set the Inertia Tensor to the given values.
+		/ I11, I12, I13 \
+		| I12, I22, I23 |
+		\ I13, I23, I33 /
+		
+		@param I11: Inertia tensor
+		@param I22: Inertia tensor
+		@param I33: Inertia tensor
+		@param I12: Inertia tensor
+		@param I13: Inertia tensor
+		@param I23: Inertia tensor
+		@type mass: float
+		@type cgx: float
+		@type cgy: float
+		@type cgz: float
+		@type I11: float
+		@type I22: float
+		@type I33: float
+		@type I12: float
+		@type I13: float
+		@type I23: float"""
+		dMassSetParameters(&self._mass, self._mass.mass, self._mass.c[0],
+				self._mass.c[1], self._mass.c[2], I11, I22, I33, I12, I13, I23)
+		
+	def __getattr__(self, name):
+		if name=="mass":
+			return self._mass.mass
+		elif name=="c":
+			return (self._mass.c[0], self._mass.c[1], self._mass.c[2])
+		elif name=="I":
+			return ((self._mass.I[0],self._mass.I[1],self._mass.I[2]),
+					(self._mass.I[4],self._mass.I[5],self._mass.I[6]),
+					(self._mass.I[8],self._mass.I[9],self._mass.I[10]))
+		else:
+			raise AttributeError,"Mass object has no attribute '%s'"%name
 
-	def set_sphere(self, density, radius):
+	def __setattr__(self, name, value):
+		if name=="mass":
+			self.adjust(value)
+		elif name=="c":
+			dMassTranslate(&self._mass,  value[0]-self._mass.c[0],
+										value[1]-self._mass.c[1],
+										value[2]-self._mass.c[2])
+		elif name=="I":
+			raise AttributeError("use set_parameter to set I")
+			#self._mass.I[ 0] = value[0][0]
+			#self._mass.I[ 1] = value[0][1]
+			#self._mass.I[ 2] = value[0][2]
+			#self._mass.I[ 4] = value[1][0]
+			#self._mass.I[ 5] = value[1][1]
+			#self._mass.I[ 6] = value[1][2]
+			#self._mass.I[ 8] = value[2][0]
+			#self._mass.I[ 9] = value[2][1]
+			#self._mass.I[10] = value[2][2]
+		else:
+			raise AttributeError,"Mass object has no attribute '%s'"%name
+
+	def __iadd__(self, _Mass other):
+		dMassAdd(&self._mass, &other._mass)
+		return self
+		
+	def __add__(self, _Mass other):
+		cdef _Mass new
+		new = Mass()
+		dMassAdd(&new._mass, &other._mass)
+		dMassAdd(&new._mass, &other._mass)
+		return new
+	def __cmp__(self,_Mass other):
+		"""compare the two mass of the two Mass object"""
+		return cmp(self._mass.mass,other._mass.mass)	
+	
+	#def __new__(self, *args, **kw):
+	#	dMassSetZero(&self._mass)
+		
+	cdef __getcstate__(self):
+		cdef Chunk* chunk
+		chunk = get_chunk()
+		chunk_add_float_endian_safe(chunk,self._mass.mass)
+		chunk_add_floats_endian_safe(chunk,self._mass.c,4)
+		chunk_add_floats_endian_safe(chunk,self._mass.I,12)
+		return drop_chunk_to_string(chunk)
+	cdef __setcstate__(self,cstate):
+		cdef Chunk* chunk
+		chunk = string_to_chunk(cstate)
+		chunk_get_float_endian_safe(chunk,&self._mass.mass)
+		chunk_get_floats_endian_safe(chunk,self._mass.c,4)
+		chunk_get_floats_endian_safe(chunk,self._mass.I,12)
+		drop_chunk(chunk)
+	def set_zero(self):
+		"""setZero()
+
+		Set all the mass parameters to zero."""
+		dMassSetZero(&self._mass)
+
+	def set_sphere(self, float density, float radius):
 		"""setSphere(density, radius)
 		
 		Set the mass parameters to represent a sphere of the given radius
@@ -87,7 +162,7 @@ cdef class _Mass: # XXX make total for all XXX make class method for all
 		@type radius: float
 		"""
 		dMassSetSphere(&self._mass, density, radius)
-	def set_sphere_total(self,total_mass,radius):
+	def set_sphere_total(self, float total_mass, float radius):
 		"""setSphere(density, radius)
 		
 		Set the mass parameters to represent a sphere of the given radius
@@ -100,7 +175,7 @@ cdef class _Mass: # XXX make total for all XXX make class method for all
 		"""
 		dMassSetSphereTotal(&self._mass, total_mass, radius)
 
-	def set_capped_cylinder(self, density, direction, r, h):
+	def set_capped_cylinder(self, float density, direction, float r, float h):
 		"""setCappedCylinder(density, direction, r, h)
 		
 		Set the mass parameters to represent a capped cylinder of the
@@ -122,7 +197,7 @@ cdef class _Mass: # XXX make total for all XXX make class method for all
 		"""
 		dMassSetCappedCylinder(&self._mass, density, direction, r, h)
 		
-	def set_capped_cylinderTotal(self, total_mass, direction, r, h):
+	def set_capped_cylinder_total(self, float total_mass, direction, float r, float h):
 		"""setCappedCylinderToal(total_mass, direction, r, h)
 		
 		Set the mass parameters to represent a capped cylinder of the
@@ -144,27 +219,7 @@ cdef class _Mass: # XXX make total for all XXX make class method for all
 		"""
 		dMassSetCappedCylinderTotal(&self._mass, total_mass, direction, r, h)
 
-	def set_cylinder_total(self, total_mass, direction, r, h):
-		"""setCylinder(total_mass, direction, r, h)
-		
-		Set the mass parameters to represent a flat-ended cylinder of
-		the given parameters and mass, with the center of mass at
-		(0,0,0) relative to the body. The radius of the cylinder is r.
-		The length of the cylinder is h. The cylinder's long axis is
-		oriented along the body's x, y or z axis according to the value
-		of direction (1=x, 2=y, 3=z).
-
-		@param totam_mass: The mass of the cylinder
-		@param direction: The direction of the cylinder (1=x axis, 2=y axis, 3=z axis)
-		@param r: The radius of the cylinder
-		@param h: The length of the cylinder
-		@type math: float
-		@type direction: int
-		@type r: float
-		@type h: float
-		"""
-		dMassSetCylinderTotal(&self._mass, total_mass, direction, r, h)
-	def set_cylinder(self, density, direction, r, h):
+	def set_cylinder(self, float density, direction, float r, float h):
 		"""setCylinder(density, direction, r, h)
 		
 		Set the mass parameters to represent a flat-ended cylinder of
@@ -184,10 +239,30 @@ cdef class _Mass: # XXX make total for all XXX make class method for all
 		@type h: float
 		"""
 		dMassSetCylinder(&self._mass, density, direction, r, h)
+	def set_cylinder_total(self, float total_mass, direction, float r, float h):
+		"""setCylinder(total_mass, direction, r, h)
+		
+		Set the mass parameters to represent a flat-ended cylinder of
+		the given parameters and mass, with the center of mass at
+		(0,0,0) relative to the body. The radius of the cylinder is r.
+		The length of the cylinder is h. The cylinder's long axis is
+		oriented along the body's x, y or z axis according to the value
+		of direction (1=x, 2=y, 3=z).
+
+		@param totam_mass: The mass of the cylinder
+		@param direction: The direction of the cylinder (1=x axis, 2=y axis, 3=z axis)
+		@param r: The radius of the cylinder
+		@param h: The length of the cylinder
+		@type math: float
+		@type direction: int
+		@type r: float
+		@type h: float
+		"""
+		dMassSetCylinderTotal(&self._mass, total_mass, direction, r, h)
 
 		
 
-	def set_box(self, density, lx, ly, lz):
+	def set_box(self, float density, float lx, float ly, float lz):
 		"""setBox(density, lx, ly, lz)
 
 		Set the mass parameters to represent a box of the given
@@ -206,7 +281,7 @@ cdef class _Mass: # XXX make total for all XXX make class method for all
 		"""
 		dMassSetBox(&self._mass, density, lx, ly, lz)
 
-	def set_box_total(self, total_mass, lx, ly, lz):
+	def set_box_total(self, float total_mass, float lx, float ly, float lz):
 		"""setBox(total_mass, lx, ly, lz)
 
 		Set the mass parameters to represent a box of the given
@@ -224,7 +299,7 @@ cdef class _Mass: # XXX make total for all XXX make class method for all
 		@type lz: float
 		"""
 		dMassSetBoxTotal(&self._mass, total_mass, lx, ly, lz)
-	def adjust(self, newmass):
+	def adjust(self, float newmass):
 		"""adjust(newmass)
 
 		Adjust the total mass. Given mass parameters for some object,
@@ -238,7 +313,9 @@ cdef class _Mass: # XXX make total for all XXX make class method for all
 		"""
 		dMassAdjust(&self._mass, newmass)
 
-	def translate(self, t): #Make it more soya by supporting soya's vector
+	def translate(self, t): #Make it more soya by supporting soya's vector   ???
+						   #Since Mass don't have nor parent coordsyst nor body
+						   # No
 		"""translate(t)
 
 		Adjust mass parameters. Given mass parameters for some object,
@@ -250,7 +327,8 @@ cdef class _Mass: # XXX make total for all XXX make class method for all
 		"""
 		dMassTranslate(&self._mass, t[0], t[1], t[2])
 
-	def rotate(self,R): #Make it more soya by supporting soya's orientation
+	def rotate(self,R): #Make it more soya by supporting soya's orientation  ???
+		                #Since Mass don't have nor parent coordsyst nor body: no
 		"""
 		Given mass parameters for some object, adjust them to
 		represent the object rotated by R relative to the body frame.
@@ -271,7 +349,7 @@ cdef class _Mass: # XXX make total for all XXX make class method for all
 		
 		dMassRotate(&self._mass, r)
 
-	cdef _add(self, _Mass b):
+	def add(self, _Mass b):
 		"""add(b)
 
 		Add the mass b to the mass object. Masses can also be added using
@@ -282,69 +360,7 @@ cdef class _Mass: # XXX make total for all XXX make class method for all
 		"""
 		dMassAdd(&self._mass, &b._mass)
 
-	def __getattr__(self, name):
-		if name=="mass":
-			return self._mass.mass
-		elif name=="c":
-			return (self._mass.c[0], self._mass.c[1], self._mass.c[2])
-		elif name=="I":
-			raise AttributeError("use set_parameter to set I")
-			return ((self._mass.I[0],self._mass.I[1],self._mass.I[2]),
-					(self._mass.I[4],self._mass.I[5],self._mass.I[6]),
-					(self._mass.I[8],self._mass.I[9],self._mass.I[10]))
-		else:
-			raise AttributeError,"Mass object has no attribute '%s'"%name
 
-	def __setattr__(self, name, value):
-		if name=="mass":
-			self.adjust(value)
-		elif name=="c":
-			self._mass.c[0] = value[0]
-			self._mass.c[1] = value[1]
-			self._mass.c[2] = value[2]
-		elif name=="I":
-			self._mass.I[ 0] = value[0][0]
-			self._mass.I[ 1] = value[0][1]
-			self._mass.I[ 2] = value[0][2]
-			self._mass.I[ 4] = value[1][0]
-			self._mass.I[ 5] = value[1][1]
-			self._mass.I[ 6] = value[1][2]
-			self._mass.I[ 8] = value[2][0]
-			self._mass.I[ 9] = value[2][1]
-			self._mass.I[10] = value[2][2]
-		else:
-			raise AttributeError,"Mass object has no attribute '%s'"%name
-
-	def __iadd__(self, _Mass b):
-		self._add(b)
-		return self
-		
-	def __add__(self, _Mass b):
-		new = Mass()
-		new._add(self)
-		new._add(b)
-		return new
-	def __cmp__(self,_Mass other):
-		"""compare the two mass of the two Mass object"""
-		return cmp(self._mass.mass,other._mass.mass)
-#	property mass:
-#		def __get__(self):
-#			return self._mass.mass
-#		def __set__(self,float value):
-#			self._mass.mass = value
-	def __str__(self):
-		m   = str(self._mass.mass)
-		sc0 = str(self._mass.c[0])
-		sc1 = str(self._mass.c[1])
-		sc2 = str(self._mass.c[2])
-		I11 = str(self._mass.I[0])
-		I22 = str(self._mass.I[5])
-		I33 = str(self._mass.I[10])
-		I12 = str(self._mass.I[1])
-		I13 = str(self._mass.I[2])
-		I23 = str(self._mass.I[6])
-		return "Mass=%s\nCg=(%s, %s, %s)\nI11=%s I22=%s I33=%s\nI12=%s I13=%s I23=%s"%(m,sc0,sc1,sc2,I11,I22,I33,I12,I13,I23)
-#        return "Mass=%s / Cg=(%s, %s, %s) / I11=%s I22=%s I33=%s I12=%s I13=%s I23=%s"%(m,sc0,sc1,sc2,I11,I22,I33,I12,I13,I23)
 
 # Speudo class
 
