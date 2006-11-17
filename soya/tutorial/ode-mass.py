@@ -48,7 +48,7 @@ print 'Inertia Tensor:', m.I
 # By default a Mass is created with this property :
 #    Mass: 0.0
 #    Center of Gravity: (0.0, 0.0, 0.0)
-#    Inertia Tensor: ((nan, nan, nan), (nan, nan, nan), (nan, nan, nan))
+#    Inertia Tensor: ((0, 0, 0), (0, 0, 0), (0, 0, 0))
 
 
 
