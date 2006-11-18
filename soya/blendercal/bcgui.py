@@ -1,5 +1,4 @@
-# -*- indent-tabs-mode: t -*-
-# $Id: bcgui.py 369 2006-08-03 20:20:48Z PalleRaabjerg $
+# $Id: bcgui.py 426 2006-10-03 15:04:31Z cubicool $
 
 import Blender
 import os
@@ -8,8 +7,7 @@ import bcconf
 
 CALLBACK = lambda *a, **k: None
 UI       = [None] * 11
-#IMAGE    = Blender.Image.Load(os.path.join(Blender.Get("scriptsdir"), "blendercal", "logo.png"))
-
+IMAGE    = None
 (
 	EV_AUTHOR,
 	EV_PREPEND,
@@ -38,16 +36,15 @@ EXPORTS = [
 	int(bcconf.ANIMFPS)
 ]
 
-class Progress:
-	"""Easy way to create and manage a progress bar.
-	bar_steps is the number of times the bar itself
-	will be updated during the progress. This is to
-	avoid a horrendous amount of bar updates, which would
-	create a fantastic amount of overhead on machines
-	without hardware rendering.
-	Start by calling Progress.setup, and then call
-	Progress.increment for each time any progress is made."""
+# Easy way to create and manage a progress bar. bar_steps is the number of times the 
+# bar itself will be updated during the progress. This is to avoid a horrendous amount of
+# bar updates, which would create a fantastic amount of overhead on machines without
+# hardware rendering. Start by calling Progress.setup, and then call Progress.increment
+# for each time any progress is made.
+class Progress(object):
 	def __init__(self, bar_steps):
+		object.__init__(self)
+
 		self.bar_steps = bar_steps
 
 	def setup(self, total_steps, pstring):
@@ -67,9 +64,12 @@ class Progress:
 			self.steplimit = self.stepsize * self.multiplier
 			self.update()
 
+	# TODO: Palle, whoa. :) I'll have to break this up a bit.
 	def update(self):
-		Blender.Window.DrawProgressBar(float(self.progress)/float(self.total_steps),
-					       self.pstring + ": " + str(int((float(self.progress)/float(self.total_steps))*100)) + "%")
+		Blender.Window.DrawProgressBar(
+			float(self.progress)/float(self.total_steps),
+			self.pstring + ": " + str(int((float(self.progress)/float(self.total_steps))*100)) + "%"
+		)
 
 def InterfaceDraw():
 	Blender.BGL.glClear(Blender.BGL.GL_COLOR_BUFFER_BIT)
@@ -172,7 +172,11 @@ def InterfaceDraw():
 		"Weee!"
 	)
 
-	#Blender.Draw.Image(IMAGE, 145, 65)
+	global IMAGE
+	if not IMAGE:
+		# Don't load the logo if used in non-GUI mode
+		IMAGE = Blender.Image.Load(os.path.join(Blender.Get("scriptsdir"), "blendercal", "logo.png"))
+	Blender.Draw.Image(IMAGE, 145, 65)
 
 	Blender.BGL.glDisable(Blender.BGL.GL_BLEND)
 

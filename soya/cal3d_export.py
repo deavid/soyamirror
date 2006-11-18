@@ -1,6 +1,5 @@
 #!BPY
-# -*- indent-tabs-mode: t -*-
-# $Id: cal3d-export.py 369 2006-08-03 20:20:48Z PalleRaabjerg $
+# $Id: cal3d_export.py 438 2006-11-07 22:39:14Z cubicool $
 
 """
 Name: 'Cal3D v10.0 (blendercal)'

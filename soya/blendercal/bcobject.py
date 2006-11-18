@@ -1,10 +1,10 @@
-# -*- indent-tabs-mode: t -*-
-# $Id: bcobject.py 372 2006-08-07 23:40:44Z PalleRaabjerg $
+# $Id: bcobject.py 426 2006-10-03 15:04:31Z cubicool $
 
 import Blender
 import blendercal
 import bcconf
 import bcgui
+
 # We use immutable sets in the LOD algorithm
 # to identify unique edges and faces. Immutable
 # sets are handy for identification because they're
@@ -41,6 +41,7 @@ class Cal3DObject(object):
 
 class Material(Cal3DObject):
 	MATERIALS  = {}
+	
 	def __init__(self, name, ambient=[255]*4, diffuse=[255]*4, specular=[255]*4, mapnames=None):
 		Cal3DObject.__init__(self, "XRF")
 

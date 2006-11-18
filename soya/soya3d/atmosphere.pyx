@@ -233,22 +233,23 @@ Create a SkyAtmosphere"""
 			
 		drop_chunk(chunk)
 		
-	def set_sky_box(self, _Material front, _Material right, _Material back, _Material left, _Material bottom, _Material top = None):
-		"""SkyAtmosphere.set_sky_box(FRONT, RIGHT, BACK, LEFT, BOTTOM, TOP = None)
+	def set_sky_box(self, _Material front = None, _Material right = None, _Material back = None, _Material left = None, _Material bottom = None, _Material top = None):
+		"""SkyAtmosphere.set_sky_box(FRONT = None, RIGHT = None, BACK = None, LEFT = None, BOTTOM = None, TOP = None)
 
-Sets the sky box. The sky box is made of 6 materials that are displayed on the 6 faces of a cube.
+Sets the sky box. The sky box is made of 0, 5 or 6 materials that are displayed on the 6 faces of a cube.
 The TOP material is optional.
 """
-		if top is None: self._sky_box = front, right, back, left, bottom
-		else:           self._sky_box = front, right, back, left, bottom, top
+		if   front is None: self._sky_box = ()
+		elif top   is None: self._sky_box = front, right, back, left, bottom
+		else:               self._sky_box = front, right, back, left, bottom, top
 		
 	property sky_box:
 		def __get__(self):
 			return self._sky_box
 		def __set__(self, sky_box):
 			if (len(sky_box) == 0) or (len(sky_box) == 5) or (len(sky_box) == 6):
-				self._sky_box = front, right, back, left, bottom, top
-			else: raise ValueError("Sky box must be a tuple of 5 or 6 materials")
+				self._sky_box = sky_box
+			else: raise ValueError("Sky box must be a tuple of 0, 5 or 6 materials")
 			
 	property sky_color:
 		def __get__(self):

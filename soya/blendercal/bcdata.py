@@ -1,5 +1,4 @@
-# -*- indent-tabs-mode: t -*-
-# $Id: bcdata.py 402 2006-09-14 20:18:08Z PalleRaabjerg $
+# $Id: bcdata.py 426 2006-10-03 15:04:31Z cubicool $
 
 # The purpose of this module is to provide methods by which the caller can easily
 # create sequences of bcobject instances for their own use. These don't necessarily
@@ -25,7 +24,7 @@ def __yieldBlenderObj(t, objlist=None):
 		if obj.getType() == t and not obj.getName().startswith("_"):
 			yield obj, obj.getData()
 
-#@blendercal.exception
+@blendercal.exception
 def SkeletonData():
 	# This function returns a single blendercal.bcobject.Skeleton instance
 	# and sets blendercal.bcobject.Skeleton.ARMATURE to the appropriate Blender
@@ -54,7 +53,7 @@ def SkeletonData():
 	
 	return skeleton
 
-#@blendercal.exception
+@blendercal.exception
 def MeshData():
 	# This function returns a list of blender.bcobject.Mesh objects, one for
 	# each mesh in your Blender scene. The Cal3D notion of a Mesh is actually more
@@ -160,7 +159,7 @@ def MeshData():
 	def __createSubMeshes(mesh, objlist):
 		for obj, data in __yieldBlenderObj("Mesh", objlist):
 			# Put mesh into worldspace
-			objmatrix = Blender.Mathutils.Matrix(obj.getMatrix('worldspace'))
+			objmatrix   = Blender.Mathutils.Matrix(obj.getMatrix('worldspace'))
 			localmatrix = Blender.Mathutils.Matrix(obj.getMatrix('localspace'))
 			
 			obj.setMatrix(Blender.Mathutils.Matrix().identity())
@@ -213,10 +212,13 @@ def MeshData():
 					submeshmaterial = material
 					
 				firstmaterial = False
-
-			submesh               = bcobject.SubMesh(mesh, submeshmaterial)
+				
+			submesh = bcobject.SubMesh(mesh, submeshmaterial)
 			
-			ilist, vlist, dupdict = __createIndexVertexLists(data.faces, data.hasFaceUV())
+			ilist, vlist, dupdict = __createIndexVertexLists(
+				data.faces,
+				data.hasFaceUV()
+			)
 
 			# At this points we should have a list of indices and a list of
 			# vertices which the index list refers to. We could iterate over
@@ -235,11 +237,15 @@ def MeshData():
 			# otherwise, changing the vertex order during LOD becomes much
 			# too difficult.
 			faces = []
+
 			for v in zip(*[iter(ilist)] * 3):
-				verts = (vertices[v[0]], vertices[v[1]], vertices[v[2]])
-				face = bcobject.Face(submesh, *verts)
+				verts = vertices[v[0]], vertices[v[1]], vertices[v[2]]
+				face  = bcobject.Face(submesh, *verts)
+				
 				faces.append(face)
-			#faces = [bcobject.Face(submesh, *v) for v in zip(*[iter(ilist)] * 3)]
+			
+			# TODO: *sigh*, this used to be so clean. :)
+			# faces = [bcobject.Face(submesh, *v) for v in zip(*[iter(ilist)] * 3)]
 
 			# Here we parse data.verts (again) to get the weight values
 			# of each Vertex. For some reason, Blender doesn't guarantee
@@ -250,7 +256,7 @@ def MeshData():
 			for i, v in enumerate(vlist):
 				weights = data.getVertexInfluences(v.index)
 				total   = sum(w for b, w in weights)
-        
+			
 				for b, w in weights:
 					vertices[i].influences.append(bcobject.Influence(
 						bcobject.Bone.BONES[b.replace(".", "_")],
@@ -276,7 +282,6 @@ def MeshData():
 			meshes.append(mesh)
 			__createSubMeshes(mesh, [obj])
 
-	# bcconf.LOD == "group"
 	elif len(Blender.Group.Get()):
 		for group in Blender.Group.Get():
 			mesh = bcobject.Mesh(group.name)
@@ -294,7 +299,7 @@ def MeshData():
 
 	return meshes
 
-#@blendercal.exception
+@blendercal.exception
 def AnimationData():
 	# This function demonstrates a new way of parsing and retrieving animation
 	# data in Blender. With version 242 and above, users can call the the
@@ -362,7 +367,7 @@ def AnimationData():
 
 	return animations
 
-#@blendercal.exception
+@blendercal.exception
 def ExportData(filename, skeldata, meshdata, animdata, prefixfiles=False):
 	dirname  = os.path.dirname(filename)
 	basename = os.path.splitext(os.path.basename(filename))[0]

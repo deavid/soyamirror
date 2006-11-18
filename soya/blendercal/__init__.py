@@ -1,5 +1,4 @@
-# -*- indent-tabs-mode: t -*-
-# $Id: __init__.py 346 2006-07-21 15:35:05Z JeremyMoles $
+# $Id: __init__.py 426 2006-10-03 15:04:31Z cubicool $
 
 import bcconf
 import Blender.Mathutils
@@ -51,9 +50,6 @@ def exception(function):
 
 # A function that will parse the passed-in sequences and set the appropriate
 # values in bcconf.
-#
-# TODO: bcgui should also call this somehow, so all coersion is done in a unified,
-# predictable way...
 @exception
 def ParseArgs(parse):
 	args  = []
@@ -76,16 +72,16 @@ def ParseArgs(parse):
 			print ">>", a, "=", v
 
 			{
-				"FILENAME":   lambda: setattr(bcconf, a, v),
-				"EXPORTGL":   lambda: setattr(bcconf, a, str2bool(v)),
-				"FLOATPRE":   lambda: setattr(bcconf, a, int(v)),
-				"XMLINDENT":  lambda: setattr(bcconf, a, int(v)),
-				"ANIMFPS":    lambda: setattr(bcconf, a, float(v)),
-				"AUTHOR":     lambda: setattr(bcconf, a, v),
-				"PREPEND":    lambda: setattr(bcconf, a, v),
-				"LOD":        lambda: setattr(bcconf, a, str2bool(v)),
-				"EXTRADATA":  lambda: setattr(bcconf, a, str2bool(v)),
-				"SUBMESHMODE":lambda: setattr(bcconf, a, v),
+				"FILENAME":    lambda: setattr(bcconf, a, v),
+				"EXPORTGL":    lambda: setattr(bcconf, a, str2bool(v)),
+				"FLOATPRE":    lambda: setattr(bcconf, a, int(v)),
+				"XMLINDENT":   lambda: setattr(bcconf, a, int(v)),
+				"ANIMFPS":     lambda: setattr(bcconf, a, float(v)),
+				"AUTHOR":      lambda: setattr(bcconf, a, v),
+				"PREPEND":     lambda: setattr(bcconf, a, v),
+				"LOD":         lambda: setattr(bcconf, a, str2bool(v)),
+				"EXTRADATA":   lambda: setattr(bcconf, a, str2bool(v)),
+				"SUBMESHMODE": lambda: setattr(bcconf, a, v),
 			}[a]()
 
 	# Return args; since this will be False by default, we'll use this
