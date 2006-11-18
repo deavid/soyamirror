@@ -94,7 +94,7 @@ cdef class _Mass: # XXX make total for all XXX make class method for all
 
 	def __setattr__(self, name, value):
 		if name=="mass":
-			self.adjust(value)
+			dMassAdjust(&self._mass, value)
 		elif name=="c":
 			dMassTranslate(&self._mass,  value[0]-self._mass.c[0],
 										value[1]-self._mass.c[1],
@@ -299,18 +299,18 @@ cdef class _Mass: # XXX make total for all XXX make class method for all
 		@type lz: float
 		"""
 		dMassSetBoxTotal(&self._mass, total_mass, lx, ly, lz)
-	def adjust(self, float newmass):
-		"""adjust(newmass)
-
-		Adjust the total mass. Given mass parameters for some object,
-		adjust them so the total mass is now newmass. This is useful
-		when using the setXyz() methods to set the mass parameters for
-		certain objects - they take the object density, not the total
-		mass.
-
-		@param newmass: The new total mass
-		@type newmass: float
-		"""
+#	def adjust(self, float newmass):
+#		"""adjust(newmass)
+#
+#		Adjust the total mass. Given mass parameters for some object,
+#		adjust them so the total mass is now newmass. This is useful
+#		when using the setXyz() methods to set the mass parameters for
+#		certain objects - they take the object density, not the total
+#		mass.
+#
+#		@param newmass: The new total mass
+#		@type newmass: float
+#		"""
 		dMassAdjust(&self._mass, newmass)
 
 	def translate(self, t): #Make it more soya by supporting soya's vector   ???
@@ -349,8 +349,8 @@ cdef class _Mass: # XXX make total for all XXX make class method for all
 		
 		dMassRotate(&self._mass, r)
 
-	def add(self, _Mass b):
-		"""add(b)
+	def add_mass(self, _Mass other):
+		"""add_mass( another_mass)
 
 		Add the mass b to the mass object. Masses can also be added using
 		the + operator.
@@ -358,7 +358,7 @@ cdef class _Mass: # XXX make total for all XXX make class method for all
 		@param b: The mass to add to this mass
 		@type b: Mass
 		"""
-		dMassAdd(&self._mass, &b._mass)
+		dMassAdd(&self._mass, &other._mass)
 
 
 
