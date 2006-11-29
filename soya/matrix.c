@@ -2012,10 +2012,47 @@ int sphere_in_frustum (Frustum* f, GLfloat s[4]) {
   int i;
 // TO DO box test 1rst ?
   for (i = 0; i < 24; i += 4) {
-    if (s[0] * f->planes[i] + s[1] * f->planes[i + 1] + s[2] * f->planes[i + 2] + f->planes[i + 3] > s[3]) 
+    if (s[0] * f->planes[i] + s[1] * f->planes[i + 1] + s[2] * f->planes[i + 2] + f->planes[i + 3] > s[3])
       return FALSE; 
   }
   return TRUE;
+}
+
+int box_in_frustum (Frustum* f, GLfloat b[6]) {
+	int i, j, InCount, PtIn, TotalIn = 0;
+	GLfloat d;
+	
+	// test if the camera is inside the box
+	if ((f->position[0] > b[0] && f->position[0] < b[3])
+		&& (f->position[1] > b[1] && f->position[1] < b[4])
+		&& (f->position[2] > b[2] && f->position[2] < b[5]))
+		return(1);
+	// test each frustum plane
+	for(i = 0; i < 24; i += 4) {
+		InCount = 8;
+		PtIn = 1;
+		// test every corner of te box
+		for(j = 0; j < 8; ++j) {
+			d = b[((j>>2)%2)?3:0] * f->planes[i]
+			  + b[((j>>1)%2)?4:1] * f->planes[i+1]
+				+ b[(j%2)?5:2]      * f->planes[i+2]
+				+ f->planes[i+3];
+			// if corner is behind the plane
+			if (d > 0.) {
+				PtIn = 0;
+				--InCount;
+			}
+		}
+		// if all corner are behind the plane the box is out
+		if(InCount == 0)
+			return(0);
+		TotalIn += PtIn;
+	}
+	// if TotalIn is 6 then all corner are inside the frustum
+	if(TotalIn == 6)
+		return(2);
+	// else the box intesec the frustum
+	return(1);
 }
 
 Frustum* frustum_by_matrix (Frustum* r, Frustum* f, GLfloat* m) {

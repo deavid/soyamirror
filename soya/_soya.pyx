@@ -83,6 +83,8 @@ include "config.pyx"
 
 include "model/deform.pyx"
 
+include "model/splited_model.pyx"
+include "soya3d/bsp_world.pyx"
 
 #def _close_ode():
 #		"""CloseODE()

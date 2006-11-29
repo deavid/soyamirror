@@ -131,6 +131,7 @@ cdef extern from "matrix.h":
 	
 	int      point_in_frustum            (Frustum*, GLfloat[3])
 	int      sphere_in_frustum           (Frustum*, GLfloat[4])
+	int      box_in_frustum              (Frustum* f, GLfloat b[6])
 	Frustum* frustum_by_matrix           (Frustum*, Frustum*, GLfloat*)
 	void     frustum_to_box              (Frustum*, GLfloat*)
 

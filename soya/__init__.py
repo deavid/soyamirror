@@ -540,6 +540,11 @@ class CellShadingModel(Model, _soya._CellShadingModel):
 
 A Model that use cell-shading for rendering."""
 
+class SplitedModel(Model, _soya._SplitedModel):
+	"""SplitedModel
+
+A model splited in several parts so that it is possible to render only
+the visibles parts. Must be used with BSPWorld or futur OctreeWorld."""
 
 class Point(_soya._Point):
 	"""A Point is just a 3D position. It is used for math computation, but it DOESN'T display
@@ -706,6 +711,14 @@ Attributes are (see also Body, CoordSyst and SavedInAPath for inherited attribut
 # 	load = classmethod(load)
 World._reffed = World.load
 	
+
+class BSPWorld(SavedInAPath, _soya._BSPWorld, Body):
+        """BSPWorld
+
+A world designed to render a BSP level with maximum optimisation"""
+
+	DIRNAME = "worlds"
+	_alls = weakref.WeakValueDictionary()
 
 class Light(_soya._Light):
 	"""Light

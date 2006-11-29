@@ -52,6 +52,9 @@ cdef class _Model(_CObj):
 	cdef _Model _create_deformed_data(self): return None
 	#cdef void _apply_deform(self, _Deform deform): pass
 	
+	cdef void _batch_part(self, _Body body, int index): raise TypeError("This type of model doesn't support part batching !")
+	cdef void _batch_end(self, _Body body): raise TypeError("This type of model doesn't support part batching !")
+	
 	def __deepcopy__(self, memo):
 		"""Models are immutable."""
 		return self
@@ -208,6 +211,8 @@ cdef class _SimpleModel(_Model):
 		cdef ModelFace* face
 		cstate2, self._filename, self._materials = cstate
 		chunk = string_to_chunk(cstate2)
+		
+		print "restoring simple model"
 		
 		chunk_get_int_endian_safe(chunk, &self._option)
 		chunk_get_int_endian_safe(chunk, &self._nb_vertices)

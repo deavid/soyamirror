@@ -29,6 +29,8 @@ cdef class _Model(_CObj):
 	cdef void _set_lod_level(self, float lod_level)
 	cdef void _begin_round  (self)
 	cdef void _advance_time (self, float proportion)
+	cdef void _batch_part(self, _Body body, int index)
+	cdef void _batch_end(self, _Body body)
 	
 ctypedef struct DisplayList:
 	int      option

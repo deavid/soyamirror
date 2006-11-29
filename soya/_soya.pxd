@@ -81,4 +81,7 @@ include "cal3d/model.pxd"
 include "text/freetype.pxd"
 include "text/text.pxd"
 
+include "definitions/model/splited_model.pxd"
+include "definitions/soya3d/bsp_world.pxd"
+
 include "config.pxd"
