@@ -212,8 +212,6 @@ cdef class _SimpleModel(_Model):
 		cstate2, self._filename, self._materials = cstate
 		chunk = string_to_chunk(cstate2)
 		
-		print "restoring simple model"
-		
 		chunk_get_int_endian_safe(chunk, &self._option)
 		chunk_get_int_endian_safe(chunk, &self._nb_vertices)
 		chunk_get_int_endian_safe(chunk, &self._nb_coords)

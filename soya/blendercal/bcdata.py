@@ -327,8 +327,9 @@ def AnimationData():
 			
 				name2ipo[iponame] = ipo
 
+		if not frames: continue
 		frames.sort()
-
+    
 		animation.duration = frames[-1]
 
 		# Move the armature to the keyframe "times" and grab the data we

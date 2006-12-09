@@ -39,6 +39,8 @@ influence from Loic Dachary, especially in the bcdata.AnimationData().
 # A decorator to catch any exception semi-gracefully. Sometiem later
 # this will create a Blender panel to show the exception.
 def exception(function):
+	return function
+
 	def exceptionDecorator(*args, **kargs):
 		try:
 			return function(*args, **kargs)
