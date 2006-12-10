@@ -1,3 +1,4 @@
+# -*- indent-tabs-mode: t -*-
 # $Id: bcobject.py 426 2006-10-03 15:04:31Z cubicool $
 
 import Blender

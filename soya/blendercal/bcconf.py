@@ -1,3 +1,4 @@
+# -*- indent-tabs-mode: t -*-
 # $Id: bcconf.py 426 2006-10-03 15:04:31Z cubicool $
 
 # Rather than ask the user to change these variables directly, the user

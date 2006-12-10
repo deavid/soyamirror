@@ -1,3 +1,4 @@
+# -*- indent-tabs-mode: t -*-
 # $Id: __init__.py 426 2006-10-03 15:04:31Z cubicool $
 
 import bcconf
