@@ -5657,10 +5657,15 @@ action
 \end_layout
 
 \begin_layout Standard
-AnimatedModel are exported to the Cal3D file format using Blender2Cal3D.py.
+AnimatedModel are exported to the Cal3D file format using BlenderCal (included
+ in Soya source ; it requires Blender >= 2.42a).
 \end_layout
 
-\begin_layout Description
+\begin_layout Standard
+\begin_inset Note Comment
+status open
+
+\begin_layout Standard
 Known\InsetSpace ~
 bug: Blender2Cal3D.py is known to have several bugs.
  I encourage you to export your model as early as possible, to ensure it
@@ -5669,8 +5674,7 @@ bug: Blender2Cal3D.py is known to have several bugs.
  (for more information, read the comment at the beginning of Blender2Cal3D.py):
 \end_layout
 
-\begin_deeper
-\begin_layout Itemize
+\begin_layout Standard
 
 \series bold
 Avoid moving, rotating or resizing objects
@@ -5679,29 +5683,33 @@ Avoid moving, rotating or resizing objects
  all points / bones (with "a"), and move / rotate / resize them.
 \end_layout
 
-\begin_layout Itemize
+\begin_layout Standard
 Use only a single armature
 \end_layout
 
-\begin_layout Itemize
+\begin_layout Standard
 Use only a single rootbone (Cal3D doesn't support floating bones)
 \end_layout
 
-\begin_layout Itemize
+\begin_layout Standard
 Use only locrot keys (Cal3D doesn't support bone's size change)
 \end_layout
 
-\begin_layout Itemize
+\begin_layout Standard
 Don't try to create child/parent constructs in blender object, that gets
  exported incorrectly at the moment
 \end_layout
 
-\begin_layout Itemize
+\begin_layout Standard
 Objects or animations whose names start by "_" are not exported (hidden
  object) 
 \end_layout
 
-\end_deeper
+\end_inset
+
+
+\end_layout
+
 \begin_layout Section
 \begin_inset LatexCommand \label{sec:Adding-Soya-specific-attributes-in-Blender}
 

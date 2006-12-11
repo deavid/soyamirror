@@ -1,4 +1,3 @@
-#graft doc
 graft tutorial
 
 include LICENSE AUTHORS setup_tuto.py
@@ -10,6 +9,13 @@ exclude test* tutorial/data/shapes/skeleton/* tutorial/data/shapes/cally/* tutor
 global-exclude *.pyc *.pyo *.old* *.save *.disabled *.o *.so test_* .xvpics/*
 global-exclude */CVS/* .cvswrappers .cvsignore *.~*~
 global-exclude .dia~
+
+include doc/soya_guide.pdf
+include doc/README
+include doc/LICENSE
+
+include doc/pudding/pudding.pdf
+include doc/pudding/README
 
 exclude tutorial/data/shapes/*.data
 include tutorial/data/shapes/buggy_chassis.data
