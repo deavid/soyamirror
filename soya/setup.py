@@ -205,7 +205,7 @@ else:
 
 setup(
 	name         = "Soya",
-	version      = "0.13",
+	version      = "0.13rc1",
 	license      = "GPL",
 	description  = "A practical high-level object-oriented 3D engine for Python.",
 	long_description  = """A practical high-level object-oriented 3D engine for Python.
