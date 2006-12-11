@@ -265,8 +265,9 @@
   * New Blender -> Cal3D exporter (thanks Palle!)
     The new exporter is now automatically used by the auto-exporter.
     It REQUIRES Blender >= 2.42
+  * BSP system (work in progress, thanks Souvarine!)
   * CoordSyst.solid is no longer boolean, but a 32-bit-length bitfield
-    (thanks Souvarine)
+    (thanks Souvarine!)
   * Add RaypickContext.get_item() (thanks Souvarine)
   * Better font loading under MacOS X (thanks Greg Ewing)
   * CoordSystSpeed added
