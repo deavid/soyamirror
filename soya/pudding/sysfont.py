@@ -109,7 +109,8 @@ def initsysfonts_darwin():
 	 paths = ['/Library/Fonts',
 				'~/Library/Fonts',
 				'/Local/Library/Fonts',
-				'/Network/Library/Fonts']
+				'/Network/Library/Fonts',
+				'/System/Library/Fonts/',]
 	 fonts = {}
 	 for p in paths:
 		 d = os.path.expanduser(p)
