@@ -107,7 +107,7 @@ To use only cPickle (for compatibility with older apps):
 		
 	if "cerealizer" in [dumps.__module__] + [loads_func.__module__ for loads_func in _loadss]:
 		import soya.cerealizer4soya
-	
+
 	
 def set_root_widget(widget):
 	"""set_root_widget(WIDGET)

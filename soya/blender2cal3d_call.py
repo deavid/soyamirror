@@ -67,6 +67,9 @@ def parse_args(args):
 			print >> sys.stderr, "(reading config file %s)" % val
 			parse_args(open(var).read().split("\n"))
 			
+		elif attr == "scale":
+			cal3d_export.blendercal.bcconf.SCALE = val
+			
 		else:
 			ADDITIONAL_CFG += arg + "\n"
 			

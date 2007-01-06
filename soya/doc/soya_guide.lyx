@@ -23,7 +23,7 @@
 \topmargin 1cm
 \rightmargin 1cm
 \bottommargin 2cm
-\secnumdepth 3
+\secnumdepth 5
 \tocdepth 3
 \paragraph_separation indent
 \defskip medskip
@@ -3970,6 +3970,10 @@ bug: Currently, Camera cannot be saved in files.
 \end_layout
 
 \begin_layout Section
+\begin_inset LatexCommand \label{sec:File-formats}
+
+\end_inset
+
 File formats
 \end_layout
 
@@ -5233,6 +5237,52 @@ a
 	filename blender_uv_image_editor2.png
 	lyxscale 84
 	scale 42
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\InsetSpace ~
+
+\end_layout
+
+\begin_layout Standard
+When exporting to AnimatedModel (i.e.
+ to Cal3D format, using BlenderCal), each material need to be associated
+ to the corresponding texture.
+ This can be done by selecting the right material in the material panel
+ (see the first screenshot below), and then by selecting in the texture
+ panel, the 
+\begin_inset Quotes eld
+\end_inset
+
+Image
+\begin_inset Quotes erd
+\end_inset
+
+ texture type and the right image (see the second screenshot below).
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align center
+\begin_inset Graphics
+	filename blender_material.png
+	scale 50
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align center
+\begin_inset Graphics
+	filename blender_material2.png
+	scale 50
 
 \end_inset
 
@@ -6866,11 +6916,1825 @@ Label3D
 \end_layout
 
 \begin_layout Chapter
-Tofu and Soya
+Tofu network and game engine
+\end_layout
+
+\begin_layout Standard
+Tofu is a client-server network and game engine for Soya.
+ Main features are:
+\end_layout
+
+\begin_layout Itemize
+single and multi-player mode,
+\end_layout
+
+\begin_layout Itemize
+interpolation of character animation and position,
+\end_layout
+
+\begin_layout Itemize
+persistent world support,
+\end_layout
+
+\begin_layout Itemize
+a player can control one or several characters,
+\end_layout
+
+\begin_layout Itemize
+one or several players can play with the same client (see figure 
+\begin_inset LatexCommand \ref{fig:Tofu-client-server-model}
+
+\end_inset
+
+).
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Standard
+\noindent
+\align center
+\begin_inset Graphics
+	filename client_server.eps
+	lyxscale 50
+	width 40col%
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Caption
+\begin_inset LatexCommand \label{fig:Tofu-client-server-model}
+
+\end_inset
+
+Tofu client-server model
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Principles
+\end_layout
+
+\begin_layout Standard
+
+\end_layout
+
+\begin_layout Subsection
+Players, PlayerID, Mobiles, Levels
+\end_layout
+
+\begin_layout Description
+Players are the human players.
+ The Player class represent the human player, and thus it is used 
+\series bold
+never
+\series default
+ used client-side, since the client doesn't have the player data.
+\end_layout
+
+\begin_layout Description
+PlayerIDs are used to identify Players.
+ Contrary to Players, PlayerIDs are available both at client and server-side.
+ The default PlayerID class provides only to attributes: filename (which
+ is the name of the Player) and password.
+ You may extend the class with additional attributes, such as the character
+ the Player has chosen (
+\emph on
+e.g.
+
+\emph default
+ Tux, Gnu, and so on).
+ A new Player is automatically created when a new filename is given.
+\end_layout
+
+\begin_layout Description
+Mobiles are every objects that can move or that may be changed during the
+ game.
+ In particular, the chararacters the Player plays are Mobiles.
+ Bots, 
+\emph on
+i.e.
+
+\emph default
+ characters played by the computer, are also Mobiles.
+ Mobile inherits from soya.World.
+\end_layout
+
+\begin_layout Description
+Levels are a part of the game's universe.
+ A Mobile is located in a single level at a given time.
+ Levels inherits from soya.World.
+\end_layout
+
+\begin_layout Description
+Uniques are objects that have a unique identifier (UID), which can be used
+ to identify the object on the server or any client.
+ The UID can be acessed by the uid attribute.
+ Mobiles and Levels are Uniques.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Standard
+\noindent
+\align center
+\begin_inset Graphics
+	filename player_mobile_level.eps
+	lyxscale 50
+	width 50col%
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Caption
+\begin_inset LatexCommand \label{fig:Players,-Mobiles-and-Levels}
+
+\end_inset
+
+Players, Mobiles and Levels
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Actions, messages and states
+\end_layout
+
+\begin_layout Standard
+In client-server mode, Tofu sends various information over the network in
+ order to maintain the state of the Mobiles identical on the server and
+ on each client.
+ Tofu distinguishes three types of information (see figure 
+\begin_inset LatexCommand \ref{fig:Action,-state-and-message}
+
+\end_inset
+
+):
+\end_layout
+
+\begin_layout Description
+Actions are the action the human player or a bot decide to perform.
+ Human player actions are generated by the client (by reading 
+\emph on
+e.g.
+
+\emph default
+ the keyboard events) and sent to the server.
+ Examples are: start jumping, start walking, stop walking,...
+ Many actions are given as 
+\begin_inset Quotes eld
+\end_inset
+
+start
+\begin_inset Quotes erd
+\end_inset
+
+ or 
+\begin_inset Quotes eld
+\end_inset
+
+stop something
+\begin_inset Quotes erd
+\end_inset
+
+, in order to reduce the amount of actions sent.
+\end_layout
+
+\begin_layout Description
+Messages are information sent by the server to the clients.
+ Messages are only rarely used, in particular they should not be used for
+ sending positionning information, or any other information that evolves
+ often.
+ Examples are information about life lost, or a bonus taken.
+\end_layout
+
+\begin_layout Description
+States are also information sent by the server to the clients.
+ Contrary to messages, states are for information that evolves so quickly
+ that it is not possible to send all the information.
+ Usually, states are used only for position and orientation of the characters.
+ As a consequence, states are interpolated when needed.
+\end_layout
+
+\begin_layout Standard
+Actions, messages and states are not classes; Tofu just uses raw strings
+ for them.
+\end_layout
+
+\begin_layout Standard
+For sending information, Tofu uses a mix of TCP and UDP sockets (For those
+ that are not specialists in network, like me, TCP and UDP are two network
+ protocols.
+ The main difference between them is that, with TCP, you are garanteered
+ that the data sent over the network arrives, whereas with UDP, the data
+ may never arrive.
+ However, UDP is faster).
+ Tofu sends actions and messages with TCP, and states with UDP.
+ If a state is lost, it will be counterweighed by interpolation.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Standard
+\noindent
+\align center
+\begin_inset Graphics
+	filename action_message_state.eps
+	lyxscale 75
+	width 50col%
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Caption
+\begin_inset LatexCommand \label{fig:Action,-state-and-message}
+
+\end_inset
+
+Actions, states and messages
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Persistence: Data path and game path
+\end_layout
+
+\begin_layout Standard
+Tofu automatically saves the game data using Cerealizer with it is shut
+ down.
+\end_layout
+
+\begin_layout Standard
+With Tofu, there is two path for saving data.
+ 
+\series bold
+The normal Soya path
+\series default
+ is used to load Images, Materials, Models, Worlds, Fonts, Sounds,...
+ as usual.
+ It is also used for loading new unmodified Levels, 
+\emph on
+i.e.
+
+\emph default
+ when a player enters in the level for the first time.
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+The Tofu game path
+\series default
+ is used for loading and saving players and modified levels, 
+\emph on
+i.e.
+
+\emph default
+ levels saved after a player enters in it and possibly alter the level.
+ The game path is obtained by joining tofu.SAVED_GAME_DIR and tofu.GAME.
+ tofu.SAVED_GAME_DIR is the directory where all games are saved, and tofu.GAME
+ is the subdirectory where the current game is saved.
+\end_layout
+
+\begin_layout Standard
+These variables can be used in various ways:
+\end_layout
+
+\begin_layout Description
+In\InsetSpace ~
+single\InsetSpace ~
+player\InsetSpace ~
+mode one usually wants a game per player, which can be obtained
+ by using the player name as the game name.
+\end_layout
+
+\begin_layout Description
+In\InsetSpace ~
+single\InsetSpace ~
+client-server\InsetSpace ~
+mode :
+\end_layout
+
+\begin_deeper
+\begin_layout Description
+For\InsetSpace ~
+persistent\InsetSpace ~
+universe a single game is needed (use any name of your choice).
+\end_layout
+
+\begin_layout Description
+For\InsetSpace ~
+game\InsetSpace ~
+with\InsetSpace ~
+
+\begin_inset Quotes eld
+\end_inset
+
+match
+\begin_inset Quotes erd
+\end_inset
+
+ a game is required for each match.
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+However, notice that a Tofu server cannot manage several games at a time.
+ For instance, for a game with 
+\begin_inset Quotes eld
+\end_inset
+
+match
+\begin_inset Quotes erd
+\end_inset
+
+, you have to run one server for each match.
+\end_layout
+
+\begin_layout Subsection
+Single player, server and client modes
+\end_layout
+
+\begin_layout Standard
+With Tofu, the 
+\series bold
+same
+\series default
+ code is used for single player, server and client modes.
+ This eases game programming, because you have a single program to write.
+\end_layout
+
+\begin_layout Standard
+You can switch to any mode, by calling tofu.set_side("single"), tofu.set_side("ser
+ver") or tofu.set_side("client").
 \end_layout
 
 \begin_layout Section
 Using the Tofu network engine
+\end_layout
+
+\begin_layout Subsection
+Setting up
+\end_layout
+
+\begin_layout Standard
+First, you need to import Soya, Tofu and Cerealizer, and to define soya.path
+ and tofu.SAVED_GAME_DIR (in a real game, you'll probably want to make tofu.SAVED_
+GAME_DIR user-configurable, 
+\emph on
+e.g.
+
+\emph default
+ by reading it from a configuration file; here we use a temporary directory
+ for tutorial purpose).
+\end_layout
+
+\begin_layout LyX-Code
+import sys, os, os.path
+\end_layout
+
+\begin_layout LyX-Code
+import soya, soya.tofu as tofu, cerealizer
+\end_layout
+
+\begin_layout LyX-Code
+ 
+\end_layout
+
+\begin_layout LyX-Code
+soya.path.append(os.path.join(os.path.dirname(sys.argv[0]), "data"))
+\end_layout
+
+\begin_layout LyX-Code
+ 
+\end_layout
+
+\begin_layout LyX-Code
+tofu.SAVED_GAME_DIR = "/tmp/tofu_demo"
+\end_layout
+
+\begin_layout LyX-Code
+
+\end_layout
+
+\begin_layout Description
+Warning: Tofu automatically imports and enables Cerealizer, and disables
+ Pickle (see section 
+\begin_inset LatexCommand \ref{sec:File-formats}
+
+\end_inset
+
+) for security reasons; as a consequence, 
+\series bold
+all Soya data files MUST be in the Cerealizer file format!
+\end_layout
+
+\begin_layout Subsection
+Creating the PlayerID class
+\end_layout
+
+\begin_layout Standard
+The PlayerID class is used to identify Players.
+ The default tofu.PlayerID has just a filename (
+\emph on
+i.e.
+
+\emph default
+ the player's name) and a password.
+ If you need additional attributes, you can extend PlayerID.
+ For example, for adding a character_name attribute:
+\end_layout
+
+\begin_layout LyX-Code
+class PlayerID(tofu.PlayerID):
+\end_layout
+
+\begin_layout LyX-Code
+  def __init__(self, filename, password, character_name = "tux"):
+\end_layout
+
+\begin_layout LyX-Code
+    tofu.PlayerID.__init__(self, filename, password)
+\end_layout
+
+\begin_layout LyX-Code
+    self.character_name = character_name
+\end_layout
+
+\begin_layout LyX-Code
+ 
+\end_layout
+
+\begin_layout LyX-Code
+  def dumps(self):
+\end_layout
+
+\begin_layout LyX-Code
+    return tofu.PlayerID.dumps() + len(self.character_name) + "
+\backslash
+n" + self.character_name
+\end_layout
+
+\begin_layout LyX-Code
+  @classmethod
+\end_layout
+
+\begin_layout LyX-Code
+  def loads(Class, s):
+\end_layout
+
+\begin_layout LyX-Code
+    self = tofu.PlayerID.loads(Class, s)
+\end_layout
+
+\begin_layout LyX-Code
+    length = int(s.readline())
+\end_layout
+
+\begin_layout LyX-Code
+    self.character_name = s.read(length)
+\end_layout
+
+\begin_layout LyX-Code
+    return self
+\end_layout
+
+\begin_layout LyX-Code
+ 
+\end_layout
+
+\begin_layout LyX-Code
+tofu.LOAD_PLAYER_ID = PlayerID.loads
+\end_layout
+
+\begin_layout Standard
+The dumps method returns the PlayerID saved in a string, and the loads class
+ method returns a PlayerID loaded from a file object s.
+ The loads class method must be given to Tofu in the global variable tofu.LOAD_PL
+AYER_ID.
+\end_layout
+
+\begin_layout Standard
+You may also use Cerealizer for saving and loading PlayerID.
+ It is very handy for test, but should be avoided, because it might comprise
+ the server security (Tofu uses Cerealizer only in the server->client direction,
+ whereas PlayerIDs are sent from client to server.
+ By sending e.g.
+ Unique or SavedInAPath objects with the PlayerID, one might corrupt the
+ game currenlty played on the server).
+ To use Cerealizer, use the following dumps and loads methods:
+\end_layout
+
+\begin_layout LyX-Code
+  def dumps(self): return cerealizer.dumps(self)
+\end_layout
+
+\begin_layout LyX-Code
+  @classmethod
+\end_layout
+
+\begin_layout LyX-Code
+  def loads(Class, s): return cerealizer.load(s)
+\end_layout
+
+\begin_layout Subsection
+Creating the Player class
+\end_layout
+
+\begin_layout Standard
+The Player class is used for representing the Player in server and single
+ modes.
+ Player is responsible for creating the Player first Mobiles, and putting
+ them in the right Levels.
+ Player can also stores Player stats, like score, that are managed on server-sid
+e.
+\end_layout
+
+\begin_layout Standard
+When created, Player receive a PlayerID.
+ Here is an example of a basic Player class:
+\end_layout
+
+\begin_layout LyX-Code
+class Player(tofu.Player):
+\end_layout
+
+\begin_layout LyX-Code
+  def __init__(self, player_id):
+\end_layout
+
+\begin_layout LyX-Code
+    tofu.Player.__init__(self, player_id)
+\end_layout
+
+\begin_layout LyX-Code
+    
+\end_layout
+
+\begin_layout LyX-Code
+    mobile = Mobile()
+\end_layout
+
+\begin_layout LyX-Code
+    mobile.level = tofu.Level.get("first_level")
+\end_layout
+
+\begin_layout LyX-Code
+    mobile.set_xyz(100.0, 0.0, 100.0)
+\end_layout
+
+\begin_layout LyX-Code
+    self.add_mobile(mobile)
+\end_layout
+
+\begin_layout LyX-Code
+    
+\end_layout
+
+\begin_layout LyX-Code
+tofu.CREATE_PLAYER = Player
+\end_layout
+
+\begin_layout LyX-Code
+cerealizer.register(Player, soya.cerealizer4soya.SavedInAPathHandler(Player))
+\end_layout
+
+\begin_layout Standard
+This Player class creates a single Mobile, and puts it in the Level called
+ 
+\begin_inset Quotes eld
+\end_inset
+
+first_level
+\begin_inset Quotes erd
+\end_inset
+
+, at the given coordinates.
+ Player.add_mobile(mobile) gives the control of the Mobile to the Player.
+ Your Player class must be cerealizable.
+\end_layout
+
+\begin_layout Description
+Warning: You must not call Level.add_mobile (see below) in the Player class.
+ Level.add_mobile will be automatically called when the Player logs in.
+\end_layout
+
+\begin_layout Standard
+The following methods may be overriden in the Player class:
+\end_layout
+
+\begin_layout Description
+add_mobile(mobile) is called when the player gets the control of a new mobile
+\end_layout
+
+\begin_layout Description
+remove_mobile(mobile) is called when the player loose the control of a mobile
+ (for example because the Mobile is dead)
+\end_layout
+
+\begin_layout Description
+login(socket,\InsetSpace ~
+udp_address) is called when the Player connects to the game
+\end_layout
+
+\begin_layout Description
+logout(save=1) is called when the Player disconnects from the game ; the
+ save argument indicates wether the Player should be saved or not.
+\end_layout
+
+\begin_layout Description
+killed(save=0) is called when the Player no longer controls any Mobile,
+ and thus is considered as dead.
+ The save argument indicates wether the Player should be saved or not; it
+ defaults to false.
+\end_layout
+
+\begin_layout Subsection
+Creating the MainLoop class
+\end_layout
+
+\begin_layout Standard
+Tofu provides a MainLoop that extends Soya's MainLoop with everything required
+ for networking.
+ The following methods can be overriden:
+\end_layout
+
+\begin_layout Description
+init_interface() is called when the game is starting, in single or client
+ mode.
+ It can be used for setting up the game interface, for example for creating
+ a camera and a life-bar widget.
+\end_layout
+
+\begin_layout Subsection
+Creating the Level class
+\end_layout
+
+\begin_layout Standard
+The Level class represents a game Level.
+ It inherits from soya.World and tofu.Unique, and you have to extend this
+ class.
+ Your Level class must be cerealizable.
+\end_layout
+
+\begin_layout LyX-Code
+class Level(tofu.Level):
+\end_layout
+
+\begin_layout LyX-Code
+  def __init__(self):
+\end_layout
+
+\begin_layout LyX-Code
+    tofu.Level.__init__(self)
+\end_layout
+
+\begin_layout LyX-Code
+ 
+\end_layout
+
+\begin_layout LyX-Code
+cerealizer.register(Level, soya.cerealizer4soya.SavedInAPathHandler(Level))
+\end_layout
+
+\begin_layout Standard
+The following methods can be overriden:
+\end_layout
+
+\begin_layout Description
+add_mobile(mobile) is called when a mobile is added in the Level
+\end_layout
+
+\begin_layout Description
+remove_mobile(mobile) is called when a mobile is removed from the Level
+\end_layout
+
+\begin_layout Description
+set_active(active) is called when the Level is activated (active is true)
+ or inactivated (active is false).
+ A level is considered as active if and only if there is at least one Mobile
+ controlled by a human Player in the Level.
+\end_layout
+
+\begin_layout Subsection
+Creating the Mobile class
+\end_layout
+
+\begin_layout Standard
+The Mobile class represents anything that evolves or changes in a Level.
+ In particular, this definition includes the characters controlled by the
+ Player, as well as bots (characters controlled by computer) and several
+ traps (such as moving platforms).
+ Mobile inherits from soya.World and tofu.Unique, and you have to extend this
+ class.
+ Your Mobile classes must be cerealizable.
+\end_layout
+
+\begin_layout Standard
+Mobile has the following interesting attributes:
+\end_layout
+
+\begin_layout Description
+bot true if the Mobile is a bot, 
+\emph on
+i.e.
+
+\emph default
+ the Mobile is controlled by a computer and not a Player.
+\end_layout
+
+\begin_layout Description
+local true if the Mobile is controlled locally, and not by a remote server
+ or client.
+\end_layout
+
+\begin_layout Description
+player_name the filename of the Player that controls the Mobile, if any.
+ For bots, an empty string.
+\end_layout
+
+\begin_layout Description
+level the Level the Mobile is inside.
+\end_layout
+
+\begin_layout Subsubsection
+Owning and loosing control
+\end_layout
+
+\begin_layout Standard
+A Mobile can be controlled by different Player or computer during its life.
+ To give the control of a Mobile to a Player, call Player.add_mobile(mobile);
+ and call Player.remove_mobile(mobile) for removing the control and turning
+ the Mobile into a bot.
+ In client-server mode, Player.add_mobile and Player.remove_mobile must be
+ called server-side, usually it is called in Mobile.do_collision().
+\end_layout
+
+\begin_layout Standard
+The following methods are related to the control transfert, and should be
+ overriden:
+\end_layout
+
+\begin_layout Description
+control_owned() is called when the current program gets the control of the
+ Mobile, 
+\emph on
+i.e.
+
+\emph default
+ Mobile.local becomes true.
+ For example, if the Mobile is controlled by a local Player (
+\emph on
+i.e.
+
+\emph default
+ if Mobile.bot is false), this method can be overriden in order to makes
+ the Camera following and looking at the Mobile.
+\end_layout
+
+\begin_layout Description
+control_lost() is called when the current program loose the control of the
+ Mobile, 
+\emph on
+i.e.
+
+\emph default
+ Mobile.local becomes false.
+\end_layout
+
+\begin_layout Subsubsection
+Generating actions
+\end_layout
+
+\begin_layout Standard
+Actions are the action the human player or a bot decide to perform.
+ Actions are generated on client-side for Mobile controlled by human Players,
+ and on server-side for bots.
+\end_layout
+
+\begin_layout Standard
+Tofu doesn't have an action class; actions are simply represented by raw
+ string.
+ For instance, you can use 
+\begin_inset Quotes eld
+\end_inset
+
+<
+\begin_inset Quotes erd
+\end_inset
+
+ for representing the 
+\begin_inset Quotes eld
+\end_inset
+
+start turning left
+\begin_inset Quotes erd
+\end_inset
+
+ action, 
+\begin_inset Quotes eld
+\end_inset
+
+>
+\begin_inset Quotes erd
+\end_inset
+
+ for 
+\begin_inset Quotes eld
+\end_inset
+
+start turning right
+\begin_inset Quotes erd
+\end_inset
+
+, 
+\begin_inset Quotes eld
+\end_inset
+
+J
+\begin_inset Quotes erd
+\end_inset
+
+ for 
+\begin_inset Quotes eld
+\end_inset
+
+start jumping
+\begin_inset Quotes erd
+\end_inset
+
+, and so on.
+ More complex action examples can be 
+\begin_inset Quotes eld
+\end_inset
+
+U12
+\begin_inset Quotes erd
+\end_inset
+
+ for 
+\begin_inset Quotes eld
+\end_inset
+
+use the magical item of UID 12
+\begin_inset Quotes erd
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+The following methods are used for generating actions:
+\end_layout
+
+\begin_layout Description
+generate_actions() is called every round, and is in charge of generating
+ the actions for the Mobile.
+ You have to override this method, in order to generate actions from keyboard
+ and mouse events (for Mobiles controlled by human Players) or artificial
+ intelligence (for bots).
+ When actions are generated, you must call send_action(action) for each
+ of them (you can call send_action() several time in generation_actions()).
+\end_layout
+
+\begin_layout Description
+send_action(action) sends the given action.
+ The action argument must be a string.
+\end_layout
+
+\begin_layout Subsubsection
+\begin_inset LatexCommand \label{sub:Doing-actions}
+
+\end_inset
+
+Doing actions
+\end_layout
+
+\begin_layout Standard
+Actions are performed sever-side, by the following method that must be overriden
+:
+\end_layout
+
+\begin_layout Description
+do_action(action) is called for every action.
+ The action argument is the string that generate_actions() has given to
+ send_action().
+ For instance, if the action is 
+\begin_inset Quotes eld
+\end_inset
+
+J
+\begin_inset Quotes erd
+\end_inset
+
+ and corresponds to 
+\begin_inset Quotes eld
+\end_inset
+
+start jumping
+\begin_inset Quotes erd
+\end_inset
+
+, do_action() should modify the Mobile speed, in order to make it jump.
+\end_layout
+
+\begin_layout Standard
+When the current state of the object has been modified, you should call
+ the following method:
+\end_layout
+
+\begin_layout Description
+set_current_state_importance(importance) sets the importance of the current
+ Mobile state.
+ In client-server mode, the importance is used as a hint for determining
+ which states should be sent through network.
+ Importance can be 0 (no importance at all), 1 (small importance, corresponding
+ to a change that the client is able to interpolate) or 2 (important change,
+ requiring to send a state as soon as possible).
+\end_layout
+
+\begin_layout Subsubsection
+Generating and applying states
+\end_layout
+
+\begin_layout Standard
+In client-server mode, states are send from the server to the client.
+ The state usually indicates the position and the orientation of the Mobile.
+ However, a state is not sent for each round.
+ Tofu automatically determines for which round a state is sent, using the
+ values given to set_current_state_importance() as hints.
+\end_layout
+
+\begin_layout Standard
+The following methods are related to states and must be overriden:
+\end_layout
+
+\begin_layout Description
+get_network_state() is called on server-side when Tofu decides to send a
+ state.
+ It should returns the states of the Mobile, as a string.
+\end_layout
+
+\begin_layout Description
+read_network_state(file_object) is called on client-side when Tofu receives
+ a state.
+ It should read the states from the given file object.
+\end_layout
+
+\begin_layout Subsubsection
+Dealing with physics
+\end_layout
+
+\begin_layout Standard
+Physics computation is performed both client and server side.
+ In client mode, do_physics is in charge of interpolating between states.
+\end_layout
+
+\begin_layout Standard
+You must override the following method:
+\end_layout
+
+\begin_layout Description
+do_physics() is called every round, and is in charge of doing physics computatio
+n.
+ For instance, if the Mobile is jumping and thus has a positive vertical
+ speed, do_physics should apply the vertical speed.
+\end_layout
+
+\begin_layout Subsubsection
+Dealing with collisions
+\end_layout
+
+\begin_layout Standard
+Collisions we are speaking about here are collisions between Mobiles, or
+ important collision that must be handled server-side.
+ Normal 
+\begin_inset Quotes eld
+\end_inset
+
+collision
+\begin_inset Quotes erd
+\end_inset
+
+, like a collision with a static wall, can be dealt with during the physics
+ step.
+\end_layout
+
+\begin_layout Description
+do_collisions() is called every round, and is in charge of checking important
+ collisions.
+ Important collisions include collision between two Mobiles (
+\emph on
+e.g.
+
+\emph default
+ a character Mobile touching and taking a bonus Mobile, or two characters
+ colliding), or any collision that has an influence on the game (loosing
+ life point, being teleported to a new Level,...).
+\end_layout
+
+\begin_layout Standard
+In do_collision, you may want to call set_current_state_importance() too
+ (see section 
+\begin_inset LatexCommand \ref{sub:Doing-actions}
+
+\end_inset
+
+).
+\end_layout
+
+\begin_layout Standard
+Changing the Level of a Mobile should occur in do_collision.
+ It can be done as following:
+\end_layout
+
+\begin_layout LyX-Code
+mobile.level.remove_mobile(mobile)
+\end_layout
+
+\begin_layout LyX-Code
+new_level.add_mobile(mobile)
+\end_layout
+
+\begin_layout Subsubsection
+Generating messages
+\end_layout
+
+\begin_layout Standard
+Message are similar to action, but they are sent from the server to the
+ clients.
+ Messages often results from do_collision(), for example if a Mobile has
+ taken a life bonus, all clients must be informed that the Mobile's life
+ has increased.
+ This can be done through message.
+\end_layout
+
+\begin_layout Standard
+The following method is used for sending a message:
+\end_layout
+
+\begin_layout Description
+send_message(message) sends the given message.
+ The message argument must be a string, 
+\emph on
+e.g.
+
+\emph default
+ you may use 
+\begin_inset Quotes eld
+\end_inset
+
+L9
+\begin_inset Quotes erd
+\end_inset
+
+ as a message meaning 
+\begin_inset Quotes eld
+\end_inset
+
+the number of life of the Mobile is now 9
+\begin_inset Quotes erd
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Subsubsection
+Doing messages
+\end_layout
+
+\begin_layout Standard
+Messages are performed client-side, by the following method that must be
+ overriden:
+\end_layout
+
+\begin_layout Description
+do_message(message) is called for every message.
+ The message argument is the string that has been given to send_message().
+ For instance, if the message is 
+\begin_inset Quotes eld
+\end_inset
+
+L9
+\begin_inset Quotes erd
+\end_inset
+
+ and corresponds to 
+\begin_inset Quotes eld
+\end_inset
+
+the number of life is now 9
+\begin_inset Quotes erd
+\end_inset
+
+, do_message() may update a lifebar.
+\end_layout
+
+\begin_layout Subsubsection
+Conclusion
+\end_layout
+
+\begin_layout Standard
+The following table indicates which methods is called on which mode.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Tabular
+<lyxtabular version="3" rows="13" columns="4">
+<features>
+<column alignment="left" valignment="top" leftline="true" width="0">
+<column alignment="center" valignment="top" leftline="true" width="0">
+<column alignment="center" valignment="top" leftline="true" width="0">
+<column alignment="center" valignment="top" leftline="true" rightline="true" width="0">
+<row topline="true" bottomline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+methods (*= called every round)
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+single mode
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+server mode
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+client mode
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row topline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+control_owned
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+X
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+X
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+X
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row topline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+control_lost
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+X
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+X
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+X
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row topline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+generate_actions (*)
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+X
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+X (for bots)
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+X (for human player)
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row topline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+send_action
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+X
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+X
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+X
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row topline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+do_action
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+X
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+X
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row topline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+do_physics (*)
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+X
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+X
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+X
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row topline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+set_current_state_importance
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+X
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+X
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+X
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row topline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+get_network_state
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+X
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row topline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+read_network_state
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+X
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row topline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+do_collisions (*)
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+X
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+X
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row topline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+send_message
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+X
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+X
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row topline="true" bottomline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+do_message
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+X
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+X
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsubsection
+Tofu default implementations
+\end_layout
+
+\begin_layout Standard
+Tofu provides several default Mobile implementations with interpolation:
+\end_layout
+
+\begin_layout Paragraph
+SpeedInterpolatedMobile
+\end_layout
+
+\begin_layout Standard
+is a Mobile that has is moved according to a speed.
+\end_layout
+
+\begin_layout Standard
+The speed is not just a vector, but a CoordSystSpeed, a special object that
+ implement a 
+\begin_inset Quotes eld
+\end_inset
+
+speed matrix
+\begin_inset Quotes erd
+\end_inset
+
+.
+ Any modification applied to the speed will be performed on the Mobile 
+\series bold
+every rounds
+\series default
+.
+ For example, for making the Mobile go forward:
+\end_layout
+
+\begin_layout LyX-Code
+mobile.speed.z = -0.1
+\end_layout
+
+\begin_layout Standard
+For making the Mobile turning:
+\end_layout
+
+\begin_layout LyX-Code
+mobile.speed.turn_y(10.0)
+\end_layout
+
+\begin_layout Standard
+To stop the Mobile, just reset the speed:
+\end_layout
+
+\begin_layout LyX-Code
+mobile.speed.z = 0.0
+\end_layout
+
+\begin_layout LyX-Code
+mobile.reset_orientation_and_scaling()
+\end_layout
+
+\begin_layout Standard
+SpeedInterpolatedMobile has the following noticeable attributes:
+\end_layout
+
+\begin_layout Description
+speed the speed (see above).
+\end_layout
+
+\begin_layout Description
+last_state the last state of the Mobile.
+ last_state is a CoordSystState object, which has a position but also an
+ orientation and a scaling.
+\end_layout
+
+\begin_layout Description
+next_state the next state of the Mobile, 
+\emph on
+i.e.
+
+\emph default
+ the state it will after at the end of the current round.
+ next_state is a CoordSystState object.
+ next_state is often used for collision detection in do_physics.
+\end_layout
+
+\begin_layout Paragraph
+AnimatedMobile
+\end_layout
+
+\begin_layout Standard
+AnimatedMobile is a Mobile that uses animations from an AnimatedModel.
+ The current animation is automatically sent through network using states.
+\end_layout
+
+\begin_layout Standard
+AnimatedMobile has the following attributes:
+\end_layout
+
+\begin_layout Description
+animable the object that is animated and has an AnimatedModel.
+ If not given, it defaults to the Mobile itself.
+ You can use a different object by setting the 
+\begin_inset Quotes eld
+\end_inset
+
+animable
+\begin_inset Quotes erd
+\end_inset
+
+ attribute to any other Body.
+\end_layout
+
+\begin_layout Standard
+AnimatedMobile has the following method:
+\end_layout
+
+\begin_layout Description
+set_animation(animation) starts playing the given animation, and stops playing
+ the previous one.
+\end_layout
+
+\begin_layout Paragraph
+RaypickCollidedMobile
+\end_layout
+
+\begin_layout Standard
+RaypickCollidedMobile is a Mobile that uses raypicking for basic collision
+ detection (walls and ground).
+\end_layout
+
+\begin_layout Subsection
+Starting the game
+\end_layout
+
+\begin_layout Section
+About Tofu sources
+\end_layout
+
+\begin_layout Standard
+Tofu sources are entirey in Python.
+ The source (ab)uses of a technic I called 
+\begin_inset Quotes eld
+\end_inset
+
+side-oriented programming
+\begin_inset Quotes erd
+\end_inset
+
+, which defined in the tofu_udp.sides module.
+ When a method is prefixed by 
+\begin_inset Quotes eld
+\end_inset
+
+@side("XXX")
+\begin_inset Quotes erd
+\end_inset
+
+ (where XXX is single, server, client, or any combination of them), it means
+ that the method exists only in the corresponding modes.
+ The implementation of side-programming itself is in side.py.
 \end_layout
 
 \begin_layout Section

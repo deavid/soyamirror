@@ -260,7 +260,7 @@
     * Bugfix on shadows on AnimatedModel: soya was segfaulting if the
       model was culled on the first rendering
 
-* November 2006 : Soya3D 0.13
+* December 2006 : Soya3D 0.13
   * New ODE integration (thanks Marmoute!)
   * New Blender -> Cal3D exporter (thanks Palle!)
     The new exporter is now automatically used by the auto-exporter.
@@ -284,3 +284,4 @@
       unsigned
     * The file caching neighbors was not cleaned when animated models
       were modifed
+

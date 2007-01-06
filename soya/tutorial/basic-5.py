@@ -112,7 +112,7 @@ class CaterpillarHead(soya.Body):
 			elif event[0] == soya.sdlconst.QUIT:
 				soya.MAIN_LOOP.stop()
 				
-		# Do the rotation
+		# Do the rotation.
 		
 		self.rotate_y(self.rotation_y_speed)
 		

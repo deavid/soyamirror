@@ -54,9 +54,6 @@ SCALE = 1.0
 # The maximum angle between two smooth-lit faces.
 MAX_FACE_ANGLE = 80.0
 
-# File format (currently, "pickle" or "cerealizer")
-FILE_FORMAT = "pickle"
-
 
 TMP_FILE = ""
 
@@ -75,7 +72,6 @@ class Blender2Soya:
 		except: pass
 		
 		self.parse_args(args)
-		self.file_format = "pickle"
 		
 		self.f = open(self.tmp_file, "w")
 		
@@ -111,13 +107,6 @@ class Blender2Soya:
 		Blender.Redraw() # Needed for GetRawFromObject
 
 		print >> self.f, """import soya, soya.facecutter"""
-		
-		if   self.file_format == "pickle":
-			print >> self.f, """import cPickle as pickle; soya.set_file_format(pickle)"""
-		elif self.file_format == "cerealizer":
-			print >> self.f, """import cerealizer, soya.cerealizer4soya as cerealizer4soya; soya.set_file_format(cerealizer)"""
-		else:
-			raise ValueError("Unsupported file format %s" % self.file_format)
 		print >> self.f
 		
 		objs = Blender.Object.Get()

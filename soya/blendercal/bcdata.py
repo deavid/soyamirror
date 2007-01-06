@@ -1,3 +1,4 @@
+# -*- indent-tabs-mode: t -*-
 # $Id: bcdata.py 426 2006-10-03 15:04:31Z cubicool $
 
 # The purpose of this module is to provide methods by which the caller can easily
@@ -340,9 +341,9 @@ def AnimationData():
 			track    = bcobject.Track(animation, bone)
 			
 			animation.tracks[bonename] = track
-
+      
 			blenderbone = bcobject.Skeleton.ARMATURE.getPose().bones[iponame]
-		
+      
 			# Before versions 242 you would build Loc/Quat values using
 			# Ipo.evaluate(); no need for that now.
 			for curframe in frames:

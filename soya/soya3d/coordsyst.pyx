@@ -897,12 +897,17 @@ states(0.0 => STATE1, 1.0 => STATE2)."""
 		"""CoordSyst.add_speed(speed)
 
 """
+		#cdef float m2[19]
+		#matrix_copy(m2, self._matrix)
+		#multiply_matrix(self._matrix, m2, speed._matrix)
+		#self._invalidate()
+		
 		cdef float m2[19]
-		#cdef float m3[19]
+		cdef float m3[19]
 		matrix_copy(m2, self._matrix)
-		#speed._matrix_into(self, m3)
-		#multiply_matrix(self._matrix, m2, m3)
-		multiply_matrix(self._matrix, m2, speed._matrix)
+		matrix_copy(m3, speed._matrix)
+		speed._matrix_into(self, m3)
+		multiply_matrix(self._matrix, m2, m3)
 		self._invalidate()
 		
 	def _get_network_state(self):
@@ -1025,6 +1030,16 @@ Creates a new CoordSystSpeed, for the given COORD_SYST."""
 		self._matrix[16] = self._matrix[17] = self._matrix[18] = 1.0
 		self._invalidate()
 		
+	cdef void _matrix_into(self, CoordSyst coordsyst, float* result):
+		cdef float m2[19]
+		cdef float m3[19]
+		if (not self._parent is None) and (not coordsyst is None) and (not self._parent is coordsyst):
+			self._parent._matrix_into(coordsyst, m2)
+			matrix_invert(m3, m2)
+			multiply_matrix(m2, coordsyst._inverted_root_matrix(), self._root_matrix())
+			multiply_matrix(result, m2, m3)
+		else:
+			matrix_copy(result, self._matrix)
 
 
 cdef class PythonCoordSyst(CoordSyst):

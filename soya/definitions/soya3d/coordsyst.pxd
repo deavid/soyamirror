@@ -48,6 +48,6 @@ cdef class _CoordSystState(CoordSyst):
 	cdef void __setcstate__(self, object cstate)
 	
 cdef class _CoordSystSpeed(CoordSyst):
-	pass
+	cdef void _matrix_into(self, CoordSyst coordsyst, float* result)
 
 

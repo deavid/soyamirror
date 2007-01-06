@@ -410,7 +410,7 @@ class Banner(Widget):
 			self.elements.append(BannerElement(t[1], v_color, v_font))
 		self.init()
 		
-	def advance_time(self, proportion):
+	def widget_advance_time(self, proportion):
 		self._position += proportion * self.speed
 		self.position = int(self._position)
 		if self.position >= self.total:

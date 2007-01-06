@@ -19,3 +19,4 @@ EXPORTGL  = False
 LOD       = False
 EXTRADATA = False
 SUBMESHMODE = "group" # "group" (one submesh per group) or "object" (one submesh per object)
+SCALE = 1.0

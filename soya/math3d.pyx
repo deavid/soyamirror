@@ -287,6 +287,8 @@ Changes IN PLACE this point so as it is a clone of OTHER."""
 	#  return 1
 
 
+
+
 cdef class _Vector(_Point):
 	cdef void _into(self, CoordSyst coordsyst, float* result):
 		memcpy(result, self._matrix, 3 * sizeof(float))
