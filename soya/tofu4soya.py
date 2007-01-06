@@ -19,13 +19,8 @@
 
 """soya.tofu4soya
 
-Tofu is a practical high-level network game engine, based on Twisted.
+DEPRECATED -- use now soya.tofu (tofu4soya corresponds to an old version of tofu)
 
-This module integrate Tofu and Soya together, and thus make writing a
-'no meat inside' game very easy :-)
-
-Simply extend the classes provided by the module instead of Tofu's classes, and
-then call soya.tofu4soya.init() with your classes.
 """
 
 import twisted.internet.selectreactor
