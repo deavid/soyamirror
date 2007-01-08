@@ -1149,6 +1149,9 @@ class AnimatedMobile(Mobile):
           break
 
 
+
+  
+
 # XXX optimize this one (by re-using Point and Vector,...)
 class RaypickCollidedMobile(Mobile):
   max_y_speed = 0.5
@@ -1162,12 +1165,47 @@ class RaypickCollidedMobile(Mobile):
     self.radius_y  = 1.0
     
     self.left   = soya.Vector(self, -1.0,  0.0,  0.0)
-    self.down   = soya.Vector(self,  0.0, -1.0,  0.0)
     self.up     = soya.Vector(self,  0.0,  1.0,  0.0)
     self.front  = soya.Vector(self,  0.0,  0.0, -1.0)
     
   def do_physics(self):
     super(RaypickCollidedMobile, self).do_physics()
+    
+    center = soya.Point(self.next_state, 0.0, self.radius_y, 0.0)
+    context = self.level.RaypickContext(center, max(self.radius, 0.1 + self.radius_y))
+    
+    for vec, half_line in [(self.left, 0), (self.front, 0), (self.up, 0)]:
+      r = context.raypick(center, vec, self.radius, half_line = half_line)
+      if r:
+        collision, wall_normal = r
+        hypo = vec.length() * self.radius - center.distance_to(collision)
+        wall_normal.__imul__(hypo)
+        
+        self.next_state += wall_normal
+        center          += wall_normal
+        
+    self.set_current_state_importance(1)
+
+  
+# XXX optimize this one (by re-using Point and Vector,...)
+class RaypickCollidedMobileWithGravity(Mobile):
+  max_y_speed = 0.5
+  gravity     = -0.03
+  
+  def __init__(self):
+    super(RaypickCollidedMobileWithGravity, self).__init__()
+    
+    self.solid     = 0
+    self.radius    = 0.8
+    self.radius_y  = 1.0
+    
+    self.left   = soya.Vector(self, -1.0,  0.0,  0.0)
+    self.down   = soya.Vector(self,  0.0, -1.0,  0.0)
+    self.up     = soya.Vector(self,  0.0,  1.0,  0.0)
+    self.front  = soya.Vector(self,  0.0,  0.0, -1.0)
+    
+  def do_physics(self):
+    super(RaypickCollidedMobileWithGravity, self).do_physics()
     
     center = soya.Point(self.next_state, 0.0, self.radius_y, 0.0)
     context = self.level.RaypickContext(center, max(self.radius, 0.1 + self.radius_y))
@@ -1194,5 +1232,3 @@ class RaypickCollidedMobile(Mobile):
         center          += wall_normal
         
     self.set_current_state_importance(1)
-
-  

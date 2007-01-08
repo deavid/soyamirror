@@ -18,10 +18,9 @@
 import sys, os, os.path, struct, random
 import soya, soya.tofu as tofu, cerealizer, soya.cerealizer4soya, soya.sdlconst as sdlconst, soya.widget, soya.label3d
 
-tofu.SAVED_GAME_DIR = "/tmp/tofu_demo"
+soya.path.append(os.path.join(os.path.dirname(sys.argv[0]), "data"))
 
-HERE = os.path.dirname(sys.argv[0])
-soya.path.append(os.path.join(HERE, "data"))
+tofu.SAVED_GAME_DIR = "/tmp/tofu_demo"
 
 mode = sys.argv[1][2:]
 tofu.set_side(mode)
@@ -106,7 +105,6 @@ def create_demo_level():
   static_part.filename = "demo_static_part"; static_part.save()
   level      .filename = "demo"            ; level      .save()
   
-  
   level.discard()
 
 
@@ -124,50 +122,29 @@ CONTROL_KEYS = [
   [sdlconst.K_y, sdlconst.K_b, sdlconst.K_g, sdlconst.K_h, sdlconst.K_t],                 # Local player #3
   ]
 
-class Mobile(tofu.SpeedInterpolatedMobile, tofu.AnimatedMobile):
+class Mobile(tofu.SpeedInterpolatedMobile, tofu.AnimatedMobile, tofu.RaypickCollidedMobileWithGravity):
   def __init__(self):
-    super(Mobile, self).__init__(self)
+    super(Mobile, self).__init__()
     
-    self.model          = soya.AnimatedModel.get("balazar")
-    self.solid          = 0
-    self.radius         = 0.8
-    self.radius_y       = 1.0
-    
-    self.left   = soya.Vector(self, -1.0,  0.0,  0.0)
-    self.down   = soya.Vector(self,  0.0, -1.0,  0.0)
-    self.up     = soya.Vector(self,  0.0,  1.0,  0.0)
-    self.front  = soya.Vector(self,  0.0,  0.0, -1.0)
-    
+    self.model        = soya.AnimatedModel.get("balazar")
     self.control_keys = CONTROL_KEYS[0]
     
   def generate_actions(self):
-    if self.control_keys:
-      for event in soya.MAIN_LOOP.events:
-        if   event[0] == sdlconst.KEYDOWN:
-          if   (event[1] == sdlconst.K_q) or (event[1] == sdlconst.K_ESCAPE): soya.MAIN_LOOP.stop()
-          elif event[1] == self.control_keys[0]: self.send_action(ACTION_MOVE_FORWARD)
-          elif event[1] == self.control_keys[1]: self.send_action(ACTION_MOVE_BACKWARD)
-          elif event[1] == self.control_keys[2]: self.send_action(ACTION_TURN_LEFT)
-          elif event[1] == self.control_keys[3]: self.send_action(ACTION_TURN_RIGHT)
-          elif event[1] == self.control_keys[4]: self.send_action(ACTION_JUMP)
+    for event in soya.MAIN_LOOP.events:
+      if   event[0] == sdlconst.KEYDOWN:
+        if   (event[1] == sdlconst.K_q) or (event[1] == sdlconst.K_ESCAPE): soya.MAIN_LOOP.stop()
+        elif event[1] == self.control_keys[0]: self.send_action(ACTION_MOVE_FORWARD)
+        elif event[1] == self.control_keys[1]: self.send_action(ACTION_MOVE_BACKWARD)
+        elif event[1] == self.control_keys[2]: self.send_action(ACTION_TURN_LEFT)
+        elif event[1] == self.control_keys[3]: self.send_action(ACTION_TURN_RIGHT)
+        elif event[1] == self.control_keys[4]: self.send_action(ACTION_JUMP)
 
-        elif event[0] == sdlconst.KEYUP:
-          if   event[1] == self.control_keys[0]: self.send_action(ACTION_STOP_MOVING)
-          elif event[1] == self.control_keys[1]: self.send_action(ACTION_STOP_MOVING)
-          elif event[1] == self.control_keys[2]: self.send_action(ACTION_STOP_TURNING)
-          elif event[1] == self.control_keys[3]: self.send_action(ACTION_STOP_TURNING)
+      elif event[0] == sdlconst.KEYUP:
+        if   event[1] == self.control_keys[0]: self.send_action(ACTION_STOP_MOVING)
+        elif event[1] == self.control_keys[1]: self.send_action(ACTION_STOP_MOVING)
+        elif event[1] == self.control_keys[2]: self.send_action(ACTION_STOP_TURNING)
+        elif event[1] == self.control_keys[3]: self.send_action(ACTION_STOP_TURNING)
         
-    else:
-      if random.random() < 0.02: self.plan_action(Action(self, ACTION_MOVE_FORWARD))
-      if random.random() < 0.02: self.plan_action(Action(self, ACTION_MOVE_BACKWARD))
-      if random.random() < 0.02: self.plan_action(Action(self, ACTION_STOP_MOVING))
-      if random.random() < 0.02: self.plan_action(Action(self, ACTION_TURN_LEFT))
-      if random.random() < 0.02: self.plan_action(Action(self, ACTION_TURN_RIGHT))
-      if random.random() < 0.02: self.plan_action(Action(self, ACTION_STOP_TURNING))
-      if random.random() < 0.02: self.plan_action(Action(self, ACTION_JUMP))
-      
-    #if random.random() < 0.06: soya.MAIN_LOOP.stop()
-    
   def do_action(self, action):
     animation = ""
     if   action == ACTION_MOVE_FORWARD : self.speed.z = -0.35; animation = "marche"
@@ -197,37 +174,12 @@ class Mobile(tofu.SpeedInterpolatedMobile, tofu.AnimatedMobile):
   def do_physics(self):
     super(Mobile, self).do_physics()
     
-    center = soya.Point(self.next_state, 0.0, self.radius_y, 0.0)
-    context = self.level.RaypickContext(center, max(self.radius, 0.1 + self.radius_y))
-    
-    r = context.raypick(center, self.down, 0.1 + self.radius_y, 1, 1)
-    if r:
-      ground, ground_normal = r
-      ground.convert_to(self.level)
-      self.next_state.y = ground.y
-      if self.speed.y < 0.0: self.speed.y = 0.0
+    if    self.speed.y <  0.0: self.set_animation("chute")
+    elif (self.speed.y == 0.0) and (self.current_animation == "chute"):
+      if   self.speed.z < 0.0: self.set_animation("marche")
+      elif self.speed.z > 0.0: self.set_animation("recule")
+      else:                    self.set_animation("attente")
       
-      if self.current_animation == "chute":
-        if   self.speed.z < 0.0: self.set_animation("marche")
-        elif self.speed.z > 0.0: self.set_animation("recule")
-        else:                    self.set_animation("attente")
-     
-    else:
-      self.speed.y = max(self.speed.y - 0.03, -0.5)
-      self.set_animation("chute")
-        
-    for vec, half_line in [(self.left, 0), (self.front, 0), (self.up, 1)]:
-      r = context.raypick(center, vec, self.radius, half_line = half_line)
-      if r:
-        collision, wall_normal = r
-        hypo = vec.length() * self.radius - center.distance_to(collision)
-        correction = wall_normal * hypo
-        
-        self.next_state += correction
-        center          += correction
-        
-    self.set_current_state_importance(1)
-    
   def control_owned(self):
     super(Mobile, self).control_owned()
 
@@ -273,7 +225,6 @@ if (mode == "client"):
 if (mode == "client") or (mode == "single"):
   tofu.PLAYER_IDS = [tofu.PlayerID(login, "test") for login in logins]
   
-#main_loop = MainLoop(soya.World())
 main_loop = MainLoop()
 
 
