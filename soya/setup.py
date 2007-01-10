@@ -37,6 +37,7 @@ INCDIR = [
 	"/usr/local/include/cal3d",
 	"/sw/include", # For Mac OS X "fink"
 	"/opt/local/include", # For Mac OS X "darwin port"
+	"/opt/local/include/freetype2", # For Mac OS X "darwin port"
 	#"/System/Library/Frameworks/OpenAL.framework/Headers/",
 	]
 LIBDIR = [
