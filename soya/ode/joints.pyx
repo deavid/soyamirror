@@ -196,11 +196,15 @@ cdef class _Joint:
 			# getting the body ID
 			#for 1
 			if body1 is not None:
+				if body1._option & BODY_ODE_INVALIDE_POS:
+					body1._sync_ode_position()
 				bid1 = body1._OdeBodyID
 			else:
 				bid1 = NULL
 			#for 2
 			if body2 is not None:
+				if body2._option & BODY_ODE_INVALIDE_POS:
+					body2._sync_ode_position()
 				bid2 = body2._OdeBodyID
 			else:
 				bid2 = NULL
@@ -443,7 +447,7 @@ cdef class BallJoint(_Joint):
 		cdef dJointGroupID gid
 		if body1 is not None:
 			world = body1._ode_parent
-			if body2 is not None and body.ode_world is not world:
+			if body2 is not None and body2.ode_parent is not world:
 				raise RuntimeError("two body must be into the same world to be jointed")
 		elif body2 is not None:
 			world = body2._ode_parent
@@ -517,7 +521,7 @@ cdef class HingeJoint(_Joint):
 		cdef dJointGroupID gid
 		if body1 is not None:
 			world = body1._ode_parent
-			if body2 is not None and body.ode_world is not world:
+			if body2 is not None and body2.ode_parent is not world:
 				raise RuntimeError("two body must be into the same world to be jointed")
 		elif body2 is not None:
 			world = body2._ode_parent
@@ -665,7 +669,7 @@ cdef class SliderJoint(_Joint):
 		cdef dJointGroupID gid
 		if body1 is not None:
 			world = body1._ode_parent
-			if body2 is not None and body.ode_world is not world:
+			if body2 is not None and body2.ode_parent is not world:
 				raise RuntimeError("two body must be into the same world to be jointed")
 		elif body2 is not None:
 			world = body2._ode_parent
@@ -745,7 +749,7 @@ cdef class UniversalJoint(_Joint):
 		cdef dJointGroupID gid
 		if body1 is not None:
 			world = body1._ode_parent
-			if body2 is not None and body.ode_world is not world:
+			if body2 is not None and body2.ode_parent is not world:
 				raise RuntimeError("two body must be into the same world to be jointed")
 		elif body2 is not None:
 			world = body2._ode_parent
@@ -857,7 +861,7 @@ cdef class Hinge2Joint(_Joint):
 		cdef dJointGroupID gid
 		if body1 is not None:
 			world = body1._ode_parent
-			if body2 is not None and body.ode_world is not world:
+			if body2 is not None and body2.ode_parent is not world:
 				raise RuntimeError("two body must be into the same world to be jointed")
 		elif body2 is not None:
 			world = body2._ode_parent
@@ -872,8 +876,6 @@ cdef class Hinge2Joint(_Joint):
 		self.world = world
 		self.attach(body1, body2)
 
-	def attach(self, _Body body1, _Body body2):
-		Joint.attach(self, body1, body2)
 	property anchor:
 		"""setAnchor(pos)
 
@@ -885,7 +887,7 @@ cdef class Hinge2Joint(_Joint):
 		def __set__(self,_Point pos):
 			cdef float p[3]
 			pos._into(self.world, p)
-			dJointSetHinge2Anchor(self._OdeJointID, pos[0], pos[1], pos[2])
+			dJointSetHinge2Anchor(self._OdeJointID, pos.x, pos.y, pos.z)
 
 		def __get__(self):
 			cdef dVector3 p
@@ -1002,7 +1004,7 @@ cdef class FixedJoint(_Joint):
 		cdef dJointGroupID gid
 		if body1 is not None:
 			world = body1._ode_parent
-			if body2 is not None and body.ode_world is not world:
+			if body2 is not None and body2.ode_parent is not world:
 				raise RuntimeError("two body must be into the same world to be jointed")
 		elif body2 is not None:
 			world = body2._ode_parent
@@ -1048,7 +1050,7 @@ cdef class AngularMotor(_Joint):
 		cdef dJointGroupID gid
 		if body1 is not None:
 			world = body1._ode_parent
-			if body2 is not None and body.ode_world is not world:
+			if body2 is not None and body2.ode_parent is not world:
 				raise RuntimeError("two body must be into the same world to be jointed")
 		elif body2 is not None:
 			world = body2._ode_parent
