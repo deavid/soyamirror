@@ -94,15 +94,15 @@ cdef class GeomBox(_PrimitiveGeom):
 				"""
 				return dGeomBoxPointDepth(self._OdeGeomID, x, y, z)
 
-cdef class GeomCCylinder(_PrimitiveGeom):
-	"""Capped cylinder geometry.
+cdef class GeomCapsule(_PrimitiveGeom):
+	"""Capsule geometry.
 
-	This class represents a capped cylinder aligned along the local Z axis
-	and centered at the origin.
+	This class represents a capped cylinder (capsule) aligned
+	along the local Z axis and centered at the origin.
 
 	Constructor::
 	
-		GeomCCylinder(space=None, radius=0.5, length=1.0)
+		GeomCapsule(space=None, radius=0.5, length=1.0)
 
 	The length parameter does not include the caps.
 	"""
@@ -118,29 +118,29 @@ cdef class GeomCCylinder(_PrimitiveGeom):
 			else:
 					sid = NULL
 
-			self._OdeGeomID = dCreateCCylinder(sid, 1,1)
+			self._OdeGeomID = dCreateCapsule(sid, 1,1)
 		
 	property radius:
 		def __set__(self, radius):
-			dGeomCCylinderSetParams(self._OdeGeomID, radius, self.length)
+			dGeomCapsuleSetParams(self._OdeGeomID, radius, self.length)
 		def __get__(self):
 			cdef dReal radius, length
-			dGeomCCylinderGetParams(self._OdeGeomID, &radius, &length)
+			dGeomCapsuleGetParams(self._OdeGeomID, &radius, &length)
 			return radius
 	property length:
 		def __set__(self, length):
-			dGeomCCylinderSetParams(self._OdeGeomID, self.radius, length)
+			dGeomCapsuleSetParams(self._OdeGeomID, self.radius, length)
 		def __get__(self):
 			cdef dReal radius, length
-			dGeomCCylinderGetParams(self._OdeGeomID, &radius, &length)
+			dGeomCapsuleGetParams(self._OdeGeomID, &radius, &length)
 			return length
 	property params:
 		def __set__(self, params):
-			dGeomCCylinderSetParams(self._OdeGeomID, params[0], params[1])
+			dGeomCapsuleSetParams(self._OdeGeomID, params[0], params[1])
 
 		def __get__(self):
 			cdef dReal radius, length
-			dGeomCCylinderGetParams(self._OdeGeomID, &radius, &length)
+			dGeomCapsuleGetParams(self._OdeGeomID, &radius, &length)
 			return (radius, length)
 
 	cdef float _point_depth(self, float x, float y, float z):
@@ -154,56 +154,55 @@ cdef class GeomCCylinder(_PrimitiveGeom):
 		@param p: Point
 		@type p: 3-sequence of floats
 		"""
-		return dGeomCCylinderPointDepth(self._OdeGeomID, x, y, z)
-#cdef class GeomCylinder(_PlaceableGeom):
-	#"""Capped cylinder geometry.
-	#
-	#This class represents a capped cylinder aligned along the local Z axis
-	#and centered at the origin.
-	#
-	#Constructor::
-	#
-	#	GeomCylinder(space=None, radius=0.5, length=1.0)
-	#
-	#The length parameter does not include the caps.
-	#"""
-	#
-	#def __init__(self, _Body body, radius=0.5, length=1.0):
-	#	_PlaceableGeom.__init__(self,body)
-	#	self.params = radius,length
-	#	
-	#cdef _create(self):
-	#		cdef dSpaceID sid
-	#		if self._space is not None:
-	#				sid = <dSpaceID>self._space._OdeGeomID
-	#		else:
-	#				sid = NULL
-	#
-	#		self._OdeGeomID = dCreateCCylinder(sid, 1,1)
-	#
-	#property radius:
-	#	def __set__(self, radius):
-	#		dGeomCylinderSetParams(self._OdeGeomID, radius, self.length)
-	#	def __get__(self):
-	#		cdef dReal radius, length
-	#		dGeomCylinderGetParams(self._OdeGeomID, &radius, &length)
-	#		return radius
-	#property length:
-	#	def __set__(self, length):
-	#		dGeomCylinderSetParams(self._OdeGeomID, self.radius, length)
-	#	def __get__(self):
-	#		cdef dReal radius, length
-	#		dGeomCylinderGetParams(self._OdeGeomID, &radius, &length)
-	#		return length
-	#property params:
-	#	def __set__(self, params):
-	#		dGeomCylinderSetParams(self._OdeGeomID, params[0], params[1])
-	#
-	#	def __get__(self):
-	#		cdef dReal radius, length
-	#		dGeomCylinderGetParams(self._OdeGeomID, &radius, &length)
-	#		return (radius, length)
-	#
+		return dGeomCapsulePointDepth(self._OdeGeomID, x, y, z)
+
+cdef class GeomCylinder(_PrimitiveGeom):
+	"""Cylinder geometry.
+	
+	This class represents a cylinder aligned along the local Z axis
+	and centered at the origin.
+	
+	Constructor::
+	
+		GeomCylinder(space=None, radius=0.5, length=1.0)
+	"""
+	
+	def __init__(self, _Body body, radius=0.5, length=1.0):
+		_PlaceableGeom.__init__(self,body)
+		self.params = radius,length
+		
+	cdef _create(self):
+			cdef dSpaceID sid
+			if self._space is not None:
+					sid = <dSpaceID>self._space._OdeGeomID
+			else:
+					sid = NULL
+	
+			self._OdeGeomID = dCreateCylinder(sid, 1,1)
+	
+	property radius:
+		def __set__(self, radius):
+			dGeomCylinderSetParams(self._OdeGeomID, radius, self.length)
+		def __get__(self):
+			cdef dReal radius, length
+			dGeomCylinderGetParams(self._OdeGeomID, &radius, &length)
+			return radius
+	property length:
+		def __set__(self, length):
+			dGeomCylinderSetParams(self._OdeGeomID, self.radius, length)
+		def __get__(self):
+			cdef dReal radius, length
+			dGeomCylinderGetParams(self._OdeGeomID, &radius, &length)
+			return length
+	property params:
+		def __set__(self, params):
+			dGeomCylinderSetParams(self._OdeGeomID, params[0], params[1])
+	
+		def __get__(self):
+			cdef dReal radius, length
+			dGeomCylinderGetParams(self._OdeGeomID, &radius, &length)
+			return (radius, length)
+	
 	#cdef float _point_depth(self, float x, float y, float z):
 	#	"""pointDepth(p) -> float
 	#

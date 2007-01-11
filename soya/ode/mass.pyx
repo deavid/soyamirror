@@ -175,10 +175,10 @@ cdef class _Mass: # XXX make total for all XXX make class method for all
 		"""
 		dMassSetSphereTotal(&self._mass, total_mass, radius)
 
-	def set_capped_cylinder(self, float density, direction, float r, float h):
-		"""setCappedCylinder(density, direction, r, h)
+	def set_capsule(self, float density, direction, float r, float h):
+		"""setCapsule(density, direction, r, h)
 		
-		Set the mass parameters to represent a capped cylinder of the
+		Set the mass parameters to represent a capsule of the
 		given parameters and density, with the center of mass at
 		(0,0,0) relative to the body. The radius of the cylinder (and
 		the spherical cap) is r. The length of the cylinder (not
@@ -195,12 +195,12 @@ cdef class _Mass: # XXX make total for all XXX make class method for all
 		@type r: float
 		@type h: float
 		"""
-		dMassSetCappedCylinder(&self._mass, density, direction, r, h)
+		dMassSetCapsule(&self._mass, density, direction, r, h)
 		
-	def set_capped_cylinder_total(self, float total_mass, direction, float r, float h):
-		"""setCappedCylinderToal(total_mass, direction, r, h)
+	def set_capsule_total(self, float total_mass, direction, float r, float h):
+		"""setCapsuleTotal(total_mass, direction, r, h)
 		
-		Set the mass parameters to represent a capped cylinder of the
+		Set the mass parameters to represent a capsule of the
 		given parameters and mass, with the center of mass at
 		(0,0,0) relative to the body. The radius of the cylinder (and
 		the spherical cap) is r. The length of the cylinder (not
@@ -217,7 +217,7 @@ cdef class _Mass: # XXX make total for all XXX make class method for all
 		@type r: float
 		@type h: float
 		"""
-		dMassSetCappedCylinderTotal(&self._mass, total_mass, direction, r, h)
+		dMassSetCapsuleTotal(&self._mass, total_mass, direction, r, h)
 
 	def set_cylinder(self, float density, direction, float r, float h):
 		"""setCylinder(density, direction, r, h)
@@ -364,9 +364,9 @@ cdef class _Mass: # XXX make total for all XXX make class method for all
 
 # Speudo class
 
-def CappedCylindricalMass(value, direction, r, h,mode="density"):
+def CapsuleMass(value, direction, r, h,mode="density"):
 	"""
-	Create a Mass representing a capped cylinder of the
+	Create a Mass representing a capsule of the
 	given parameters, with the center of mass at
 	(0,0,0) relative to the body. The radius of the cylinder (and
 	the spherical cap) is r. The length of the cylinder (not
@@ -386,11 +386,11 @@ def CappedCylindricalMass(value, direction, r, h,mode="density"):
 	"""
 	sph = Mass()
 	if mode == "density":
-		sph.set_capped_cylinder(value, r)
+		sph.set_capsule(value, r)
 	elif mode == "total_mass":
-		sph.set_capped_cylinderTotal(value, r)
+		sph.set_capsuleTotal(value, r)
 	else:
-		raise ValueError("Unsupported CappedCylindricalMass Mode : %s"%mode)
+		raise ValueError("Unsupported CapsuleMass Mode : %s"%mode)
 	return sph
 	
 def CylindricalMass(value, direction, r, h,mode="density"):

@@ -79,7 +79,7 @@ cdef class _TriMesh(GeomObject):
 cdef class _GeomModel(_TriMesh):
 		"""Model collider for Soya.
 
-		Models can collide with primitives (box, sphere, capped cylinder, ray),
+		Models can collide with primitives (box, sphere, capsule, ray),
 		but not with other models or with terrains.
 
 		The axis-aligned bounding box (AABB) is calculated from the bounding

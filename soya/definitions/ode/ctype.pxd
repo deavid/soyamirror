@@ -94,8 +94,8 @@ cdef extern from "ode/ode.h":
 		cdef enum:
 				dSphereClass = 0
 				dBoxClass,
-				dCCylinderClass,
-				#dCylinderClass,
+				dCapsuleClass,
+				dCylinderClass,
 				dPlaneClass,
 				dRayClass,
 				dGeomTransformClass,
@@ -305,9 +305,9 @@ cdef extern from "ode/ode.h":
 						 dReal I12, dReal I13, dReal I23)
 		cdef void dMassSetSphere (dMass *, dReal density, dReal radius)
 		cdef void dMassSetSphereTotal (dMass *, dReal total_mass, dReal radius)
-		void dMassSetCappedCylinder (dMass *, dReal density, int direction,
+		void dMassSetCapsule (dMass *, dReal density, int direction,
 								 dReal a, dReal b)
-		void dMassSetCappedCylinderTotal(dMass *, dReal total_mass, int direction,
+		void dMassSetCapsuleTotal(dMass *, dReal total_mass, int direction,
 								 dReal a, dReal b)
 		void dMassSetCylinder (dMass *, dReal density, int direction,
 					dReal radius, dReal length)
@@ -351,28 +351,28 @@ cdef extern from "ode/ode.h":
 		dGeomID dCreateSphere (dSpaceID space, dReal radius)
 		dGeomID dCreateBox (dSpaceID space, dReal lx, dReal ly, dReal lz)
 		dGeomID dCreatePlane (dSpaceID space, dReal a, dReal b, dReal c, dReal d)
-		dGeomID dCreateCCylinder (dSpaceID space, dReal radius, dReal length)
-		#dGeomID dCreateCylinder (dSpaceID space, dReal radius, dReal length)
+		dGeomID dCreateCapsule (dSpaceID space, dReal radius, dReal length)
+		dGeomID dCreateCylinder (dSpaceID space, dReal radius, dReal length)
 		dGeomID dCreateGeomGroup (dSpaceID space)
 
 		void dGeomSphereSetRadius (dGeomID sphere, dReal radius)
 		void dGeomBoxSetLengths (dGeomID box, dReal lx, dReal ly, dReal lz)
 		void dGeomPlaneSetParams (dGeomID plane, dReal a, dReal b, dReal c, dReal d)
-		void dGeomCCylinderSetParams (dGeomID ccylinder, dReal radius, dReal length)
-		#void dGeomCylinderSetParams (dGeomID ccylinder, dReal radius, dReal length)
+		void dGeomCapsuleSetParams (dGeomID ccylinder, dReal radius, dReal length)
+		void dGeomCylinderSetParams (dGeomID ccylinder, dReal radius, dReal length)
 
 
 		dReal dGeomSphereGetRadius (dGeomID sphere)
 		void  dGeomBoxGetLengths (dGeomID box, dVector3 result)
 		void  dGeomPlaneGetParams (dGeomID plane, dVector4 result)
-		void  dGeomCCylinderGetParams (dGeomID ccylinder, dReal *radius, dReal *length)
-		#void  dGeomCylinderGetParams (dGeomID ccylinder, dReal *radius, dReal *length)
+		void  dGeomCapsuleGetParams (dGeomID ccylinder, dReal *radius, dReal *length)
+		void  dGeomCylinderGetParams (dGeomID ccylinder, dReal *radius, dReal *length)
 
 		
 		dReal dGeomSpherePointDepth (dGeomID sphere, dReal x, dReal y, dReal z)
 		dReal dGeomBoxPointDepth (dGeomID box, dReal x, dReal y, dReal z)
 		dReal dGeomPlanePointDepth (dGeomID plane, dReal x, dReal y, dReal z)
-		dReal dGeomCCylinderPointDepth (dGeomID ccylinder, dReal x, dReal y, dReal z)
+		dReal dGeomCapsulePointDepth (dGeomID ccylinder, dReal x, dReal y, dReal z)
 		#dReal dGeomCylinderPointDepth (dGeomID ccylinder, dReal x, dReal y, dReal z)
 
 		dGeomID dCreateRay (dSpaceID space, dReal length)
