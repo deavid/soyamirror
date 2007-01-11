@@ -18,7 +18,7 @@
 import sys, os.path, time, weakref, struct, socket, select
 from cStringIO import StringIO
 import cerealizer, soya
-from tofu_udp.sides import *
+from soya.tofu.sides import *
 
 VERSION = "0.1"
 
