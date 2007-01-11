@@ -311,7 +311,7 @@ cdef class _Mass: # XXX make total for all XXX make class method for all
 #		@param newmass: The new total mass
 #		@type newmass: float
 #		"""
-		dMassAdjust(&self._mass, newmass)
+#		dMassAdjust(&self._mass, newmass)
 
 	def translate(self, t): #Make it more soya by supporting soya's vector   ???
 						   #Since Mass don't have nor parent coordsyst nor body
