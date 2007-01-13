@@ -123,7 +123,7 @@ def _fontwalk_darwin(fonts, path, files):
 	 for font in files:
 		 if font[-4:].lower() != '.ttf':
 			 continue
-		 name = font[:-4]
+		 name = font[:-4].lower()
 		 font = os.path.join( path, font )
 		 bold = 0
 		 italic = 0
