@@ -1051,7 +1051,7 @@ class Mobile(soya.World, Unique):
     for client in self.level.get_clients(): client.sock.write(msg)
     self.do_message(s)
     
-  def do_message(self, s): raise NotImplementedError("You must override this method if you want to send message to this object!") 
+  def do_message(self, s): raise NotImplementedError("You must override this method if you want to send message to this object!")
   
 
 class SpeedInterpolatedMobile(Mobile):

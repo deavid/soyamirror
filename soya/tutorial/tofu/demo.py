@@ -223,7 +223,7 @@ if (mode == "client"):
   logins = sys.argv[3:]
 
 if (mode == "client") or (mode == "single"):
-  tofu.PLAYER_IDS = [tofu.PlayerID(login, "test") for login in logins]
+  tofu.PLAYER_IDS = [PlayerID(login, "test") for login in logins]
   
 main_loop = MainLoop()
 
