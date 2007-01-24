@@ -1167,25 +1167,33 @@ class RaypickCollidedMobile(Mobile):
     self.left   = soya.Vector(self, -1.0,  0.0,  0.0)
     self.up     = soya.Vector(self,  0.0,  1.0,  0.0)
     self.front  = soya.Vector(self,  0.0,  0.0, -1.0)
+    self.raypick_dirs = [(self.left, 0), (self.front, 0), (self.up, 0)]
+    self.center = soya.Point(self, 0.0, self.radius_y, 0.0)
     
   def do_physics(self):
     super(RaypickCollidedMobile, self).do_physics()
     
-    center = soya.Point(self.next_state, 0.0, self.radius_y, 0.0)
-    context = self.level.RaypickContext(center, max(self.radius, 0.1 + self.radius_y))
+    self.center.__init__(self.next_state, 0.0, self.radius_y, 0.0)
+    context = self.level.RaypickContext(self.center, max(self.radius, 0.1 + self.radius_y))
     
-    for vec, half_line in [(self.left, 0), (self.front, 0), (self.up, 0)]:
-      r = context.raypick(center, vec, self.radius, half_line = half_line)
+    for vec, half_line in self.raypick_dirs:
+      r = context.raypick(self.center, vec, self.radius, half_line = half_line)
       if r:
         collision, wall_normal = r
-        hypo = vec.length() * self.radius - center.distance_to(collision)
-        wall_normal.__imul__(hypo)
+        #hypo = vec.length() * self.radius - self.center.distance_to(collision)
+        #wall_normal.__imul__(hypo)
+        correction = self.collide_wall(self.center, vec, collision, wall_normal)
         
-        self.next_state += wall_normal
-        center          += wall_normal
+        self.next_state += correction
+        self.center     += correction
         
     self.set_current_state_importance(1)
 
+  def collide_wall(self, center, vec, collision, wall_normal):
+    hypo = vec.length() * self.radius - center.distance_to(collision)
+    wall_normal.__imul__(hypo)
+    return wall_normal
+    
   
 # XXX optimize this one (by re-using Point and Vector,...)
 class RaypickCollidedMobileWithGravity(Mobile):
@@ -1203,14 +1211,16 @@ class RaypickCollidedMobileWithGravity(Mobile):
     self.down   = soya.Vector(self,  0.0, -1.0,  0.0)
     self.up     = soya.Vector(self,  0.0,  1.0,  0.0)
     self.front  = soya.Vector(self,  0.0,  0.0, -1.0)
+    self.raypick_dirs = [(self.left, 0), (self.front, 0), (self.up, 1)]
+    self.center = soya.Point(self, 0.0, self.radius_y, 0.0)
     
   def do_physics(self):
     super(RaypickCollidedMobileWithGravity, self).do_physics()
     
-    center = soya.Point(self.next_state, 0.0, self.radius_y, 0.0)
-    context = self.level.RaypickContext(center, max(self.radius, 0.1 + self.radius_y))
+    self.center.__init__(self.next_state, 0.0, self.radius_y, 0.0)
+    context = self.level.RaypickContext(self.center, max(self.radius, 0.1 + self.radius_y))
     
-    r = context.raypick(center, self.down, 0.1 + self.radius_y, 1, 1)
+    r = context.raypick(self.center, self.down, 0.1 + self.radius_y, 1, 1)
     if r:
       ground, ground_normal = r
       ground.convert_to(self.level)
@@ -1220,15 +1230,21 @@ class RaypickCollidedMobileWithGravity(Mobile):
     else:
       self.speed.y = max(self.speed.y + self.gravity, -self.max_y_speed)
       
-    for vec, half_line in [(self.left, 0), (self.front, 0), (self.up, 1)]:
-      r = context.raypick(center, vec, self.radius, half_line = half_line)
+    for vec, half_line in self.raypick_dirs:
+      r = context.raypick(self.center, vec, self.radius, half_line = half_line)
       if r:
         collision, wall_normal = r
-        hypo = vec.length() * self.radius - center.distance_to(collision)
-        wall_normal.__imul__(hypo)
-        #correction = wall_normal * hypo
+        #hypo = vec.length() * self.radius - self.center.distance_to(collision)
+        #wall_normal.__imul__(hypo)
+        correction = self.collide_wall(self.center, vec, collision, wall_normal)
         
-        self.next_state += wall_normal
-        center          += wall_normal
+        self.next_state += correction
+        self.center     += correction
         
     self.set_current_state_importance(1)
+    
+  def collide_wall(self, center, vec, collision, wall_normal):
+    hypo = vec.length() * self.radius - center.distance_to(collision)
+    wall_normal.__imul__(hypo)
+    return wall_normal
+
