@@ -359,7 +359,8 @@ cdef class _AnimatedModel(_Model):
 			
 			# For outline
 			if (self._option & CAL3D_CELL_SHADING) and (self._outline_width > 0.0):
-				renderer._batch(renderer.secondpass, self, body, -1)
+				#renderer._batch(renderer.secondpass, self, body, -1)
+				if not self._option & CAL3D_ALPHA: renderer._batch(renderer.alpha, self, body, -1)
 				
 				
 	cdef void _render(self, _Body body):
@@ -378,7 +379,8 @@ cdef class _AnimatedModel(_Model):
 		ptrf   = data._coords
 		ptrn   = data._vnormals
 		
-		if renderer.state == RENDERER_STATE_SECONDPASS:
+		#if renderer.state == RENDERER_STATE_SECONDPASS:
+		if renderer.state == RENDERER_STATE_ALPHA:
 			if data._face_plane_ok <= 0: data._build_face_planes()
 			
 			frustum = renderer._frustum(body)
@@ -570,6 +572,10 @@ cdef class _AnimatedModel(_Model):
 		glDisable  (GL_LIGHTING)
 		glDepthFunc(GL_LEQUAL)
 		
+		glEnable   (GL_LINE_SMOOTH)
+		glPolygonOffset(2.0, 2.0)
+		glEnable   (GL_POLYGON_OFFSET_LINE)
+		
 		# mark faces as either front or back
 		for i from 0 <= i < submesh._nb_faces:
 			if plane[0] * frustum.position[0] + plane[1] * frustum.position[1] + plane[2] * frustum.position[2] + plane[3] > 0.0:
@@ -631,6 +637,8 @@ cdef class _AnimatedModel(_Model):
 		glEnable   (GL_LIGHTING)
 		glDepthFunc(GL_LESS)
 		glColor4fv (white)
+		
+		glDisable   (GL_POLYGON_OFFSET_LINE)
 
 
 
