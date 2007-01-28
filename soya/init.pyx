@@ -171,6 +171,7 @@ cdef void init_gl():
 cdef void base_init():
 	global renderer
 	#srand (1);
+	clist_init()
 	renderer = Renderer()
 	#terrain_tri_recycler = P3_list_new(20)
 	#chunks = P3_list_new(2)
@@ -202,6 +203,8 @@ cdef void base_quit():
 	
 	free(JOYSTICKS)
 	renderer.engine_option = renderer.engine_option & ~INITED
+	#print "clist dealloc"
+	#clist_dealloc()
 
 cdef void init_joysticks():
 	cdef int i
@@ -368,7 +371,7 @@ def quit():
 def set_use_unicode(state):
 	"""when set, process_event will return a 4 part tuple for a keydown event.
 	the fourth part contains the unicode symbol for the key.
-	usefull for getting CAPITALS and !£$% etc in text boxes for example """
+	usefull for getting CAPITALS and !$% etc in text boxes for example """
 	global SDL_UNICODE
 
 	if state:

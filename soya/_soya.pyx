@@ -21,6 +21,7 @@
 
 # Still in C :-(
 #include "chunk.pxd"
+include "list.pyx"
 
 # Pyrex base module
 include "base.pyx"

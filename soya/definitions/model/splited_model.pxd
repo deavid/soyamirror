@@ -17,13 +17,14 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 cdef struct _ModelPart:
-	int     nb_faces
-	int*    faces
+	int  nb_face_groups
+	int* face_groups
 
 cdef class _SplitedModel(_SimpleModel):
-	cdef _ModelPart* _model_parts
+	cdef Chunk**     _face_groups
 	cdef int         _nb_face_groups
-	cdef char*       _batched_faces
+	cdef _ModelPart* _model_parts
+	cdef int         _nb_parts
 	cdef object      _face2index
 	
 	cdef      __getcstate__(self)

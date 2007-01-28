@@ -868,8 +868,8 @@ and if the angle between their 2 faces is < ANGLE."""
 			sphere_by_matrix_copy(sphere, self._sphere, body._root_matrix())
 			if sphere_in_frustum(renderer.root_frustum, sphere) == 0: return
 		
-		if self._display_lists.nb_opaque_list != 0: renderer._batch(renderer.opaque, self, body, -1)
-		if self._display_lists.nb_alpha_list  != 0: renderer._batch(renderer.alpha , self, body, -1)
+		if self._display_lists.nb_opaque_list != 0: renderer._batch(renderer.opaque, self, body, NULL)
+		if self._display_lists.nb_alpha_list  != 0: renderer._batch(renderer.alpha , self, body, NULL)
 		
 	# Not used by _SimpleModel, but by subclasses (like _TreeModel or _CellShadingModel)
 	cdef void _batch_face(self, ModelFace* face):
@@ -888,10 +888,10 @@ and if the angle between their 2 faces is < ANGLE."""
 					(self._vertex_options[face.v[2]] & P3_VERTEX_ALPHA) or
 					((face.option & FACE_QUAD) and (self._vertex_options[face.v[3]] & VERTEX_ALPHA))):
 				
-				pack_batch_face(pack_get_alpha(face.pack), face)
+				pack_batch_face(pack_get_alpha(face.pack), face, 0)
 				return
 			
-		pack_batch_face(face.pack, face)
+		pack_batch_face(face.pack, face, 0)
 		
 	cdef void _render(self, _Body body):
 		cdef DisplayList*  display_list

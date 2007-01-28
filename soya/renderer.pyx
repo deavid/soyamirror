@@ -75,24 +75,35 @@ cdef class Renderer:
 		self.portals       = []
 		self.contexts      = []
 
-		self.opaque        = get_chunk()
-		self.secondpass    = get_chunk()
-		self.alpha         = get_chunk()
-		self.specials      = get_chunk()
+		self.opaque        = get_clist()
+		self.secondpass    = get_clist()
+		self.alpha         = get_clist()
+		self.specials      = get_clist()
 		
-		self.data                  = get_chunk()
+		self.data                  = get_clist()
 		self.frustums              = get_chunk()
-		self.used_opaque_packs     = get_chunk()
-		self.used_secondpass_packs = get_chunk()
-		self.used_alpha_packs      = get_chunk()
+		self.used_opaque_packs     = get_clist()
+		self.used_secondpass_packs = get_clist()
+		self.used_alpha_packs      = get_clist()
 		
 		self.current_material = _DEFAULT_MATERIAL
 		
 	def __dealloc__(self):
+		pass
+		"""
+		print "renderer dealloc"
 		free(self.root_frustum)
-		chunk_dealloc(self.data)
+		drop_clist(self.data)
+		drop_clist(self.opaque)
+		drop_clist(self.secondpass)
+		drop_clist(self.alpha)
+		drop_clist(self.specials)
+		drop_clist(self.used_opaque_packs)
+		drop_clist(self.used_secondpass_packs)
+		drop_clist(self.used_alpha_packs)
 		chunk_dealloc(self.frustums)
-		
+		"""
+	
 	cdef Frustum* _frustum(self, CoordSyst coordsyst):
 		if coordsyst is None: return self.root_frustum
 		if coordsyst._frustum_id == -1:
@@ -152,19 +163,19 @@ cdef class Renderer:
 		self.top_lights .__imul__(0)
 		self.worlds_made.__imul__(0)
 		self.portals    .__imul__(0)
-		self.opaque     .nb = 0
-		self.secondpass .nb = 0
-		self.alpha      .nb = 0
-		self.specials   .nb = 0
-		self.data       .nb = 0
+		clist_flush(self.opaque)
+		clist_flush(self.secondpass)
+		clist_flush(self.alpha)
+		clist_flush(self.specials)
+		clist_flush(self.data)
 		self.delta_time = 0.0
 		
-	cdef void _batch(self, Chunk* list, obj, CoordSyst coordsyst, int data):
-		chunk_add_ptr(list, <void*> obj)
-		chunk_add_ptr(list, <void*> coordsyst)
-		chunk_add_ptr(list, <void*> renderer.current_context)
-		chunk_add_int(list, data)
-		
+	cdef void _batch(self, CList* list, obj, CoordSyst coordsyst, CListHandle* data):
+		clist_add(list, <void*> obj)
+		clist_add(list, <void*> coordsyst)
+		clist_add(list, <void*> renderer.current_context)
+		clist_add(list, <void*> data)
+	
 	cdef void _render(self):
 		cdef Context ctxt
 		cdef _Portal portal
@@ -233,19 +244,22 @@ cdef class Renderer:
 		
 		#drop_chunk(self.frustums)
 		
-	cdef void _render_list(self, Chunk* list):
-		cdef CoordSyst coordsyst
-		cdef Context   context
-		cdef int       i, nb
-		cdef _CObj     obj
+	cdef void _render_list(self, CList* list):
+		cdef CoordSyst    coordsyst
+		cdef Context      context
+		cdef CListHandle* handle
+		cdef int          i, nb
+		cdef _CObj        obj
 		
-		nb = list.nb
-		list.nb = 0
-		while list.nb < nb:
-			obj          = <_CObj>     chunk_get_ptr(list)
-			coordsyst    = <CoordSyst> chunk_get_ptr(list)
-			context      = <Context>   chunk_get_ptr(list)
-			self.data.nb =             chunk_get_int(list)
+		handle = list.begin
+		while handle:
+			obj               = <_CObj>        handle.data
+			handle            =                handle.next
+			coordsyst         = <CoordSyst>    handle.data
+			handle            =                handle.next
+			context           = <Context>      handle.data
+			handle            =                handle.next
+			self.current_data = <CListHandle*> handle.data
 			
 			# context
 			if not context is self.current_context:
@@ -263,6 +277,8 @@ cdef class Renderer:
 			
 			if (not coordsyst is None) and (coordsyst._render_matrix[17] != 1.0): glDisable(GL_NORMALIZE)
 			
+			handle = handle.next
+	
 	cdef void _clear_screen(self, float* color):
 		cdef int* size
 		if (self.current_camera._option & CAMERA_PARTIAL):

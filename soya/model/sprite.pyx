@@ -96,9 +96,9 @@ cdef class _Sprite(CoordSyst):
 	cdef void _batch(self, CoordSyst coordsyst):
 		if self._option & HIDDEN: return
 		if self._option & SPRITE_RECEIVE_SHADOW:
-			if self.option & SPRITE_ALPHA: renderer._batch(renderer.alpha,    self, None, -1)
-			else:                          renderer._batch(renderer.opaque,   self, None, -1)
-		else:                            renderer._batch(renderer.specials, self, None, -1)
+			if self.option & SPRITE_ALPHA: renderer._batch(renderer.alpha,    self, None, NULL)
+			else:                          renderer._batch(renderer.opaque,   self, None, NULL)
+		else:                            renderer._batch(renderer.specials, self, None, NULL)
 		
 	cdef void _render(self, CoordSyst coordsyst):
 		cdef float* a, *b
@@ -284,7 +284,7 @@ cdef class _Bonus(CoordSyst):
 			if self._angle >= 360.0: self._angle = self._angle - 360.0
 		multiply_matrix(self._render_matrix, coordsyst._render_matrix, self._matrix)
 		self._frustum_id = -1
-		renderer._batch(renderer.alpha, self, self, -1)
+		renderer._batch(renderer.alpha, self, self, NULL)
 		
 	cdef void _render(self, CoordSyst coordsyst):
 		cdef float* m

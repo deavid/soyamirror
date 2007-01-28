@@ -1059,9 +1059,9 @@ You should override the batch and render methods.
 		#else:
 		#  memcpy(self._render_matrix, coordsyst._render_matrix, sizeof(self._render_matrix))
 			
-		if   result == 1: renderer._batch(renderer.opaque,     self, coordsyst, -1)
-		elif result == 2: renderer._batch(renderer.alpha,      self, coordsyst, -1)
-		elif result == 3: renderer._batch(renderer.secondpass, self, coordsyst, -1)
+		if   result == 1: renderer._batch(renderer.opaque,     self, coordsyst, NULL)
+		elif result == 2: renderer._batch(renderer.alpha,      self, coordsyst, NULL)
+		elif result == 3: renderer._batch(renderer.secondpass, self, coordsyst, NULL)
 		
 	cdef void _render(self, CoordSyst coordsyst):
 		self.render()

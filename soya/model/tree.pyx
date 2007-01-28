@@ -327,31 +327,34 @@ cdef class _TreeModel(_SimpleModel):
 	cdef void _render(self, _Body instance):
 		cdef Pack*      pack
 		cdef ModelFace* face
+		cdef CListHandle* handle
 		
 		model_option_activate(self._option)
 		
-		pack = <Pack*> chunk_get_ptr(renderer.data)
+		handle = renderer.current_data
+		pack   = <Pack*> handle.data
+		handle = handle.next
 		while pack:
 			(<_Material> (pack.material_id))._activate()
 			face_option_activate(pack.option)
-
-			face = <ModelFace*> chunk_get_ptr(renderer.data)
+			face   = <ModelFace*> handle.data
+			handle = handle.next
 			if   pack.option & FACE_TRIANGLE:
 				glBegin(GL_TRIANGLES)
 				while face:
 					self._render_triangle(face)
-					face = <ModelFace*> chunk_get_ptr(renderer.data)
-
+					face   = <ModelFace*> handle.data
+					handle = handle.next
 			elif pack.option & FACE_QUAD:
 				glBegin(GL_QUADS)
 				while face:
 					self._render_quad(face)
-					face = <ModelFace*> chunk_get_ptr(renderer.data)
-
+					face   = <ModelFace*> handle.data
+					handle = handle.next
 			glEnd()
 			face_option_inactivate(pack.option)
-			pack = <Pack*> chunk_get_ptr(renderer.data)
-				
+			pack   = <Pack*> handle.data
+			handle = handle.next
 		model_option_inactivate(self._option)
 		
 	cdef void _raypick(self, RaypickData data, CoordSyst parent):

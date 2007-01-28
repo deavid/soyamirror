@@ -23,6 +23,7 @@ cdef class _Material(_CObj)
 cdef class _Model(_CObj)
 cdef class _SimpleModel(_Model)
 cdef class _CellShadingModel(_SimpleModel)
+cdef class _SplitedModel(_SimpleModel)
 cdef class _TreeModel(_SimpleModel)
 cdef class _ModelData(_Model)
 cdef class _AnimatedModelData(_ModelData)
@@ -262,11 +263,11 @@ ctypedef struct Frustum:
 	float planes  [24] # planes equation : (a,b,c,d) * 6
 
 cdef struct _Pack: # See material.pyx for doc and comments
-	int      option
-	intptr_t material_id # it is a pointer - should be long not to fail on AMD64
-	_Pack*   alpha
-	_Pack*   secondpass
-	Chunk*   batched_faces
+	int       option
+	intptr_t  material_id # it is a pointer - should be long not to fail on AMD64
+	_Pack*    alpha
+	_Pack*    secondpass
+	CList*    batched_faces
 
 ctypedef _Pack Pack
 

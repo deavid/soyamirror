@@ -258,7 +258,7 @@ cdef class _Particles(CoordSyst):
 		
 		self._advance(self._delta_time)
 		if not self._parent is None: # Else, _advance has removed the Particles system.
-			renderer._batch(renderer.alpha,    self, coordsyst, -1)
+			renderer._batch(renderer.alpha,    self, coordsyst, NULL)
 		self._delta_time = 0.0
 		
 		#if self._option & SPRITE_RECEIVE_SHADOW:

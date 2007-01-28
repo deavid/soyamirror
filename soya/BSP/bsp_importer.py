@@ -25,9 +25,11 @@ from struct import *
 from math import *
 import sys, os, os.path
 import soya
+import soya.widget as widget
 
 SCALE_FACTOR = 0.1
 TESSELATE_LEVEL = 5
+SPEED = 10.
 
 BSP_ENTITIES_LUMP     = 0
 BSP_TEXTURES_LUMP     = 1
@@ -97,6 +99,7 @@ class Q3BSPPlane(Q3BSPObject):
 		self.b =  data[2]
 		self.c = -data[1]
 		self.d =  data[3]
+		self.normal = soya.Vector(None, self.a, self.b, self.c)
 
 class Q3BSPNode(Q3BSPObject):
 	format = "<9i"
@@ -104,11 +107,11 @@ class Q3BSPNode(Q3BSPObject):
 	entry = 3
 	
 	def __init__(self, data):
-		self.plane       = data[0]
-		self.front = data[1]
-		self.back  = data[2]
-		self.box_min     = data[3:6]
-		self.box_max     = data[6:9]
+		self.plane   = data[0]
+		self.front   = data[1]
+		self.back    = data[2]
+		self.box_min = data[3:6]
+		self.box_max = data[6:9]
 
 class Q3BSPLeaf(Q3BSPObject):
 	format = "<12i"
@@ -135,6 +138,8 @@ class Q3BSPLeaf(Q3BSPObject):
 		self.nb_leaf_face     =  data[9]
 		self.leaf_brush_start =  data[10]
 		self.nb_leaf_brush    =  data[11]
+		self.brush_indices    =  []
+		self.model_part       = -1
 
 class Q3BSPLeafFace(Q3BSPObject):
 	format = "<i"
@@ -178,6 +183,7 @@ class Q3BSPBrush(Q3BSPObject):
 		self.brush_side_start = data[0]
 		self.nb_brush_side    = data[1]
 		self.texture          = data[2]
+		self.plane_indices    = []
 
 class Q3BSPBrushSide(Q3BSPObject):
 	format = "<2i"
@@ -252,38 +258,39 @@ class Q3BSPEffect(Q3BSPObject):
 		self.brush  = data[1]
 		self.unknow = data[2]
 
-class Q3BSPFace(Q3BSPObject):
+class Q3BSPFaceGroup(Q3BSPObject):
 	format = "<12i12f2i"
 	size = calcsize(format)
 	entry = 13
 	
 	def __init__(self, data):
-		self.texture           = data[0]
-		self.effect            = data[1]
-		self.face_type         = data[2]
-		self.vertex_start      = data[3]
-		self.nb_vertex         = data[4]
-		self.indices_start     = data[5]
-		self.nb_indices        = data[6]
-		self.lightmap          = data[7]
-		self.lightmap_x        = data[8]
-		self.lightmap_y        = data[9]
-		self.lightmap_size_x   = data[10]
-		self.lightmap_size_y   = data[11]
-		self.lightmap_origin_x = data[12]
-		self.lightmap_origin_y = data[13]
-		self.lightmap_origin_z = data[14]
-		self.lightmap_vect_s_x = data[15]
-		self.lightmap_vect_s_y = data[16]
-		self.lightmap_vect_s_z = data[17]
-		self.lightmap_vect_t_x = data[18]
-		self.lightmap_vect_t_y = data[19]
-		self.lightmap_vect_t_z = data[20]
-		self.normal_x          = data[21]
-		self.normal_y          = data[22]
-		self.normal_z          = data[23]
-		self.patch_size_x      = data[24]
-		self.patch_size_y      = data[25]
+		self.texture           =  data[0]
+		self.effect            =  data[1]
+		self.face_type         =  data[2]
+		self.vertex_start      =  data[3]
+		self.nb_vertex         =  data[4]
+		self.indices_start     =  data[5]
+		self.nb_indices        =  data[6]
+		self.lightmap          =  data[7]
+		self.lightmap_x        =  data[8]
+		self.lightmap_y        =  data[9]
+		self.lightmap_size_x   =  data[10]
+		self.lightmap_size_y   =  data[11]
+		self.lightmap_origin_x =  data[12]
+		self.lightmap_origin_y =  data[13]
+		self.lightmap_origin_z =  data[14]
+		self.lightmap_vect_s_x =  data[15]
+		self.lightmap_vect_s_y =  data[16]
+		self.lightmap_vect_s_z =  data[17]
+		self.lightmap_vect_t_x =  data[18]
+		self.lightmap_vect_t_y =  data[19]
+		self.lightmap_vect_t_z =  data[20]
+		self.normal_x          =  data[21]
+		self.normal_y          =  data[23]
+		self.normal_z          = -data[22]
+		self.patch_size_x      =  data[24]
+		self.patch_size_y      =  data[25]
+		self.facegroup_index   =  -1
 
 class Q3BSPLightmap(Q3BSPObject):
 	format = "<49152B"
@@ -323,9 +330,22 @@ class Q3BSPVisData(Q3BSPObject):
 		self.vector_size = vector_size
 		self.data        = data
 
+class BSPGeomBox(object):
+	def __init__(self, cluster, center_x, center_y, center_z, length_x, length_y, length_z, base_x, base_y, base_z):
+		self.cluster = cluster
+		self.x       = center_x
+		self.y       = center_y
+		self.z       = center_z
+		self.lx      = length_x
+		self.ly      = length_y
+		self.lz      = length_z
+		self.base_x  = base_x
+		self.base_y  = base_y
+		self.base_z  = base_z
+
 def get_lump(lump):
-	f.seek(lumps[lump.entry].offset)
-	data = f.read(lumps[lump.entry].length)
+	bsp_file.seek(lumps[lump.entry].offset)
+	data = bsp_file.read(lumps[lump.entry].length)
 	return lump.unpack(data)
 
 def tesselate_grid(grid, level):
@@ -351,23 +371,87 @@ def tesselate_grid(grid, level):
 			indices.append(indice)
 	return vertices, indices
 
+def point_from_3_planes(p1, p2, p3):
+	denom = p1.normal.dot_product(p2.normal.cross_product(p3.normal))
+	print "pp", p1.d
+	p = (p2.normal.cross_product(p3.normal))*p1.d + \
+			(p3.normal.cross_product(p1.normal))*p2.d + \
+			(p1.normal.cross_product(p2.normal))*p3.d
+	return p
+
+def brush_is_cube(brush_planes):
+	if len(brush_planes) == 6:
+		for i in range(1, 6):
+			angle = planes[brush_planes[0]].normal.angle_to(planes[brush_planes[i]].normal)
+			if not ((angle > 89. and angle < 91.) or (angle > 179. and angle < 181.)):
+				return False
+		else:
+			return True
+	return False
+
+class moving_camera(soya.Camera):
+	def __init__(self, parent):
+		soya.Camera.__init__(self, parent)
+		self.speed            = soya.Vector(self, 0.0, 0.0, 0.0)
+		self.rotation_y_speed = 0.0
+	
+	def begin_round(self):
+		soya.Camera.begin_round(self)
+		for event in soya.process_event():
+			if event[0] == soya.sdlconst.KEYDOWN:
+				if   event[1] == soya.sdlconst.K_UP:     self.speed.z = -SPEED
+				elif event[1] == soya.sdlconst.K_DOWN:   self.speed.z =  SPEED
+				elif event[1] == soya.sdlconst.K_a:      self.speed.y =  SPEED
+				elif event[1] == soya.sdlconst.K_q:      self.speed.y =  -SPEED
+				elif event[1] == soya.sdlconst.K_LEFT:   self.rotation_y_speed =  3.0
+				elif event[1] == soya.sdlconst.K_RIGHT:  self.rotation_y_speed = -3.0
+				elif event[1] == soya.sdlconst.K_ESCAPE: soya.MAIN_LOOP.stop()
+				elif event[1] == soya.sdlconst.K_o:      self.parent.enable_area_visibility(0, 1)
+				elif event[1] == soya.sdlconst.K_i:      self.parent.disable_area_visibility(0, 1)
+			elif event[0] == soya.sdlconst.KEYUP:
+				if   event[1] == soya.sdlconst.K_UP:     self.speed.z = 0.0
+				elif event[1] == soya.sdlconst.K_DOWN:   self.speed.z = 0.0
+				elif event[1] == soya.sdlconst.K_a:      self.speed.y =  0.
+				elif event[1] == soya.sdlconst.K_q:      self.speed.y =  0.
+				elif event[1] == soya.sdlconst.K_LEFT:   self.rotation_y_speed = 0.0
+				elif event[1] == soya.sdlconst.K_RIGHT:  self.rotation_y_speed = 0.0
+			elif event[0] == soya.sdlconst.QUIT:
+				soya.MAIN_LOOP.stop()
+		
+	def advance_time(self, proportion):
+		soya.Camera.advance_time(self, proportion)
+		self.add_mul_vector(proportion, self.speed)
+		self.rotate_y(proportion * self.rotation_y_speed)
+
+
+
+
+
 
 
 
 # Open file and read header
-f = open('test1.bsp', 'rb')
-data = f.read(8)
+bsp_file = open('demo.bsp', 'rb')
+data = bsp_file.read(8)
 header = unpack('<4ci', data)
+magic  = ""
+for i in range(0, 4): magic += header[i]
+version = header[4]
 # Magic should be IBSP and version 46. Else your file is not a quake 3 bsp level !
-print "magic =", header[0], header[1], header[2], header[3]
-print "version =", header[4]
+print "magic =", magic
+print "version =", version
+if magic != "IBSP" or version != 46:
+	print "This is not a Quake 3 BSP level !"
+	sys.exit()
+
 # Read lump entry
-data = f.read(Q3BSPLumpEntry.size * NB_BSP_LUMPS)
+data = bsp_file.read(Q3BSPLumpEntry.size * NB_BSP_LUMPS)
 lumps = Q3BSPLumpEntry.unpack(data)
 i = 0
 for lump in lumps:
 	print i, "offset =", lump.offset, "length =", lump.length
 	i += 1
+
 # Read all lumps
 entities    = get_lump(Q3BSPEntitie)
 textures    = get_lump(Q3BSPTexture)
@@ -381,146 +465,325 @@ brushes     = get_lump(Q3BSPBrush)
 brushsides  = get_lump(Q3BSPBrushSide)
 vertexs     = get_lump(Q3BSPVertex)
 indices     = get_lump(Q3BSPIndice)
-faces       = get_lump(Q3BSPFace)
+facegroups  = get_lump(Q3BSPFaceGroup)
 lightmaps   = get_lump(Q3BSPLightmap)
 lightvols   = get_lump(Q3BSPLightvol)
 visdata     = get_lump(Q3BSPVisData)
 
-soya.path.append(os.path.join(os.path.dirname(sys.argv[0]), "data"))
-# Process every leaf
-# Creat a soya world with the whole level inside
-print "found", len(leafs), "leafs"
-world = soya.World()
-face_groups = []
-leaf2facegroup = {}
+# Don't need the file any more
+bsp_file.close()
+
+# An attempt to use ODE in BSPWorld
+"""
 for leaf in leafs:
-	# Discarde strange leaf
-	# Invalid leaf, outside the level or inside a wall
-	if leaf.cluster == -1:
+	#if leaf.cluster < 0:
+	#	continue
+	#leaf_brushs = brushes[leaf.leaf_brush_start : leaf.leaf_brush_start+leaf.nb_leaf_brush]
+	#print len(leaf_brushs), "brushs in leaf"
+	leaf_brush_indices = range(leaf.leaf_brush_start, leaf.leaf_brush_start+leaf.nb_leaf_brush)
+	print len(leaf_brush_indices), "brushs in leaf"
+	for i in leaf_brush_indices:
+		for leaf2 in leafs:
+			if leaf2 == leaf:
+				continue
+			leaf_brush_indices2 = range(leaf2.leaf_brush_start, leaf2.leaf_brush_start+leaf2.nb_leaf_brush)
+			if i in leaf_brush_indices2:
+				print "brush", i, "from leaf", leafs.index(leaf), "also in leaf", leafs.index(leaf2)
+
+sys.exit()
+"""
+"""
+bsp_geoms = []
+for leaf in leafs:
+	# Get ride of invalid leaf
+	if leaf.cluster < 0 or leaf.nb_leaf_brush <= 0:
 		continue
-	# Zero sized leaf, dorr or moving plateform
-	if leaf.box_min_x == 0 and leaf.box_max_x == 0:
-		continue
-	# Leaf without faces (some faces are shared between leaf)
-	if leaf.nb_leaf_face == 0:
-		continue
+	# Get brushes
+	leaf_leafbrushes = leafbrushes[leaf.leaf_brush_start : leaf.leaf_brush_start+leaf.nb_leaf_brush]
+	leaf_brushes     = []
+	for leafbrush in leaf_leafbrushes:
+		leaf_brushes.append(brushes[leafbrush])
+	# Transform brushes into geoms
+	for brush in leaf_brushes:
+		# Get brush planes
+		brush_sides = brushsides[brush.brush_side_start : brush.brush_side_start+brush.nb_brush_side]
+		brush_planes = []
+		for brushside in brush_sides:
+			brush_planes.append(brushside.plane)
+		# Test if brush is a box
+		if brush_is_box(brush_planes):
+			# Brush is a box, we will transform into an ODE box
+			# Compute two opposed points of the box
+			box_point1 = point_from_3_planes(planes[brush_planes[0]], planes[brush_planes[2]], planes[brush_planes[4]])
+			box_point2 = point_from_3_planes(planes[brush_planes[1]], planes[brush_planes[3]], planes[brush_planes[5]])
+			# Compute box dimensions and position
+			length_x = abs(box_point1.x - box_point2.x)
+			length_y = abs(box_point1.y - box_point2.y)
+			length_z = abs(box_point1.z - box_point2.z)
+			if box_point1.x < box_point2.x: center_x = box_point1.x + length_x/2.
+			else:                           center_x = box_point2.x + length_x/2.
+			if box_point1.y < box_point2.y: center_y = box_point1.y + length_y/2.
+			else:                           center_y = box_point2.y + length_y/2.
+			if box_point1.z < box_point2.z: center_z = box_point1.z + length_z/2.
+			else:                           center_z = box_point2.z + length_z/2.
+			# Get box base vectors, used to compute box rotation matrix
+			vect_x = planes[brush_planes[1]].normal
+			vect_y = planes[brush_planes[5]].normal
+			vect_z = planes[brush_planes[3]].normal
+			# Creat box geom
+			bsp_geoms.append(BSPGeomBox(center_x, center_y, center_z, \
+																	length_x, length_y, length_z, \
+																	vect_x, vect_y, vect_z))
+		else:
+			# Brush is not a box, we will transform into an ODE trimesh
+			pass
+"""
+
+soya.path.append(os.path.join(os.path.dirname(sys.argv[0]), "../tutorial/data"))
+
+# Creat a soya world
+# We will put the whole level inside this world
+world = soya.World()
+# model_face_groups is a list of all face groups used in the model
+# It contains lists of faces
+model_face_groups = []
+# model_parts is a list of all parts used in the model
+# it contains lists of indexs in model_face_groups
+# some face groups can be in several model parts
+model_parts       = []
+# leaf2model_part
+leaf2model_part   = {}
+
+# Creat all faces
+# A Quake face is actually a group of faces
+# Every face is a triangle
+# Every face in a facegroup have the same texture
+for facegroup in facegroups:
+	model_face_group = []
+	# Retriving materials
+	material   = soya.Material()
+	file_index = textures[facegroup.texture].name.rfind('/')
+	directory  = textures[facegroup.texture].name[0:file_index]
+	texname    = textures[facegroup.texture].name[file_index+1:]
+	try:
+		material.texture = soya.Image.get(texname + ".png")
+	except ValueError:
+		print "impossible to use texture", texname
 	
-	# Get a list of all faces in that leaf
-	leaf_leaffaces = leaffaces[leaf.leaf_face_start:leaf.leaf_face_start+leaf.nb_leaf_face]
-	
-	# Retrive faces
-	leaf_bsp_faces = []
-	for leafface in leaf_leaffaces:
-		if faces[leafface.face].face_type == 4: continue
-		if faces[leafface.face].face_type == 2 and (faces[leafface.face].nb_vertex <= 0 or faces[leafface.face].patch_size_x <= 0): continue
-		leaf_bsp_faces.append(faces[leafface.face])
-	
-	# Creat corresponding soya faces in the leaf world
-	current_face_list = []
-	for face in leaf_bsp_faces:
-		# Retriving materials
-		print "loading texture", textures[face.texture].name
-		material = soya.Material()
-		try:
-			material.texture = soya.Image.get(textures[face.texture].name + ".jpg")
-		except ValueError:
-			print "impossible to use texture :("
+	# If the facegroup is a polygon or mesh
+	if facegroup.face_type == 1 or facegroup.face_type == 3:
+		bsp_indices = indices[facegroup.indices_start:facegroup.indices_start+facegroup.nb_indices]
+		if len(bsp_indices) % 3 != 0:
+			print "ERROR face num vertices not a multiple of 3 !!!"
+			sys.exit()
 		
-		# Creat sub faces (3 vertices per face)
-		# For a polygon or mesh face
-		if face.face_type == 1 or face.face_type == 3:
-			bsp_indices = indices[face.indices_start:face.indices_start+face.nb_indices]
-			if len(bsp_indices) % 3 != 0:
-				print "ERROR face num vertices not a multiple of 3 !!!"
-				sys.exit()
+		for i in range(0, len(bsp_indices), 3):
+			f = soya.Face(world)
+			f.material = material
+			bsp_vertices = []
+			bsp_vertices.append(vertexs[facegroup.vertex_start+bsp_indices[i].indice])
+			bsp_vertices.append(vertexs[facegroup.vertex_start+bsp_indices[i+2].indice])
+			bsp_vertices.append(vertexs[facegroup.vertex_start+bsp_indices[i+1].indice])
 			
-			for i in range(0, len(bsp_indices), 3):
-				f = soya.Face(world)
-				f.material = material
-				f.double_sided = 1
+			for vertex in bsp_vertices:
+				v = soya.Vertex(world, vertex.x, vertex.y, vertex.z)
+				v.tex_x = vertex.texture_x
+				v.tex_y = vertex.texture_y
+				f.append(v)
+			model_face_group.append(f)
+	
+	# If the facegroup is a Bezier path
+	elif facegroup.face_type == 2:
+		# A patch is composed of several 3x3 control grids
+		# We need to get all the control points
+		patch_width    =  facegroup.patch_size_x
+		patch_height   =  facegroup.patch_size_y
+		nb_grib_width  = (facegroup.patch_size_x-1) / 2
+		nb_grid_height = (facegroup.patch_size_y-1) / 2
+		
+		# Get control points
+		control_points = []
+		for i in range(0, (patch_width * patch_height)):
+			control_points.append(vertexs[facegroup.vertex_start + i])
+		
+		for i in range(0, nb_grid_height):
+			for j in range(0, nb_grib_width):
+				grid = []
+				grid.append(control_points[i*patch_width*2 + j*2])
+				grid.append(control_points[i*patch_width*2 + j*2 + 1])
+				grid.append(control_points[i*patch_width*2 + j*2 + 2])
 				
-				bsp_vertexs = []
-				bsp_vertexs.append(vertexs[face.vertex_start+bsp_indices[i].indice])
-				bsp_vertexs.append(vertexs[face.vertex_start+bsp_indices[i+1].indice])
-				bsp_vertexs.append(vertexs[face.vertex_start+bsp_indices[i+2].indice])
+				grid.append(control_points[i*patch_width*2 + patch_width + j*2])
+				grid.append(control_points[i*patch_width*2 + patch_width + j*2 + 1])
+				grid.append(control_points[i*patch_width*2 + patch_width + j*2 + 2])
 				
-				for vertex in bsp_vertexs:
-					v = soya.Vertex(world, vertex.x, vertex.y, vertex.z)
-					v.tex_x = vertex.texture_x
-					v.tex_y = vertex.texture_y
-					f.append(v)
-				current_face_list.append(f)
-		# For a patch face
-		elif face.face_type == 2:
-			# Retrives bezier patchs
-			# A patch is composed of several 3x3 control grids
-			# We need to get all the control points
-			patch_width    = face.patch_size_x
-			patch_height   = face.patch_size_y
-			nb_grib_width  = (face.patch_size_x-1) / 2
-			nb_grid_height = (face.patch_size_y-1) / 2
-			
-			# Get control points
-			control_points = []
-			for i in range(0, (patch_width * patch_height)):
-				control_points.append(vertexs[face.vertex_start + i])
-			
-			for i in range(0, nb_grid_height):
-				for j in range(0, nb_grib_width):
-					grid = []
-					grid.append(control_points[i*patch_width*2 + j*2])
-					grid.append(control_points[i*patch_width*2 + j*2 + 1])
-					grid.append(control_points[i*patch_width*2 + j*2 + 2])
-					
-					grid.append(control_points[i*patch_width*2 + patch_width + j*2])
-					grid.append(control_points[i*patch_width*2 + patch_width + j*2 + 1])
-					grid.append(control_points[i*patch_width*2 + patch_width + j*2 + 2])
-					
-					grid.append(control_points[i*patch_width*2 + patch_width*2 + j*2])
-					grid.append(control_points[i*patch_width*2 + patch_width*2 + j*2 + 1])
-					grid.append(control_points[i*patch_width*2 + patch_width*2 + j*2 + 2])
-					
-					bsp_vertexs, bsp_indices = tesselate_grid(grid, TESSELATE_LEVEL)
-					
-					triangle_per_row = 2*(TESSELATE_LEVEL+1)
-					for k in range(0, TESSELATE_LEVEL):
-						for l in range(2, triangle_per_row):
-							f = soya.Face(world)
-							f.material = material
-							f.double_sided = 1
-							v = soya.Vertex(world, bsp_vertexs[bsp_indices[(k*triangle_per_row)+l-2]].x, \
-																		 bsp_vertexs[bsp_indices[(k*triangle_per_row)+l-2]].y, \
-																		 bsp_vertexs[bsp_indices[(k*triangle_per_row)+l-2]].z)
-							v.tex_x = bsp_vertexs[bsp_indices[(k*triangle_per_row)+l-2]].texture_x
-							v.tex_y = bsp_vertexs[bsp_indices[(k*triangle_per_row)+l-2]].texture_y
-							f.append(v)
-							v = soya.Vertex(world, bsp_vertexs[bsp_indices[(k*triangle_per_row)+l-1]].x, \
-																		 bsp_vertexs[bsp_indices[(k*triangle_per_row)+l-1]].y, \
-																		 bsp_vertexs[bsp_indices[(k*triangle_per_row)+l-1]].z)
-							v.tex_x = bsp_vertexs[bsp_indices[(k*triangle_per_row)+l-1]].texture_x
-							v.tex_y = bsp_vertexs[bsp_indices[(k*triangle_per_row)+l-1]].texture_y
-							f.append(v)
-							v = soya.Vertex(world, bsp_vertexs[bsp_indices[(k*triangle_per_row)+l]].x, \
-																		 bsp_vertexs[bsp_indices[(k*triangle_per_row)+l]].y, \
-																		 bsp_vertexs[bsp_indices[(k*triangle_per_row)+l]].z)
+				grid.append(control_points[i*patch_width*2 + patch_width*2 + j*2])
+				grid.append(control_points[i*patch_width*2 + patch_width*2 + j*2 + 1])
+				grid.append(control_points[i*patch_width*2 + patch_width*2 + j*2 + 2])
+				
+				bsp_vertexs, bsp_indices = tesselate_grid(grid, TESSELATE_LEVEL)
+				
+				triangle_per_row = 2*(TESSELATE_LEVEL+1)
+				for k in range(0, TESSELATE_LEVEL):
+					for l in range(2, triangle_per_row):
+						f = soya.Face(world)
+						f.material = material
+						if l % 2:
+							v = soya.Vertex(world,  bsp_vertexs[bsp_indices[(k*triangle_per_row)+l]].x, \
+																			bsp_vertexs[bsp_indices[(k*triangle_per_row)+l]].y, \
+																			bsp_vertexs[bsp_indices[(k*triangle_per_row)+l]].z)
 							v.tex_x = bsp_vertexs[bsp_indices[(k*triangle_per_row)+l]].texture_x
 							v.tex_y = bsp_vertexs[bsp_indices[(k*triangle_per_row)+l]].texture_y
 							f.append(v)
-							current_face_list.append(f)
+							v = soya.Vertex(world,  bsp_vertexs[bsp_indices[(k*triangle_per_row)+l-1]].x, \
+																			bsp_vertexs[bsp_indices[(k*triangle_per_row)+l-1]].y, \
+																			bsp_vertexs[bsp_indices[(k*triangle_per_row)+l-1]].z)
+							v.tex_x = bsp_vertexs[bsp_indices[(k*triangle_per_row)+l-1]].texture_x
+							v.tex_y = bsp_vertexs[bsp_indices[(k*triangle_per_row)+l-1]].texture_y
+							f.append(v)
+							v = soya.Vertex(world,  bsp_vertexs[bsp_indices[(k*triangle_per_row)+l-2]].x, \
+																			bsp_vertexs[bsp_indices[(k*triangle_per_row)+l-2]].y, \
+																			bsp_vertexs[bsp_indices[(k*triangle_per_row)+l-2]].z)
+							v.tex_x = bsp_vertexs[bsp_indices[(k*triangle_per_row)+l-2]].texture_x
+							v.tex_y = bsp_vertexs[bsp_indices[(k*triangle_per_row)+l-2]].texture_y
+						else:
+							v = soya.Vertex(world,  bsp_vertexs[bsp_indices[(k*triangle_per_row)+l-2]].x, \
+																			bsp_vertexs[bsp_indices[(k*triangle_per_row)+l-2]].y, \
+																			bsp_vertexs[bsp_indices[(k*triangle_per_row)+l-2]].z)
+							v.tex_x = bsp_vertexs[bsp_indices[(k*triangle_per_row)+l-2]].texture_x
+							v.tex_y = bsp_vertexs[bsp_indices[(k*triangle_per_row)+l-2]].texture_y
+							f.append(v)
+							v = soya.Vertex(world,  bsp_vertexs[bsp_indices[(k*triangle_per_row)+l-1]].x, \
+																			bsp_vertexs[bsp_indices[(k*triangle_per_row)+l-1]].y, \
+																			bsp_vertexs[bsp_indices[(k*triangle_per_row)+l-1]].z)
+							v.tex_x = bsp_vertexs[bsp_indices[(k*triangle_per_row)+l-1]].texture_x
+							v.tex_y = bsp_vertexs[bsp_indices[(k*triangle_per_row)+l-1]].texture_y
+							f.append(v)
+							v = soya.Vertex(world,  bsp_vertexs[bsp_indices[(k*triangle_per_row)+l]].x, \
+																			bsp_vertexs[bsp_indices[(k*triangle_per_row)+l]].y, \
+																			bsp_vertexs[bsp_indices[(k*triangle_per_row)+l]].z)
+							v.tex_x = bsp_vertexs[bsp_indices[(k*triangle_per_row)+l]].texture_x
+							v.tex_y = bsp_vertexs[bsp_indices[(k*triangle_per_row)+l]].texture_y
+						f.append(v)
+						model_face_group.append(f)
+	model_face_groups.append(model_face_group)
+	facegroup.facegroup_index = model_face_groups.index(model_face_group)
+
+# Process every brush
+# A brush is a list of planes that creat a convex volume
+# Used for raypicking
+for brush in brushes:
+	# Get brush planes
+	brush_sides = brushsides[brush.brush_side_start : brush.brush_side_start+brush.nb_brush_side]
+	for brushside in brush_sides:
+		brush.plane_indices.append(brushside.plane)
+
+# Process brushes in leafs
+for leaf in leafs:
+	# Discarde leaf wich are not cluster
+	# Invalid leaf, outside the level or inside a wall
+	#if leaf.cluster == -1:
+	#	continue
+	# Zero sized leaf, door or moving plateform
+	if leaf.box_min_x == 0 and leaf.box_max_x == 0:
+		continue
+	# Leaf without brush
+	if leaf.nb_leaf_brush == 0:
+		continue
+	leaf_leafbrushes = leafbrushes[leaf.leaf_brush_start : leaf.leaf_brush_start+leaf.nb_leaf_brush]
+	for leafbrush in leaf_leafbrushes:
+		if brushes[leafbrush.brush].nb_brush_side > 0 and (textures[brushes[leafbrush.brush].texture].contents & 1):
+			leaf.brush_indices.append(leafbrush.brush)
+
+# Process every cluster
+# A cluster is a visible leaf (a leaf with faces inside)
+# Those cluster will be the parts of our splited model
+for leaf in leafs:
+	# Discarde leaf wich are not cluster
+	# Invalid leaf, outside the level or inside a wall
+	if leaf.cluster == -1:
+		continue
+	# Zero sized leaf, door or moving plateform
+	if leaf.box_min_x == 0 and leaf.box_max_x == 0:
+		continue
+	# Leaf without faces
+	if leaf.nb_leaf_face == 0:
+		continue
 	
-	if len(current_face_list) > 0:
-		face_groups.append(current_face_list)
-		leaf2facegroup[leaf] = face_groups.index(current_face_list)
+	# Get a list of all facegroups in that leaf
+	# Discare billboard faces (not implemented) and bad patchs (craps in bsp flies)
+	# BSP files use some kind of facegroup pointer called leaffaces
+	leaf_leaffaces  = leaffaces[leaf.leaf_face_start:leaf.leaf_face_start+leaf.nb_leaf_face]
+	leaf_facegroups = []
+	for leafface in leaf_leaffaces:
+		if facegroups[leafface.face].face_type == 4: continue
+		if facegroups[leafface.face].face_type == 2 and (facegroups[leafface.face].nb_vertex <= 0 or facegroups[leafface.face].patch_size_x <= 0): continue
+		leaf_facegroups.append(facegroups[leafface.face])
+	
+	# Creat the model part corresponding to the leaf
+	# The model part is a list contaning every facegroups of the leaf
+	model_part = []
+	for facegroup in leaf_facegroups: model_part.append(facegroup.facegroup_index)
+	model_parts.append(model_part)
+	# This dict will be used when creaing the BSP world
+	#leaf2model_part[leaf] = model_parts.index(model_part)
+	leaf.model_part = model_parts.index(model_part)
 
 # Creat a splited model from our world
 print "creating optimised splited model"
 print "this can take up to 10 minutes on a recent computer so be patient :)"
-splited_model = soya.SplitedModel(world, face_groups, 80., 0, None)
+splited_model = soya.SplitedModel(world, model_face_groups, model_parts, 80., 0, None)
+del(world)
+print "creating BSP World"
 
 # Creat the corresponding BSP world and save it
-bsp_world = soya.BSPWorld(splited_model, nodes, leafs, planes, leaf2facegroup, visdata)
+bsp_world = soya.BSPWorld(splited_model, nodes, leafs, planes, brushes, visdata)
 bsp_world.filename = "imported_bsp_world"
 bsp_world.save()
 
+print "BSP World file saved"
+
 for ent in entities:
-	print ent
+	index = ent.find("info_player_deathmatch")
+	if index >= 0:
+		index += 34
+		index2 = ent.find('"', index)
+		start_point = ent[index:index2].split()
+		start_x =  float(start_point[0])
+		start_y =  float(start_point[2])
+		start_z = -float(start_point[1])
+		print "Found start point at", start_x, start_y, start_z
+		break
+else:
+	print "No start point found, will start at 0, 0, 0"
+	start_x = 0
+	start_y = 0
+	start_z = 0
+
+# Display the imported BSP World
+soya.init()
+scene = soya.World()
+scene.add(bsp_world)
+atmosphere = soya.SkyAtmosphere()
+atmosphere.ambient = (0.9, 0.9, 0.9, 1.0)
+scene.atmosphere = atmosphere
+
+#sword_model = soya.Shape.get("sword")
+#sword = soya.Body(bsp_world, sword_model)
+#sword.set_xyz(start_x, start_y, start_z)
+
+
+# Creates a camera in the scene
+camera = moving_camera(bsp_world)
+camera.set_xyz(start_x, start_y, start_z)
+camera.back = 1500.
+
+# Creates a widget group, containing the camera and a label showing the FPS.
+soya.set_root_widget(widget.Group())
+soya.root_widget.add(camera)
+soya.root_widget.add(widget.FPSLabel())
+
+print "Use arrow keys to move, A and Q to move up and down"
+print "Use key 0 and I to enable/disable visibility of area 0 and 1"
+
+soya.MainLoop(scene).main_loop()

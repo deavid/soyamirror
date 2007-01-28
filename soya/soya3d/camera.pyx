@@ -234,7 +234,7 @@ Gets the height of the rendering screen, in pixel."""
 		cdef CoordSyst root
 		
 		if renderer.engine_option & INITED == 0: 
-			return 
+			return
 			
 		renderer.current_camera = self
 		# compute the model matrix

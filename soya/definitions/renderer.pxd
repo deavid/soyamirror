@@ -44,18 +44,19 @@ cdef class Renderer:
 	cdef _Atmosphere root_atmosphere # root atmosphere (the one to clear the screen with)
 	
 	# list of collected objects to render
-	cdef Chunk* opaque
-	cdef Chunk* secondpass
-	cdef Chunk* alpha
-	cdef Chunk* specials  # objects that are rendered after the shadows (= not shadowed)
+	cdef CList* opaque
+	cdef CList* secondpass
+	cdef CList* alpha
+	cdef CList* specials  # objects that are rendered after the shadows (= not shadowed)
 	
 	cdef top_lights # contain top level activated lights
 	cdef worlds_made  # list of world whose context has been made (used by portals to determine if a world must be batched or not)
 	cdef portals  # a list of encountered portals to clear_part the atmosphere before any other rendering and to draw fog at the end
 	
 	# mesh renderer
-	cdef Chunk* data
-	cdef Chunk* used_opaque_packs, *used_secondpass_packs, *used_alpha_packs
+	cdef CList* data
+	cdef CListHandle* current_data
+	cdef CList *used_opaque_packs, *used_secondpass_packs, *used_alpha_packs
 	cdef float** colors
 	
 	# screen
@@ -68,9 +69,9 @@ cdef class Renderer:
 	cdef Context _context(self)
 	cdef void _activate_context_over(self, Context old, Context new)
 	cdef void _reset(self)
-	cdef void _batch(self, Chunk* list, obj, CoordSyst coordsyst, int data)
+	cdef void _batch(self, CList* list, obj, CoordSyst coordsyst, CListHandle* data)
 	cdef void _render(self)
-	cdef void _render_list(self, Chunk* list)
+	cdef void _render_list(self, CList* list)
 	cdef void _clear_screen(self, float* color)
 	cdef void _render_shadows(self)
 

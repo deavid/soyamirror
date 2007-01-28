@@ -46,6 +46,8 @@ class moving_camera(soya.Camera):
 				elif event[1] == soya.sdlconst.K_LEFT:   self.rotation_y_speed =  3.0
 				elif event[1] == soya.sdlconst.K_RIGHT:  self.rotation_y_speed = -3.0
 				elif event[1] == soya.sdlconst.K_ESCAPE: soya.MAIN_LOOP.stop()
+				elif event[1] == soya.sdlconst.K_o:      self.parent.enable_area_visibility(0, 1)
+				elif event[1] == soya.sdlconst.K_i:      self.parent.disable_area_visibility(0, 1)
 			elif event[0] == soya.sdlconst.KEYUP:
 				if   event[1] == soya.sdlconst.K_UP:     self.speed.z = 0.0
 				elif event[1] == soya.sdlconst.K_DOWN:   self.speed.z = 0.0
@@ -55,7 +57,6 @@ class moving_camera(soya.Camera):
 				elif event[1] == soya.sdlconst.K_RIGHT:  self.rotation_y_speed = 0.0
 			elif event[0] == soya.sdlconst.QUIT:
 				soya.MAIN_LOOP.stop()
-		#self.rotate_y(self.rotation_y_speed)
 		
 	def advance_time(self, proportion):
 		soya.Camera.advance_time(self, proportion)
@@ -63,7 +64,7 @@ class moving_camera(soya.Camera):
 		self.rotate_y(proportion * self.rotation_y_speed)
 
 soya.init()
-soya.path.append(os.path.join(os.path.dirname(sys.argv[0]), "data"))
+soya.path.append(os.path.join(os.path.dirname(sys.argv[0]), "../tutorial/data"))
 level = soya.BSPWorld.get("imported_bsp_world")
 scene = soya.World()
 atmosphere = soya.SkyAtmosphere()
@@ -72,8 +73,8 @@ scene.atmosphere = atmosphere
 scene.add(level)
 
 # Creates a camera in the scene
-camera = moving_camera(scene)
-camera.set_xyz(0.0, 30.0, 3.0)
+camera = moving_camera(level)
+camera.set_xyz(-128.0, 40.0, 8.0)
 camera.back = 1500.
 
 # Creates a widget group, containing the camera and a label showing the FPS.

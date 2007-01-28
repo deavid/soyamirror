@@ -163,6 +163,7 @@ Starts idling with the current thread. This method never finishes, until you cal
 				self._time_since_last_round = self._time_since_last_round + delta
 				
 				self.render()
+				clist_manage_recycler()
 				
 			current = time.time()
 			self.fps = nb_frame / (current - last_fps_computation_time)

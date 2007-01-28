@@ -93,9 +93,8 @@ You shouldn't free the returned pack."""
 		# create a new pack
 		pack = <Pack*> malloc(sizeof(Pack))
 		pack.material_id   = id(self)
+		pack.batched_faces = get_clist()
 		pack.option        = opt
-		#pack.data          = -1
-		pack.batched_faces = NULL
 		pack.secondpass    = pack.alpha = NULL
 		self._packs  = <Pack**> realloc(self._packs, (self._nb_packs + 1) * sizeof(Pack*))
 		self._packs[self._nb_packs] = pack
@@ -480,16 +479,14 @@ In addition to PythonMaterial, PythonMainLoopingMaterial also has begin_round, a
 #  - secondpass: a pointer to another pack, with the same material and drawing options,
 #    but using the second_pass renderer batching state.
 #
-#  - batched_faces: a chunk, which is used to store data during the rendering process,
-#    on a per-chunk basis. The chunk should be droped after each object have used it
-#    (so it can be re-used by another one).
+#  - batched_faces: a linked list which is used to store data during the rendering process.
 
 # cdef struct _Pack:
-#   int    option
-#   long   material_id
-#   _Pack* alpha
-#   _Pack* secondpass
-#   Chunk* batched_faces
+#   int       option
+#   long      material_id
+#   _Pack*    alpha
+#   _Pack*    secondpass
+#   CList* batched_faces
 # ctypedef _Pack Pack
 
 
@@ -504,9 +501,8 @@ not be free'ed."""
 	if pack.alpha == NULL: # create a new pack
 		pack.alpha               = <Pack*> malloc(sizeof(Pack))
 		pack.alpha.material_id   = pack.material_id
+		pack.alpha.batched_faces = get_clist()
 		pack.alpha.option        = pack.option | FACE_ALPHA
-		#pack.alpha.data          = -1
-		pack.alpha.batched_faces = NULL
 		pack.alpha.secondpass    = pack.alpha.alpha = NULL
 	return pack.alpha
 
@@ -518,118 +514,77 @@ renderer batching state (for drawing triangle / quad after all the other).
 If called twice with the same argument, the returned pack is the same, and it should
 not be free'ed."""
 	if pack.secondpass == NULL: # create a new pack
-		pack.secondpass = <Pack*> malloc(sizeof(Pack))
-		pack.secondpass.material_id = pack.material_id
+		pack.secondpass               = <Pack*> malloc(sizeof(Pack))
+		pack.secondpass.material_id   = pack.material_id
+		pack.secondpass.batched_faces = get_clist()
 		if pack.option & PACK_SECONDPASS: pack.secondpass.option = pack.option | PACK_SPECIAL
 		else:                             pack.secondpass.option = pack.option | PACK_SECONDPASS
-		#pack.secondpass.data          = -1
-		pack.secondpass.batched_faces = NULL
 		pack.secondpass.secondpass    = pack.secondpass.alpha = NULL
 	return pack.secondpass
 
-
-cdef void pack_batch_face(Pack* pack, void* face):
+cdef void pack_batch_face(Pack* pack, void* face, int no_double):
 	"""pack_batch_face(Pack* pack, void* face)
 
 Batches face, i.e. store a pointer to face for a future rendering (at the rendering time)
-using the pack's attributes."""
-	if pack.batched_faces == NULL: # first time we use this pack (for the object we are rendering)
-		pack.batched_faces = get_chunk()
-		if   pack.option & FACE_ALPHA:      chunk_add_ptr(renderer.used_alpha_packs     , pack)
-		elif pack.option & PACK_SECONDPASS: chunk_add_ptr(renderer.used_secondpass_packs, pack)
-		else:                               chunk_add_ptr(renderer.used_opaque_packs    , pack)
-	chunk_add_ptr(pack.batched_faces, face)
-	
+using the pack's attributes.
+If no_double is not 0 the function will only batch the face if it hasn't been already"""
+	if pack.batched_faces.begin == NULL: # first time we use this pack (for the object we are rendering)
+		if   pack.option & FACE_ALPHA:      clist_add(renderer.used_alpha_packs     , <void*> pack)
+		elif pack.option & PACK_SECONDPASS: clist_add(renderer.used_secondpass_packs, <void*> pack)
+		else:                               clist_add(renderer.used_opaque_packs    , <void*> pack)
+		clist_add(pack.batched_faces, face)
+	elif no_double:
+		if clist_find(pack.batched_faces, face) == NULL: clist_add(pack.batched_faces, face)
+	else:                                              clist_add(pack.batched_faces, face)
+
 # pack_batch_end replace the xmesh_batch_end of Soya 0.6.1 (Blam C code)
 # there is no pack_batch_start (formely xmesh_batch_start) ; it is no longer necessary
 cdef void pack_batch_end(batched_object, CoordSyst coordsyst):
-	cdef Pack*  pack
+	cdef Pack*        pack
+	cdef CListHandle* current_data
+	cdef CListHandle* current_pack
 	
-	if renderer.used_opaque_packs.nb:
-		renderer._batch(renderer.opaque, batched_object, coordsyst, renderer.data.nb)
-		chunk_add_ptr(renderer.used_opaque_packs, NULL) # NULL terminated list
-		renderer.used_opaque_packs.nb = 0
-		pack = <Pack*> chunk_get_ptr(renderer.used_opaque_packs)
-		while pack:
-			chunk_add_ptr(renderer.data, pack)
-			chunk_add    (renderer.data, pack.batched_faces.content, pack.batched_faces.nb)
-			chunk_add_ptr(renderer.data, NULL) # NULL terminated list
-			drop_chunk(pack.batched_faces); pack.batched_faces = NULL # reset the pack
-			pack = <Pack*> chunk_get_ptr(renderer.used_opaque_packs)
-		chunk_add_ptr(renderer.data, NULL) # NULL terminated list
-		renderer.used_opaque_packs.nb = 0
-		
-	if renderer.used_alpha_packs.nb:
-		renderer._batch(renderer.alpha, batched_object, coordsyst, renderer.data.nb)
-		chunk_add_ptr(renderer.used_alpha_packs, NULL) # NULL terminated list
-		renderer.used_alpha_packs.nb = 0
-		pack = <Pack*> chunk_get_ptr(renderer.used_alpha_packs)
-		while pack:
-			chunk_add_ptr(renderer.data, pack)
-			chunk_add    (renderer.data, pack.batched_faces.content, pack.batched_faces.nb)
-			chunk_add_ptr(renderer.data, NULL) # NULL terminated list
-			drop_chunk(pack.batched_faces); pack.batched_faces = NULL # reset the pack
-			pack = <Pack*> chunk_get_ptr(renderer.used_alpha_packs)
-		chunk_add_ptr(renderer.data, NULL) # NULL terminated list
-		renderer.used_alpha_packs.nb = 0
-		
-	if renderer.used_secondpass_packs.nb:
-		renderer._batch(renderer.secondpass, batched_object, coordsyst, renderer.data.nb)
-		chunk_add_ptr(renderer.used_secondpass_packs, NULL) # NULL terminated list
-		renderer.used_secondpass_packs.nb = 0
-		pack = <Pack*> chunk_get_ptr(renderer.used_secondpass_packs)
-		while pack:
-			chunk_add_ptr(renderer.data, pack)
-			chunk_add    (renderer.data, pack.batched_faces.content, pack.batched_faces.nb)
-			chunk_add_ptr(renderer.data, NULL) # NULL terminated list
-			drop_chunk(pack.batched_faces); pack.batched_faces = NULL # reset the pack
-			pack = <Pack*> chunk_get_ptr(renderer.used_secondpass_packs)
-		chunk_add_ptr(renderer.data, NULL) # NULL terminated list
-		renderer.used_secondpass_packs.nb = 0
-
-
-# Alternative version, based on chained lists -- implementation is not complete !!!!
-
-# ctypedef struct BatchedFace:
-#   void* face
-#   int   next
-
-# ctypedef struct BatchedPack:
-#   Pack* pack
-#   int   batched_faces
-
-# cdef void pack_batch_start(CoordSyst coordsyst):
-#   renderer.current_instance = coordsyst
+	if not renderer.used_opaque_packs.begin == NULL:
+		current_data = renderer.data.end
+		current_pack = renderer.used_opaque_packs.begin
+		while current_pack != NULL:
+			pack = <Pack*> current_pack.data
+			clist_add(renderer.data, <void*> pack)
+			clist_transfer(pack.batched_faces, renderer.data)
+			clist_add(renderer.data, NULL) # NULL terminated list
+			current_pack = current_pack.next
+		clist_add(renderer.data, NULL) # NULL terminated list
+		if current_data == NULL: current_data = renderer.data.begin
+		else:                    current_data = current_data.next
+		renderer._batch(renderer.opaque, batched_object, coordsyst, current_data)
+		clist_flush(renderer.used_opaque_packs)
 	
-# cdef int pack_batch_end():
-#   cdef int          rendered_data
-#   cdef BatchedPack* batched_pack
-#   rendered_data = renderer.data.nb
+	if not renderer.used_alpha_packs.begin == NULL:
+		current_data = renderer.data.end
+		current_pack = renderer.used_alpha_packs.begin
+		while current_pack != NULL:
+			pack = <Pack*> current_pack.data
+			clist_add(renderer.data, <void*> pack)
+			clist_transfer(pack.batched_faces, renderer.data)
+			clist_add(renderer.data, NULL) # NULL terminated list
+			current_pack = current_pack.next
+		clist_add(renderer.data, NULL) # NULL terminated list
+		if current_data == NULL: current_data = renderer.data.begin
+		else:                    current_data = current_data.next
+		renderer._batch(renderer.alpha, batched_object, coordsyst, current_data)
+		clist_flush(renderer.used_alpha_packs)
 	
-#   # Add the list of the used packs to the rendered data
-#   chunk_add    (renderer.data, renderer.used_packs.content, renderer.used_packs.nb)
-#   chunk_add_ptr(renderer.data, NULL) # NULL terminated list
-#   renderer.used_packs.nb = 0 # Reset the list of the used packs
-	
-#   batched_pack = renderer.data.content + rendered_data
-#   while batched_pack:
-#     (<BatchedFace> (renderer.data + batched_pack.pack.last_batched_face)).next = -1 # end the batched_face chain
-#     batched_pack.pack.last_batched_face = -1 # reset the pack
-#     batched_pack = batched_pack + 1
-		
-#   return rendered_data # return the data index
-
-# void pack_batch_face(Pack* pack, obj, void* face):
-#   cdef int batched_face
-#   batched_face = chunk_register(renderer.data, sizeof(BatchedFace))
-#   (<BatchedFace*> (renderer.data.content + batched_face)).face = face
-	
-#   if pack.last_batched_face == -1:
-#     chunk_add_ptr(renderer.used_packs, pack) # We use this pack !!!
-		
-#   else: # Chain
-#     (<BatchedFace*> (renderer.data.content + pack.last_batched_face)).next = batched_face
-		
-#   pack.last_batched_face = batched_face
-	
-
+	if not renderer.used_secondpass_packs.begin == NULL:
+		current_data = renderer.data.end
+		current_pack = renderer.used_secondpass_packs.begin
+		while current_pack != NULL:
+			pack = <Pack*> current_pack.data
+			clist_add(renderer.data, <void*> pack)
+			clist_transfer(pack.batched_faces, renderer.data)
+			clist_add(renderer.data, NULL) # NULL terminated list
+			current_pack = current_pack.next
+		clist_add(renderer.data, NULL) # NULL terminated list
+		if current_data == NULL: current_data = renderer.data.begin
+		else:                    current_data = current_data.next
+		renderer._batch(renderer.secondpass, batched_object, coordsyst, current_data)
+		clist_flush(renderer.used_secondpass_packs)

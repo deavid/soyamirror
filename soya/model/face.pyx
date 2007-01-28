@@ -290,8 +290,8 @@ Returns true if the Face has at least one alpha blended Vertex."""
 		return 0
 	
 	cdef void _batch(self, CoordSyst coord_syst):
-		if self.is_alpha(): renderer._batch(renderer.alpha , self, coord_syst, -1)
-		else:               renderer._batch(renderer.opaque, self, coord_syst, -1)
+		if self.is_alpha(): renderer._batch(renderer.alpha , self, coord_syst, NULL)
+		else:               renderer._batch(renderer.opaque, self, coord_syst, NULL)
 		
 	cdef void _render(self, CoordSyst coord_syst):
 		cdef _Vertex vertex

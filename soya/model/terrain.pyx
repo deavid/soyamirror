@@ -926,10 +926,10 @@ You MUST call this method after the terrain have been modified manually
 						if p1 < p2: p = p1
 						else:       p = p2
 						if p3 < p : p = p3
-						pack_batch_face(pack_get_secondpass(p), tri)
-						if  p1 != p                               : pack_batch_face(p1, tri)
-						if (p2 != p) and (p2 != p1)               : pack_batch_face(p2, tri)
-						if (p3 != p) and (p3 != p1) and (p3 != p2): pack_batch_face(p3, tri)
+						pack_batch_face(pack_get_secondpass(p), tri, 0)
+						if  p1 != p                               : pack_batch_face(p1, tri, 0)
+						if (p2 != p) and (p2 != p1)               : pack_batch_face(p2, tri, 0)
+						if (p3 != p) and (p3 != p1) and (p3 != p2): pack_batch_face(p3, tri, 0)
 						return
 					
 				p1 = tri.v1.pack
@@ -938,31 +938,31 @@ You MUST call this method after the terrain have been modified manually
 				# we must render without alpha the pack that is the most represented 
 				# this constraint is needed for special texturing smoothing
 				if   p1 == p2:
-					pack_batch_face(p1, tri)
-					if p3 != p1: pack_batch_face(pack_get_secondpass(p3), tri)
+					pack_batch_face(p1, tri, 0)
+					if p3 != p1: pack_batch_face(pack_get_secondpass(p3), tri, 0)
 				elif p1 == p3:
-					pack_batch_face(p1, tri)
-					if p2 != p1: pack_batch_face(pack_get_secondpass(p2), tri)
+					pack_batch_face(p1, tri, 0)
+					if p2 != p1: pack_batch_face(pack_get_secondpass(p2), tri, 0)
 				elif p2 == p3:
-					pack_batch_face(p2, tri)
-					if p1 != p2: pack_batch_face(pack_get_secondpass(p1), tri)
+					pack_batch_face(p2, tri, 0)
+					if p1 != p2: pack_batch_face(pack_get_secondpass(p1), tri, 0)
 				else:
 					# take in account the base neighbor if it's a diamond
 					if (tri.base_neighbor != NULL) and (tri.v2 == tri.base_neighbor.v3) and (tri.v3 == tri.base_neighbor.v2):
 						p4 = tri.base_neighbor.v1.pack
 						if   p2 == p4:
-							pack_batch_face(                    p2 , tri)
-							pack_batch_face(pack_get_secondpass(p1), tri)
-							pack_batch_face(pack_get_secondpass(p3), tri)
+							pack_batch_face(                    p2 , tri, 0)
+							pack_batch_face(pack_get_secondpass(p1), tri, 0)
+							pack_batch_face(pack_get_secondpass(p3), tri, 0)
 							return
 						elif p3 == p4:
-							pack_batch_face(                    p3 , tri)
-							pack_batch_face(pack_get_secondpass(p1), tri)
-							pack_batch_face(pack_get_secondpass(p2), tri)
+							pack_batch_face(                    p3 , tri, 0)
+							pack_batch_face(pack_get_secondpass(p1), tri, 0)
+							pack_batch_face(pack_get_secondpass(p2), tri, 0)
 							return
-					pack_batch_face(                    p1 , tri)
-					pack_batch_face(pack_get_secondpass(p2), tri)
-					pack_batch_face(pack_get_secondpass(p3), tri)
+					pack_batch_face(                    p1 , tri, 0)
+					pack_batch_face(pack_get_secondpass(p2), tri, 0)
+					pack_batch_face(pack_get_secondpass(p3), tri, 0)
 					
 	cdef void _patch_batch(self, TerrainPatch* patch, Frustum* frustum):
 		if sphere_in_frustum(frustum, patch.sphere):
@@ -1129,9 +1129,10 @@ You MUST call this method after the terrain have been modified manually
 
 
 	cdef void _render(self, CoordSyst coordsyst):
-		cdef int      cur, index
-		cdef Pack*    pack
-		cdef TerrainTri* tri
+		cdef int          index
+		cdef CListHandle* handle
+		cdef Pack*        pack
+		cdef TerrainTri*  tri
 		
 		terrain_disableColor()
 		# ArrayElement doesn't work well, at least for me
@@ -1140,15 +1141,17 @@ You MUST call this method after the terrain have been modified manually
 		# Renderer.data is like :
 		#   [pack1*, terrain_tri1*, terrain_tri2*,..., NULL, pack2*, terrain_tri3,..., NULL, NULL]
 		
-		cur = renderer.data.nb
-		pack = <Pack*> chunk_get_ptr(renderer.data)
+		handle = renderer.current_data
+		pack   = <Pack*> handle.data
+		handle = handle.next
 		
-		if   renderer.state == RENDERER_STATE_OPAQUE:
+		if renderer.state == RENDERER_STATE_OPAQUE:
 			while pack:
 				(<_Material> (pack.material_id))._activate()
 				
 				glBegin(GL_TRIANGLES)
-				tri = <TerrainTri*> chunk_get_ptr(renderer.data)
+				tri    = <TerrainTri*> handle.data
+				handle = handle.next
 				while tri:
 					#index = tri.v1 - self._vertices
 					if self._colors != NULL: terrain_drawColor(self._colors + index)
@@ -1171,11 +1174,13 @@ You MUST call this method after the terrain have been modified manually
 					glNormal3fv(tri.v3.normal)
 					glVertex3fv(tri.v3.coord)
 					
-					tri = <TerrainTri*> chunk_get_ptr(renderer.data)
+					tri = <TerrainTri*> handle.data
+					handle = handle.next
 					
 				glEnd()
-				pack = <Pack*> chunk_get_ptr(renderer.data)
 				
+				pack   = <Pack*> handle.data
+				handle = handle.next
 				
 		elif renderer.state == RENDERER_STATE_SECONDPASS:
 			glEnable(GL_BLEND)
@@ -1187,38 +1192,48 @@ You MUST call this method after the terrain have been modified manually
 				if pack.option & PACK_SPECIAL:
 					(<_Material> (pack.material_id))._activate()
 					glBegin(GL_TRIANGLES)
-					tri = <TerrainTri*> chunk_get_ptr(renderer.data)
+					tri    = <TerrainTri*> handle.data
+					handle = handle.next
+					
 					while tri:
 						self._vertex_render_special(tri.v1)
 						self._vertex_render_special(tri.v2)
 						self._vertex_render_special(tri.v3)
-						tri = <TerrainTri*> chunk_get_ptr(renderer.data)
+						tri    = <TerrainTri*> handle.data
+						handle = handle.next
 					glEnd()
 				else:
-					while chunk_get_ptr(renderer.data): pass
+					while handle.data:
+						handle = handle.next
 					
-				pack = <Pack*> chunk_get_ptr(renderer.data)
+				pack   = <Pack*> handle.data
+				handle = handle.next
 				
 			# draw the secondpass
 			glDepthFunc(GL_LEQUAL)
 			glPolygonOffset(-1.0, 0.0)
-			renderer.data.nb = cur # Reset the chunk, in order to loop over the same data than above
-			pack = <Pack*> chunk_get_ptr(renderer.data)
+			handle = renderer.current_data # Reset the chunk, in order to loop over the same data than above
+			pack   = <Pack*> handle.data
+			handle = handle.next
 			while pack:
 				if not(pack.option & PACK_SPECIAL):
 					(<_Material> (pack.material_id))._activate()
 					glEnable(GL_POLYGON_OFFSET_FILL) # Black magic : it doesn't work if GL_POLYGON_OFFSET_FILL is enabled once. we must enable/disable it for all glBegin-glEnd.
 					glBegin(GL_TRIANGLES)
-					tri = <TerrainTri*> chunk_get_ptr(renderer.data)
+					tri    = <TerrainTri*> handle.data
+					handle = handle.next
 					while tri:
 						self._tri_render_secondpass(tri)
-						tri = <TerrainTri*> chunk_get_ptr(renderer.data)
+						tri    = <TerrainTri*> handle.data
+						handle = handle.next
 					glEnd()
 					glDisable(GL_POLYGON_OFFSET_FILL) # Black magic
 				else:
-					while chunk_get_ptr(renderer.data): pass
+					while handle.data:
+						handle = handle.next
 					
-				pack = <Pack*> chunk_get_ptr(renderer.data)
+				pack   = <Pack*> handle.data
+				handle = handle.next
 				
 			glDisable(GL_BLEND)
 			glDepthFunc(GL_LESS)

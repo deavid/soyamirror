@@ -16,42 +16,60 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
+cdef struct _BSPPlane:
+	float coords[4]
+	int   signbits
 
 cdef struct _BSPLeaf:
 	int   cluster
-	int   face_group
+	int   area
+	int   model_part
+	int   nb_brush
+	int*  brushes
 	float sphere[4]
 	float box[6]
 
 cdef struct _BSPNode:
-	int   front
-	int   back
-	float plane[4]
+	int front
+	int back
+	int plane
 
-cdef struct _BSPCluster:
-	int* leafs
-	int  nb_leafs
+cdef struct _BSPBrush:
+	int  nb_plane
+	int* planes
 
 cdef class _BSPWorld(_World):
+	cdef _BSPPlane*     _planes
+	cdef int            _nb_plane
 	cdef _BSPNode*      _nodes
 	cdef int            _nb_node
 	cdef _BSPLeaf*      _leafs
 	cdef int            _nb_leaf
-	cdef _BSPCluster*   _clusters
+	cdef int*           _clusters
+	cdef int            _old_cluster
 	cdef object         _movable_lists
 	cdef int            _nb_cluster
+	cdef _BSPBrush*     _brushes
+	cdef int            _nb_brush
 	cdef int            _row_length
 	cdef unsigned char* _vis_data
+	cdef int*           _areamask
+	cdef int            _areamask_modified
 	cdef object         _batched_children
+	cdef object         _batched_clusters
 	
-	cdef float _distance_to(self, float* coords, int node)
+	cdef float _distance_to(self, float* coords, int plane)
 	cdef int   _is_visible_from(self, int _from, int _to)
-	cdef void  _locate_child(self, _Body child)
-	cdef void  _locate_sphere(self, _Body movable, float* sphere, int node)
-	cdef void  _locate_movable(self, _Body movable)
+	cdef char  _box_against_plane(self, float* box, int plane)
+	cdef void  _locate_point(self, float* coords, int* cluster, int* area)
+	cdef void  _locate_box(self, child, float* box, int node, int* areas)
+	cdef void  _locate_child(self, child, int* areas)
 	cdef       __getcstate__(self)
 	cdef void  __setcstate__(self, object cstate)
+	cdef void  _batch_cluster(self, int index)
 	cdef void  _batch(self, CoordSyst coordsyst)
+#	cdef int   _raypick_leaf(self, RaypickData data, int leaf, int category)
+#	cdef int   _raypick_node(self, RaypickData data, float* start, float* end, float start_fraction, float end_fraction, int node, int category)
 	cdef void  _raypick(self, RaypickData raypick_data, CoordSyst raypickable, int category)
 	cdef int   _raypick_b(self, RaypickData raypick_data, CoordSyst raypickable, int category)
 	cdef void  _collect_raypickables(self, Chunk* items, float* rsphere, float* sphere, int category)

@@ -354,13 +354,13 @@ cdef class _AnimatedModel(_Model):
 			
 			# Ok, we render the Cal3D model ; rendering implies computing vertices
 			data._vertex_ok = 1
-			if self._option & CAL3D_ALPHA: renderer._batch(renderer.alpha , self, body, -1)
-			else:                          renderer._batch(renderer.opaque, self, body, -1)
+			if self._option & CAL3D_ALPHA: renderer._batch(renderer.alpha , self, body, NULL)
+			else:                          renderer._batch(renderer.opaque, self, body, NULL)
 			
 			# For outline
 			if (self._option & CAL3D_CELL_SHADING) and (self._outline_width > 0.0):
 				#renderer._batch(renderer.secondpass, self, body, -1)
-				if not self._option & CAL3D_ALPHA: renderer._batch(renderer.alpha, self, body, -1)
+				if not self._option & CAL3D_ALPHA: renderer._batch(renderer.alpha, self, body, NULL)
 				
 				
 	cdef void _render(self, _Body body):
