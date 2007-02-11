@@ -109,11 +109,13 @@ if BUILDING:
 		CONFIG_PYX_FILE.write("""include "sound/nosound.pyx"\n""")
 
 if USE_OPENAL:
-	if sys.platform == 'darwin':# and os.path.exists("/System/Library/Frameworks/OpenAL.framework/"):
+	if sys.platform == 'darwin' and os.path.exists("/System/Library/Frameworks/OpenAL.framework/"):
 		#COMPILE_ARGS.append("-framework OpenAL")
 		#print "using Tiger OpenAl.framework"
+		os.environ['CFLAGS']= '-framework OpenAL '+os.environ.get('CFLAGS','')
 		DEFINES.append(('SOYA_MACOSX',1))
-	LIBS.append("openal")
+	else:
+		LIBS.append("openal")
 		
 
 # Taken from Twisted ; thanks to Christopher Armstrong :
