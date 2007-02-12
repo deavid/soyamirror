@@ -25,6 +25,7 @@ USE_OPENAL = 1     # use OpenAL
 #USE_OPENAL = 0
 
 	
+	
 
 INCDIR = [
 	#"ode-0.5/include",
@@ -36,7 +37,7 @@ INCDIR = [
 	"/usr/include/cal3d",
 	"/usr/local/include/cal3d",
 	"/sw/include", # For Mac OS X "fink"
-	"/opt/local/include", # For Mac OS X "darwin port"
+	"/opt/local/include",# For Mac OS X "darwin port"
 	"/opt/local/include/freetype2", # For Mac OS X "darwin port"
 	#"/System/Library/Frameworks/OpenAL.framework/Headers/",
 	]
@@ -58,6 +59,9 @@ COMPILE_ARGS = [
 
 import os, os.path, sys, glob, distutils.core, distutils.sysconfig
 from distutils.core import setup, Extension
+
+def framework_exist(framework_name): #Os X related stuff. test if a .Framework are present or not.
+	return not os.system("ld -framework %s 2> /dev/null"%framework_name)
 
 BUILDING = ("build" in sys.argv[1:]) and not ("--help" in sys.argv[1:])
 SDISTING = ("sdist" in sys.argv[1:]) and not ("--help" in sys.argv[1:])
@@ -81,8 +85,8 @@ if endian == "big":
 if sys.platform[:3] == "win":
 	LIBS = ["m", "glew32", "SDL", "SDL_mixer", "freetype", "cal3d", "stdc++","ode"]
 else:
-	#LIBS = ["m", "GLEW", "GL", "GLU", "SDL", "SDL_mixer", "freetype", "cal3d", "stdc++"]
 	LIBS = ["m", "GLEW", "SDL", "freetype", "cal3d", "stdc++","ode"]
+	FRAMEWORKS=[]
 
 SOYA_PYREX_SOURCES  = ["_soya.pyx", "matrix.c", "chunk.c" ]
 SOYA_C_SOURCES      = ["_soya.c"  , "matrix.c", "chunk.c" ]
@@ -109,15 +113,24 @@ if BUILDING:
 		CONFIG_PYX_FILE.write("""include "sound/nosound.pyx"\n""")
 
 if USE_OPENAL:
-	if sys.platform == 'darwin' and os.path.exists("/System/Library/Frameworks/OpenAL.framework/"):
-		#COMPILE_ARGS.append("-framework OpenAL")
-		#print "using Tiger OpenAl.framework"
-		os.environ['CFLAGS']= '-framework OpenAL '+os.environ.get('CFLAGS','')
+	if sys.platform == 'darwin' and framework_exist('OpenAL'):
+		print "using OpenAl.Framework"
+		FRAMEWORKS.append('OpenAL')
 		DEFINES.append(('SOYA_MACOSX',1))
 	else:
 		LIBS.append("openal")
-		
 
+
+if "darwin" in sys.platform: #try to use framework if present.
+	for lib in LIBS:
+		if framework_exist(lib):
+			LIBS.remove(lib)
+			FRAMEWORKS.append(lib)
+			print "%s.Framework found in the system, using it instead of an unix lib."%lib
+		else:
+			print "%s.framework not found in the system, trying to use an unix lib instead"%lib
+	for framework in FRAMEWORKS:
+		os.environ['CFLAGS']= ('-framework %s '%framework)+os.environ.get('CFLAGS','')
 # Taken from Twisted ; thanks to Christopher Armstrong :
 #   make sure data files are installed in twisted package
 #   this is evil.
