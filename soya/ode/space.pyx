@@ -12,11 +12,6 @@ cdef class _Space(_Geom):
 	can identify which pairs of geometry objects are potentially
 	touching.
 
-	This Space class can be used for both, a SimpleSpace and a HashSpace
-	(see ODE documentation).
-
-	 >>> space = Space(type=0)   # Create a SimpleSpace
-	 >>> space = Space(type=1)   # Create a HashSpace
 	"""
 
 	# The world this space belongs to, for the default collision callback
