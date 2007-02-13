@@ -24,6 +24,7 @@
 USE_OPENAL = 1     # use OpenAL
 #USE_OPENAL = 0
 
+
 	
 	
 
@@ -60,8 +61,14 @@ COMPILE_ARGS = [
 import os, os.path, sys, glob, distutils.core, distutils.sysconfig
 from distutils.core import setup, Extension
 
+
 def framework_exist(framework_name): #Os X related stuff. test if a .Framework are present or not.
-	return not os.system("ld -framework %s 2> /dev/null"%framework_name)
+	tmpnam = os.tmpnam()
+	ret = os.system("ld -framework %s -o %s 2> /dev/null"%(framework_name,tmpnam))
+	if not ret:
+		os.remove(tmpnam)
+	return not ret
+
 
 BUILDING = ("build" in sys.argv[1:]) and not ("--help" in sys.argv[1:])
 SDISTING = ("sdist" in sys.argv[1:]) and not ("--help" in sys.argv[1:])
@@ -113,7 +120,8 @@ if BUILDING:
 		CONFIG_PYX_FILE.write("""include "sound/nosound.pyx"\n""")
 
 if USE_OPENAL:
-	if sys.platform == 'darwin' and framework_exist('OpenAL'):
+	#print "OpenAl exist :",framework_exist('OpenAL')
+	if "darwin" in sys.platform and framework_exist('OpenAL'):
 		print "using OpenAl.Framework"
 		FRAMEWORKS.append('OpenAL')
 		DEFINES.append(('SOYA_MACOSX',1))
