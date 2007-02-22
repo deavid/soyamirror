@@ -26,10 +26,11 @@ from math import *
 import sys, os, os.path
 import soya
 import soya.widget as widget
+import soya.sdlconst as sdlconst
 
 SCALE_FACTOR = 0.1
 TESSELATE_LEVEL = 5
-SPEED = 10.
+SPEED = 5./20.
 
 BSP_ENTITIES_LUMP     = 0
 BSP_TEXTURES_LUMP     = 1
@@ -389,11 +390,21 @@ def brush_is_cube(brush_planes):
 			return True
 	return False
 
+
+
+
+
 class moving_camera(soya.Camera):
 	def __init__(self, parent):
 		soya.Camera.__init__(self, parent)
-		self.speed            = soya.Vector(self, 0.0, 0.0, 0.0)
-		self.rotation_y_speed = 0.0
+		self.speed          = soya.Vector(self, 0.0, 0.0, 0.0)
+		self.rotation_speed = 0.0
+		
+		self.laser          = soya.laser.Laser(self.parent, reflect = 1)
+		self.laser_vector   = soya.Vector(self,0.,0.01,-1.)
+		self.laser_pos      = soya.Point(self,0.,-1.,0.)
+		self.laser.visible  = False
+		self.laser.color    = (1,0,0,0.5)
 	
 	def begin_round(self):
 		soya.Camera.begin_round(self)
@@ -403,25 +414,37 @@ class moving_camera(soya.Camera):
 				elif event[1] == soya.sdlconst.K_DOWN:   self.speed.z =  SPEED
 				elif event[1] == soya.sdlconst.K_a:      self.speed.y =  SPEED
 				elif event[1] == soya.sdlconst.K_q:      self.speed.y =  -SPEED
-				elif event[1] == soya.sdlconst.K_LEFT:   self.rotation_y_speed =  3.0
-				elif event[1] == soya.sdlconst.K_RIGHT:  self.rotation_y_speed = -3.0
+				elif event[1] == soya.sdlconst.K_LEFT:   self.rotation_speed =  3.0
+				elif event[1] == soya.sdlconst.K_RIGHT:  self.rotation_speed = -3.0
 				elif event[1] == soya.sdlconst.K_ESCAPE: soya.MAIN_LOOP.stop()
 				elif event[1] == soya.sdlconst.K_o:      self.parent.enable_area_visibility(0, 1)
 				elif event[1] == soya.sdlconst.K_i:      self.parent.disable_area_visibility(0, 1)
+				elif event[1] == soya.sdlconst.K_l:
+					print "LASER ------------------------------------------------------"
+					#self.laser.visible  = True
+					r = scene.raypick(self.laser_pos, self.laser_vector, 10., 1, 1)
+					if r: print self.distance_to(r[0])
+				elif event[1] == soya.sdlconst.K_y:
+					self.laser.visible = not (self.laser.visible)
 			elif event[0] == soya.sdlconst.KEYUP:
 				if   event[1] == soya.sdlconst.K_UP:     self.speed.z = 0.0
 				elif event[1] == soya.sdlconst.K_DOWN:   self.speed.z = 0.0
-				elif event[1] == soya.sdlconst.K_a:      self.speed.y =  0.
-				elif event[1] == soya.sdlconst.K_q:      self.speed.y =  0.
-				elif event[1] == soya.sdlconst.K_LEFT:   self.rotation_y_speed = 0.0
-				elif event[1] == soya.sdlconst.K_RIGHT:  self.rotation_y_speed = 0.0
+				elif event[1] == soya.sdlconst.K_a:      self.speed.y = 0.
+				elif event[1] == soya.sdlconst.K_q:      self.speed.y = 0.
+				elif event[1] == soya.sdlconst.K_LEFT:   self.rotation_speed = 0.0
+				elif event[1] == soya.sdlconst.K_RIGHT:  self.rotation_speed = 0.0
 			elif event[0] == soya.sdlconst.QUIT:
 				soya.MAIN_LOOP.stop()
+		
+		self.laser.move(self.laser_pos)
+		self.laser.look_at(self.laser_vector)
 		
 	def advance_time(self, proportion):
 		soya.Camera.advance_time(self, proportion)
 		self.add_mul_vector(proportion, self.speed)
-		self.rotate_y(proportion * self.rotation_y_speed)
+		self.rotate_y(proportion * self.rotation_speed)
+		self.laser.move(self.laser_pos)
+		self.laser.look_at(self.laser_vector)
 
 
 
@@ -680,10 +703,6 @@ for brush in brushes:
 
 # Process brushes in leafs
 for leaf in leafs:
-	# Discarde leaf wich are not cluster
-	# Invalid leaf, outside the level or inside a wall
-	#if leaf.cluster == -1:
-	#	continue
 	# Zero sized leaf, door or moving plateform
 	if leaf.box_min_x == 0 and leaf.box_max_x == 0:
 		continue
@@ -698,16 +717,22 @@ for leaf in leafs:
 # Process every cluster
 # A cluster is a visible leaf (a leaf with faces inside)
 # Those cluster will be the parts of our splited model
+merde = -1
 for leaf in leafs:
+	merde += 1
+	print merde
 	# Discarde leaf wich are not cluster
 	# Invalid leaf, outside the level or inside a wall
 	if leaf.cluster == -1:
+		print "cont 1"
 		continue
 	# Zero sized leaf, door or moving plateform
 	if leaf.box_min_x == 0 and leaf.box_max_x == 0:
+		print "cont 2"
 		continue
 	# Leaf without faces
 	if leaf.nb_leaf_face == 0:
+		print "cont 3"
 		continue
 	
 	# Get a list of all facegroups in that leaf
@@ -763,20 +788,35 @@ else:
 # Display the imported BSP World
 soya.init()
 scene = soya.World()
+
+
+
+
+start_x = -128.0/20.
+start_y = 40.0/20.
+start_z = 8.0/20.
+bsp_world.scale(0.05, 0.05, 0.05)
+
+
+
+
+
 scene.add(bsp_world)
 atmosphere = soya.SkyAtmosphere()
 atmosphere.ambient = (0.9, 0.9, 0.9, 1.0)
 scene.atmosphere = atmosphere
 
-#sword_model = soya.Shape.get("sword")
-#sword = soya.Body(bsp_world, sword_model)
-#sword.set_xyz(start_x, start_y, start_z)
+sword_model = soya.Shape.get("sword")
+sword = soya.Body(bsp_world, sword_model)
+#sword.scale(20., 20., 20.)
+sword.set_xyz(start_x, start_y, start_z)
 
 
 # Creates a camera in the scene
-camera = moving_camera(bsp_world)
-camera.set_xyz(start_x, start_y, start_z)
-camera.back = 1500.
+camera = moving_camera(scene)
+camera.set_xyz(start_x, start_y+(25./20.), start_z)
+#camera.back = 1500.
+camera.back = 70.0
 
 # Creates a widget group, containing the camera and a label showing the FPS.
 soya.set_root_widget(widget.Group())
