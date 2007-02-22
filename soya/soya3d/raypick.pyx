@@ -99,8 +99,10 @@ See World.raypick"""
 		items.nb = 0
 		while items.nb < max:
 			obj = <_CObj> chunk_get_ptr(items)
-			if isinstance(obj, _TreeModel):
+			if   isinstance(obj, _TreeModel):
 				(<_TreeModel> obj)._raypick_from_context(data, items)
+			elif isinstance(obj, _BSPWorld):
+				(<_BSPWorld>obj)._raypick_from_context(data, items, category)
 			else:
 				(<CoordSyst> obj)._raypick(data, (<CoordSyst> obj)._parent, category)
 			
@@ -140,6 +142,8 @@ See World.raypick_b"""
 			obj = <_CObj> chunk_get_ptr(items)
 			if isinstance(obj, _TreeModel):
 				if (<_TreeModel> obj)._raypick_from_context_b(data, items): result = 1; break
+			elif isinstance(obj, _BSPWorld):
+				if (<_BSPWorld>obj)._raypick_from_context_b(data, items, category): result = 1; break
 			else:
 				if (<CoordSyst>  obj)._raypick_b(data, (<CoordSyst> obj)._parent, category): result = 1; break
 		else: result = 0
