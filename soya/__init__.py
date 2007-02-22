@@ -718,7 +718,17 @@ class BSPWorld(SavedInAPath, _soya._BSPWorld, Body):
 A world designed to render a BSP level with maximum optimisation"""
 
 	DIRNAME = "worlds"
+	SRC_DIRNAMES_EXTS = [("bsp", ".bsp")]
 	_alls = weakref.WeakValueDictionary()
+	
+	def _export(klass, src, filename):
+		if src.endswith(".bsp"):
+			import soya.q3bsp2soya
+			bspworld = soya.q3bsp2soya.loadObj(os.path.splitext(src)[0] + ".bsp")
+			bspworld.filename = filename
+			bspworld.save()
+	
+	_export = classmethod(_export)
 
 class Light(_soya._Light):
 	"""Light
