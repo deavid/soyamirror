@@ -454,7 +454,7 @@ cdef class _SimpleModel(_Model):
 				value[2] = vertex._diffuse[2]
 				value[3] = vertex._diffuse[3]
 			else: # the face use diffuse color, but not for this vertex. but we need ALL the face's vertices to have a color => we take the material diffuse color as default.
-				memcpy(value, vertex._face._material._diffuse, 4 * sizeof(float))
+				memcpy(&value[0], &vertex._face._material._diffuse[0], 4 * sizeof(float))
 			diffuse = self._register_color(value)
 		else: diffuse = -1
 		
@@ -982,13 +982,13 @@ and if the angle between their 2 faces is < ANGLE."""
 				data.result      = z
 				data.root_result = root_z
 				data.result_coordsyst = parent
-				if   r == RAYPICK_DIRECT: memcpy(data.normal, self._values + face.normal, 3 * sizeof(float))
+				if   r == RAYPICK_DIRECT: memcpy(&data.normal[0], self._values + face.normal, 3 * sizeof(float))
 				elif r == RAYPICK_INDIRECT:
 					if face.option & FACE_DOUBLE_SIDED:
 						data.normal[0] = -(self._values + face.normal)[0]
 						data.normal[1] = -(self._values + face.normal)[1]
 						data.normal[2] = -(self._values + face.normal)[2]
-					else: memcpy(data.normal, self._values + face.normal, 3 * sizeof(float))
+					else: memcpy(&data.normal[0], self._values + face.normal, 3 * sizeof(float))
 				
 	cdef int _face_raypick_b(self, ModelFace* face, float* raydata, RaypickData data):
 		# XXX inline this func ?
@@ -1232,12 +1232,12 @@ and if the angle between their 2 faces is < ANGLE."""
 				
 				i = (<int*> (chunk.content + (i * (6 * sizeof(float) + sizeof(int)) + 6 * sizeof(float))))[0]
 				
-				memcpy(fp1, coord_ptr    , 3 * sizeof(float))
-				memcpy(fp2, coord_ptr + 3, 3 * sizeof(float))
+				memcpy(&fp1[0], coord_ptr    , 3 * sizeof(float))
+				memcpy(&fp2[0], coord_ptr + 3, 3 * sizeof(float))
 				
 				if light._w == 0.0: # Directional light
-					memcpy(v1, light._data, 3 * sizeof(float))
-					memcpy(v2, light._data, 3 * sizeof(float))
+					memcpy(&v1[0], &light._data[0], 3 * sizeof(float))
+					memcpy(&v2[0], &light._data[0], 3 * sizeof(float))
 				else:
 					v1[0] = fp1[0] - light._data[0]
 					v1[1] = fp1[1] - light._data[1]
@@ -1266,7 +1266,7 @@ and if the angle between their 2 faces is < ANGLE."""
 				
 				glBegin(GL_POLYGON)
 				for j from 0 <= j < nb_points[0]:
-					glVertex3fv(face_data + j * 3)
+					glVertex3fv(&face_data[0] + j * 3)
 				glEnd()
 				
 				if nb_points[1]:
@@ -1503,25 +1503,25 @@ cdef void segment_projection_intersect_plane(float* p1, float* v1, float* p2, fl
 		nb_face = nb_face + 3
 		
 	if has_i1:
-		memcpy(face + nb_face, i1, 3 * sizeof(float))
+		memcpy(face + nb_face, &i1[0], 3 * sizeof(float))
 		nb_face = nb_face + 3
 		
 	if (pv1d > 0.0) and not(has_i1 and (p1d > 0.0)):
-		memcpy(face + nb_face, pv1, 3 * sizeof(float))
+		memcpy(face + nb_face, &pv1[0], 3 * sizeof(float))
 		nb_face = nb_face + 3
 		
 		
 	if has_i4:
-		memcpy(face + nb_face, i4, 3 * sizeof(float))
+		memcpy(face + nb_face, &i4[0], 3 * sizeof(float))
 		nb_face = nb_face + 3
 		
 		
 	if (pv2d > 0.0) and not(has_i2 and (p2d > 0.0)):
-		memcpy(face + nb_face, pv2, 3 * sizeof(float))
+		memcpy(face + nb_face, &pv2[0], 3 * sizeof(float))
 		nb_face = nb_face + 3
 		
 	if has_i2:
-		memcpy(face + nb_face, i2, 3 * sizeof(float))
+		memcpy(face + nb_face, &i2[0], 3 * sizeof(float))
 		nb_face = nb_face + 3
 		
 	if p2d > 0.0:
@@ -1530,18 +1530,18 @@ cdef void segment_projection_intersect_plane(float* p1, float* v1, float* p2, fl
 		
 		
 	if has_i3:
-		memcpy(face + nb_face, i3, 3 * sizeof(float))
+		memcpy(face + nb_face, &i3[0], 3 * sizeof(float))
 		nb_face = nb_face + 3
 		
 		
-	if   has_i1: memcpy(inter1, i1, 3 * sizeof(float)); nb[1] = 1
-	elif has_i3: memcpy(inter1, i3, 3 * sizeof(float)); nb[1] = 1
-	elif has_i4: memcpy(inter1, i4, 3 * sizeof(float)); nb[1] = 1
+	if   has_i1: memcpy(inter1, &i1[0], 3 * sizeof(float)); nb[1] = 1
+	elif has_i3: memcpy(inter1, &i3[0], 3 * sizeof(float)); nb[1] = 1
+	elif has_i4: memcpy(inter1, &i4[0], 3 * sizeof(float)); nb[1] = 1
 	else: nb[1] = 0
 	
-	if   has_i2: memcpy(inter2, i2, 3 * sizeof(float)); nb[2] = 1
-	elif has_i4: memcpy(inter2, i4, 3 * sizeof(float)); nb[2] = 1
-	elif has_i3: memcpy(inter2, i3, 3 * sizeof(float)); nb[2] = 1
+	if   has_i2: memcpy(inter2, &i2[0], 3 * sizeof(float)); nb[2] = 1
+	elif has_i4: memcpy(inter2, &i4[0], 3 * sizeof(float)); nb[2] = 1
+	elif has_i3: memcpy(inter2, &i3[0], 3 * sizeof(float)); nb[2] = 1
 	else: nb[2] = 0
 	
 	nb[0] = nb_face / 3

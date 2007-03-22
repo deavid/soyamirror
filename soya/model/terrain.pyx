@@ -666,7 +666,7 @@ You MUST call this method after the terrain have been modified manually
 		for i from x1 <= i <= x2:
 			for j from z1 <= j <= z2:
 				vertex = self._get_vertex(i, j)
-				memcpy(coords + m, vertex.coord, 3 * sizeof(float))
+				memcpy(coords + m, &vertex.coord[0], 3 * sizeof(float))
 				m = m + 3
 		sphere_from_points(patch.sphere, coords, nb)
 		free(coords)
@@ -761,8 +761,8 @@ You MUST call this method after the terrain have been modified manually
 			self._colors = <float*> malloc(8 * sizeof(float))
 			wcolor = 0
 			scolor = 4
-			memcpy(self._colors + wcolor, white        , 4 * sizeof(float))
-			memcpy(self._colors + scolor, cshadow_color, 4 * sizeof(float))
+			memcpy(self._colors + wcolor, &white[0]        , 4 * sizeof(float))
+			memcpy(self._colors + scolor, &cshadow_color[0], 4 * sizeof(float))
 			
 		# compute shadows
 		for i from 0 <= i < nb:
@@ -1262,7 +1262,7 @@ You MUST call this method after the terrain have been modified manually
 					data.result           = r
 					data.root_result      = root_r
 					data.result_coordsyst = self
-					memcpy(data.normal, tri.normal, 3 * sizeof(float))
+					memcpy(&data.normal[0], &tri.normal[0], 3 * sizeof(float))
 					
 	cdef void _full_raypick(self, TerrainVertex* v1, TerrainVertex* v2, TerrainVertex* v3, float* normal, float* raydata, RaypickData data):
 		cdef float* coord1, *coord2, *coord3
@@ -1287,7 +1287,7 @@ You MUST call this method after the terrain have been modified manually
 							data.result           = a
 							data.root_result      = root_a
 							data.result_coordsyst = self
-							memcpy(data.normal, normal, 3 * sizeof(float))
+							memcpy(&data.normal[0], normal, 3 * sizeof(float))
 
 	cdef void _full_raypick_rect(self, int x1, int z1, int x2, int z2, float* raydata, RaypickData data):
 		cdef int         i, j
@@ -1476,10 +1476,10 @@ You MUST call this method after the terrain have been modified manually
 						patch = self._patchs + i
 						if not sphere_raypick(data, patch.sphere): continue
 						# raypick on tris with full accuracy
-						if self._full_raypick_rect_b(<int> patch.tri_top   .v3.coord[0] / self._scale_factor,
-																				 <int> patch.tri_top   .v3.coord[2] / self._scale_factor,
-																				 <int> patch.tri_bottom.v3.coord[0] / self._scale_factor,
-																				 <int> patch.tri_bottom.v3.coord[2] / self._scale_factor,
+						if self._full_raypick_rect_b(<int> (patch.tri_top   .v3.coord[0] / self._scale_factor),
+																				 <int> (patch.tri_top   .v3.coord[2] / self._scale_factor),
+																				 <int> (patch.tri_bottom.v3.coord[0] / self._scale_factor),
+																				 <int> (patch.tri_bottom.v3.coord[2] / self._scale_factor),
 																				 data, raypick_data.option): return 1
 				else:
 					if raypick_data.option & RAYPICK_HALF_LINE:
@@ -1673,7 +1673,7 @@ You MUST call this method after the terrain have been modified manually
 			self._vertices = <TerrainVertex*> malloc(nb * sizeof(TerrainVertex))
 			for i from 0 <= i < nb:
 				v = self._vertices + i
-				chunk_get_float_endian_safe(chunk, v.coord + 1)
+				chunk_get_float_endian_safe(chunk, &v.coord[0] + 1)
 				chunk_get_int_endian_safe(chunk, &temp)
 				v.pack = (<_Material> (self._materials[temp]))._pack(FACE_TRIANGLE)
 			self._normals = <float*> malloc((self._nb_vertex_width - 1) * (self._nb_vertex_depth - 1) * 6 * sizeof(float))

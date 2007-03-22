@@ -26,14 +26,14 @@ cdef object make_raypick_result(float* f, float z, float* normal, CoordSyst coor
 	if p is None:
 		p = Point (coordsyst, f[0] + f[3] * z, f[1] + f[4] * z, f[2] + f[5] * z)
 		v = Vector(coordsyst)
-		memcpy(v._matrix, normal, 3 * sizeof(float))
+		memcpy(&v._matrix[0], normal, 3 * sizeof(float))
 		return p, v
 	else:
 		p._parent = v._parent = coordsyst
 		p._matrix[0] = f[0] + f[3] * z
 		p._matrix[1] = f[1] + f[4] * z
 		p._matrix[2] = f[2] + f[5] * z
-		memcpy(v._matrix, normal, 3 * sizeof(float))
+		memcpy(&v._matrix[0], normal, 3 * sizeof(float))
 		return 1
 
 
@@ -90,8 +90,8 @@ See World.raypick"""
 		data = get_raypick_data()
 		
 		origin   ._out(data.root_data)
-		direction._out(data.root_data + 3)
-		vector_normalize(data.root_data + 3)
+		direction._out(&data.root_data[0] + 3)
+		vector_normalize(&data.root_data[0] + 3)
 		data.root_data[6] = distance
 		data.option       = RAYPICK_CULL_FACE * cull_face + RAYPICK_HALF_LINE * half_line
 		
@@ -131,8 +131,8 @@ See World.raypick_b"""
 		cdef int         result, max
 		data = get_raypick_data()
 		origin   ._out(data.root_data)
-		direction._out(data.root_data + 3)
-		vector_normalize(data.root_data + 3)
+		direction._out(&data.root_data[0] + 3)
+		vector_normalize(&data.root_data[0] + 3)
 		data.root_data[6] = distance
 		data.option       = RAYPICK_CULL_FACE * cull_face + RAYPICK_HALF_LINE * half_line
 		

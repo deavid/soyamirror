@@ -359,8 +359,8 @@ cdef class _Particles(CoordSyst):
 		cdef float* particle
 		particle = self._particles + index * self._particle_size
 		particle[0] = particle[1] = life
-		if self._parent is None: memcpy (particle + 2, self._matrix + 12, 3 * sizeof(float))
-		else: point_by_matrix_copy(particle + 2, self._matrix + 12, self._parent._root_matrix())
+		if self._parent is None: memcpy (particle + 2, &self._matrix[0] + 12, 3 * sizeof(float))
+		else: point_by_matrix_copy(particle + 2, &self._matrix[0] + 12, self._parent._root_matrix())
 		if not self._particle_coordsyst is None: point_by_matrix(particle + 2, self._particle_coordsyst._inverted_root_matrix())
 		
 		if self._option & PARTICLES_MULTI_COLOR:

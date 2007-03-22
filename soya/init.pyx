@@ -246,7 +246,7 @@ def set_video(int width, int height, int fullscreen, int resizable):
 	# Under Win32, ChangeDisplaySettings can change the bpp.
 	
 	bits_per_pixel = info.vfmt.BitsPerPixel
-	flags = SDL_OPENGL | SDL_GL_DOUBLEBUFFER | SDL_HWPALETTE
+	flags = <int>SDL_OPENGL | <int>SDL_GL_DOUBLEBUFFER | <int>SDL_HWPALETTE
 	if fullscreen == 0: renderer.engine_option = renderer.engine_option & ~FULLSCREEN
 	else:
 		renderer.engine_option = renderer.engine_option |  FULLSCREEN

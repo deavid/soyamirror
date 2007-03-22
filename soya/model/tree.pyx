@@ -32,7 +32,7 @@ cdef Node* node_new(int face_index, GLfloat* sphere):
 	node.faces[0]    = face_index
 	node.nb_children = 0
 	node.children    = NULL
-	memcpy(node.sphere, sphere, 4 * sizeof(float))
+	memcpy(&node.sphere[0], sphere, 4 * sizeof(float))
 	return node
 	
 cdef Node* node_register_face(Node* node, Node* parent, int face_index, float* sphere):
@@ -48,7 +48,7 @@ cdef Node* node_register_face(Node* node, Node* parent, int face_index, float* s
 		n.nb_children = 1
 		n.children    = <Node**> malloc(sizeof(Node*))
 		n.children[0] = node
-		memcpy(n.sphere, sphere, 4 * sizeof(float))
+		memcpy(&n.sphere[0], sphere, 4 * sizeof(float))
 		return n
 	else:
 		if parent == NULL: # create a new node with no face
@@ -144,7 +144,7 @@ cdef int node_gather(Node* node, int mode, float param):
 					if node.children[j] != NULL:
 						sphere_from_2_spheres(sphere, n.sphere, node.children[j].sphere)
 						if (best1 < 0) or (sphere[3] < best_sphere[3]):
-							memcpy(best_sphere, sphere, 4 * sizeof(float))
+							memcpy(&best_sphere[0], &sphere[0], 4 * sizeof(float))
 							best1 = i
 							best2 = j
 	if (best_sphere[3] >= node.sphere[3]): return 0
@@ -156,7 +156,7 @@ cdef int node_gather(Node* node, int mode, float param):
 	n.children    = <Node**> malloc(2 * sizeof(Node*))
 	n.children[0] = node.children[best1]
 	n.children[1] = node.children[best2]
-	memcpy(n.sphere, best_sphere, 4 * sizeof(float))
+	memcpy(&n.sphere[0], &best_sphere[0], 4 * sizeof(float))
 	node.nb_children = node.nb_children - 1
 	node.children[best1] = n
 	node.children[best2] = node.children[node.nb_children]
@@ -293,12 +293,12 @@ cdef class _TreeModel(_SimpleModel):
 		
 	cdef void compute_sphere(self, ModelFace* face, float* sphere):
 		cdef float p[12]
-		memcpy(p,     self._coords + self._vertex_coords[face.v[0]], 3 * sizeof(float))
-		memcpy(p + 3, self._coords + self._vertex_coords[face.v[1]], 3 * sizeof(float))
-		memcpy(p + 6, self._coords + self._vertex_coords[face.v[2]], 3 * sizeof(float))
+		memcpy(&p[0],     self._coords + self._vertex_coords[face.v[0]], 3 * sizeof(float))
+		memcpy(&p[0] + 3, self._coords + self._vertex_coords[face.v[1]], 3 * sizeof(float))
+		memcpy(&p[0] + 6, self._coords + self._vertex_coords[face.v[2]], 3 * sizeof(float))
 		if   face.option & FACE_TRIANGLE: sphere_from_points(sphere, p, 3)
 		elif face.option & FACE_QUAD:
-			memcpy(p + 9, self._coords + self._vertex_coords[face.v[3]], 3 * sizeof(float))
+			memcpy(&p[0] + 9, self._coords + self._vertex_coords[face.v[3]], 3 * sizeof(float))
 			sphere_from_points(sphere, p, 4)
 			
 			

@@ -908,12 +908,12 @@ cdef class _AnimatedModel(_Model):
 				
 				i = (<int*> (chunk.content + (i * (6 * sizeof(float) + sizeof(int)) + 6 * sizeof(float))))[0]
 				
-				memcpy(fp1, coord_ptr    , 3 * sizeof(float))
-				memcpy(fp2, coord_ptr + 3, 3 * sizeof(float))
+				memcpy(&fp1[0], coord_ptr    , 3 * sizeof(float))
+				memcpy(&fp2[0], coord_ptr + 3, 3 * sizeof(float))
 				
 				if light._w == 0.0: # Directional light
-					memcpy(v1, light._data, 3 * sizeof(float))
-					memcpy(v2, light._data, 3 * sizeof(float))
+					memcpy(&v1[0], &light._data[0], 3 * sizeof(float))
+					memcpy(&v2[0], &light._data[0], 3 * sizeof(float))
 				else:
 					v1[0] = fp1[0] - light._data[0]
 					v1[1] = fp1[1] - light._data[1]
@@ -943,7 +943,7 @@ cdef class _AnimatedModel(_Model):
 				
 				glBegin(GL_POLYGON)
 				for j from 0 <= j < nb_points[0]:
-					glVertex3fv(face_data + j * 3)
+					glVertex3fv(&face_data[0] + j * 3)
 				glEnd()
 				
 				if nb_points[1]:
@@ -1087,13 +1087,13 @@ cdef class _AnimatedModel(_Model):
 							data.result      = z
 							data.root_result = root_z
 							data.result_coordsyst = body
-							if   r == RAYPICK_DIRECT: memcpy(data.normal, plane + 4 * j, 3 * sizeof(float))
+							if   r == RAYPICK_DIRECT: memcpy(&data.normal[0], plane + 4 * j, 3 * sizeof(float))
 							elif r == RAYPICK_INDIRECT:
 								if self._option & CAL3D_DOUBLE_SIDED:
 									data.normal[0] = -(plane + 4 * j)[0]
 									data.normal[1] = -(plane + 4 * j)[1]
 									data.normal[2] = -(plane + 4 * j)[2]
-								else: memcpy(data.normal, plane + 4 * j, 3 * sizeof(float))
+								else: memcpy(&data.normal[0], plane + 4 * j, 3 * sizeof(float))
 							vector_normalize(data.normal)
 							
 			i = i + 1

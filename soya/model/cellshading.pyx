@@ -29,7 +29,7 @@ cdef class _CellShadingModel(_SimpleModel):
 		data._shader              = self._shader
 		data._outline_width       = self._outline_width
 		data._outline_attenuation = self._outline_attenuation
-		memcpy(data._outline_color, self._outline_color, 4 * sizeof(float))
+		memcpy(&data._outline_color[0], &self._outline_color[0], 4 * sizeof(float))
 		return data
 		
 	property shader:

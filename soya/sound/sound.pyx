@@ -134,7 +134,7 @@ cdef void _update_sound_listener_position(CoordSyst ear, float proportion):
 							 (pos[2] - _ear_old_pos[2]) / dt,
 							 )
 	
-	memcpy(_ear_old_pos, pos, 3 * sizeof(float))
+	memcpy(&_ear_old_pos[0], &pos[0], 3 * sizeof(float))
 	
 	pos[0] =  0.0
 	pos[1] =  0.0
@@ -143,7 +143,7 @@ cdef void _update_sound_listener_position(CoordSyst ear, float proportion):
 	pos[3] =  0.0
 	pos[4] =  1.0
 	pos[5] =  0.0
-	vector_by_matrix(pos + 3, ear._root_matrix())
+	vector_by_matrix(&pos[0] + 3, ear._root_matrix())
 	alListenerfv(AL_ORIENTATION, pos)
 
 	
@@ -425,7 +425,7 @@ cdef class _SoundPlayer(CoordSyst):
 								 (pos[2] - self._old_pos[2]) / dt,
 								 )
 			
-			memcpy(self._old_pos, pos, 3 * sizeof(float))
+			memcpy(&self._old_pos[0], &pos[0], 3 * sizeof(float))
 
 	property sound:
 		def __get__(self):

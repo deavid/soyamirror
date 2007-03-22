@@ -356,7 +356,7 @@ Returns true if the Face has at least one alpha blended Vertex."""
 		cdef float   coord[3]
 		
 		for vertex in self._vertices:
-			if matrix == NULL: memcpy(coord, vertex._matrix, 3 * sizeof(float))
+			if matrix == NULL: memcpy(&coord[0], &vertex._matrix[0], 3 * sizeof(float))
 			else:              point_by_matrix_copy(coord, vertex._matrix, matrix)
 			
 			if coord[0] < box[0]: box[0] = coord[0]
@@ -392,7 +392,7 @@ Returns true if the Face has at least one alpha blended Vertex."""
 					data.result           = r
 					data.root_result      = root_r
 					data.result_coordsyst = self
-					memcpy(data.normal, normal, 3 * sizeof(float))
+					memcpy(&data.normal[0], &normal[0], 3 * sizeof(float))
 				elif i == RAYPICK_INDIRECT:
 					data.result           = r
 					data.result_coordsyst = self
@@ -400,7 +400,7 @@ Returns true if the Face has at least one alpha blended Vertex."""
 						data.normal[0] = -normal[0]
 						data.normal[1] = -normal[1]
 						data.normal[2] = -normal[2]
-					else: memcpy (data.normal, normal, 3 * sizeof(float))
+					else: memcpy (&data.normal[0], &normal[0], 3 * sizeof(float))
 					
 		free(p)
 		

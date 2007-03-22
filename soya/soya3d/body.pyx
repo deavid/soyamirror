@@ -559,7 +559,7 @@ It also resets the cycle animation time : i.e. cycles will restart from their be
 				else:
 					#saving the scale of the object
 					#XXX optimisable
-					memcpy(zoom,&self._matrix[16],3*sizeof(float))
+					memcpy(&zoom[0],&self._matrix[16],3*sizeof(float))
 					r = dBodyGetQuaternion(self._OdeBodyID)
 					p = dBodyGetPosition(self._OdeBodyID)
 					t = 1.0 - self._t

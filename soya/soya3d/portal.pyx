@@ -163,9 +163,9 @@ portal.beyond from memory (with 'portal.beyond = None')."""
 		
 		# put the 4 points of the portal in the camera coordsys. render_matrix must be set !!!
 		point_by_matrix(p,     self._render_matrix)
-		point_by_matrix(p + 3, self._render_matrix)
-		point_by_matrix(p + 6, self._render_matrix)
-		point_by_matrix(p + 9, self._render_matrix)
+		point_by_matrix(&p[0] + 3, self._render_matrix)
+		point_by_matrix(&p[0] + 6, self._render_matrix)
+		point_by_matrix(&p[0] + 9, self._render_matrix)
 		
 		# find any point is behind the camera front plane
 		free(self._coords)
@@ -180,10 +180,10 @@ portal.beyond from memory (with 'portal.beyond = None')."""
 			face_intersect_plane(p, 4, p2, &p1, &nb)
 			free(p2)
 			# intersect portal with side planes
-			face_intersect_plane(p1, nb, frustum.planes +  4, &p2, &nb); free(p1)
-			face_intersect_plane(p2, nb, frustum.planes +  8, &p1, &nb); free(p2)
-			face_intersect_plane(p1, nb, frustum.planes + 12, &p2, &nb); free(p1)
-			face_intersect_plane(p2, nb, frustum.planes + 16, &self._coords, &(self._nb_vertices))
+			face_intersect_plane(p1, nb, &frustum.planes[0] +  4, &p2, &nb); free(p1)
+			face_intersect_plane(p2, nb, &frustum.planes[0] +  8, &p1, &nb); free(p2)
+			face_intersect_plane(p1, nb, &frustum.planes[0] + 12, &p2, &nb); free(p1)
+			face_intersect_plane(p2, nb, &frustum.planes[0] + 16, &self._coords, &(self._nb_vertices))
 			free(p2)
 			# push portal points to the front plane ;
 			# actually we must not draw the vertices with the camera front value as Z coordinate,
@@ -204,7 +204,7 @@ portal.beyond from memory (with 'portal.beyond = None')."""
 		
 		self._coords = <float*> realloc(self._coords, (self._nb_vertices + 4) * 3 * sizeof(float))
 		nb = self._nb_vertices * 3
-		memcpy(self._coords + nb, p, 12 * sizeof(float))
+		memcpy(self._coords + nb, &p[0], 12 * sizeof(float))
 		
 	cdef void _batch(self, CoordSyst coordsyst):
 		cdef int      i

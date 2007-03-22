@@ -152,7 +152,7 @@ initialized to make OpenGL calls."""
 		for j from 0 <= j < bitmap.rows: # get pixels
 			memcpy(self._pixels + self._current_x + (self._current_y + j) * MAX_TEXTURE_SIZE, bitmap.buffer + bitmap.pitch * j, bitmap.pitch)
 			
-		self._current_x = self._current_x + glyph.width + 5
+		self._current_x = <int> (self._current_x + glyph.width + 5.)
 		
 		glBindTexture(GL_TEXTURE_2D, self._tex_id)
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR)

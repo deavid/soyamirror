@@ -297,9 +297,9 @@ The TOP material is optional.
 		
 		ptr = renderer.current_camera._root_matrix()
 		point_by_matrix(face1,     ptr)
-		point_by_matrix(face1 + 3, ptr)
-		point_by_matrix(face1 + 6, ptr)
-		point_by_matrix(face1 + 9, ptr)
+		point_by_matrix(&face1[0] + 3, ptr)
+		point_by_matrix(&face1[0] + 6, ptr)
+		point_by_matrix(&face1[0] + 9, ptr)
 		
 		y = renderer.current_camera._back * 0.5
 		h = renderer.root_frustum.position[1]

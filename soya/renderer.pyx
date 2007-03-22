@@ -338,7 +338,7 @@ cdef class Renderer:
 		p[10] = - p[1]
 		p[11] =   p[2]
 		glEnableClientState(GL_VERTEX_ARRAY)
-		glVertexPointer    (3, GL_FLOAT, 0, p)
+		glVertexPointer    (3, GL_FLOAT, 0, &p[0])
 		glDisable          (GL_LIGHTING)
 		glDisable          (GL_TEXTURE_2D)
 		glDisable          (GL_FOG)
@@ -361,7 +361,7 @@ cdef class Renderer:
 				glStencilMask (0)
 				glColorMask   (GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE)
 				
-				glColor4fv    (light._colors + 12)
+				glColor4fv    (&light._colors[0] + 12)
 				glStencilFunc (GL_NOTEQUAL, 0, 0xFFFFFFFF)
 				glStencilOp   (GL_KEEP, GL_KEEP, GL_KEEP)
 				glDisable     (GL_CULL_FACE)

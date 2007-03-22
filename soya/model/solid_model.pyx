@@ -84,7 +84,7 @@ cdef class _SolidModel(_SimpleModel):
 		
 		glBegin(GL_TRIANGLES)
 		for i from 0 <= i < 3:
-			point_by_matrix_copy(p + 3 * i, self._coords   + self._vertex_coords[vertex_indices[i]], coord_syst._render_matrix)
+			point_by_matrix_copy(&p[0] + 3 * i, self._coords   + self._vertex_coords[vertex_indices[i]], coord_syst._render_matrix)
 			
 			if self._option & MODEL_DIFFUSES : glColor4fv   (self._colors   + self._vertex_diffuses [vertex_indices[i]])
 			if self._option & MODEL_EMISSIVES: glMaterialfv (GL_FRONT_AND_BACK, GL_EMISSION, self._colors + self._vertex_emissives[vertex_indices[i]]) # XXX use glColorMaterial when emissive color but no diffuse ?
@@ -92,7 +92,7 @@ cdef class _SolidModel(_SimpleModel):
 			if face.option & FACE_SMOOTH_LIT :
 				vector_by_matrix_copy(n, self._vnormals + self._vertex_coords[vertex_indices[i]], coord_syst._render_matrix)
 				glNormal3fv(n)
-			glVertex3fv(p + 3 * i)
+			glVertex3fv(&p[0] + 3 * i)
 		glEnd()
 		
 		for i from 0 <= i < 3:
@@ -105,9 +105,9 @@ cdef class _SolidModel(_SimpleModel):
 				inter[cur_inter3 + 1] = p[i3 + 1]
 				inter[cur_inter3 + 2] = -renderer.current_camera._front - 0.0001
 				
-				if self._option & MODEL_DIFFUSES : memcpy(inter + (cur_inter3 +  3), self._colors + self._vertex_diffuses [vertex_indices[i]], 4 * sizeof(float))
-				if self._option & MODEL_EMISSIVES: memcpy(inter + (cur_inter3 +  7), self._colors + self._vertex_emissives[vertex_indices[i]], 4 * sizeof(float))
-				if self._option & MODEL_TEXCOORDS: memcpy(inter + (cur_inter3 + 11), self._values + self._vertex_texcoords[vertex_indices[i]], 2 * sizeof(float))
+				if self._option & MODEL_DIFFUSES : memcpy(&inter[0] + (cur_inter3 +  3), self._colors + self._vertex_diffuses [vertex_indices[i]], 4 * sizeof(float))
+				if self._option & MODEL_EMISSIVES: memcpy(&inter[0] + (cur_inter3 +  7), self._colors + self._vertex_emissives[vertex_indices[i]], 4 * sizeof(float))
+				if self._option & MODEL_TEXCOORDS: memcpy(&inter[0] + (cur_inter3 + 11), self._values + self._vertex_texcoords[vertex_indices[i]], 2 * sizeof(float))
 				
 				cur_inter3 = cur_inter3 + 13
 				nb_inter   = nb_inter   + 1
@@ -150,10 +150,10 @@ cdef class _SolidModel(_SimpleModel):
 			glNormal3f(0.0, 0.0, 1.0)
 			for i from 0 <= i < nb_inter:
 				cur_inter3 = i * 13
-				if self._option & MODEL_DIFFUSES : glColor4fv   (inter + (cur_inter3 +  3))
-				if self._option & MODEL_EMISSIVES: glMaterialfv (GL_FRONT_AND_BACK, GL_EMISSION, inter + (cur_inter3 +  7))
-				if self._option & MODEL_TEXCOORDS: glTexCoord2fv(inter + (cur_inter3 + 11))
-				glVertex3fv(inter + cur_inter3)
+				if self._option & MODEL_DIFFUSES : glColor4fv   (&inter[0] + (cur_inter3 +  3))
+				if self._option & MODEL_EMISSIVES: glMaterialfv (GL_FRONT_AND_BACK, GL_EMISSION, &inter[0] + (cur_inter3 +  7))
+				if self._option & MODEL_TEXCOORDS: glTexCoord2fv(&inter[0] + (cur_inter3 + 11))
+				glVertex3fv(&inter[0] + cur_inter3)
 			glEnd()
 			
 			if not face.option & FACE_DOUBLE_SIDED: glEnable(GL_CULL_FACE)

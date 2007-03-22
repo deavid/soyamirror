@@ -326,7 +326,7 @@ cdef class _BSPWorld(_World):
 		if self._leafs[self._clusters[index]].model_part >= 0:
 			# test cluster's bounding box against frustum
 			point_by_matrix_copy(box,   self._leafs[self._clusters[index]].box,   self._root_matrix())
-			point_by_matrix_copy(box+3, self._leafs[self._clusters[index]].box+3, self._root_matrix())
+			point_by_matrix_copy(&box[0]+3, &self._leafs[self._clusters[index]].box[0]+3, self._root_matrix())
 			if box_in_frustum(renderer.root_frustum, box) > 0:
 				self._model._batch_part(self, self._leafs[self._clusters[index]].model_part)
 			for child in self._movable_lists[index]:
@@ -443,7 +443,7 @@ cdef class _BSPWorld(_World):
 					data.result      = output_dist
 					data.root_result = root_dist
 					data.result_coordsyst = self
-					memcpy(data.normal, self._planes[hit_plane].coords, 3 * sizeof(float))
+					memcpy(&data.normal[0], &self._planes[hit_plane].coords[0], 3 * sizeof(float))
 		# Raypick againt the world's childrens in this leaf, if this leaf is a cluster
 		if self._leafs[leaf].cluster >= 0:
 			something = data.result_coordsyst

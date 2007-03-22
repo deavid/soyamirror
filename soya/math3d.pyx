@@ -81,13 +81,13 @@ Returns the position of this Position (a Point or a Vector, whatever Position is
 		return self
 		
 	cdef void _into(self, CoordSyst coordsyst, float* result):
-		memcpy(result, self._matrix, 3 * sizeof(float))
+		memcpy(result, &self._matrix[0], 3 * sizeof(float))
 		if (not self._parent is None) and (not coordsyst is None) and (not self._parent is coordsyst):
 			point_by_matrix(result, self._parent._root_matrix())
 			point_by_matrix(result, coordsyst._inverted_root_matrix())
 		
 	cdef void _out(self, float* result):
-		memcpy(result, self._matrix, 3 * sizeof(float))
+		memcpy(result, &self._matrix[0], 3 * sizeof(float))
 		if not self._parent is None:
 			point_by_matrix(result, self._parent._root_matrix())
 		
@@ -291,13 +291,13 @@ Changes IN PLACE this point so as it is a clone of OTHER."""
 
 cdef class _Vector(_Point):
 	cdef void _into(self, CoordSyst coordsyst, float* result):
-		memcpy(result, self._matrix, 3 * sizeof(float))
+		memcpy(result, &self._matrix[0], 3 * sizeof(float))
 		if (not self._parent is None) and (not coordsyst is None) and (not self._parent is coordsyst):
 			vector_by_matrix(result, self._parent._root_matrix())
 			vector_by_matrix(result, coordsyst._inverted_root_matrix())
 			
 	cdef void _out(self, float* result):
-		memcpy(result, self._matrix, 3 * sizeof(float))
+		memcpy(result, &self._matrix[0], 3 * sizeof(float))
 		if not self._parent is None:
 			vector_by_matrix(result, self._parent._root_matrix())
 			

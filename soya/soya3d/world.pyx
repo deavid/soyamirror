@@ -288,8 +288,8 @@ NORMAL is the normal of the object at the impact point.
 		cdef float*      d
 		data = get_raypick_data()
 		origin   ._out(data.root_data)
-		direction._out(data.root_data + 3)
-		vector_normalize(data.root_data + 3)
+		direction._out(&data.root_data[0] + 3)
+		vector_normalize(&data.root_data[0] + 3)
 		data.root_data[6] = distance
 		data.option       = RAYPICK_CULL_FACE * cull_face + RAYPICK_HALF_LINE * half_line
 		
@@ -335,8 +335,8 @@ CATEGORY is a 32 bit wide bitfield identifying witch categories the methode shou
 		cdef int         result
 		data = get_raypick_data()
 		origin   ._out(data.root_data)
-		direction._out(data.root_data + 3)
-		vector_normalize(data.root_data + 3)
+		direction._out(&data.root_data[0] + 3)
+		vector_normalize(&data.root_data[0] + 3)
 		data.root_data[6] = distance
 		data.option       = RAYPICK_CULL_FACE * cull_face + RAYPICK_HALF_LINE * half_line
 		

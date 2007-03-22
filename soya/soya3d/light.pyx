@@ -210,11 +210,11 @@ cdef class _Light(CoordSyst):
 			rdata[2] = rdata[2] - rdata[5] * rdata[6]
 			rdata[6] = rdata[6] - 1.0
 		else:
-			vector_from_points(rdata + 3, self._matrix + 12, position)
+			vector_from_points(rdata + 3, &self._matrix[0] + 12, position)
 			if self._parent is None:
-				memcpy(rdata, self._matrix + 12, 3 * sizeof(GLfloat))
+				memcpy(rdata, &self._matrix[0] + 12, 3 * sizeof(GLfloat))
 			else:
-				point_by_matrix_copy(rdata, self._matrix + 12, self._parent._root_matrix())
+				point_by_matrix_copy(rdata, &self._matrix[0] + 12, self._parent._root_matrix())
 				vector_by_matrix(rdata + 2, self._parent._root_matrix())
 			rdata[6] = vector_length(rdata + 3) - 1.0
 			vector_normalize(rdata + 3)
@@ -235,12 +235,12 @@ cdef class _Light(CoordSyst):
 		m = vector_dot_product(v, w)
 		if m < 0.0: m = 0.0
 		if m <= cos(self._angle): return 0.0 # position is out of cone
-		else: return pow(m, self._exponent)
+		else: return pow(m, <int>self._exponent)
 		
 	cdef float _attenuation_at(self, float position[3]):
 		cdef float d
 		if self._w == 0.0: return 1.0 # directional light
-		d = point_distance_to(self._matrix + 12, position)
+		d = point_distance_to(&self._matrix[0] + 12, position)
 		return 1.0 / (self._constant + self._linear * d + self._quadratic * d * d)
 
 	cdef void _static_light_at(self, float* position, float* normal, int shadow, float* result):
@@ -255,7 +255,7 @@ cdef class _Light(CoordSyst):
 		else:
 			if (normal == NULL): angle = 1.0
 			else:
-				memcpy(n, normal, sizeof(n))
+				memcpy(&n[0], normal, sizeof(n))
 				vector_normalize(n)
 				if self._w == 0.0: # directional light
 					v[0] =  0.0
@@ -263,7 +263,7 @@ cdef class _Light(CoordSyst):
 					v[2] =  1.0 # XXX should be -1, but works only with 1...???
 					vector_by_matrix(v, self._matrix)
 				else:
-					vector_from_points(v, self._matrix + 12, position)
+					vector_from_points(v, &self._matrix[0] + 12, position)
 					vector_normalize(v)
 				angle = vector_dot_product(n, v)
 				
@@ -287,9 +287,9 @@ cdef class _Light(CoordSyst):
 				vector_normalize(self._data)
 		else: # convert light position in coordsys
 			if (self.parent is None) or (self.parent is coordsyst):
-				memcpy (self._data, self._matrix + 12, sizeof(self._data))
+				memcpy (&self._data[0], &self._matrix[0] + 12, sizeof(self._data))
 			else:
-				point_by_matrix_copy(self._data, self._matrix + 12, self._parent._root_matrix())
+				point_by_matrix_copy(self._data, &self._matrix[0] + 12, self._parent._root_matrix())
 				point_by_matrix     (self._data, coordsyst._inverted_root_matrix())
 				
 	cdef void _batch(self, CoordSyst coordsyst):
@@ -338,8 +338,8 @@ cdef class _Light(CoordSyst):
 				glLightf (id, GL_SPOT_EXPONENT,         self._exponent)
 				glLightf (id, GL_SPOT_CUTOFF,           self._angle)
 				glLightfv(id, GL_AMBIENT,               self._colors)
-				glLightfv(id, GL_DIFFUSE,               self._colors + 4)
-				glLightfv(id, GL_SPECULAR,              self._colors + 8)
+				glLightfv(id, GL_DIFFUSE,               &self._colors[0] + 4)
+				glLightfv(id, GL_SPECULAR,              &self._colors[0] + 8)
 				glLightf (id, GL_CONSTANT_ATTENUATION,  self._constant)
 				glLightf (id, GL_LINEAR_ATTENUATION,    self._linear)
 				glLightf (id, GL_QUADRATIC_ATTENUATION, self._quadratic)

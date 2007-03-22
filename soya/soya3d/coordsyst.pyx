@@ -33,14 +33,14 @@ cdef Frustum* frustum_coordsyst_into(Frustum* r, Frustum* f, float* old, float* 
 	if (new != old):
 		# change position, points of coordsys
 		if old != NULL:
-			for i from 0 <= i < 8: point_by_matrix(r.points + 3 * i, old)
+			for i from 0 <= i < 8: point_by_matrix(&r.points[0] + 3 * i, old)
 			scalefactor[0] = scalefactor[0] * old[16]
 			scalefactor[1] = scalefactor[1] * old[17]
 			scalefactor[2] = scalefactor[2] * old[18]
 			point_by_matrix(r.position, old)
 		
 		if new != NULL:
-			for i from 0 <= i < 8: point_by_matrix(r.points + 3 * i, new)
+			for i from 0 <= i < 8: point_by_matrix(&r.points[0] + 3 * i, new)
 			scalefactor[0] = scalefactor[0] * new[16]
 			scalefactor[1] = scalefactor[1] * new[17]
 			scalefactor[2] = scalefactor[2] * new[18]
@@ -50,18 +50,18 @@ cdef Frustum* frustum_coordsyst_into(Frustum* r, Frustum* f, float* old, float* 
 		scaling = scalefactor[0]
 		if scalefactor[1] > scaling: scaling = scalefactor[1]
 		if scalefactor[2] > scaling: scaling = scalefactor[2]
-		face_normal(r.planes, r.points, r.points + 3, r.points + 9)
+		face_normal(r.planes, r.points, &r.points[0] + 3, &r.points[0] + 9)
 		vector_set_length(r.planes, scaling)
-		face_normal(r.planes + 4, r.points + 12, r.points + 15, r.points)
-		vector_set_length(r.planes + 4, scaling)
-		face_normal(r.planes + 8, r.points + 9, r.points + 6, r.points + 21)
-		vector_set_length(r.planes + 8, scaling)
-		face_normal(r.planes + 12, r.points + 12, r.points, r.points + 21)
-		vector_set_length(r.planes + 12, scaling)
-		face_normal(r.planes + 16, r.points + 3, r.points + 15, r.points + 6)
-		vector_set_length(r.planes + 16, scaling)
-		face_normal(r.planes + 20, r.points + 15, r.points + 12, r.points + 18)
-		vector_set_length(r.planes + 20, scaling)
+		face_normal(&r.planes[0] + 4, &r.points[0] + 12, &r.points[0] + 15, r.points)
+		vector_set_length(&r.planes[0] + 4, scaling)
+		face_normal(&r.planes[0] + 8, &r.points[0] + 9, &r.points[0] + 6, &r.points[0] + 21)
+		vector_set_length(&r.planes[0] + 8, scaling)
+		face_normal(&r.planes[0] + 12, &r.points[0] + 12, r.points, &r.points[0] + 21)
+		vector_set_length(&r.planes[0] + 12, scaling)
+		face_normal(&r.planes[0] + 16, &r.points[0] + 3, &r.points[0] + 15, &r.points[0] + 6)
+		vector_set_length(&r.planes[0] + 16, scaling)
+		face_normal(&r.planes[0] + 20, &r.points[0] + 15, &r.points[0] + 12, &r.points[0] + 18)
+		vector_set_length(&r.planes[0] + 20, scaling)
 		# re-compute the constants
 		r.planes[ 3] = -(r.planes[ 0] * r.points[ 0] + r.planes[ 1] * r.points[ 1] + r.planes[ 2] * r.points[ 2])
 		r.planes[ 7] = -(r.planes[ 4] * r.points[ 0] + r.planes[ 5] * r.points[ 1] + r.planes[ 6] * r.points[ 2])
@@ -118,13 +118,13 @@ Creates a new CoordSyst in the World PARENT."""
 		drop_chunk(chunk)
 		
 	cdef void _into(self, CoordSyst coordsyst, float* result):
-		memcpy(result, self._matrix + 12, 12)
+		memcpy(result, &self._matrix[0] + 12, 12)
 		if (not self._parent is None) and (not coordsyst is None) and (not self._parent is coordsyst):
 			point_by_matrix(result, self._parent._root_matrix())
 			point_by_matrix(result, coordsyst._inverted_root_matrix())
 			
 	cdef void _out(self, float* result):
-		memcpy(result, self._matrix + 12, 12)
+		memcpy(result, &self._matrix[0] + 12, 12)
 		if not self._parent is None:
 			point_by_matrix(result, self._parent._root_matrix())
 			
@@ -218,7 +218,7 @@ the given dimensions."""
 			# transform origin and direction into the parent coordsys
 			matrix = self._inverted_root_matrix()
 			point_by_matrix_copy (rdata,     data.root_data,     matrix)
-			vector_by_matrix_copy(rdata + 3, data.root_data + 3, matrix)
+			vector_by_matrix_copy(rdata + 3, &data.root_data[0] + 3, matrix)
 			
 			if (matrix[16] != 1.0) or (matrix[17] != 1.0) or (matrix[18] != 1.0): vector_normalize(rdata + 3)
 
@@ -416,7 +416,7 @@ Sets the scale factors in the X, Y and Z dimension."""
 		
 	cdef float* _root_matrix(self):
 		if not(self._validity & COORDSYS_ROOT_VALID):
-			if self._parent is None: memcpy(self.__root_matrix, self._matrix, sizeof(self.__root_matrix))
+			if self._parent is None: memcpy(&self.__root_matrix[0], &self._matrix[0], sizeof(self.__root_matrix))
 			else: multiply_matrix(self.__root_matrix, self._parent._root_matrix(), self._matrix)
 			self._validity = self._validity | COORDSYS_ROOT_VALID
 		return self.__root_matrix
@@ -470,7 +470,7 @@ Moves a CoordSyst to X, Y and Z."""
 Moves a Position to POSITION.
 Coordinates system conversion is performed if needed (=if the Position and
 POSITION are not defined in the same coordinates system)."""
-		position._into(self._parent, self._matrix + 12)
+		position._into(self._parent, &self._matrix[0] + 12)
 		self._invalidate()
 		
 	def add_xyz(self, float x, float y, float z):
@@ -729,19 +729,19 @@ Same as rotate_z."""
 	def rotate_axe(self, float angle, Position axe not None):
 		"""Same as rotate_axis"""
 		cdef float coords[3]
-		memcpy(coords, self._matrix + 12, 3 * sizeof(float))
+		memcpy(&coords[0], &self._matrix[0] + 12, 3 * sizeof(float))
 		cdef float f[3]
 		axe._into(self._parent, f)
 		matrix_rotate_axe(self._matrix, to_radians(angle), f[0], f[1], f[2])
-		memcpy(self._matrix + 12, coords, 3 * sizeof(float))
+		memcpy(&self._matrix[0] + 12, &coords[0], 3 * sizeof(float))
 		self._invalidate()
 		
 	def rotate_axe_xyz(self, float angle, float x, float y, float z):
 		"""Same as rotate_axis_xyz"""
 		cdef float coords[3]
-		memcpy(coords, self._matrix + 12, 3 * sizeof(float))
+		memcpy(&coords[0], &self._matrix[0] + 12, 3 * sizeof(float))
 		matrix_rotate_axe(self._matrix, to_radians(angle), x, y, z)
-		memcpy(self._matrix + 12, coords, 3 * sizeof(float))
+		memcpy(&self._matrix[0] + 12, &coords[0], 3 * sizeof(float))
 		self._invalidate()
 		
 	def rotate_axis(self, float angle, Position axe not None):
@@ -750,11 +750,11 @@ Same as rotate_z."""
 Rotate a CoordSyst about an axis, of ANGLE degrees.
 The axis is defined by a Vector AXE, and pass through the origin (0, 0, 0)."""
 		cdef float coords[3]
-		memcpy(coords, self._matrix + 12, 3 * sizeof(float))
+		memcpy(&coords[0], &self._matrix[0] + 12, 3 * sizeof(float))
 		cdef float f[3]
 		axe._into(self._parent, f)
 		matrix_rotate_axe(self._matrix, to_radians(angle), f[0], f[1], f[2])
-		memcpy(self._matrix + 12, coords, 3 * sizeof(float))
+		memcpy(&self._matrix[0] + 12, &coords[0], 3 * sizeof(float))
 		self._invalidate()
 		
 	def rotate_axis_xyz(self, float angle, float x, float y, float z):
@@ -762,9 +762,9 @@ The axis is defined by a Vector AXE, and pass through the origin (0, 0, 0)."""
 
 Rotate a CoordSyst about an (X, Y, Z) axis, of ANGLE degrees."""
 		cdef float coords[3]
-		memcpy(coords, self._matrix + 12, 3 * sizeof(float))
+		memcpy(&coords[0], &self._matrix[0] + 12, 3 * sizeof(float))
 		matrix_rotate_axe(self._matrix, to_radians(angle), x, y, z)
-		memcpy(self._matrix + 12, coords, 3 * sizeof(float))
+		memcpy(&self._matrix[0] + 12, &coords[0], 3 * sizeof(float))
 		self._invalidate()
 		
 	def rotate(self, float angle, Position a not None, Position b not None):
@@ -788,7 +788,7 @@ The axis is defined by a Position A, and another Position or a Vector B."""
 Rotate a CoordSyst about an axis, of ANGLE degrees.
 The axis is defined by a two point (X1, Y1, Z1) and (X2, Y2, Z2)."""
 		cdef float coords[3]
-		memcpy(coords, self._matrix + 12, 3 * sizeof(float))
+		memcpy(&coords[0], &self._matrix[0] + 12, 3 * sizeof(float))
 		cdef float p1[3], p2[3]
 		p1[0] = x1
 		p1[1] = y1
@@ -797,7 +797,7 @@ The axis is defined by a two point (X1, Y1, Z1) and (X2, Y2, Z2)."""
 		p2[1] = y2 - y2
 		p2[2] = z2 - z2
 		matrix_rotate(self._matrix, to_radians(angle), p1, p2)
-		memcpy(self._matrix + 12, coords, 3 * sizeof(float))
+		memcpy(&self._matrix[0] + 12, &coords[0], 3 * sizeof(float))
 		self._invalidate()
 		
 	def __repr__(self):
