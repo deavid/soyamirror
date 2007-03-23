@@ -19,7 +19,7 @@
 
 ctypedef void (*_GLUfuncptr)()
 
-cdef extern from "GL/glew.h":
+cdef extern from "include_glew.h":
 	ctypedef unsigned int		GLenum
 	ctypedef unsigned char  GLboolean
 	ctypedef unsigned int		GLbitfield

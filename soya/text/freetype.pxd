@@ -33,7 +33,7 @@
 #cdef extern from "FT_FREETYPE_H":
 #  pass
 
-cdef extern from "freetype_include.h":
+cdef extern from "include_freetype.h":
 #cdef extern from *:
 	cdef int FT_LOAD_DEFAULT
 	cdef int FT_FACE_FLAG_SCALABLE

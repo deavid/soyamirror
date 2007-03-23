@@ -138,7 +138,9 @@ if "darwin" in sys.platform: #try to use framework if present.
 		else:
 			print "%s.framework not found in the system, trying to use an unix lib instead"%lib
 	for framework in FRAMEWORKS:
-		os.environ['CFLAGS']= ('-framework %s '%framework)+os.environ.get('CFLAGS','')
+		os.environ['CFLAGS']= ('-DHAS_FRAMEWORK_%s '%framework.upper()) + os.environ.get('CFLAGS','')
+		os.environ['LDFLAGS']= ('-framework %s '%framework) + os.environ.get('LDFLAGS','')
+
 # Taken from Twisted ; thanks to Christopher Armstrong :
 #   make sure data files are installed in twisted package
 #   this is evil.

@@ -28,7 +28,7 @@
 #include <stdarg.h>
 #include <float.h>
 #include <math.h>
-#include <GL/glew.h>
+#include "include_glew.h"
 
 #include "matrix.h"
 
