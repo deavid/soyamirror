@@ -130,13 +130,16 @@ if USE_OPENAL:
 
 
 if "darwin" in sys.platform: #try to use framework if present.
+	to_be_remove_lib =[]
 	for lib in LIBS:
 		if framework_exist(lib):
-			LIBS.remove(lib)
+			to_be_remove_lib.append(lib)
 			FRAMEWORKS.append(lib)
 			print "%s.Framework found in the system, using it instead of an unix lib."%lib
 		else:
 			print "%s.framework not found in the system, trying to use an unix lib instead"%lib
+	for lib in to_be_remove_lib:
+		LIBS.remove(lib)
 	for framework in FRAMEWORKS:
 		os.environ['CFLAGS']= ('-DHAS_FRAMEWORK_%s '%framework.upper()) + os.environ.get('CFLAGS','')
 		os.environ['LDFLAGS']= ('-framework %s '%framework) + os.environ.get('LDFLAGS','')
