@@ -712,7 +712,7 @@ class InputControl:
 				self.focus = True
 
 			if event[0] == sdl.MOUSEMOTION:
-				return self.on_mouse_over(x, y, event[1])
+				return self.on_mouse_over(x, y, event[3], event[4], event[5])
 			elif event[0] == sdl.MOUSEBUTTONDOWN:
 				return self.on_mouse_down(x, y, event[1])
 			else:
@@ -724,7 +724,7 @@ class InputControl:
 
 		return False
 
-	def on_mouse_over(self, x, y, buttons):
+	def on_mouse_over(self, x, y, dx, dy, buttons):
 		""" event triggered when the mouse moves over the control """
 		pass
 
@@ -755,7 +755,7 @@ class InputControl:
 class _TestInputControl(unittest.TestCase):
 	def testOnMouseOver(self):  
 		""" testing calling on_mouse_over """
-		self.getControl().on_mouse_over(1, 1, 1)
+		self.getControl().on_mouse_over(1, 1, 1, 1, 1)
 
 	def testOnMouseDown(self):
 		""" testing calling on_mouse_down """
