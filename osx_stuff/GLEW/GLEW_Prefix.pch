@@ -1,0 +1,5 @@
+//
+// Prefix header for all source files of the 'GLEW' target in the 'GLEW' project.
+//
+
+#include <Carbon/Carbon.h>

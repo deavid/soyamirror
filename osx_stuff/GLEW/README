@@ -1,0 +1,18 @@
+If you are trying to get a framework with the new version of GLEW, follow these instructions :
+
+• In the file glew.c, add these lines (+ added, = existing) :
+
++ #ifdef OSX_FRAMEWORK
++ #  include <GLEW/glew.h>
++ #else
+
+= #include <GL/glew.h>
+= #if defined(_WIN32)
+= #  include <GL/wglew.h>
+= #elif !defined(__APPLE__) || defined(GLEW_APPLE_GLX)
+= #  include <GL/glxew.h>
+= #endif
+
++ #endif
+
+madprog

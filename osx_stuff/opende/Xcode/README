@@ -1,0 +1,37 @@
+If you want this to compile, you must have run the configure script.
+
+If you want to make a universal binary, change the value of the setting 'Architectures' in Project > Edit project settings > Build and put it to "i386 ppc"
+You will then have to make an hybrid config.h:
+  you should get a config.h generated on a ppc architecture.
+  looking at the difference of these two files (i386 and ppc config.h), surround the #define which differs like this :
+
+ppc file:
+/* #undef PENTIUM */
+
+i386 file:
+#define PENTIUM 1
+
+hybrid file:
+#if defined ppc_YES
+/* #undef PENTIUM */
+#elif defined i386_YES
+#define PENTIUM 1
+#endif
+
+
+ppc file:
+#define WORDS_BIGENDIAN 1
+
+i386 file:
+/* #undef WORDS_BIGENDIAN */
+
+hybrid file:
+#if defined ppc_YES
+#define WORDS_BIGENDIAN 1
+#elif defined i386_YES
+/* #undef WORDS_BIGENDIAN */
+#endif
+
+Note: these are the two different values I found when I did this for version 0.8.0, so maybe it will work for you (if you can't have the diff).
+
+madprog

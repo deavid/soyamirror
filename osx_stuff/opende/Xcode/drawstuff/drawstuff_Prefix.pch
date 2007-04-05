@@ -1,0 +1,5 @@
+//
+// Prefix header for all source files of the 'drawstuff' target in the 'drawstuff' project.
+//
+
+#include <Carbon/Carbon.h>
