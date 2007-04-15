@@ -772,14 +772,14 @@ Rotate a CoordSyst about an (X, Y, Z) axis, of ANGLE degrees."""
 
 Rotate a CoordSyst about an axis, of ANGLE degrees.
 The axis is defined by a Position A, and another Position or a Vector B."""
-		cdef float p1[3], p2[3]
+		cdef float p1[3], v2[3]
 		a._into(self._parent, p1)
-		b._into(self._parent, p2)
+		b._into(self._parent, v2)
 		if not isinstance(b, _Vector):
-			p2[0] = p2[0] - p1[0]
-			p2[1] = p2[1] - p1[1]
-			p2[2] = p2[2] - p1[2]
-		matrix_rotate(self._matrix, to_radians(angle), p1, p2)
+			v2[0] = v2[0] - p1[0]
+			v2[1] = v2[1] - p1[1]
+			v2[2] = v2[2] - p1[2]
+		matrix_rotate(self._matrix, to_radians(angle), p1, v2)
 		self._invalidate()
 		
 	def rotate_xyz(self, float angle, float x1, float y1, float z1, float x2, float y2, float z2):

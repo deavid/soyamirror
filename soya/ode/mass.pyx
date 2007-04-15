@@ -21,8 +21,8 @@ cdef class _Mass: # XXX make total for all XXX make class method for all
 	@type c: 3-tuple of floats
 	@type I: 3-tuple of 3-tuples of floats 
 	"""
-	def __init__(self, float mass=0, float cgx=0, float cgy=0, float cgz=0,
-					  float I11=0,  float I22=0, float I33=0, float I12=0,
+	def __init__(self, float mass=1, float cgx=0, float cgy=0, float cgz=0,
+					  float I11=1,  float I22=1, float I33=1, float I12=0,
 					  float I13=0, float I23=0):
 		dMassSetParameters(&self._mass, mass, cgx, cgy, cgz, I11, I22, I33, I12, I13, I23)
 		
@@ -393,7 +393,7 @@ def CapsuleMass(value, direction, r, h,mode="density"):
 		raise ValueError("Unsupported CapsuleMass Mode : %s"%mode)
 	return sph
 	
-def CylindricalMass(value, direction, r, h,mode="density"):
+def CylindricalMass(value=1, direction=1, r=1, h=1, mode="density"):
 	"""
 	Create a Mass parameters representing a flat-ended cylinder of
 	the given parameters, with the center of mass at
