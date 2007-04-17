@@ -141,9 +141,9 @@ if "darwin" in sys.platform: #try to use framework if present.
 	for lib in to_be_remove_lib:
 		LIBS.remove(lib)
 	for framework in FRAMEWORKS:
-		DEFINES.append(('HAS_FRAMEWORK_%s '%framework.upper(),))
+		DEFINES.append(('HAS_FRAMEWORK_%s'%framework.upper(),1))
 		#os.environ['CFLAGS']= ('-DHAS_FRAMEWORK_%s '%framework.upper()) + os.environ.get('CFLAGS','')
-		os.environ['LDFLAGS']= ('-framework %s '%framework) + os.environ.get('LDFLAGS','')
+		os.environ['CFLAGS']= ('-framework %s '%framework) + os.environ.get('CFLAGS','')
 
 # Taken from Twisted ; thanks to Christopher Armstrong :
 #   make sure data files are installed in twisted package
@@ -174,7 +174,6 @@ if HAVE_PYREX:
 		if os.path.getmtime(f)>soya_pyx_mtime:
 			os.utime('_soya.pyx',None)
 			break
-	
 	KARGS = {
 		"ext_modules" : [
 		Extension("soya._soya", SOYA_PYREX_SOURCES,
