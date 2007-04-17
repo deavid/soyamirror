@@ -24,6 +24,8 @@
 USE_OPENAL = 1     # use OpenAL
 #USE_OPENAL = 0
 
+# Modify the following if needed :
+UNIVERSAL_BINARY = True #try to build a UB if possible
 
 	
 	
@@ -129,7 +131,11 @@ if USE_OPENAL:
 		LIBS.append("openal")
 
 
-if "darwin" in sys.platform: #try to use framework if present.
+if "darwin" in sys.platform:
+    if UNIVERSAL_BINARY:
+        os.environ['CFLAGS'] = "-arch ppc -arch i386"+ os.environ.get('CFLAGS','')
+
+    #try to use framework if present.
 	to_be_remove_lib =[]
 	for lib in LIBS:
 		if framework_exist(lib):
