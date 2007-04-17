@@ -141,7 +141,8 @@ if "darwin" in sys.platform: #try to use framework if present.
 	for lib in to_be_remove_lib:
 		LIBS.remove(lib)
 	for framework in FRAMEWORKS:
-		os.environ['CFLAGS']= ('-DHAS_FRAMEWORK_%s '%framework.upper()) + os.environ.get('CFLAGS','')
+		DEFINES.append(('HAS_FRAMEWORK_%s '%framework.upper(),))
+		#os.environ['CFLAGS']= ('-DHAS_FRAMEWORK_%s '%framework.upper()) + os.environ.get('CFLAGS','')
 		os.environ['LDFLAGS']= ('-framework %s '%framework) + os.environ.get('LDFLAGS','')
 
 # Taken from Twisted ; thanks to Christopher Armstrong :
