@@ -865,7 +865,7 @@ def glMatrixMode(int mode):
 	c_opengl.glMatrixMode(mode)
 	
 def glMultMatrix(float mode):
-	c_opengl.glMatrixMode(mode)
+	c_opengl.glMultMatrix(mode)
 	
 def glTexParameteri(int target, int param, int value):
 	c_opengl.glTexParameteri(target, param, value)
