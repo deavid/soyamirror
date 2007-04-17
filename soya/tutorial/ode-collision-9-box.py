@@ -34,13 +34,13 @@ cubes = []
 for i in xrange(15):
 	cubes.append(soya.Body(scene,m_cube))
 ## Adding a mass ##
-ball_density = 25000
+ball_density = 50
 ground.pushable = False
 ground.gravity_mode = False
 ground.mass     = soya.SphericalMass(1)
 ball.mass       =soya.SphericalMass(ball_density)
 for cube in cubes:
-	cube.mass =soya.BoxedMass(1, 3, 3, 3)
+	cube.mass =soya.BoxedMass(0.01, 3, 3, 3)
 scene.gravity = soya.Vector(scene,0,-9.8,0)
 #Adding Geom
 ball.bounciness = 1
