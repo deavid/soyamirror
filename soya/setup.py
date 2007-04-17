@@ -132,7 +132,9 @@ if USE_OPENAL:
 
 
 if "darwin" in sys.platform:
-    if UNIVERSAL_BINARY:
+    kernel_version = os.uname()[2] # 8.4.3
+    major_version = int(kernel_version.split('.')[0])
+    if UNIVERSAL_BINARY and major_version >=8 :
         os.environ['CFLAGS'] = "-arch ppc -arch i386"+ os.environ.get('CFLAGS','')
 
     #try to use framework if present.
