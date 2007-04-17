@@ -584,6 +584,8 @@
 					i386,
 					ppc,
 				);
+				DYLIB_COMPATIBILITY_VERSION = 0.8;
+				DYLIB_CURRENT_VERSION = 0.8;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"ppc_$(ppc)",
 					"i386_$(i386)",
@@ -602,6 +604,8 @@
 					i386,
 					ppc,
 				);
+				DYLIB_COMPATIBILITY_VERSION = 0.8;
+				DYLIB_CURRENT_VERSION = 0.8;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"ppc_$(ppc)",
 					"i386_$(i386)",
