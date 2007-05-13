@@ -255,8 +255,6 @@ cdef class _WAVSound(_Sound):
 		self._framerate = self._file.getframerate()
 		
 	cdef _getnextdata(self):
-		data = self._file.readframes(1024 * 64)
-		return data
 		return self._file.readframes(1024 * 64)
 	
 	cdef ALuint _getbuffer(self, i):
@@ -393,6 +391,7 @@ cdef class _SoundPlayer(CoordSyst):
 				alSourceQueueBuffers(self._source, 1, &self._pending_buffer)
 				
 			alSourcePlay(self._source)
+			print "Play..."
 			
 	cdef __getcstate__(self):
 		cdef float x

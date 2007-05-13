@@ -172,8 +172,6 @@ class MainLoop(soya.MainLoop, Multisided):
   @side("server")
   def __init__(self, scene = None):
     _set_path_current("_server", 1)
-    import soya.server_mode
-    soya.server_mode.set_server()
     self.action_queues      = weakref.WeakKeyDictionary()
     
     self.sock2client        = {}
