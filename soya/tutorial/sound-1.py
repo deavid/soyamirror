@@ -82,8 +82,7 @@ cube = NoisyCube(scene, cube.Cube().to_model())
 
 # Gets the sound called "test.wav" from the data directory.
 
-#sound = soya.Sound.get("test.wav")
-sound = soya.Sound.get("alterbretonnade.ogg")
+sound = soya.Sound.get("test.wav")
 
 # Creates a sound player in the cube.
 # Sound players have the following attributes (which can be passed to the constructor, too):
