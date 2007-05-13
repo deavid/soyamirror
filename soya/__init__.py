@@ -1019,20 +1019,39 @@ if hasattr(_soya, "_Sound"):
 		def save(klass, filename = None): raise NotImplementedError("Soya cannot save sound.")
 
 		def load(klass, filename):
-
 			if ".." in filename: raise ValueError("Cannot have .. in filename (security reason)!", filename)
 			filename = filename.replace("/", os.sep)
+			
+			try:
+				import pymedia
+				has_pymedia = 1
+			except:
+				has_pymedia = 0
+				
+			has_pymedia = 0
+				
 			for p in path:
 				file = os.path.join(p, klass.DIRNAME, filename)
 				if os.path.exists(file):
-					if   file.endswith(".wav"): sound = WAVSound(file)
-					elif file.endswith(".ogg"): sound = OGGVorbisSound(file)
-					else: raise ValueError("Unsupported sound file format: %s!" % file)
+					if has_pymedia:
+						sound = PyMediaSound(file)
+					else:
+						if   file.endswith(".wav"): sound = WAVSound(file)
+						elif file.endswith(".ogg"): sound = OGGVorbisSound(file)
+						else: raise ValueError("Unsupported sound file format: %s!" % file)
 					sound._filename = filename
 					return sound
 			raise ValueError("No %s named %s" % (klass.__name__, filename))
 		load = classmethod(load)
+		
+		
+	class PyMediaSound(_soya._PyMediaSound, Sound):
+		"""PyMediaSound
 
+	A sound loaded through PyMedia (support WAV, OGG Vorbis, MP3,...).
+
+	Use soya.Sound.get("filename.xxx") for loading a sound from your data directory,
+	or soya.PyMediaSound("/full/filename.xxx") for loading a sound from any directory."""
 
 	class WAVSound(_soya._WAVSound, Sound):
 		"""WAVSound

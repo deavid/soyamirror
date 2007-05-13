@@ -39,4 +39,4 @@ cdef extern from "math.h":
 	float floor (float x)
 
 cdef extern from "stdint.h":
-	ctypedef long intptr_t
+	ctypedef unsigned long intptr_t

@@ -845,12 +845,16 @@ class Level(soya.World, Unique):
   @side("server")
   def check_active(self):
     for mobile in self.mobiles:
-      if not mobile.local: self.set_active(1); break
+      if not mobile.local:
+        self.set_active(1)
+        break
     else: self.set_active(0)
   @side("single", "client")
   def check_active(self):
     for mobile in self.mobiles:
-      if mobile.local and not mobile.bot: self.set_active(1); break
+      if mobile.local and not mobile.bot:
+        self.set_active(1)
+        break
     else: self.set_active(0)
     
   @side("single", "server", "client")
@@ -860,7 +864,9 @@ class Level(soya.World, Unique):
       else:      print "* Tofu * Level %s UID:%s inactivated." % (self.filename, self.uid)
       self.active = active
       if active: soya.MAIN_LOOP.scenes[0].add(self)
-      else:      self.parent.remove(self); self.discard()
+      else:
+        self.parent.remove(self)
+        self.discard()
   @side("single", "client")
   def set_active(self, active):
     if not active:
@@ -880,8 +886,11 @@ class Level(soya.World, Unique):
       soya.World.begin_round(self)
       
       self.state_counter += 1
-      if self.state_counter > MAX_ROUNDS_PER_STATE: sync = 1; self.state_counter = 0
-      else:                                         sync = 0
+      if self.state_counter > MAX_ROUNDS_PER_STATE:
+        sync = 1
+        self.state_counter = 0
+      else:
+        sync = 0
       
       mobile2state = {}
       for client in self.get_clients():
@@ -1053,7 +1062,6 @@ class Mobile(soya.World, Unique):
     
   def do_message(self, s): raise NotImplementedError("You must override this method if you want to send message to this object!")
   
-
 class SpeedInterpolatedMobile(Mobile):
   def __init__(self):
     super(SpeedInterpolatedMobile, self).__init__()
@@ -1152,9 +1160,13 @@ class AnimatedMobile(Mobile):
 
   
 
+_P = soya.Point()
+_V = soya.Vector()
+_R = None
+
 # XXX optimize this one (by re-using Point and Vector,...)
 class RaypickCollidedMobile(Mobile):
-  max_y_speed = 0.5
+  max_y_speed =  0.5
   gravity     = -0.03
   
   def __init__(self):
@@ -1173,19 +1185,22 @@ class RaypickCollidedMobile(Mobile):
   def do_physics(self):
     super(RaypickCollidedMobile, self).do_physics()
     
+    global _R
+    
     self.center.__init__(self.next_state, 0.0, self.radius_y, 0.0)
-    context = self.level.RaypickContext(self.center, max(self.radius, 0.1 + self.radius_y))
+    context = _R = self.level.RaypickContext(self.center, max(self.radius, 0.1 + self.radius_y), _R)
     
     for vec, half_line in self.raypick_dirs:
-      r = context.raypick(self.center, vec, self.radius, half_line = half_line)
+      r = context.raypick(self.center, vec, self.radius, half_line, 1, _P, _V)
       if r:
-        collision, wall_normal = r
+        #collision, wall_normal = r
         #hypo = vec.length() * self.radius - self.center.distance_to(collision)
         #wall_normal.__imul__(hypo)
-        correction = self.collide_wall(self.center, vec, collision, wall_normal)
+        correction = self.collide_wall(self.center, vec, _P, _V)
         
         self.next_state += correction
         self.center     += correction
+        _P.parent = _V.parent = None
         
     self.set_current_state_importance(1)
 
@@ -1195,7 +1210,6 @@ class RaypickCollidedMobile(Mobile):
     return wall_normal
     
   
-# XXX optimize this one (by re-using Point and Vector,...)
 class RaypickCollidedMobileWithGravity(Mobile):
   max_y_speed = 0.5
   gravity     = -0.03
@@ -1218,28 +1232,32 @@ class RaypickCollidedMobileWithGravity(Mobile):
     super(RaypickCollidedMobileWithGravity, self).do_physics()
     
     self.center.__init__(self.next_state, 0.0, self.radius_y, 0.0)
-    context = self.level.RaypickContext(self.center, max(self.radius, 0.1 + self.radius_y))
+    global _R
+    context = _R = self.level.RaypickContext(self.center, max(self.radius, 1.5 * self.radius_y), _R)
     
-    r = context.raypick(self.center, self.down, 0.1 + self.radius_y, 1, 1)
+    r = context.raypick(self.center, self.down, 1.5 * self.radius_y, 1, 1, _P, _V)
     if r:
-      ground, ground_normal = r
-      ground.convert_to(self.level)
-      self.next_state.y = ground.y
+      #ground, ground_normal = r
+      _P.convert_to(self.level)
+      if (self.next_state.y < _P.y) or self.speed.y <= 0.0:
+        self.next_state.y = _P.y
       if self.speed.y < 0.0: self.speed.y = 0.0
+      _P.parent = _V.parent = None
       
     else:
       self.speed.y = max(self.speed.y + self.gravity, -self.max_y_speed)
       
     for vec, half_line in self.raypick_dirs:
-      r = context.raypick(self.center, vec, self.radius, half_line = half_line)
+      r = context.raypick(self.center, vec, self.radius, half_line, 1, _P, _V)
       if r:
-        collision, wall_normal = r
+        #collision, wall_normal = r
         #hypo = vec.length() * self.radius - self.center.distance_to(collision)
         #wall_normal.__imul__(hypo)
-        correction = self.collide_wall(self.center, vec, collision, wall_normal)
+        correction = self.collide_wall(self.center, vec, _P, _V)
         
         self.next_state += correction
         self.center     += correction
+        _P.parent = _V.parent = None
         
     self.set_current_state_importance(1)
     

@@ -122,7 +122,6 @@ cdef void _update_sound_listener_position(CoordSyst ear, float proportion):
 	cdef float dt
 	
 	ear._out(pos)
-	#print "camera", pos[0], pos[1], pos[2]
 	alListenerfv(AL_POSITION, pos)
 	alGetListenerfv(AL_POSITION, pos)
 	
@@ -174,6 +173,74 @@ cdef class _Sound(_CObj):
 		return "<%s %s>" % (self.__class__.__name__, self._filename)
 	
 	
+cdef class _PyMediaSound(_Sound):
+	def __init__(self, filename):
+		print "* Soya * Using PyMedia"
+		
+		import pymedia
+		import pymedia.audio.acodec
+		import pymedia.muxer
+		self.dm = pymedia.muxer.Demuxer(filename.split(".")[-1].lower())
+		
+		self._file = open(filename, "rb")
+		
+		nb = 1
+		s = ""
+		while 1:
+			s = s + self._file.read(8192)
+			frames = self.dm.parse(s)
+			if frames or (nb > 100): break
+			nb = nb + 1
+		self._file.seek(0)
+		
+		self.dec = pymedia.audio.acodec.Decoder(self.dm.streams[0])
+		
+		self._framerate = self.dm.streams[0]["sample_rate"]
+		if self.dm.streams[0]["channels"] == 2:
+			if self.dm.streams[0]["bitrate"] / 8 / self._framerate == 2: self._format = AL_FORMAT_STEREO16
+			else:                                                        self._format = AL_FORMAT_STEREO8
+		else:
+			if self.dm.streams[0]["bitrate"] / 8 / self._framerate == 2: self._format = AL_FORMAT_MONO16
+			else:                                                        self._format = AL_FORMAT_MONO8
+		
+	cdef _getnextdata(self):
+		s = ""
+		i = 0
+		for i from 0 <= i < 100:
+			s = s + self._file.read(1024 * 64)
+			if s == "": return ""
+			frames = self.dm.parse(s)
+			if frames:
+				data = ""
+				for frame in frames:
+					data = data + str(self.dec.decode(frame[1]).data)
+				return data
+			
+		raise RuntimeError("Cannot read data for sound %s !" % self._filename)
+	
+	cdef ALuint _getbuffer(self, i):
+		if i < len(self._buffers): return self._buffers[i]
+		
+		if self._file is None: return 0
+		
+		if i > len(self._buffers): self._getbuffer(i - 1) # Load (recursively) the previous buffers
+		
+		cdef int length
+		data = self._getnextdata()
+		length = len(data)
+		
+		if length == 0: # End of the file
+			self._file = None # Now useless
+			return 0
+		
+		cdef ALuint buffer
+		alGenBuffers(1, &buffer)
+		alBufferData(buffer, self._format, PyString_AS_STRING(data), length, self._framerate)
+		self._buffers.append(buffer)
+		
+		return buffer
+
+
 cdef class _WAVSound(_Sound):
 	def __init__(self, filename):
 		import wave
@@ -188,6 +255,8 @@ cdef class _WAVSound(_Sound):
 		self._framerate = self._file.getframerate()
 		
 	cdef _getnextdata(self):
+		data = self._file.readframes(1024 * 64)
+		return data
 		return self._file.readframes(1024 * 64)
 	
 	cdef ALuint _getbuffer(self, i):
@@ -224,7 +293,7 @@ cdef class _OGGVorbisSound(_Sound):
 		if info.channels == 2: self._format = AL_FORMAT_STEREO16
 		else:                  self._format = AL_FORMAT_MONO16
 		self._framerate = info.rate
-		
+			
 	cdef _getdata(self, int i):
 		cdef int length, size
 		
@@ -295,6 +364,7 @@ cdef class _SoundPlayer(CoordSyst):
 	def __init__(self, _World parent = None, _Sound sound = None, int loop = 0, int play_in_3D = 1, float gain = 1.0, int auto_remove = 1):
 		CoordSyst.__init__(self, parent)
 		self._sound = sound
+		
 		alSourcef(self._source, AL_GAIN, gain)
 		
 		if loop:        self._option = self._option | SOUND_LOOP
@@ -417,7 +487,6 @@ cdef class _SoundPlayer(CoordSyst):
 			
 			self._out(pos)
 			
-			#print "son   ", pos[0], pos[1], pos[2]
 			alSourcefv(self._source, AL_POSITION, pos)
 			alSource3f(self._source, AL_VELOCITY,
 								 (pos[0] - self._old_pos[0]) / dt,

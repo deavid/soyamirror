@@ -85,6 +85,7 @@ return the same pack.
 You shouldn't free the returned pack."""
 		cdef Pack* pack
 		cdef int   opt, i
+
 		opt = option & PACK_OPTIONS
 		# look for existing packs
 		for i from 0 <= i < self._nb_packs: # Don't worth a dict i think (in practice, self._nb_packs <= 3)

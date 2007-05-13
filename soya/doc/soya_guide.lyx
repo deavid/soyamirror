@@ -5056,6 +5056,11 @@ When drawing the mesh, you should use the Blender axis convention (X is
  Model so as it uses Soya's convention (X is right, Y is up and Z is back).
 \end_layout
 
+\begin_layout Description
+Warning: Only triangles or quads are supported; lines, points or more complex
+ faces are not.
+\end_layout
+
 \begin_layout Subsection
 Smooth or solid lighting
 \end_layout
@@ -6845,6 +6850,11 @@ In Soya, each model is made of Faces.
 
 \begin_layout Section
 Modelifiers
+\end_layout
+
+\begin_layout Description
+Warning: Only triangles or quads are supported; lines, points or more complex
+ faces are not.
 \end_layout
 
 \begin_layout Section

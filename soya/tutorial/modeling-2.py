@@ -49,6 +49,9 @@ scene = soya.World()
 # the World file is changed, Model.get will recompile it automatically.
 # You can also use the World.to_model() to compile a World into a Model without saving it.
 
+# Soya Model compilation supports only triangles and quads; points, lines or more complex faces are
+# not supported.
+
 pyramid_model = soya.Model.get("pyramid")
 
 # Creates a Body in the scene, that displays the pyramid.

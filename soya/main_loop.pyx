@@ -99,9 +99,10 @@ Creates a new main_loop for scenes SCENE1, SCENE2,...."""
 
 Stops the main loop. The stopping may not occur immediately, but at the end of the next iteration.
 MainLoop.stop() causes MainLoop.main_loop() to returns ; VALUE is the (optionnal) value that MainLoop.main_loop() will return."""
-		self.running       = 0
-		self._return_value = value
-		
+		if self.running > 0:
+			self.running       = 0
+			self._return_value = value
+			
 	def reset(self):
 		import time
 		self._time = time.time()

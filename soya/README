@@ -28,8 +28,7 @@ For MacOSX, you also need:
  - PyObjC (pyobjc.sourceforge.net)
 
 For sound support, you need either:
- - OpenAL (http://openal.org) and PyOpenAL
-   (http://home.gna.org/oomadness/en/pyopenal/index.html)
+ - OpenAL (http://openal.org)
 
 
 *************************** Installation ***************************

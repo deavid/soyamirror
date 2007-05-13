@@ -231,7 +231,8 @@ def set_gamma(float r_gamma,float g_gamma,float b_gamma):
 
 def set_video(int width, int height, int fullscreen, int resizable):
 	cdef int stencil, bits_per_pixel
-	cdef unsigned int flags
+	#cdef unsigned int flags
+	cdef int flags
 	cdef SDL_VideoInfo* info
 	renderer.screen_width  = width
 	renderer.screen_height = height
