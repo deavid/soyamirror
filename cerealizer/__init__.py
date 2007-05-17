@@ -1,5 +1,5 @@
 # Cerealizer
-# Copyright (C) 2005-2006 Jean-Baptiste LAMY
+# Copyright (C) 2005-2007 Jean-Baptiste LAMY
 #
 # This program is free software.
 # It is available under the Python licence.
@@ -57,11 +57,11 @@ It looks like that :
   <number of objects>\\n
   <classname of object #0>\\n
   <optional data for creating object #0 (currently nothing except for tuples)>
-  <classname of object #0>\\n
-  <optional data for creating object #0 (currently nothing except for tuples)>
+  <classname of object #1>\\n
+  <optional data for creating object #1 (currently nothing except for tuples)>
   [...]
-  <data of object #0 (format depend of the type of object #1)>
-  <data of object #0 (format depend of the type of object #1)>
+  <data of object #0 (format depend of the type of object #0)>
+  <data of object #1 (format depend of the type of object #1)>
   [...]
   <reference to the 'root' object>
 
@@ -102,7 +102,7 @@ The part <data of object #n> saves the data of object #n. It may contains refere
 
 REFERENCES (<reference to XXX> above)
 
-In Cerealizer a reference can be either a reference to another object beign serialized in the
+In Cerealizer a reference can be either a reference to another object being serialized in the
 same file, or a raw value (e.g. an integer).
  - an int              is saved by e.g. 'i187\\n'
  - a  long             is saved by e.g. 'l10000000000\\n'
@@ -130,14 +130,17 @@ class NonCerealizableObjectError(StandardError): pass
 def _priority_sorter(a, b): return cmp(a[0], b[0])
 
 class Dumper(object):
-  def dump(self, root_obj, s):
+  def __init__(self): self.init()
+  def init(self):
     self.objs            = []
     self.objs_id         = set()
     self.priorities_objs = [] # [(priority1, obj1), (priority2, obj2),...]
     self.obj2state       = {}
     self.obj2newargs     = {}
     self.id2id           = {}
+    self.id2obj          = None
     
+  def dump(self, root_obj, s):
     self.collect(root_obj)
     self.priorities_objs.sort(_priority_sorter)
     self.objs.extend([o for (priority, o) in self.priorities_objs])
@@ -152,6 +155,7 @@ class Dumper(object):
     for obj in self.objs: _HANDLERS_[obj.__class__].dump_data(obj, self, s)
     
     _HANDLERS_[root_obj.__class__].dump_ref(root_obj, self, s)
+    self.init()
     
   def undump(self, s):
     if s.read(8) != "cereal1\n": raise NotCerealizerFileError("Not a cerealizer file!")
@@ -165,7 +169,9 @@ class Dumper(object):
       self.id2obj[i] = handler.undump_obj(self, s)
     for obj in self.id2obj: _HANDLERS_[obj.__class__].undump_data(obj, self, s)
     
-    return self.undump_ref(s)
+    r = self.undump_ref(s)
+    self.init()
+    return r
   
   def collect(self, obj):
     """Dumper.collect(OBJ) -> bool
