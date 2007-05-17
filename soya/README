@@ -43,10 +43,12 @@ Soya3D uses Python distutils for installation.
 To install, type the following as root:
 
 cd Soya3D-XXX
+python ./setup.py build
 python ./setup.py install
 
 You might need to edit "config.py" if some of your library are in an
 exotic location (i.e. not in /usr or /usr/local).
+The build part is important as some specific file are generate in this phase
 
 
 If you get an error like :
