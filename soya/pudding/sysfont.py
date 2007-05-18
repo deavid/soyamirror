@@ -28,6 +28,9 @@ __revision__ = '$Revision: 1.3 $'
 
 import os, sys
 
+class FontNotFoundError(IOError):
+	pass
+
 def _simplename(name):
 	""" create simple version of the font name """
 	for char in '_ -':
@@ -259,6 +262,7 @@ def SysFont(name):
 	
 	gotbold = gotitalic = False
 	fontname = None
+	_name = name
 	if name:
 		allnames = name
 		for name in allnames.split(','):
@@ -280,6 +284,8 @@ def SysFont(name):
 					fontname = plainname
 			if fontname: break
 
+	if fontname is None:
+		raise FontNotFoundError("_name")
 	return fontname
 
 
