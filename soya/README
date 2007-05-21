@@ -22,7 +22,7 @@ Soya 3D requires:
  - PIL (Python Imaging Library, for loading images from image files
    http://www.pythonware.com/products/pil/index.htm)
  - GLEW (The OpenGL Extension Wrangler Library http://glew.sf.net)
- - ODE
+ - ODE (0.7 or upper)
    http://www.ode.org/
 For MacOSX, you also need:
  - PyObjC (pyobjc.sourceforge.net)
