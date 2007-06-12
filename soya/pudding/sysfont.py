@@ -285,7 +285,7 @@ def SysFont(name):
 			if fontname: break
 
 	if fontname is None:
-		raise FontNotFoundError("_name")
+		raise FontNotFoundError(_name)
 	return fontname
 
 
