@@ -285,20 +285,20 @@ class UnicodeHandler(RefHandler):
     s.write("u%s\n%s" % (len(obj), obj))
     
 class BoolHandler(RefHandler):
-  def dump_ref (self, obj, dumper, s): s.write("b%s" % int(obj))
+  def dump_ref (self, obj, dumper, s): s.write("b%r" % int(obj))
 
 class IntHandler(RefHandler):
-  def dump_ref (self, obj, dumper, s): s.write("i%s\n" % obj)
+  def dump_ref (self, obj, dumper, s): s.write("i%r\n" % obj)
   
 class LongHandler(RefHandler):
-  def dump_ref (self, obj, dumper, s): s.write("l%s\n" % obj)
+  def dump_ref (self, obj, dumper, s): s.write("l%r\n" % obj)
   
 class FloatHandler(RefHandler):
-  def dump_ref (self, obj, dumper, s): s.write("f%s\n" % obj)
+  def dump_ref (self, obj, dumper, s): s.write("f%r\n" % obj)
   
 class ComplexHandler(RefHandler):
   def dump_ref (self, obj, dumper, s):
-    c = str(obj)
+    c = repr(obj)
     if c.startswith("("): c = c[1:-1] # complex("(1+2j)") doesn't work
     s.write("c%s\n" % c)
     
