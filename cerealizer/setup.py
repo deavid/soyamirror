@@ -1,7 +1,7 @@
 #! /usr/bin/env python
 
 # Cerealizer
-# Copyright (C) 2005 Jean-Baptiste LAMY
+# Copyright (C) 2005-2007 Jean-Baptiste LAMY
 #
 # This program is free software.
 # It is available under the Python licence.
@@ -9,7 +9,7 @@
 import os.path, sys, distutils.core
 
 distutils.core.setup(name         = "Cerealizer",
-                     version      = "0.5",
+                     version      = "0.6",
                      license      = "Python licence",
                      description  = "A secure pickle-like module",
                      long_description = """A secure pickle-like module.
