@@ -24,7 +24,9 @@ DEPRECATED -- use now soya.tofu (tofu4soya corresponds to an old version of tofu
 """
 
 import twisted.internet.selectreactor
-import soya, tofu
+import soya
+
+tofu = __import__("tofu")
 
 class MainLoop(soya.MainLoop):
 	def __init__(self, scene = None):
@@ -104,7 +106,6 @@ class Level(tofu.Level, soya.World):
 		if self.active:
 			soya.World.advance_time(self, proportion)
 		
-
 
 class CoordSystState(soya.CoordSystState, tofu.State):
 	"""CoordSystState
@@ -186,8 +187,17 @@ This default implementation take care of position, rotation and scaling."""
 
 # The other Tofu classes doesn't need hacks currently :-)
 
-from tofu import init, GameInterface, Unique, SavedInAPath, Player, Action, State, LocalController, RemoteController, LocalDoer, RemoteDoer
-
+init = tofu.init
+GameInterface = tofu.GameInterface
+Unique = tofu.Unique
+SavedInAPath = tofu.SavedInAPath
+Player = tofu.Player
+Action = tofu.Action
+State = tofu.State
+LocalController = tofu.LocalController
+RemoteController = tofu.RemoteController
+LocalDoer = tofu.LocalDoer
+RemoteDoer = tofu.RemoteDoer
 
 DROPPED_STATE_RATIO = 10
 LocalDoer. STATE_FACTOR = 1.0
