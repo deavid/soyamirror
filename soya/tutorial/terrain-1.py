@@ -154,8 +154,10 @@ scene.x = 100.0
 scene.atmosphere = soya.Atmosphere()
 scene.atmosphere.ambient = (1.0, 1.0, 1.0, 1.0)
 
-#soya.MainLoop(scene).main_loop()
-i = soya.MainLoop(scene)
-#i.min_frame_duration = 0.0
-i.main_loop()
-print i.fps
+import soya.widget
+soya.set_root_widget(soya.widget.Group())
+soya.root_widget.add(camera)
+soya.root_widget.add(soya.widget.FPSLabel())
+m = soya.MainLoop(scene)
+#m.min_frame_duration = 0.0
+m.main_loop()

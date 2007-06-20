@@ -92,13 +92,13 @@ if endian == "big":
 #from config import *
 
 if sys.platform[:3] == "win":
-	LIBS = ["m", "glew32", "SDL", "SDL_mixer", "freetype", "cal3d", "stdc++","ode"]
+	LIBS = ["m", "glew32", "SDL", "SDL_mixer", "freetype", "cal3d", "stdc++", "ode"]
 else:
 	LIBS = ["m", "GLEW", "SDL", "freetype", "cal3d", "stdc++","ode"]
 	FRAMEWORKS=[]
 
-SOYA_PYREX_SOURCES  = ["_soya.pyx", "matrix.c", "chunk.c" ]
-SOYA_C_SOURCES      = ["_soya.c"  , "matrix.c", "chunk.c" ]
+SOYA_PYREX_SOURCES  = ["_soya.pyx", "matrix.c", "chunk.c"]
+SOYA_C_SOURCES      = ["_soya.c"  , "matrix.c", "chunk.c"]
 
 
 print "BUILDING", BUILDING
@@ -242,7 +242,7 @@ else:
 
 setup(
 	name         = "Soya",
-	version      = "0.13.1",
+	version      = "0.13.2",
 	license      = "GPL",
 	description  = "A practical high-level object-oriented 3D engine for Python.",
 	long_description  = """A practical high-level object-oriented 3D engine for Python.

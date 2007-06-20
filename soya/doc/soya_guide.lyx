@@ -5,6 +5,7 @@
 \textclass report
 \begin_preamble
 \usepackage{ae,aecompl}
+\usepackage{hyperref}
 \end_preamble
 \language english
 \inputencoding auto
@@ -41,7 +42,7 @@
 \begin_inset Graphics
 	filename yeti.png
 	lyxscale 25
-	width 20col%
+	width 25col%
 
 \end_inset
 
@@ -7015,7 +7016,7 @@ never
 \begin_layout Description
 PlayerIDs are used to identify Players.
  Contrary to Players, PlayerIDs are available both at client and server-side.
- The default PlayerID class provides only to attributes: filename (which
+ The default PlayerID class provides only two attributes: filename (which
  is the name of the Player) and password.
  You may extend the class with additional attributes, such as the character
  the Player has chosen (
@@ -8715,6 +8716,14 @@ RaypickCollidedMobile is a Mobile that uses raypicking for basic collision
  detection (walls and ground).
 \end_layout
 
+\begin_layout Paragraph
+RaypickCollidedMobileWithGravity
+\end_layout
+
+\begin_layout Standard
+Same as RaypickCollidedMobile, but with gravitational force.
+\end_layout
+
 \begin_layout Standard
 \begin_inset Tabular
 <lyxtabular version="3" rows="4" columns="2">
@@ -8826,7 +8835,7 @@ side-oriented programming
 \begin_inset Quotes erd
 \end_inset
 
-, which defined in the tofu_udp.sides module.
+, which defined in the soya.tofu.sides module.
  When a method is prefixed by 
 \begin_inset Quotes eld
 \end_inset
@@ -8837,7 +8846,7 @@ side-oriented programming
 
  (where XXX is single, server, client, or any combination of them), it means
  that the method exists only in the corresponding modes.
- The implementation of side-programming itself is in side.py.
+ The implementation of side-programming itself is in sides.py.
 \end_layout
 
 \begin_layout Section

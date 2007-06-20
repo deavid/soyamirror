@@ -42,7 +42,7 @@ scene = soya.World()
 # Creates a new terrain in the scene. terrain_size is the dimension of the terrain ;
 # it must be of the form (2 ** n) + 1.
 
-terrain_size = 33
+terrain_size = 129
 terrain = soya.Terrain(scene, terrain_size, terrain_size)
 
 # Sets a random value for each height.
@@ -100,6 +100,14 @@ class MovableCamera(soya.Camera):
 camera = MovableCamera(scene)
 camera.set_xyz(16.0, 6.0, 0.0)
 camera.look_at(soya.Point(scene, 16.0, 6.0, 10.0))
-soya.set_root_widget(camera)
+#soya.set_root_widget(camera)
+
+import soya.widget
+soya.set_root_widget(soya.widget.Group())
+soya.root_widget.add(camera)
+soya.root_widget.add(soya.widget.FPSLabel())
+m = soya.MainLoop(scene)
+#m.min_frame_duration = -1.0
+m.main_loop()
 
 soya.MainLoop(scene).main_loop()
