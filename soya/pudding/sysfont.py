@@ -180,13 +180,42 @@ def _fontwalk(fonts, path, files):
 		read_unix_fontscache(path, 'fonts.cache-1', fonts)
 
 
-def initsysfonts_unix():
+def initsysfonts_unix_old():
 	""" read the fonts on unix """
 	paths = ['/usr/X11R6/lib/X11/fonts', '/usr/share/fonts']
 	fonts = {}
 	for p in paths:
 		if os.path.isdir(p):
 			os.path.walk(p, _fontwalk, fonts)
+	return fonts
+
+#read the fonts on unix
+def initsysfonts_unix():
+	fonts = initsysfonts_unix_old()
+	
+	# we use the fc-list from fontconfig to get a list of fonts.
+	
+	try:
+		# note, we use popen3 for if fc-list isn't there to stop stderr printing.
+		flin, flout, flerr = os.popen3('fc-list : file family style')
+	except:
+		return fonts
+	
+	try:
+		for line in flout:
+			try:
+				filename, family, style = line.split(':', 2)
+				if filename[-4:].lower() in ['.ttf', '.ttc']:
+					bold = style.find('Bold') >= 0
+					italic = style.find('Italic') >= 0
+					oblique = style.find('Oblique') >= 0
+					_addfont(_simplename(family), bold, italic or oblique, filename, fonts)
+			except:
+				# try the next one.
+				pass
+	except:
+		pass
+	
 	return fonts
 
 
