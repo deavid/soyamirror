@@ -293,3 +293,7 @@
       to the first call, and not the last one.
     * Fix for Python 2.5
 
+* June 2007 : Soya3D 0.13.2
+  * Better use of fontconfig on Unix
+  * Bugfixes:
+    * Fix old and deprecated tofu3soya.py (for Balazar)
