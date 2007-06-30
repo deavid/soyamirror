@@ -109,5 +109,3 @@ soya.root_widget.add(soya.widget.FPSLabel())
 m = soya.MainLoop(scene)
 #m.min_frame_duration = -1.0
 m.main_loop()
-
-soya.MainLoop(scene).main_loop()

@@ -4592,6 +4592,12 @@ sorcerer.detach("helmet")
 sorcerer.attach("armor")
 \end_layout
 
+\begin_layout Standard
+Notice that displaying AnimatedModels is much slower than non-animated Model,
+ due to the animation-related computation, even if you actually don't play
+ animation.
+\end_layout
+
 \begin_layout Section
 Playing animations
 \end_layout

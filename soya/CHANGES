@@ -297,3 +297,5 @@
   * Better use of fontconfig on Unix
   * Bugfixes:
     * Fix old and deprecated tofu3soya.py (for Balazar)
+    * World -> Model compilation (and thus Blender export) was broken
+      on Python 2.4
