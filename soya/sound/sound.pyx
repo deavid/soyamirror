@@ -391,7 +391,6 @@ cdef class _SoundPlayer(CoordSyst):
 				alSourceQueueBuffers(self._source, 1, &self._pending_buffer)
 				
 			alSourcePlay(self._source)
-			print "Play..."
 			
 	cdef __getcstate__(self):
 		cdef float x

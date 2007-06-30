@@ -407,12 +407,12 @@ cdef int check_gl_error() except -1:
 	cdef GLenum error
 	error = glGetError()
 	if error != GL_NO_ERROR:
-		if   error == GL_INVALID_ENUM     : print "GL_INVALID_ENUM"     ; raise GLError("GL_INVALID_ENUM")
-		elif error == GL_INVALID_OPERATION: print "GL_INVALID_OPERATION"; raise GLError("GL_INVALID_OPERATION")
-		elif error == GL_STACK_OVERFLOW   : print "GL_STACK_OVERFLOW"   ; raise GLError("GL_STACK_OVERFLOW")
-		elif error == GL_STACK_UNDERFLOW  : print "GL_STACK_UNDERFLOW"  ; raise GLError("GL_STACK_UNDERFLOW")
-		elif error == GL_OUT_OF_MEMORY    : print "GL_OUT_OF_MEMORY"    ; raise GLError("GL_OUT_OF_MEMORY")
-		else:                               print "Unknown GL_ERROR"    ; raise GLError("Unknown GL_Error")
+		if   error == GL_INVALID_ENUM     : print "GL_INVALID_ENUM"     ; raise GLError, "GL_INVALID_ENUM"
+		elif error == GL_INVALID_OPERATION: print "GL_INVALID_OPERATION"; raise GLError, "GL_INVALID_OPERATION"
+		elif error == GL_STACK_OVERFLOW   : print "GL_STACK_OVERFLOW"   ; raise GLError, "GL_STACK_OVERFLOW"
+		elif error == GL_STACK_UNDERFLOW  : print "GL_STACK_UNDERFLOW"  ; raise GLError, "GL_STACK_UNDERFLOW"
+		elif error == GL_OUT_OF_MEMORY    : print "GL_OUT_OF_MEMORY"    ; raise GLError, "GL_OUT_OF_MEMORY"
+		else:                               print "Unknown GL_ERROR"    ; raise GLError, "Unknown GL_Error"
 
 
 def set_root_widget(widget):
