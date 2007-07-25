@@ -40,12 +40,15 @@ cdef class _World(_Body):
 	property has_space:
 		def __get__(self):
 			return self._space is not None
-		def __set__(self,value):
-			if value != self._space is not None:
-				if value:
-					SimpleSpace(world=self)
-				else:
-					raise NotImplementedError("There is currently no way to remove a space from a world")
+		def __set__(self,value):#
+			print value
+			if value  and self._space is None:
+				print "in"
+				print SimpleSpace(world=self)
+				print self._space
+			elif self._space is not None:
+				print "out"
+				raise NotImplementedError("There is currently no way to remove a space from a world")
 			
 	def __init__(self, _World parent = None, _Model model = None, opt = None):
 		self.children = []

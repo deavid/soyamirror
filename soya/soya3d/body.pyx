@@ -342,8 +342,11 @@ It also resets the cycle animation time : i.e. cycles will restart from their be
 		else: raise TypeError("This type of model doesn't support LOD!")
 		
 	cdef void _activate_ode_body(_Body self):
+		if self.parent is None:
+			raise ValueError("Orphan Body can't be ODE managed, it must ba added to a world first")
 		self._activate_ode_body_with(self.parent)
 	cdef void _activate_ode_body_with(_Body self,_World world):	
+		assert world is not None
 		if not self._option & BODY_HAS_ODE:
 			world = _find_or_create_most_probable_ode_parent_from(world)
 			self._OdeBodyID = dBodyCreate(world._OdeWorldID)
@@ -449,18 +452,24 @@ It also resets the cycle animation time : i.e. cycles will restart from their be
 			return self._geom
 		def __set__(self, _PlaceableGeom geom):
 			if geom is not self._geom:
-				if self._geom is not None:
-					self._geom.body = None
+				old_geom = self._geom
 				self._geom = geom
+				if old_geom is not None:
+					old_geom.body = None
 				if geom is not None:
 					if geom._body is not self:
 						geom.body = self
+		def __del__(self):
+			self.geom=None
 	def added_into(self, _World new_parent):
 		CoordSyst.added_into(self,new_parent)
 		if self._geom is not None:
-			if self._parent._space is None:
-				self._parent._space = self._geom._space.__class__(self._parent)
-			self._geom.space = self._parent._space
+			if self._parent is not None:
+				if self._parent.space is None:
+					type(self._geom._space)(self._parent)
+				self._geom.space = self._parent.space
+			else:
+				self._geom.space = None
 			
 						
 	cdef void _sync_ode_position(self):

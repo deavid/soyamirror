@@ -100,7 +100,7 @@ cdef class _Space(_Geom):
 		"""
 		if geom not in self.geoms:
 			self.geoms.append(geom)
-			self.space = self # ZZZ warning
+			geom.space = self # ZZZ warning
 			dSpaceAdd(<dSpaceID>self._OdeGeomID, geom._OdeGeomID)
 
 	def remove(self, _Geom geom):
@@ -111,9 +111,10 @@ cdef class _Space(_Geom):
 		@param geom: Geom object to remove
 		@type geom: _Geom
 		"""
-		self.geoms.remove(geom)
-		geom._space = None
-		dSpaceRemove(<dSpaceID>self._OdeGeomID, geom._OdeGeomID)
+		if geom in self.geoms:
+			self.geoms.remove(geom)
+			geom.space = None
+			dSpaceRemove(<dSpaceID>self._OdeGeomID, geom._OdeGeomID)
 
 	#def set_last_transformations(self):
 	#		"""Set the last transformation for each TriMesh geom in the space.

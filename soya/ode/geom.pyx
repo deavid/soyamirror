@@ -43,11 +43,12 @@ cdef class _Geom:
 			return self._space
 		def __set__(self,_Space space):
 			if space is not self._space:
-				if self._space is not None:
-					self._space.remove(self)
+				old_space = self._space
+				self._space = space
+				if old_space is not None:
+					old_space.remove(self)
 				if space is not None :
 					space.add(self)
-				self._space = space
 				
 	property collide_bits:
 		def __set__(self,bits):
@@ -90,16 +91,19 @@ cdef class _PlaceableGeom(_Geom):
 	property body:
 		def __set__(self, _Body body):
 			if self._body is not body:
-				if self._body is not None:
+				if self._body is not None and self._body.geom is self:
 					self._body.geom = None
 				self._body = body
-				if body  is None:
+				if body is None:
 					dGeomSetBody(self._OdeGeomID,NULL)
 				else:
 					if not body._option & BODY_HAS_ODE:
 						body._activate_ode_body()
 					dGeomSetBody(self._OdeGeomID,body._OdeBodyID)
 					body.geom = self
+					if body.parent.space is None:
+						SimpleSpace(world=body.parent)
+					self.space=body.parent.space
 				
 			
 		def __get__(self):
