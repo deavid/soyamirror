@@ -288,7 +288,7 @@ Gets the height of the rendering screen, in pixel."""
 		renderer.current_camera = None # Avoid a potential memory leak
 		
 	cdef void _render_scene(self):
-		glPushAttrib(GL_VIEWPORT)
+		glPushAttrib(GL_VIEWPORT_BIT)
 		glMatrixMode(GL_PROJECTION)
 		glPushMatrix()
 		glMatrixMode(GL_MODELVIEW)
