@@ -450,7 +450,7 @@ cdef int _TerrainCollide(dGeomID o1, dGeomID o2, int flags,
 
 cdef dColliderFn * _TerrainGetColliderFn(int gclass):
 
-		if gclass in (dSphereClass, dBoxClass, dCCylinderClass):
+		if gclass in (dSphereClass, dBoxClass, dCCylinderClass, dCylinderClass):
 				return _TerrainCollide
 		raise RuntimeError("TerrainGeom can't collide with non primitive Geom")
 
