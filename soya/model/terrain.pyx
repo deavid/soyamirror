@@ -1127,7 +1127,7 @@ You MUST call this method after the terrain have been modified manually
 		glVertex3fv(tri.v3.coord)
 		#glArrayElement(index)
 
-
+		
 	cdef void _render(self, CoordSyst coordsyst):
 		cdef int          index
 		cdef CListHandle* handle
@@ -1153,21 +1153,21 @@ You MUST call this method after the terrain have been modified manually
 				tri    = <TerrainTri*> handle.data
 				handle = handle.next
 				while tri:
-					#index = tri.v1 - self._vertices
+					index = tri.v1 - self._vertices
 					if self._colors != NULL: terrain_drawColor(self._colors + index)
 					#glArrayElement(index)
 					glTexCoord2fv(tri.v1.texcoord)
 					glNormal3fv(tri.v1.normal)
 					glVertex3fv(tri.v1.coord)
 					
-					#index = tri.v2 - self._vertices
+					index = tri.v2 - self._vertices
 					if self._colors != NULL: terrain_drawColor(self._colors + index)
 					#glArrayElement(index)
 					glTexCoord2fv(tri.v2.texcoord)
 					glNormal3fv(tri.v2.normal)
 					glVertex3fv(tri.v2.coord)
 					
-					#index = tri.v3 - self._vertices
+					index = tri.v3 - self._vertices
 					if self._colors != NULL: terrain_drawColor(self._colors + index)
 					#glArrayElement(index)
 					glTexCoord2fv(tri.v3.texcoord)
