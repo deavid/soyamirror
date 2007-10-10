@@ -25,7 +25,6 @@ def __yieldBlenderObj(t, objlist=None):
 		if obj.getType() == t and not obj.getName().startswith("_"):
 			yield obj, obj.getData()
 
-@blendercal.exception
 def SkeletonData():
 	# This function returns a single blendercal.bcobject.Skeleton instance
 	# and sets blendercal.bcobject.Skeleton.ARMATURE to the appropriate Blender
@@ -54,7 +53,9 @@ def SkeletonData():
 	
 	return skeleton
 
-@blendercal.exception
+SkeletonData = blendercal.exception(SkeletonData)
+
+#@blendercal.exception
 def MeshData():
 	# This function returns a list of blender.bcobject.Mesh objects, one for
 	# each mesh in your Blender scene. The Cal3D notion of a Mesh is actually more
@@ -256,7 +257,7 @@ def MeshData():
 			# preventing another iteration of all the vertices here.
 			for i, v in enumerate(vlist):
 				weights = data.getVertexInfluences(v.index)
-				total   = sum(w for b, w in weights)
+				total   = sum([w for b, w in weights])
 			
 				for b, w in weights:
 					vertices[i].influences.append(bcobject.Influence(
@@ -300,7 +301,8 @@ def MeshData():
 
 	return meshes
 
-@blendercal.exception
+MeshData = blendercal.exception(MeshData)
+
 def AnimationData():
 	# This function demonstrates a new way of parsing and retrieving animation
 	# data in Blender. With version 242 and above, users can call the the
@@ -369,7 +371,8 @@ def AnimationData():
 
 	return animations
 
-@blendercal.exception
+AnimationData = blendercal.exception(AnimationData)
+
 def ExportData(filename, skeldata, meshdata, animdata, prefixfiles=False):
 	dirname  = os.path.dirname(filename)
 	basename = os.path.splitext(os.path.basename(filename))[0]
@@ -419,3 +422,5 @@ def ExportData(filename, skeldata, meshdata, animdata, prefixfiles=False):
 		print >> file(os.path.join(dirname, matfile), "w"), material
 		
 		print >> cfg, "material=%s" % matfile
+
+ExportData = blendercal.exception(ExportData)

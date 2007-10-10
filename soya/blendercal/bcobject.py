@@ -12,7 +12,7 @@ import bcgui
 # hashable and unordered.
 from sets import ImmutableSet
 
-CONCAT = lambda s, j="": j.join(str(v) for v in s)
+CONCAT = lambda s, j="": j.join([str(v) for v in s])
 STRFLT = lambda f: "%%.%df" % bcconf.FLOATPRE % f
 
 class Cal3DObject(object):
@@ -550,7 +550,7 @@ class Vertex(Cal3DObject):
 		
 		# If one UV is None, the rest will also be None.
 		if len(uvs) and (uvs[0][0] != None):
-			self.maps.extend(Map(uv) for uv in uvs)
+			self.maps.extend([Map(uv) for uv in uvs])
 		
 		submesh.vertices.append(self)
 
@@ -710,7 +710,7 @@ class Bone(Cal3DObject):
 			STRFLT(invertrot.z),
 			STRFLT(invertrot.w),
 			self.parent and "%d" % self.parent.id or "-1",
-			"".join("##<CHILDID>%s</CHILDID>\n" % c.id for c in self.children)
+			"".join(["##<CHILDID>%s</CHILDID>\n" % c.id for c in self.children])
 		)
 
 class Animation(Cal3DObject):
