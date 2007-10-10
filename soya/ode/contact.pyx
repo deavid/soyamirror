@@ -19,7 +19,7 @@ cdef class Contact:
 		"""
 		
 
-		def __new__(self, *args, **kw):
+		def __cinit__(self, *args, **kw):
 				self._contact.surface.mode = ContactBounce
 				self._contact.surface.mu   = dInfinity
 

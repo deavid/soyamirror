@@ -33,7 +33,7 @@ cdef class _Light(CoordSyst):
 	##cdef int _used
 	#cdef _static_shadow_displaylists
 	
-	def __new__(self, *args, **kargs):
+	def __cinit__(self, *args, **kargs):
 		self.__raypick_data              = -1
 		self._id                         = -1
 		self._static_shadow_displaylists = weakref.WeakKeyDictionary()
@@ -401,11 +401,11 @@ model computation time)."""
 			glEnable(GL_LIGHT0 + light._id)
 			light._gl_id_enabled = 1
 			
-cdef void disable_deep_lights():
-	"""Disable all non top level lights."""
-	cdef _Light light
-	for light in LIGHTS:
-		if (not light is None) and (light._option & LIGHT_TOP_LEVEL) and (light._gl_id_enabled == 1):
-			glDisable(GL_LIGHT0 + i)
-			light._gl_id_enabled = 0
+#U#cdef void disable_deep_lights():
+#U#	"""Disable all non top level lights."""
+#U#	cdef _Light light
+#U#	for light in LIGHTS:
+#U#		if (not light is None) and (light._option & LIGHT_TOP_LEVEL) and (light._gl_id_enabled == 1):
+#U#			glDisable(GL_LIGHT0 + i)
+#U#			light._gl_id_enabled = 0
 			

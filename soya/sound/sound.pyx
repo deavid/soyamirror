@@ -154,7 +154,7 @@ cdef class _Sound(_CObj):
 	cdef        int    _format
 	cdef        int    _framerate
 	
-	def __new__(self, *args, **kargs):
+	def __cinit__(self, *args, **kargs):
 		self._buffers = []
 		
 	def __dealloc__(self):
@@ -301,6 +301,10 @@ cdef class _OGGVorbisSound(_Sound):
 		elif self._format == AL_FORMAT_MONO16  : size = 16384
 		elif self._format == AL_FORMAT_STEREO8 : size = 16384
 		elif self._format == AL_FORMAT_MONO8   : size = 16384 / 2
+		# Greg Ewing, March 2007 (greg.ewing@canterbury.ac.nz)
+		# Else clause added to fix uninitialised variable warning
+		else:
+			raise ValueError("Unknown size")
 
 		# Catching exception seems to memory leak in pyrex
 		#try:    self._file.pcm_seek(i * 8192)
@@ -352,7 +356,7 @@ cdef class _SoundPlayer(CoordSyst):
 	cdef int    _current_buffer_id
 	cdef float  _old_pos[3]
 	
-	def __new__(self, *args, **kargs):
+	def __cinit__(self, *args, **kargs):
 		alGenSources(1, &self._source)
 		alSourcef(self._source, AL_REFERENCE_DISTANCE, _reference_distance)
 		

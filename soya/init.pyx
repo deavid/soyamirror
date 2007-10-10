@@ -237,7 +237,7 @@ def set_video(int width, int height, int fullscreen, int resizable):
 	renderer.screen_width  = width
 	renderer.screen_height = height
 	# Information about the current video settings
-	info = SDL_GetVideoInfo()
+	info = <SDL_VideoInfo*> SDL_GetVideoInfo() # cast for constness adjustment
 	if info == NULL:
 		s = "Video query failed : %s" % SDL_GetError()
 		print s

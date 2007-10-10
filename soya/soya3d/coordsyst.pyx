@@ -83,7 +83,7 @@ cdef class CoordSyst(Position):
 	#cdef int _option
 	#cdef int _auto_static_count
 	
-	def __new__(self, *args, **kargs):
+	def __cinit__(self, *args, **kargs):
 		self.__raypick_data     = -1
 		self._auto_static_count = 3
 		

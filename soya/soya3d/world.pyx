@@ -418,8 +418,14 @@ children, + the children of its children and so on)."""
 	#  return item in self.children
 	def __getitem__(self, name):
 		cdef CoordSyst item, i
+		cdef object name_attr
 		for item in self.children:
-			if getattr(item, "name", "") == name: return item
+			try:
+				name_attr = getattr(item, "name")
+			except:
+				name_attr = ""
+			if name_attr == name:
+				return item
 		for item in self.children:
 			if isinstance(item, _World):
 				i = item[name]

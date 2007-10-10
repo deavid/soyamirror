@@ -455,8 +455,8 @@ cdef dColliderFn * _TerrainGetColliderFn(int gclass):
 		raise RuntimeError("TerrainGeom can't collide with non primitive Geom")
 
 
-cdef int _TerrainAABBTest(dGeomID o1, dGeomID o2, dReal aabb2[6]):
-		pass
+#U#cdef int _TerrainAABBTest(dGeomID o1, dGeomID o2, dReal aabb2[6]):
+#U#		pass
 
 
 cdef dGeomClass dTerrainGeomClass

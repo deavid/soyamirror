@@ -71,12 +71,12 @@ cdef class _Body(CoordSyst):
 			# pos            vector (3)   # XXX ignored for the moment
 			# quaternion     quaternion   # XXX use a self-relativ cordinate later
 			# linear speed   vector (3)   # XXX idem
-			v = dBodyGetLinearVel(bid)
+			v = <dReal*> dBodyGetLinearVel(bid) # Cast for const correction
 			vector_by_matrix(vector, self._ode_parent._root_matrix())
 			vector_by_matrix(vector, self._inverted_root_matrix())
 			chunk_add_floats_endian_safe(ode_chunk,v,3)
 			# angular speed  vector (3)   # XXX idem
-			v = dBodyGetAngularVel(bid)
+			v = <dReal*> dBodyGetAngularVel(bid) # Cast for const correction
 			vector_by_matrix(v, self._ode_parent._root_matrix())
 			vector_by_matrix(v, self._inverted_root_matrix())
 			chunk_add_floats_endian_safe(ode_chunk,v,3)
@@ -110,7 +110,7 @@ cdef class _Body(CoordSyst):
 				if self._option & BODY_HAS_ODE:
 					self.__ode_data = cstate[3]
 					self.joints = cstate[4]
-					self._option & BODY_HAS_ODE
+					#self._option & BODY_HAS_ODE
 					self._option = self._option & ~BODY_HAS_ODE
 				else:
 					self.__ode_data = None
@@ -473,13 +473,17 @@ It also resets the cycle animation time : i.e. cycles will restart from their be
 			
 						
 	cdef void _sync_ode_position(self):
-		cdef GLfloat * m
+		# Greg Ewing, March 2007 (greg.ewing@canterbury.ac.nz)
+		# multiply_matrix was being passed an uninitialised pointer
+		cdef GLfloat ma[19]
+		cdef GLfloat *m
 		cdef dMatrix3  R
 		cdef dReal * q
 		
 		if self.parent is self.ode_parent:
 			m = self._matrix
 		else:
+			m = ma
 			multiply_matrix(m, self._ode_parent._inverted_root_matrix(), self._root_matrix())
 		R[0]  = m[0]
 		R[1]  = m[4]
@@ -499,13 +503,13 @@ It also resets the cycle animation time : i.e. cycles will restart from their be
 		dBodySetPosition(self._OdeBodyID, m[12], m[13], m[14])
 		dBodySetRotation(self._OdeBodyID, R)
 		
-		q = dBodyGetQuaternion(self._OdeBodyID)
+		q = <dReal*> dBodyGetQuaternion(self._OdeBodyID) # Cast for const correction
 		self._q[0] = q[1]
 		self._q[1] = q[2]
 		self._q[2] = q[3]
 		self._q[3] = q[0]
 
-		q = dBodyGetPosition(self._OdeBodyID)
+		q = <dReal*> dBodyGetPosition(self._OdeBodyID) # Cast for const correction
 		self._p[0] = q[0]
 		self._p[1] = q[1]
 		self._p[2] = q[2]
@@ -527,13 +531,13 @@ It also resets the cycle animation time : i.e. cycles will restart from their be
 			self._t = 0
 			if self._option & BODY_ODE_INVALIDE_POS:
 				self._sync_ode_position()
-			q = dBodyGetQuaternion(self._OdeBodyID)
+			q = <dReal*> dBodyGetQuaternion(self._OdeBodyID) # Cast for const correction
 			self._q[0] = q[1]
 			self._q[1] = q[2]
 			self._q[2] = q[3]
 			self._q[3] = q[0]
 	
-			q = dBodyGetPosition(self._OdeBodyID)
+			q = <dReal*> dBodyGetPosition(self._OdeBodyID) # Cast for const correction
 			self._p[0] = q[0]
 			self._p[1] = q[1]
 			self._p[2] = q[2]
@@ -569,8 +573,8 @@ It also resets the cycle animation time : i.e. cycles will restart from their be
 					#saving the scale of the object
 					#XXX optimisable
 					memcpy(&zoom[0],&self._matrix[16],3*sizeof(float))
-					r = dBodyGetQuaternion(self._OdeBodyID)
-					p = dBodyGetPosition(self._OdeBodyID)
+					r = <dReal*> dBodyGetQuaternion(self._OdeBodyID) # Cast for const correction
+					p = <dReal*> dBodyGetPosition(self._OdeBodyID) # Cast for const correction
 					t = 1.0 - self._t
 		
 					# Linearly interpolate between the current quaternion and the last

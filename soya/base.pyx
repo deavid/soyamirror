@@ -60,7 +60,7 @@ CAN_USE_TEX_BORDER = 1
 
 cdef Renderer renderer
 
-cdef int MAX_LIGHTS, MAX_CLIP_PLANES, MAX_TEXTURES, MAX_TEXTURE_SIZE
+cdef GLint MAX_LIGHTS, MAX_CLIP_PLANES, MAX_TEXTURES, MAX_TEXTURE_SIZE
 
 def get_max_texture_size():
 	return MAX_TEXTURE_SIZE
@@ -113,8 +113,13 @@ cdef class _CObj:
 		pass
 	
 	def __getstate__(self):
-		if getattr(self, "__dict__", 0): return self.__getcstate__(), self.__dict__
-		else:                            return self.__getcstate__(),
+		cdef object d
+		try:
+			d = getattr(self, "__dict__")
+		except:
+			return self.__getcstate__()
+		else:
+			return self.__getcstate__(), d
 		
 	def __setstate__(self, state):
 		self.__setcstate__(state[0])
@@ -136,8 +141,8 @@ cdef class _CObj:
 		return clone
 
 
-cdef chunk_to_string(Chunk* chunk):
-	return PyString_FromStringAndSize(<char*> chunk.content, chunk.nb)
+#U#cdef chunk_to_string(Chunk* chunk):
+#U#	return PyString_FromStringAndSize(<char*> chunk.content, chunk.nb)
 
 cdef drop_chunk_to_string(Chunk* chunk):
 	cdef string

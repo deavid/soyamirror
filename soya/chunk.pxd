@@ -17,19 +17,13 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-ctypedef struct Chunk:
-	void* content
-	int   nb
-	int   max
-	
 cdef extern from "chunk.h":
-#   cdef struct _Chunk:
-#     void* content
-#     int   nb
-#     int   max
-		
-#   ctypedef _Chunk Chunk
-		
+
+	ctypedef struct Chunk:
+		void* content
+		int   nb
+		int   max
+
 	Chunk*    chunk_new         ()
 	int       chunk_dealloc     (Chunk*)
 	int       chunk_check_error ()
@@ -50,8 +44,8 @@ cdef extern from "chunk.h":
 	int       drop_chunk        (Chunk*)
 
 
-	int   chunk_add_chars_endian_safe (Chunk*, char* , int)
-	int   chunk_get_chars_endian_safe (Chunk*, char* , int)
+	int   chunk_add_chars_endian_safe (Chunk*, void* , int)
+	int   chunk_get_chars_endian_safe (Chunk*, void* , int)
 
 	int   chunk_add_ints_endian_safe  (Chunk*, int*  , int)
 	int   chunk_get_ints_endian_safe  (Chunk*, int*  , int)

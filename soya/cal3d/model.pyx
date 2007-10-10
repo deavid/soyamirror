@@ -685,8 +685,11 @@ cdef class _AnimatedModel(_Model):
 			CalCoreModel_CreateCoreMaterialThread(self._core_model, i)
 			CalCoreModel_SetCoreMaterialId(self._core_model, i, 0, i)
 			CalCoreMaterial_SetUserData(material, <CalUserData> i)
-			
-		CalRenderer_GetMapUserData
+		
+		# Greg Ewing, March 2007 (greg.ewing@canterbury.ac.nz)
+		# Following line commented out as it wasn't doing anything and was causing
+		# a compiler warning. POSSIBLE BUG.
+		#CalRenderer_GetMapUserData
 		
 # This method is split in 3 ; this is a work-around for a bug in Pyrex
 

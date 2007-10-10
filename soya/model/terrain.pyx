@@ -203,19 +203,19 @@ cdef void terrain_get_height_at_factors(TerrainVertex* v1, TerrainVertex* v2, Te
 	k[0] = (- (x - ptr[0]) * w[1] + (z - ptr[2]) * w[0]) * q
 
 
-cdef void terrain_drawColor_radeon(float* vect):
-	glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, vect)
+#U#cdef void terrain_drawColor_radeon(float* vect):
+#U#	glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, vect)
 	
 cdef void noop():
 	pass
 
-cdef void terrain_disableColor_radeon():
-	#glColor4fv(white) # XXX really needed ?
-	glDisable(GL_COLOR_MATERIAL)
-	glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, white)
+#U#cdef void terrain_disableColor_radeon():
+#U#	#glColor4fv(white) # XXX really needed ?
+#U#	glDisable(GL_COLOR_MATERIAL)
+#U#	glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, white)
 	
-cdef void terrain_enableColor_radeon():
-	glEnable(GL_COLOR_MATERIAL)
+#U#cdef void terrain_enableColor_radeon():
+#U#	glEnable(GL_COLOR_MATERIAL)
 
 #ctypedef void (*terrain_drawColor_FUNC   )(float*)
 #ctypedef void (*terrain_disableColor_FUNC)()
@@ -225,7 +225,7 @@ cdef terrain_drawColor_FUNC    terrain_drawColor
 cdef terrain_disableColor_FUNC terrain_disableColor
 cdef terrain_enableColor_FUNC  terrain_enableColor
 
-terrain_drawColor    = glColor4fv
+terrain_drawColor    = <terrain_drawColor_FUNC> glColor4fv # Const cast
 terrain_disableColor = noop
 terrain_enableColor  = noop
 
@@ -748,6 +748,9 @@ You MUST call this method after the terrain have been modified manually
 		cshadow_color[1] = shadow_color[1]
 		cshadow_color[2] = shadow_color[2]
 		cshadow_color[3] = shadow_color[3]
+		
+		scolor = 0 # Greg Ewing, March 2007 (greg.ewing@cosc.canterbury.ac.nz)
+		wcolor = 0 # Uninitialised variables. POSSIBLE BUG.
 		
 		# initialize vertex colors if needed
 		old_colors = self._colors

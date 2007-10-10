@@ -25,7 +25,7 @@ cdef class _Camera(CoordSyst):
 	#cdef int      _viewport[4]
 	#cdef          _master
 	
-	def __new__(self, *args, **kargs):
+	def __cinit__(self, *args, **kargs):
 		self.__raypick_data     = -1
 		self._render_matrix[15] = 1.0
 		self._frustum           = <Frustum*> malloc(sizeof(Frustum))

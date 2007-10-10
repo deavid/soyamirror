@@ -238,29 +238,30 @@ cdef enum:
 	NETWORK_STATE_HAS_POSITION = 1 << 0
 	NETWORK_STATE_HAS_SCALING  = 1 << 1
 
-ctypedef struct Frustum:
-## Frustum
-## points :
-## 15-------12
-## |\       /|
-## | \     / |
-## |  3---0  |
-## |  |   |  |
-## |  6---9  |
-## | /     \ |
-## |/       \|
-## 18-------21
-## 
-## plane[ 0] : front plane
-## plane[ 4] : top plane
-## plane[ 8] : bottom plane
-## plane[12] : right plane
-## plane[16] : left plane
-## plane[20] : back plane
-## plane normals are oriented toward the exterior of the frustum
-	float position[3]  # camera position (x,y,z)
-	float points  [24] # points : (x,y,z) * 8
-	float planes  [24] # planes equation : (a,b,c,d) * 6
+cdef extern from "matrix.h":
+	ctypedef struct Frustum:
+	## Frustum
+	## points :
+	## 15-------12
+	## |\       /|
+	## | \     / |
+	## |  3---0  |
+	## |  |   |  |
+	## |  6---9  |
+	## | /     \ |
+	## |/       \|
+	## 18-------21
+	## 
+	## plane[ 0] : front plane
+	## plane[ 4] : top plane
+	## plane[ 8] : bottom plane
+	## plane[12] : right plane
+	## plane[16] : left plane
+	## plane[20] : back plane
+	## plane normals are oriented toward the exterior of the frustum
+		float position[3]  # camera position (x,y,z)
+		float points  [24] # points : (x,y,z) * 8
+		float planes  [24] # planes equation : (a,b,c,d) * 6
 
 cdef struct _Pack: # See material.pyx for doc and comments
 	int       option

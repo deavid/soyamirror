@@ -15,6 +15,8 @@
 # author:
 #	edited by Marmoute - Pierre-Yves David - marmoute@nekeme.net
 
+cdef extern from "ode_check.h":
+	pass
 
 cdef extern from "ode/ode.h":
 

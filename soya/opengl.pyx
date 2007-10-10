@@ -22,6 +22,7 @@ include "c.pxd"
 include "python.pxd"
 
 cimport c_opengl
+from c_opengl cimport GLenum, GLuint
 
 GL_FALSE = c_opengl.GL_FALSE
 GL_TRUE = c_opengl.GL_TRUE
@@ -844,9 +845,8 @@ def glScalef(float x,float y,float z):
 	c_opengl.glScalef(x,y,z)
 
 def glGenTextures(int n):
-	cdef unsigned int ret
+	cdef GLuint ret
 	c_opengl.glGenTextures(n,&ret)
-
 	return ret
  
 def glBindTexture(int target, unsigned int texture):
@@ -864,7 +864,7 @@ def glAccum(int value, float coef):
 def glMatrixMode(int mode):
 	c_opengl.glMatrixMode(mode)
 	
-def glMultMatrix(float mode):
+def glMultMatrix(GLenum mode):
 	c_opengl.glMultMatrix(mode)
 	
 def glTexParameteri(int target, int param, int value):

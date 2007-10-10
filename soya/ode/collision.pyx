@@ -101,50 +101,50 @@ def collide(_Geom geom1, _Geom geom2, int max_contacts=8):
 
 	return res
 
-cdef int collide_edge(GLfloat *A, GLfloat *B,
-			 GLfloat *AB, GLfloat *normalA,
-			 GLfloat *normalB,
-			 dGeomID o1, dGeomID o2, int max_contacts, 
-			 int flags, dContactGeom *contact):
-		"""Check for collision with one triangle edge. Uses a normal
-		that's halfway between the precomputed normals of the vertices
-		that make up the edge."""
-		cdef dGeomID _land_ray   # Reusable ray geom #XXX misplaced
-
-
-		cdef int n, num_contacts, nA, nB
-		cdef dContactGeom contactA, contactB
-		cdef _Geom other
-		_land_ray = dCreateRay(NULL, 1.0)#XXX misplaced
-
-		# First, do one direction
-		dGeomRaySetLength(_land_ray, point_distance_to(A, B))
-		dGeomRaySet(_land_ray, A[0], A[1], A[2], AB[0], AB[1], AB[2])
-		nA = dCollide(_land_ray, o2, flags, &contactA, sizeof(dContactGeom))
-	
-
-		# Then the other
-		dGeomRaySet(_land_ray, B[0], B[1], B[2], -AB[0], -AB[1], -AB[2])
-		nB = dCollide(_land_ray, o2, flags, &contactB, sizeof(dContactGeom))
-		dGeomDestroy(_land_ray)
-		
-		if nA and nB:
-				contact.pos[0] = (contactA.pos[0] + contactB.pos[0]) / 2.0
-				contact.pos[1] = (contactA.pos[1] + contactB.pos[1]) / 2.0
-				contact.pos[2] = (contactA.pos[2] + contactB.pos[2]) / 2.0
-
-				# D
-				contact.normal[0] = (normalA[0] + normalB[0]) / 2.0
-				contact.normal[1] = (normalA[1] + normalB[1]) / 2.0
-				contact.normal[2] = (normalA[2] + normalB[2]) / 2.0
-
-				# Get the depth of the contact point in the colliding geom
-				other = <_Geom>dGeomGetData(o2)
-				contact.depth = other._point_depth(contact.pos[0], contact.pos[1], 
-																					 contact.pos[2])
-				contact.g1 = o1
-				contact.g2 = o2
-
-				return 1
-
-		return 0
+#U#cdef int collide_edge(GLfloat *A, GLfloat *B,
+#U#			 GLfloat *AB, GLfloat *normalA,
+#U#			 GLfloat *normalB,
+#U#			 dGeomID o1, dGeomID o2, int max_contacts, 
+#U#			 int flags, dContactGeom *contact):
+#U#		"""Check for collision with one triangle edge. Uses a normal
+#U#		that's halfway between the precomputed normals of the vertices
+#U#		that make up the edge."""
+#U#		cdef dGeomID _land_ray   # Reusable ray geom #XXX misplaced
+#U#
+#U#
+#U#		cdef int n, num_contacts, nA, nB
+#U#		cdef dContactGeom contactA, contactB
+#U#		cdef _Geom other
+#U#		_land_ray = dCreateRay(NULL, 1.0)#XXX misplaced
+#U#
+#U#		# First, do one direction
+#U#		dGeomRaySetLength(_land_ray, point_distance_to(A, B))
+#U#		dGeomRaySet(_land_ray, A[0], A[1], A[2], AB[0], AB[1], AB[2])
+#U#		nA = dCollide(_land_ray, o2, flags, &contactA, sizeof(dContactGeom))
+#U#	
+#U#
+#U#		# Then the other
+#U#		dGeomRaySet(_land_ray, B[0], B[1], B[2], -AB[0], -AB[1], -AB[2])
+#U#		nB = dCollide(_land_ray, o2, flags, &contactB, sizeof(dContactGeom))
+#U#		dGeomDestroy(_land_ray)
+#U#		
+#U#		if nA and nB:
+#U#				contact.pos[0] = (contactA.pos[0] + contactB.pos[0]) / 2.0
+#U#				contact.pos[1] = (contactA.pos[1] + contactB.pos[1]) / 2.0
+#U#				contact.pos[2] = (contactA.pos[2] + contactB.pos[2]) / 2.0
+#U#
+#U#				# D
+#U#				contact.normal[0] = (normalA[0] + normalB[0]) / 2.0
+#U#				contact.normal[1] = (normalA[1] + normalB[1]) / 2.0
+#U#				contact.normal[2] = (normalA[2] + normalB[2]) / 2.0
+#U#
+#U#				# Get the depth of the contact point in the colliding geom
+#U#				other = <_Geom>dGeomGetData(o2)
+#U#				contact.depth = other._point_depth(contact.pos[0], contact.pos[1], 
+#U#																					 contact.pos[2])
+#U#				contact.g1 = o1
+#U#				contact.g2 = o2
+#U#
+#U#				return 1
+#U#
+#U#		return 0

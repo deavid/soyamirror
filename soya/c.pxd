@@ -34,7 +34,7 @@ cdef extern from "math.h":
 	float sin (float x)
 	float tan (float x)
 	float exp (float x)
-	float pow (float x, int n)
+	float pow (float x, float n)
 	float ceil (float x)
 	float floor (float x)
 

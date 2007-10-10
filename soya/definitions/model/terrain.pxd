@@ -54,7 +54,7 @@ cdef struct _TerrainTri:
 	int         texcoord_type # 0: use terrainvertex texcoord, 1, 2, 3, 4: the tri use a texture generated (from blend_material), and the texcoord are (0.0, 0.0) - (1.0, 1.0)
 ctypedef _TerrainTri TerrainTri
 
-ctypedef void (*terrain_drawColor_FUNC   )(float*)
+ctypedef void (*terrain_drawColor_FUNC   )(GLfloat*)
 ctypedef void (*terrain_disableColor_FUNC)()
 ctypedef void (*terrain_enableColor_FUNC )()
 

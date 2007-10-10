@@ -78,10 +78,10 @@ cdef class _Model(_CObj):
 #  int      normal
 #  int      v[4] # v[3] is optional (only for quad, unused for triangle)
 	
-cdef int face_vertices_number(ModelFace* self):
-	if   self.option & FACE_TRIANGLE: return 3
-	elif self.option & FACE_QUAD:     return 4
-	return 0
+#U#cdef int face_vertices_number(ModelFace* self):
+#U#	if   self.option & FACE_TRIANGLE: return 3
+#U#	elif self.option & FACE_QUAD:     return 4
+#U#	return 0
 
 
 cdef class _SimpleModel(_Model):
@@ -739,7 +739,7 @@ and if the angle between their 2 faces is < ANGLE."""
 		# find face neighbors
 		if self._option & MODEL_NEIGHBORS:
 			self._neighbors      = <int *> malloc(self._nb_faces * 4 * sizeof(int ))
-			self._neighbors_side = <char*> malloc(self._nb_faces * 4 * sizeof(char))
+			self._neighbors_side = <signed char*> malloc(self._nb_faces * 4 * sizeof(char))
 			self._compute_face_neighbors(faces, vertex2ivertex, ivertex2vertices, self._neighbors, self._neighbors_side)
 			
 		# find face simple neighbors (doesn't take angle into account)
@@ -747,7 +747,7 @@ and if the angle between their 2 faces is < ANGLE."""
 			# Re-identify vertices, because for simple neighbors we don't take angle into account
 			vertex2ivertex, ivertex2vertices = self._identify_vertices(faces, 360.0)
 			self._simple_neighbors      = <int *> malloc(self._nb_faces * 4 * sizeof(int ))
-			self._simple_neighbors_side = <char*> malloc(self._nb_faces * 4 * sizeof(char))
+			self._simple_neighbors_side = <signed char*> malloc(self._nb_faces * 4 * sizeof(char))
 			self._compute_face_neighbors(faces, vertex2ivertex, ivertex2vertices, self._simple_neighbors, self._simple_neighbors_side)
 			
 		# TO DO ?
