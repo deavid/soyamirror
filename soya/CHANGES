@@ -296,6 +296,14 @@
 * June 2007 : Soya3D 0.13.2
   * Better use of fontconfig on Unix
   * Bugfixes:
-    * Fix old and deprecated tofu3soya.py (for Balazar)
+    * Fix old and deprecated tofu4soya.py (for Balazar)
     * World -> Model compilation (and thus Blender export) was broken
       on Python 2.4
+
+* October 2007 : Soya3D 0.13.3
+  * Bugfixes:
+    * Update for Pyrex 0.9.6.2 (thanks Greg Ewing)
+    * Blender => Cal3D can now run with Python 2.3 (thanks Greg Ewing)
+    * Fix the weird segfaulting bug in terrain (thanks Souvarine)
+    * Fix GL_INVALID_ENUM crash with the OSS ATI DRI driver (thanks
+    * Zoltan Dome)

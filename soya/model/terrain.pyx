@@ -749,9 +749,6 @@ You MUST call this method after the terrain have been modified manually
 		cshadow_color[2] = shadow_color[2]
 		cshadow_color[3] = shadow_color[3]
 		
-		scolor = 0 # Greg Ewing, March 2007 (greg.ewing@cosc.canterbury.ac.nz)
-		wcolor = 0 # Uninitialised variables. POSSIBLE BUG.
-		
 		# initialize vertex colors if needed
 		old_colors = self._colors
 		self._colors = NULL
@@ -760,27 +757,31 @@ You MUST call this method after the terrain have been modified manually
 			self._option = self._option | TERRAIN_COLORED
 			self._vertex_colors = <int*> malloc(nb * sizeof(int))
 			for i from 0 <= i < nb: self._vertex_colors[i] = -1
-			self._nb_colors = 2
-			self._colors = <float*> malloc(8 * sizeof(float))
-			wcolor = 0
-			scolor = 4
-			memcpy(self._colors + wcolor, &white[0]        , 4 * sizeof(float))
-			memcpy(self._colors + scolor, &cshadow_color[0], 4 * sizeof(float))
+		#	self._nb_colors = 2
+		#	self._colors = <float*> malloc(8 * sizeof(float))
+		#	memcpy(self._colors    , &white[0]        , 4 * sizeof(float))
+		#	memcpy(self._colors + 4, &cshadow_color[0], 4 * sizeof(float))
 			
+		wcolor = self._register_color(white)
+		scolor = self._register_color(cshadow_color)
+		
 		# compute shadows
 		for i from 0 <= i < nb:
 			if light._shadow_at((self._vertices + i).coord):
-				if self._vertex_colors[i] == -1: self._vertex_colors[i] = scolor
+				if self._vertex_colors[i] == -1:
+					self._vertex_colors[i] = scolor
 				else:
-					ocolor = self._colors + self._vertex_colors[i]
+					ocolor = old_colors + self._vertex_colors[i]
 					color[0] = ocolor[0] * cshadow_color[0]
 					color[1] = ocolor[1] * cshadow_color[1]
 					color[2] = ocolor[2] * cshadow_color[2]
 					color[3] = ocolor[3] * cshadow_color[3]
 					self._vertex_colors[i] = self._register_color(color)
 			else:
-				if self._vertex_colors[i] == -1: self._vertex_colors[i] = wcolor
-				else:                            self._vertex_colors[i] = self._register_color(self._colors + self._vertex_colors[i])
+				if self._vertex_colors[i] == -1:
+					self._vertex_colors[i] = wcolor
+				else:
+					self._vertex_colors[i] = self._register_color(old_colors + self._vertex_colors[i])
 		free(old_colors)
 
 

@@ -686,11 +686,6 @@ cdef class _AnimatedModel(_Model):
 			CalCoreModel_SetCoreMaterialId(self._core_model, i, 0, i)
 			CalCoreMaterial_SetUserData(material, <CalUserData> i)
 		
-		# Greg Ewing, March 2007 (greg.ewing@canterbury.ac.nz)
-		# Following line commented out as it wasn't doing anything and was causing
-		# a compiler warning. POSSIBLE BUG.
-		#CalRenderer_GetMapUserData
-		
 # This method is split in 3 ; this is a work-around for a bug in Pyrex
 
 #   cdef _Material _get_material_4_cal3d(self, image_filename, float diffuse_r, float diffuse_g, float diffuse_b, float diffuse_a, float specular_r, float specular_g, float specular_b, float specular_a, float shininess):
