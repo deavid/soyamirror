@@ -21,7 +21,23 @@
 # author:
 #	edited by Marmoute - Pierre-Yves David - marmoute@nekeme.net
 
+#<<< Greg Ewing, Oct 2007: Turning debug messages on and off
 
+cdef int debug_body_reactivate
+cdef int debug_body_cm
+
+debug_body_reactivate = 0
+debug_body_cm = 0
+
+def set_debug_body_reactivate(int value):
+	global debug_body_reactivate
+	debug_body_reactivate = value
+
+def set_debug_body_cm(int value):
+	global debug_body_cm
+	debug_body_cm = value
+
+#>>>
 
 cdef class _Body(CoordSyst):
 	#cdef _Model _model
@@ -362,7 +378,8 @@ It also resets the cycle animation time : i.e. cycles will restart from their be
 		cdef dBodyID bid
 		cdef dMass   mass
 		
-		print "Reactivated"
+		if debug_body_reactivate:
+			print "Reactivated"
 		
 		if not (world._option & WORLD_HAS_ODE):
 			raise TypeError("cant reactive on %s, %s is not and Ode Manager"%(self,world))
@@ -379,9 +396,9 @@ It also resets the cycle animation time : i.e. cycles will restart from their be
 		vector_by_matrix(v, self._root_matrix())
 		vector_by_matrix(v, self._ode_parent._inverted_root_matrix())
 		dBodySetLinearVel(bid,v[0],v[1],v[2])
+		chunk_get_floats_endian_safe(ode_chunk,v,3)
 		vector_by_matrix(v, self._root_matrix())
 		vector_by_matrix(v, self._ode_parent._inverted_root_matrix())
-		chunk_get_floats_endian_safe(ode_chunk,v,3)
 		dBodySetAngularVel(bid,v[0],v[1],v[2])
 		chunk_get_int_endian_safe(ode_chunk,&i) #Auto Disable Flag
 		dBodySetAutoDisableFlag(bid, i)
@@ -479,6 +496,7 @@ It also resets the cycle animation time : i.e. cycles will restart from their be
 		cdef GLfloat *m
 		cdef dMatrix3  R
 		cdef dReal * q
+		cdef GLfloat ode_pos[3] # Greg Ewing, Oct 2007 - Arbitrary centre of mass support
 		
 		if self.parent is self.ode_parent:
 			m = self._matrix
@@ -500,7 +518,17 @@ It also resets the cycle animation time : i.e. cycles will restart from their be
 
 		# XXX Overriding the movement methods would be faster due to the fact
 		# that we wouldn't have to copy the rotation matrix as well
-		dBodySetPosition(self._OdeBodyID, m[12], m[13], m[14])
+		#<<< Greg Ewing, Oct 2007 - Arbitrary centre of mass support
+		#dBodySetPosition(self._OdeBodyID, m[12], m[13], m[14])
+		point_by_matrix_copy(ode_pos, self._cm, m)
+		if debug_body_cm:
+			print "Soya (%10g %10g %10g) + cm (%10g %10g %10g) --> ODE (%10g %10g %10g) + cm = (%10g %10g %10g)" % (
+				self._matrix[12], self._matrix[13], self._matrix[14],
+				self._cm[0], self._cm[1], self._cm[2],
+				m[12], m[13], m[14],
+				ode_pos[0], ode_pos[1], ode_pos[2])
+		dBodySetPosition(self._OdeBodyID, ode_pos[0], ode_pos[1], ode_pos[2])
+		#>>>
 		dBodySetRotation(self._OdeBodyID, R)
 		
 		q = <dReal*> dBodyGetQuaternion(self._OdeBodyID) # Cast for const correction
@@ -563,6 +591,7 @@ It also resets the cycle animation time : i.e. cycles will restart from their be
 		cdef float next_pos[19]
 		cdef float tmp_pos[19]
 		cdef float zoom[3]
+		cdef GLfloat cm[3] # Greg Ewing, Oct 2007
 
 		self._t = self._t + proportion
 		if self._option & BODY_HAS_ODE: 
@@ -605,6 +634,18 @@ It also resets the cycle animation time : i.e. cycles will restart from their be
 						multiply_matrix(self._matrix,self._parent._inverted_root_matrix(),tmp_pos)
 					else:
 						matrix_copy(self._matrix,next_pos)
+					#<<< Greg Ewing, Oct 2007 - Arbitrary centre of mass support
+					# Subtract centre of mass from position in parent coords
+					vector_by_matrix_copy(cm, self._cm, self._matrix)
+					self._matrix[12] = self._matrix[12] - cm[0]
+					self._matrix[13] = self._matrix[13] - cm[1]
+					self._matrix[14] = self._matrix[14] - cm[2]
+					if debug_body_cm:
+						print "Soya (%10g %10g %10g) + cm (%10g %10g %10g) <-- ODE (%10g %10g %10g)" % (
+							self._matrix[12], self._matrix[13], self._matrix[14],
+							cm[0], cm[1], cm[2],
+							next_pos[12], next_pos[13], next_pos[14])
+					#>>>
 					
 					matrix_scale(self._matrix,zoom[0],zoom[1],zoom[2])
 					#memcpy(&self._matrix[16],zoom,3*sizeof(float))
@@ -670,8 +711,22 @@ It also resets the cycle animation time : i.e. cycles will restart from their be
 			@param mass: Mass properties
 			@type mass: Mass
 			"""
+			cdef dMass ode_mass # Greg Ewing, Oct 2007 - Arbitrary centre of mass support
+
 			if not (self._option & BODY_HAS_ODE): self._activate_ode_body()
-			dBodySetMass(self._OdeBodyID, &mass._mass)
+			
+			#<<< Greg Ewing, Oct 2007 - Arbitrary centre of mass support
+			#dBodySetMass(self._OdeBodyID, &mass._mass)
+			ode_mass = mass._mass
+			self._cm[0] = ode_mass.c[0]
+			self._cm[1] = ode_mass.c[1]
+			self._cm[2] = ode_mass.c[2]
+			ode_mass.c[0] = 0
+			ode_mass.c[1] = 0
+			ode_mass.c[2] = 0
+			dBodySetMass(self._OdeBodyID, &ode_mass)
+			self._invalidate()
+			#>>>
 	
 		def __get__(self):
 			"""getMass() -> mass
@@ -682,6 +737,11 @@ It also resets the cycle animation time : i.e. cycles will restart from their be
 			cdef _Mass m
 			m=Mass()
 			dBodyGetMass(self._OdeBodyID, &m._mass)
+			#<<< Greg Ewing, Oct 2007 - Arbitrary centre of mass support
+			m._mass.c[0] = self._cm[0]
+			m._mass.c[1] = self._cm[1]
+			m._mass.c[2] = self._cm[2]
+			#>>>
 			return m
 
 	# addForce

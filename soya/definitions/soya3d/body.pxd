@@ -39,6 +39,7 @@ cdef class _Body(CoordSyst):
 	cdef readonly joints
 	cdef readonly __ode_data     #some data about ODE state load when deserealisation
 	                        # but not yet used
+	cdef GLfloat _cm[3] # Centre of mass in local coordinates (Greg Ewing, Oct 2007)
 	
 	cdef GLfloat _q[4] # Previous quaternion (into ode_parent coord sys)
 	cdef GLfloat _p[4] # Previous position   (into ode_parent coord sys)
