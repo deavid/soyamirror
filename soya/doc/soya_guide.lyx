@@ -3926,12 +3926,12 @@ Soya stores each class of object in a separate subdirectory in <data>, the
 \end_layout
 
 \begin_layout Description
-<data>/world contains Soya Worlds.
+<data>/worlds contains Soya Worlds.
  These Worlds can either be though as 3D scenes.
 \end_layout
 
 \begin_layout Description
-<data>/blenders contains Blender models (see chapter 
+<data>/blender contains Blender models (see chapter 
 \begin_inset LatexCommand \ref{cha:Blender-for-Soya}
 
 \end_inset
