@@ -17,3 +17,30 @@
 #                                   Your teacher, Jiba
 
 
+# Some practical advices :
+
+# If you installed the tutorial via a binary package of a linux distribution,
+# it is likely that some tutorials will require root privilege to work on 
+# their data files. In that case, verify you have write access to data dir
+# and data files : 
+# 	[INSTALL_DIR]/tutorial/data 
+
+# A good way to proceed anyway is to make a personal copy of the tutorial with
+# your regular user, thus you will have the appropriate rights and will be safe 
+# to hack tutorial code without damaging original package :
+#	cp [INSTALL_DIR]/tutorial [WORK_DIR]
+
+# Some tutorials need their level data to be created prior their execution. 
+# game_skel-1.py will create the level used by other tutorials of the same 
+# serie.
+
+# To start, go in your tutorial directory and type 
+#	python ./basic-1.py
+# and then <Ctrl-C> from the console to terminate the soya script.
+
+# Under linux, you can walk through all tutorials by executing.
+# 	./tutorial-tour.sh
+
+# If you are a linux distribution packager, this "tour" is a quick test to
+# verify that soya and the tutorial are properly configured for your 
+# distribution.
