@@ -311,3 +311,4 @@
     * Fix GL_INVALID_ENUM crash with the OSS ATI DRI driver
       (thanks Zoltan Dome)
     * Fix data/worldS and data/blender in the yet-in
+    * Fix speed-1.py tuto

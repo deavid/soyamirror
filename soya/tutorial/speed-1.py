@@ -40,7 +40,7 @@ class InterpolatingBody(soya.Body):
 	def __init__(self, parent = None, model = None):
 		soya.Body.__init__(self, parent, model)
 		
-		self.speed  = soya.CoordSystSpeed(self)
+		self.speed  = soya.CoordSystSpeed(None)
 		
 		self.state1 = soya.CoordSystState(self)
 		self.state2 = soya.CoordSystState(self)
