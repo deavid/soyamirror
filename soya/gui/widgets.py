@@ -18,7 +18,6 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-import os, os.path
 import soya, soya.sdlconst as sdlconst, soya.opengl as opengl
 
 soya.set_use_unicode(1)
@@ -55,13 +54,17 @@ class Widget(object):
 		
 	def added_into(self, parent):
 		self.parent = parent
-
+		if parent: self.request_resize()
+		
 	def get_window(self):
 		ancestor = self.parent
 		while ancestor:
 			if isinstance(ancestor, Window): return ancestor
 			ancestor = ancestor.parent
 			
+	def request_resize(self, widget = None):
+		if self.parent: self.parent.request_resize(self)
+	
 	def resize(self, x, y, width, height):
 		self.reset_size()
 		while 1:
@@ -309,7 +312,22 @@ class Layer(Group):
 			if (widget.x <= x <= widget.x + widget.width) and (widget.y <= y <= widget.y + widget.height):
 				if widget.on_mouse_move(x, y, x_relative, y_relative, state): return 1
 			
-			
+class RootLayer(Layer):
+	def __init__(self, parent):
+		Layer.__init__(self, parent)
+		self.widgets_needing_resize = set()
+		
+	def request_resize(self, widget):
+		self.widgets_needing_resize.add(widget)
+		
+	def begin_round(self):
+		if self.widgets_needing_resize:
+			for widget in self.widgets_needing_resize:
+				widget.resize(self.x, self.y, self.width, self.height)
+			self.widgets_needing_resize = set()
+		Layer.begin_round(self)
+		
+		
 class Table(Group):
 	def __init__(self, parent, nb_col = 1, nb_row = 1):
 		Group.__init__(self, parent)
@@ -768,6 +786,36 @@ It might call glyph tessellation that would be included in the display list !"""
 			opengl.glCallList(self._display_list.id)
 		opengl.glPopMatrix()
 		
+class FPSLabel(Label):
+	def __init__(self, parent = None, color = (1.0, 1.0, 1.0, 1.0)):
+		Label.__init__(self, parent, u"FPS", color)
+		self.fps = -1.0
+		
+	def calc_ideal_size(self):
+		text_size = self._font.get_print_size(u"1000.0 FPS")
+		self.ideal_width  = int(text_size[0])
+		self.ideal_height = int(text_size[1])
+		self.min_width    = self.ideal_width
+		self.min_height   = self.ideal_height
+		
+	def allocate(self, x, y, width, height):
+		if isinstance(self.parent, Layer):
+			Widget.allocate(self, self.parent.x + self.parent.width - self.min_width - 5, self.parent.y + self.parent.height - self.min_height - 5, self.min_width, self.min_height)
+		else:
+			Widget.allocate(self, x, y, width, height)
+			
+	def begin_round(self):
+		if soya.MAIN_LOOP:
+			if self.fps != soya.MAIN_LOOP.fps:
+				self.fps  = soya.MAIN_LOOP.fps
+				self._text = u"%.1f FPS" % self.fps
+				self._changed = -2
+		else:
+			if self.fps != -2.0:
+				self.fps  = -2.0
+				self._text = u"No main_loop"
+				self._changed = -2
+				
 class Text(Widget):
 	def __init__(self, parent = None, text = u"", color = None, font = None):
 		self.color         = color or STYLE.text_colors[0]
@@ -832,10 +880,11 @@ class Text(Widget):
 
 
 class Button(Label, HighlightableWidget, FocusableWidget):
-	def __init__(self, parent = None, text = u"", color = None, font = None):
+	def __init__(self, parent = None, text = u"", on_clicked = None, color = None, font = None):
 		HighlightableWidget.__init__(self)
 		FocusableWidget    .__init__(self)
 		Label.__init__(self, parent, text, color, font)
+		if on_clicked: self.on_clicked = on_clicked
 		
 	def calc_ideal_size(self):
 		Label.calc_ideal_size(self)
@@ -851,8 +900,7 @@ class Button(Label, HighlightableWidget, FocusableWidget):
 		STYLE.rectangle(self.x, self.y, self.x + self.width, self.y + self.height, self.highlight or self.focus)
 		Label.render(self)
 		
-	def on_clicked(self):
-		print "Button clicked !"
+	def on_clicked(self): pass
 	
 	def on_mouse_released(self, button, x, y):
 		if button == 1: self.on_clicked()
@@ -867,16 +915,16 @@ class Button(Label, HighlightableWidget, FocusableWidget):
 		HighlightableWidget.on_highlight(self, highlight)
 		if highlight: self.color = STYLE.text_colors[1]
 		else:         self.color = STYLE.text_colors[0]
-
+		
 class CancelButton(Button):
-	def __init__(self, parent = None, text = u"Cancel", color = None, font = None):
-		Button.__init__(self, parent, text, color, font)
+	def __init__(self, parent = None, text = u"Cancel", on_clicked = None, color = None, font = None):
+		Button.__init__(self, parent, text, on_clicked, color, font)
 		
 	def on_clicked(self): self.get_window().close()
 	
 class ValidateButton(Button):
-	def __init__(self, parent = None, text = u"Ok", color = None, font = None):
-		Button.__init__(self, parent, text, color, font)
+	def __init__(self, parent = None, text = u"Ok", on_clicked = None, color = None, font = None):
+		Button.__init__(self, parent, text, on_clicked, color, font)
 
 	
 class Input(Label, HighlightableWidget, FocusableWidget):
@@ -1031,15 +1079,25 @@ class Window(Table, HighlightableWidget):
 			title_bar.col_pad = 15
 			title_bar.add(title_widget)
 			self.close_button = WindowCloseButton(title_bar, u"", 1)
-		else: self.add(title_widget)
+		else:
+			self.add(title_widget)
+			self.close_button = None
 		self.max_width_percent   = 0.8
 		self.max_height_percent  = 0.8
 		self.last_focused_widget = None
+		self.x = -1
+		self.y = -1
 		
 	def on_key_pressed (self, key, unicode_key, mods):
 		if    key == sdlconst.K_ESCAPE:
-			self.close()
-			return 1
+			if self.close_button:
+				self.close()
+				return 1
+			for widget in self.recursive():
+				if isinstance(widget, CancelButton):
+					widget.on_clicked()
+					return 1
+				
 		elif (key == sdlconst.K_SPACE) or (key == sdlconst.K_RETURN) or (key == sdlconst.K_KP_ENTER):
 			for widget in self.recursive():
 				if isinstance(widget, ValidateButton):
@@ -1073,12 +1131,15 @@ class Window(Table, HighlightableWidget):
 		w_width  = min(width , self.ideal_width , int(self.max_width_percent  * self.parent.width ))
 		w_height = min(height, self.ideal_height, int(self.max_height_percent * self.parent.height))
 		
-		if   x < self.parent.x                                   : x = self.parent.x
-		elif x > self.parent.x + self.parent.width  - self.width : x = self.parent.x + self.parent.width  - self.width
-		if   y < self.parent.y                                   : y = self.parent.y
-		elif y > self.parent.y + self.parent.height - self.height: y = self.parent.y + self.parent.height - self.height
+		if self.x == -1: self.x = (self.parent.width  - w_width ) // 2
+		if self.y == -1: self.y = (self.parent.height - w_height) // 2
 		
-		Table.allocate(self, x, y, w_width, w_height)
+		if   self.x < self.parent.x                                   : self.x = self.parent.x
+		elif self.x > self.parent.x + self.parent.width  - w_width : self.x = self.parent.x + self.parent.width  - w_width
+		if   self.y < self.parent.y                                   : self.y = self.parent.y
+		elif self.y > self.parent.y + self.parent.height - w_height: self.y = self.parent.y + self.parent.height - w_height
+
+		Table.allocate(self, self.x, self.y, w_width, w_height)
 		
 		if self.last_focused_widget is None:
 			if isinstance(self.widgets[1], Group): widgets = self.widgets[1].recursive()
