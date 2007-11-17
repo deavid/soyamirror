@@ -590,9 +590,12 @@ class Table(Group):
 			available = width - self._col_pads
 			required  = sum(self.min_col_widths)
 			ideal     = sum(self.ideal_col_widths)
-			factor    = float(available - required) / (ideal - required)
-			
-			self.col_widths = [int(self.min_col_widths[i] + (self.ideal_col_widths[i] - self.min_col_widths[i]) * factor) for i in range(self.nb_col)]
+			if ideal == required:
+				factor = float(available) / required
+				self.col_widths = [int(self.min_col_widths[i] * factor) for i in range(self.nb_col)]
+			else:
+				factor = float(available - required) / (ideal - required)
+				self.col_widths = [int(self.min_col_widths[i] + (self.ideal_col_widths[i] - self.min_col_widths[i]) * factor) for i in range(self.nb_col)]
 			
 		extra = height - self.ideal_height
 		if  (extra == 0) or ((extra > 0) and (self.extra_height == 0)):
@@ -603,10 +606,13 @@ class Table(Group):
 			available = height - self._row_pads
 			required  = sum(self.min_row_heights)
 			ideal     = sum(self.ideal_row_heights)
-			factor    = float(available - required) / (ideal - required)
-			
-			self.row_heights = [int(self.min_row_heights[i] + (self.ideal_row_heights[i] - self.min_row_heights[i]) * factor) for i in range(self.nb_row)]
-			
+			if ideal == required:
+				factor = float(available) / required
+				self.row_heights = [int(self.min_row_heights[i] * factor) for i in range(self.nb_row)]
+			else:
+				factor = float(available - required) / (ideal - required)
+				self.row_heights = [int(self.min_row_heights[i] + (self.ideal_row_heights[i] - self.min_row_heights[i]) * factor) for i in range(self.nb_row)]
+				
 		wx = x
 		if self.border_pad: wx += self.row_pad
 		for col in range(self.nb_col):
@@ -778,7 +784,8 @@ class VList(VTable, HighlightableWidget, FocusableWidget):
 		HighlightableWidget.__init__(self)
 		FocusableWidget    .__init__(self)
 		VTable             .__init__(self, parent, nb_col)
-		self.value = 1
+		self.value      = 0
+		self.border_pad = 1
 		
 	def add(self, widget, row = None):
 		if isinstance(widget, basestring): widget = Label(None, widget)
@@ -789,17 +796,17 @@ class VList(VTable, HighlightableWidget, FocusableWidget):
 			y = self.y + self.row_pad * self.value
 			if self.border_pad: y += self.row_pad
 			for i in range(self.value): y += self.row_heights[i]
-			STYLE.rectangle(self.x, y, self.x + self.width, y + self.row_heights[self.value], self.highlight or self.focus)
+			STYLE.rectangle(self.x + 2, y - 2, self.x + self.width - 2, y + self.row_heights[self.value] + 2, self.highlight or self.focus)
 		VTable.render(self)
 		
 	def set_focus(self, focus, from_side = -1):
-		FocusableWidget.set_focus(self, focus, from_side)
+		return FocusableWidget.set_focus(self, focus, from_side)
 		
 	def on_mouse_pressed(self, button, x, y):
 		self.set_focus(1)
 		widget = self.widget_at(x, y)
 		if widget and widget.on_mouse_pressed(button, x, y): pass
-		else:
+		elif button == 1:
 			wy = self.y
 			if self.border_pad: wy += self.row_pad
 			for row in range(self.nb_row):
@@ -827,7 +834,8 @@ class HList(HTable, HighlightableWidget, FocusableWidget):
 		HighlightableWidget.__init__(self)
 		FocusableWidget    .__init__(self)
 		HTable             .__init__(self, parent, nb_row)
-		self.value = 1
+		self.value      = 0
+		self.border_pad = 1
 		
 	def add(self, widget, col = None):
 		if isinstance(widget, basestring): widget = Label(None, widget)
@@ -838,17 +846,17 @@ class HList(HTable, HighlightableWidget, FocusableWidget):
 			x = self.x + self.col_pad * self.value
 			if self.border_pad: x += self.col_pad
 			for i in range(self.value): x += self.col_widths[i]
-			STYLE.rectangle(x, self.y, x + self.col_widths[self.value], self.y + self.height, self.highlight or self.focus)
+			STYLE.rectangle(x - 2, self.y + 2, x + self.col_widths[self.value] + 2, self.y + self.height - 2, self.highlight or self.focus)
 		HTable.render(self)
 		
 	def set_focus(self, focus, from_side = -1):
-		FocusableWidget.set_focus(self, focus, from_side)
+		return FocusableWidget.set_focus(self, focus, from_side)
 		
 	def on_mouse_pressed(self, button, x, y):
 		self.set_focus(1)
 		widget = self.widget_at(x, y)
 		if widget and widget.on_mouse_pressed(button, x, y): pass
-		else:
+		elif button == 1:
 			wx = self.x
 			if self.border_pad: wx += self.col_pad
 			for col in range(self.nb_col):
@@ -896,7 +904,7 @@ class Image(Widget):
 
 
 class Label(Widget):
-	def __init__(self, parent = None, text = "", color = None, font = None):
+	def __init__(self, parent = None, text = u"", color = None, font = None):
 		self.color         = color or STYLE.text_colors[0]
 		self.text          = text
 		self._font         = font or STYLE.font
@@ -950,10 +958,9 @@ It might call glyph tessellation that would be included in the display list !"""
 		else:
 			opengl.glCallList(self._display_list.id)
 		opengl.glPopMatrix()
-			
-			
+		
 class Text(Widget):
-	def __init__(self, parent = None, text = "", color = None, font = None):
+	def __init__(self, parent = None, text = u"", color = None, font = None):
 		self.color         = color or STYLE.text_colors[0]
 		self.text          = text
 		self._font         = font or STYLE.font
@@ -1013,11 +1020,10 @@ class Text(Widget):
 		else:
 			opengl.glCallList(self._display_list.id)
 		opengl.glPopMatrix()
-			
 
 
 class Button(Label, HighlightableWidget, FocusableWidget):
-	def __init__(self, parent = None, text = "", color = None, font = None):
+	def __init__(self, parent = None, text = u"", color = None, font = None):
 		HighlightableWidget.__init__(self)
 		FocusableWidget    .__init__(self)
 		Label.__init__(self, parent, text, color, font)
@@ -1065,7 +1071,7 @@ class ValidateButton(Button):
 
 	
 class Input(Label, HighlightableWidget, FocusableWidget):
-	def __init__(self, parent = None, text = "", color = None, font = None):
+	def __init__(self, parent = None, text = u"", color = None, font = None):
 		self.cursor_pos = len(text)
 		HighlightableWidget.__init__(self)
 		FocusableWidget    .__init__(self)
@@ -1135,10 +1141,10 @@ class Input(Label, HighlightableWidget, FocusableWidget):
 		if highlight: self.color = STYLE.text_colors[1]
 		else:         self.color = STYLE.text_colors[0]
 		
-	
+		
 class CheckBox(Label, HighlightableWidget, FocusableWidget):
 	base_color_index = 0
-	def __init__(self, parent = None, text = "", value = 0, color = None, font = None):
+	def __init__(self, parent = None, text = u"", value = 0, color = None, font = None):
 		self.value     = value
 		self.focus     = 0
 		HighlightableWidget.__init__(self)
@@ -1587,9 +1593,9 @@ class ScrollPane(Table):
 		self.scroll_x0 = self.widgets[0].x
 		self.scroll_y0 = self.widgets[0].y
 		if self.hscroll.parent: self.hscroll.set_range(0, max(self.widgets[0].min_width , self.col_widths [0]), self.hscroll.value, self.col_widths [0], 50.0)
-		else:                   self.hscroll.value = 0.0; self.hscroll.page_size = self.widgets[0].width ; self.hscroll.max = max(self.widgets[0].min_width , self.col_widths [0])
+		else:                   self.hscroll.value = 0.0; self.hscroll.page_size = self.col_widths [0]; self.hscroll.max = max(self.widgets[0].min_width , self.col_widths [0])
 		if self.vscroll.parent: self.vscroll.set_range(0, max(self.widgets[0].min_height, self.row_heights[0]), self.vscroll.value, self.row_heights[0], 50.0)
-		else:                   self.vscroll.value = 0.0; self.vscroll.page_size = self.widgets[0].height; self.vscroll.max = max(self.widgets[0].min_height, self.row_heights[0])
+		else:                   self.vscroll.value = 0.0; self.vscroll.page_size = self.row_heights[0]; self.vscroll.max = max(self.widgets[0].min_height, self.row_heights[0])
 		
 		self.widgets[0].allocate(
 			int(self.scroll_x0 - self.hscroll.value),
@@ -1599,9 +1605,9 @@ class ScrollPane(Table):
 			)
 		
 	def move(self, x, y):
+		self.scroll_x0 += x - self.x
+		self.scroll_y0 += y - self.y
 		Table.move(self, x, y)
-		self.scroll_x0 = self.x + self.border_pad * self.col_pad
-		self.scroll_y0 = self.y + self.border_pad * self.row_pad
 		
 	def update_viewport(self):
 		self.widgets[0].move(
@@ -1655,16 +1661,40 @@ class ScrollPane(Table):
 
 class ProgressBar(Widget):
 	def __init__(self, parent = None, value = 0.0):
+		self.value = value
 		Widget.__init__(self, parent)
 		self.extra_width = 1.0
-		self.min_height  = self.ideal_height = STYLE.char_height
-		self.min_width   = 3 * STYLE.char_height
-		self.ideal_width = 5 * STYLE.char_height
+		self.min_height  = self.ideal_height = int(STYLE.get_char_height())
+		self.min_width   = int(3 * STYLE.get_char_height())
+		self.ideal_width = int(5 * STYLE.get_char_height())
 
 	def render(self):
 		STYLE.rectangle(self.x, self.y, self.x + int(self.value * self.width), self.y + self.height)
 
 
+class CameraViewport(Widget):
+	def __init__(self, parent, camera = None):
+		Widget.__init__(self, parent)
+		self.camera = camera
+		self.extra_width  = 1.0
+		self.extra_height = 1.0
+		self.ideal_width  = 320
+		self.ideal_height = 200
+
+	def set_camera(self, camera):
+		self.camera = camera
+		if self.camera: self.camera.resize(self.x, self.y, self.width, self.height)
+		
+	def allocate(self, x, y, width, height):
+		Widget.allocate(self, x, y, width, height)
+		if self.camera:
+			self.camera.resize(self.x, self.y, self.width, self.height)
+			
+	def render(self):
+		if self.camera:
+			self.camera.render()
+			
+			
 if __name__ == "__main__":
 	soya.init(width = 640, height = 480)
 
@@ -1680,8 +1710,8 @@ if __name__ == "__main__":
 		def render(self): self.widget.render()
 		
 	class MainLoop(soya.MainLoop):
-		def __init__(self):
-			soya.MainLoop.__init__(self)
+		def __init__(self, *worlds):
+			soya.MainLoop.__init__(self, *worlds)
 			self.events = []
 			
 		def begin_round(self):
@@ -1692,6 +1722,7 @@ if __name__ == "__main__":
 			
 		def advance_time(self, proportion):
 			soya.root_widget.widget.advance_time(proportion)
+			soya.MainLoop.advance_time(self, proportion)
 			
 			
 	
@@ -1782,24 +1813,54 @@ Jiba""")
 	CancelButton(table)
 	ValidateButton(table)
 	
-	window = Window(layer)
-	vbox = VTable(window)
-	box = HList(vbox, 2)
-	l1 = Label(box, u"Jiba")
-	l12= Label(box, u"1")
-	l2 = Label(box, u"Blam")
-	l22= Label(box, u"2")
-	l3 = Label(box, u"Marmoute")
-	l32= Label(box, u"3")
+	window = Window(layer, u"List demo")
+	table = VTable(window, 2)
+	table.row_pad = table.col_pad = 20
 	
-	p = ProgressBar(vbox, 0.6)
-	c = Button(vbox, u"Close")
-	#box.remove(l2)
-	#box.remove(l22)
-	#box.remove(l32)
-	print box.widgets
+	Label(table, u"vertical list\nin a scroll pane")
+	l = VList(ScrollPane(table))
+	Label(l, u"Baby").extra_width = 1.0
+	Label(l, u"Beginner")
+	Label(l, u"Very easy")
+	Label(l, u"Easy")
+	Label(l, u"Hard gamer")
+	Label(l, u"Nighmare")
+	Label(l, u"Impossible")
+	Label(l, u"God")
+	Label(l, u"Jiba :-)")
+	
+	Label(table, u"vertical list\nwith 2 columns")
+	l = VList(table, 2)
+	ProgressBar(l, 0.2)
+	Label(l, u"Beginner")
+	ProgressBar(l, 0.5)
+	Label(l, u"Hard gamer")
+	ProgressBar(l, 0.8)
+	Label(l, u"Nighmare")
+	
+	Label(table, u"horizontal list")
+	l = HList(table)
+	Label(l, u"Beginner")
+	Label(l, u"Hard gamer")
+	Label(l, u"Nighmare")
+	
+	window = Window(layer, u"Camera demo")
+	scene = soya.World()
+	#scene.atmosphere = soya.NoBackgroundAtmosphere()
+	print scene.atmosphere
+	scene.atmosphere = soya.Atmosphere()
+	light = soya.Light(scene)
+	light.set_xyz(0.5, 0.0, 2.0)
+	camera = soya.Camera(scene)
+	camera.z = 2.0
+	camera.partial = 1
+	import soya.cube
+	cube = soya.cube.Cube(scene, red)
+	cube.advance_time = lambda proportion: cube.rotate_lateral(proportion)
+	CameraViewport(window, camera)
+	
 	
 	root = Root(layer)
 	soya.set_root_widget(root)
 	
-	MainLoop().main_loop()
+	MainLoop(scene).main_loop()
