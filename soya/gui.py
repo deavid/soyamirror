@@ -623,7 +623,7 @@ class Table(Group):
 		if (x < 0) or (y < 0): return None
 		
 		wx = self.x
-		if self.border_pad: wx += self.row_pad
+		if self.border_pad: wx += self.col_pad
 		for col in range(self.nb_col):
 			wx += self.col_widths[col]
 			if x <= wx: break
@@ -632,7 +632,7 @@ class Table(Group):
 		else: return None
 		
 		wy = self.y
-		if self.border_pad: wy += self.col_pad
+		if self.border_pad: wy += self.row_pad
 		for row in range(self.nb_row):
 			wy += self.row_heights[row]
 			if y <= wy: break
@@ -773,7 +773,7 @@ class VTable(Table):
 		else: self.delete_row(row)
 		
 
-class List(VTable, HighlightableWidget, FocusableWidget):
+class VList(VTable, HighlightableWidget, FocusableWidget):
 	def __init__(self, parent, nb_col = 1):
 		HighlightableWidget.__init__(self)
 		FocusableWidget    .__init__(self)
@@ -801,7 +801,7 @@ class List(VTable, HighlightableWidget, FocusableWidget):
 		if widget and widget.on_mouse_pressed(button, x, y): pass
 		else:
 			wy = self.y
-			if self.border_pad: wy += self.col_pad
+			if self.border_pad: wy += self.row_pad
 			for row in range(self.nb_row):
 				wy += self.row_heights[row] + self.row_pad
 				if y <= wy:
@@ -813,6 +813,55 @@ class List(VTable, HighlightableWidget, FocusableWidget):
 		if   key == sdlconst.K_DOWN:
 			if self.value < self.nb_row - 1: self.set_value(self.value + 1); return 1
 		elif key == sdlconst.K_UP:
+			if self.value > 0              : self.set_value(self.value - 1); return 1
+			
+	def set_value(self, value):
+		if value != self.value:
+			self.value = value
+			self.on_value_changed()
+			
+	def on_value_changed(self): pass
+	
+class HList(HTable, HighlightableWidget, FocusableWidget):
+	def __init__(self, parent, nb_row = 1):
+		HighlightableWidget.__init__(self)
+		FocusableWidget    .__init__(self)
+		HTable             .__init__(self, parent, nb_row)
+		self.value = 1
+		
+	def add(self, widget, col = None):
+		if isinstance(widget, basestring): widget = Label(None, widget)
+		HTable.add(self, widget, col)
+		
+	def render(self):
+		if self.value != -1:
+			x = self.x + self.col_pad * self.value
+			if self.border_pad: x += self.col_pad
+			for i in range(self.value): x += self.col_widths[i]
+			STYLE.rectangle(x, self.y, x + self.col_widths[self.value], self.y + self.height, self.highlight or self.focus)
+		HTable.render(self)
+		
+	def set_focus(self, focus, from_side = -1):
+		FocusableWidget.set_focus(self, focus, from_side)
+		
+	def on_mouse_pressed(self, button, x, y):
+		self.set_focus(1)
+		widget = self.widget_at(x, y)
+		if widget and widget.on_mouse_pressed(button, x, y): pass
+		else:
+			wx = self.x
+			if self.border_pad: wx += self.col_pad
+			for col in range(self.nb_col):
+				wx += self.col_widths[col] + self.col_pad
+				if x <= wx:
+					self.set_value(col)
+					break
+			else: self.set_value(-1)
+			
+	def on_key_pressed (self, key, unicode_key, mods):
+		if   key == sdlconst.K_RIGHT:
+			if self.value < self.nb_col - 1: self.set_value(self.value + 1); return 1
+		elif key == sdlconst.K_LEFT:
 			if self.value > 0              : self.set_value(self.value - 1); return 1
 			
 	def set_value(self, value):
@@ -1724,7 +1773,7 @@ Jiba""")
 	
 	window = Window(layer)
 	vbox = VTable(window)
-	box = List(vbox, 2)
+	box = HList(vbox, 2)
 	l1 = Label(box, u"Jiba")
 	l12= Label(box, u"1")
 	l2 = Label(box, u"Blam")
