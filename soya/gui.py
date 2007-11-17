@@ -1652,7 +1652,18 @@ class ScrollPane(Table):
 			if   button == 4: self.vscroll.set_value(self.vscroll.value - self.vscroll.step_size); return 1
 			elif button == 5: self.vscroll.set_value(self.vscroll.value + self.vscroll.step_size); return 1
 		
-	
+
+class ProgressBar(Widget):
+	def __init__(self, parent = None, value = 0.0):
+		Widget.__init__(self, parent)
+		self.extra_width = 1.0
+		self.min_height  = self.ideal_height = STYLE.char_height
+		self.min_width   = 3 * STYLE.char_height
+		self.ideal_width = 5 * STYLE.char_height
+
+	def render(self):
+		STYLE.rectangle(self.x, self.y, self.x + int(self.value * self.width), self.y + self.height)
+
 
 if __name__ == "__main__":
 	soya.init(width = 640, height = 480)
@@ -1781,6 +1792,7 @@ Jiba""")
 	l3 = Label(box, u"Marmoute")
 	l32= Label(box, u"3")
 	
+	p = ProgressBar(vbox, 0.6)
 	c = Button(vbox, u"Close")
 	#box.remove(l2)
 	#box.remove(l22)
