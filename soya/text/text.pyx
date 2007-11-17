@@ -84,6 +84,7 @@ initialized to make OpenGL calls."""
 		# init FreeType face
 		if FT_New_Face(library, self.filename, 0, &self._face): raise ValueError("Cannot open font file %s", self.filename)
 		if FT_Set_Char_Size(self._face, 0, self._face.units_per_EM * 64, 0, 0): raise ValueError("Cannot set char size")
+		
 		if self._face.face_flags & FT_FACE_FLAG_SCALABLE: FT_Set_Pixel_Sizes(self._face, self._width, self._height)
 		else:                                             FT_Set_Pixel_Sizes(self._face, 0    , 0)
 		
@@ -95,6 +96,9 @@ initialized to make OpenGL calls."""
 		
 		#self._ascender  = self._scale * (<float> self._face.ascender )
 		#self._descender = self._scale * (<float> self._face.descender)
+		self._ascender  = (<float> self._face.size.metrics.ascender ) / 64.0
+		#self._descender = (<float> self._face.descender)
+		self._descender = (<float> self._face.size.metrics.descender) / 64.0
 		
 	def __dealloc__(self):
 		FT_Done_Face(self._face)
@@ -307,6 +311,7 @@ initialized to make OpenGL calls."""
 		glBindTexture(GL_TEXTURE_2D, self._tex_id)
 		
 		x_orig = x
+		y = y + self._descender
 		self._rendering = 0
 		for char_ in text:
 			if char_ == "\n":
@@ -322,7 +327,7 @@ initialized to make OpenGL calls."""
 				x = x + glyph.width
 				glTexCoord2f(glyph._pixels_x2, glyph._pixels_y2); glVertex3f(x, y + glyph.y + glyph.height, z)
 				glTexCoord2f(glyph._pixels_x2, glyph._pixels_y1); glVertex3f(x, y + glyph.y, z)
-				
+
 		if self._rendering == 1: glEnd(); self._rendering = 0
 		
 		if cull_face == 0: glEnable (GL_CULL_FACE)
@@ -339,6 +344,8 @@ initialized to make OpenGL calls."""
 		glBindTexture(GL_TEXTURE_2D, self._tex_id)
 		
 		x_orig = x
+		y = y + self._descender
+		box_height = box_height + y
 		self._rendering = 0
 		if   align == TEXT_ALIGN_LEFT:
 			width, h, text = self.wordwrap(text, width)
