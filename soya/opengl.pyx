@@ -873,4 +873,15 @@ def glTexParameteri(int target, int param, int value):
 def glPolygonOffset(float factor, float units):
 	c_opengl.glPolygonOffset(factor, units)
 
+def glOrtho(float x1, float x2, float y1, float y2, float z1, float z2):
+	c_opengl.glOrtho(x1, x2, y1, y2, z1, z2)
+
+def glPushAttrib(int arg):
+	c_opengl.glPushAttrib(arg)
+
+def glPopAttrib():
+	c_opengl.glPopAttrib()
+	
+def glViewport(int x, int y, int width, int height):
+	c_opengl.glViewport(x, y, width, height)
 
