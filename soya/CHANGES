@@ -304,11 +304,13 @@
   * Allow the centre of mass of a Body to be anywhere in its local
     coordinate system (thanks Greg Ewing)
   * Improve tutorial README (thanks Jacques Rebourcier)
+  * Update for Pyrex 0.9.6.2 (thanks Greg Ewing)
+  * Blender => Cal3D can now run with Python 2.3 (thanks Greg Ewing)
   * Bugfixes:
-    * Update for Pyrex 0.9.6.2 (thanks Greg Ewing)
-    * Blender => Cal3D can now run with Python 2.3 (thanks Greg Ewing)
     * Fix the weird segfaulting bug in terrain (thanks Souvarine)
     * Fix GL_INVALID_ENUM crash with the OSS ATI DRI driver
       (thanks Zoltan Dome)
     * Fix data/worldS and data/blender in the yet-in
     * Fix speed-1.py tuto
+    * Fog was activated by error on partial camera with no atmosphere
+    * Fix descender computation in font
