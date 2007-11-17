@@ -21,12 +21,14 @@
 import os, os.path
 import soya, soya.sdlconst as sdlconst, soya.opengl as opengl
 
+soya.set_use_unicode(1)
 
 class Style(object):
 	def __init__(self):
 		self.table_row_pad = 5
 		self.table_col_pad = 5
 		#self.font = soya.Font(os.path.join(soya.DATADIR, "FreeSans.ttf"), 25, 30)
+		#self.font = soya.Font(os.path.join(soya.DATADIR, "FreeSans.ttf"), 30, 30)
 		self.font = soya.Font(os.path.join(soya.DATADIR, "FreeSans.ttf"), 20, 20)
 		self.font.filename = "DEFAULT_FONT"
 		self._char_height = None
@@ -78,12 +80,12 @@ class Style(object):
 		
 		
 		self.materials[0].diffuse = (1.0, 0.9, 0.4, 1.0) # Base
-		self.materials[1].diffuse = (1.0, 1.0, 0.5, 1.0) # Selected
+		self.materials[1].diffuse = (1.0, 1.0, 0.7, 1.0) # Selected
 		self.materials[2].diffuse = (1.0, 0.9, 0.4, 1.0) # Window title
 		self.materials[3].diffuse = (1.0, 1.0, 0.5, 1.0) # Selected window title
 		
 		self.materials[2].diffuse = (1.0, 0.7, 0.2, 1.0) # Window title
-		self.materials[3].diffuse = (1.0, 0.8, 0.3, 1.0) # Selected window title
+		self.materials[3].diffuse = (1.0, 0.9, 0.4, 1.0) # Selected window title
 		self.materials[4].diffuse = (1.0, 1.0, 1.0, 0.9) # Window background
 		b  = (0.9, 0.6, 0.0, 1.0)
 		b2 = (0.9, 0.5, 0.0, 1.0)
@@ -219,6 +221,7 @@ STYLE = Style()
 
 HIGHLIGHT_WIDGET     = None
 MOUSE_GRABBER_WIDGET = None
+FOCUSED_WIDGET       = None
 
 class CalcSizeRestart(Exception): pass
 
@@ -243,7 +246,13 @@ class Widget(object):
 		
 	def added_into(self, parent):
 		self.parent = parent
-	
+
+	def get_window(self):
+		ancestor = self.parent
+		while ancestor:
+			if isinstance(ancestor, Window): return ancestor
+			ancestor = ancestor.parent
+			
 	def resize(self, x, y, width, height):
 		self.reset_size()
 		while 1:
@@ -272,6 +281,8 @@ class Widget(object):
 			self.height = height
 			self.y      = y
 			
+	def move(self, x, y): self.allocate(x, y, self.width, self.height)
+	
 	def render(self): pass
 	
 	def process_event(self, events):
@@ -285,14 +296,51 @@ class Widget(object):
 			elif event[0] == sdlconst.MOUSEBUTTONUP  :
 				if MOUSE_GRABBER_WIDGET: MOUSE_GRABBER_WIDGET.on_mouse_released(*event[1:])
 				else:                    self                .on_mouse_released(*event[1:])
-				
+			elif event[0] == sdlconst.KEYDOWN:
+				widget = FOCUSED_WIDGET
+				while widget:
+					if widget.on_key_pressed(event[1], event[3], event[2]): break
+					widget = widget.parent
+			elif event[0] == sdlconst.KEYUP:
+				widget = FOCUSED_WIDGET
+				while widget:
+					if widget.on_key_released(event[1], event[2]): break
+					widget = widget.parent
+			elif event[0] == sdlconst.JOYBUTTONDOWN:
+				widget = FOCUSED_WIDGET
+				while widget:
+					if widget.on_joy_pressed(event[1]): break
+					widget = widget.parent
+				else:
+					if   event[1] == 0: self.process_event([(sdlconst.KEYDOWN, sdlconst.K_RETURN, 0, 0)])
+					elif event[1] == 1: self.process_event([(sdlconst.KEYDOWN, sdlconst.K_ESCAPE, 0, 0)])
+			elif event[0] == sdlconst.JOYBUTTONUP:
+				widget = FOCUSED_WIDGET
+				while widget:
+					if widget.on_joy_released(event[1]): break
+					widget = widget.parent
+				else:
+					if   event[1] == 0: self.process_event([(sdlconst.KEYUP, sdlconst.K_RETURN, 0)])
+					elif event[1] == 1: self.process_event([(sdlconst.KEYUP, sdlconst.K_ESCAPE, 0)])
+			elif event[0] == sdlconst.JOYAXISMOTION:
+				widget = FOCUSED_WIDGET
+				while widget:
+					if widget.on_joy_moved(event[1], event[2]): break
+					widget = widget.parent
+				else:
+					if   event[1] == 0:
+						if   event[2] < -1000: self.process_event([(sdlconst.KEYDOWN, sdlconst.K_LEFT , 0, 0), (sdlconst.KEYUP, sdlconst.K_LEFT , 0)])
+						elif event[2] >  1000: self.process_event([(sdlconst.KEYDOWN, sdlconst.K_RIGHT, 0, 0), (sdlconst.KEYUP, sdlconst.K_RIGHT, 0)])
+					if   event[1] == 1:
+						if   event[2] < -1000: self.process_event([(sdlconst.KEYDOWN, sdlconst.K_UP   , 0, 0), (sdlconst.KEYUP, sdlconst.K_UP   , 0)])
+						elif event[2] >  1000: self.process_event([(sdlconst.KEYDOWN, sdlconst.K_DOWN , 0, 0), (sdlconst.KEYUP, sdlconst.K_DOWN , 0)])
+						
 	def set_grab_mouse(self, grab):
 		global MOUSE_GRABBER_WIDGET
 		if   grab and not MOUSE_GRABBER_WIDGET:             MOUSE_GRABBER_WIDGET = self
 		elif (not grab) and (MOUSE_GRABBER_WIDGET is self): MOUSE_GRABBER_WIDGET = None
 		
-	def on_mouse_pressed (self, button, x, y):
-		print "clic sur %s" % self
+	def on_mouse_pressed (self, button, x, y): pass
 		
 	def on_mouse_released(self, button, x, y): pass
 	
@@ -302,20 +350,66 @@ class Widget(object):
 			HIGHLIGHT_WIDGET.set_highlight(0)
 			HIGHLIGHT_WIDGET = None
 		
+	def on_key_pressed (self, key, unicode_key, mods): pass
+	def on_key_released(self, key, mods): pass
+	
+	def on_joy_moved   (self, axis, value): pass
+	def on_joy_pressed (self, button): pass
+	def on_joy_released(self, button): pass
+	
 	def begin_round(self): pass
 	def advance_time(self, proportion): pass
 
 class HighlightableWidget(Widget):
-	def set_highlight(self, highlight): pass
-	
-	def on_mouse_move(self, x, y, x_relative, y_relative, state):
+	def __init__(self):
+		self.highlight = 0
+	def on_highlight (self, highlight): pass
+	def set_highlight(self, highlight):
 		global HIGHLIGHT_WIDGET
-		if HIGHLIGHT_WIDGET is not self:
-			if HIGHLIGHT_WIDGET: HIGHLIGHT_WIDGET.set_highlight(0)
-			HIGHLIGHT_WIDGET = self
-			self.set_highlight(1)
+		if highlight:
+			if HIGHLIGHT_WIDGET is not self:
+				if HIGHLIGHT_WIDGET: HIGHLIGHT_WIDGET.set_highlight(0)
+				HIGHLIGHT_WIDGET = self
+				self.highlight = 1
+				self.on_highlight(1)
+		else:
+			if HIGHLIGHT_WIDGET is self:
+				HIGHLIGHT_WIDGET = None
+				self.highlight = 0
+				self.on_highlight(0)
 		return 1
 	
+	def on_mouse_move(self, x, y, x_relative, y_relative, state):
+		self.set_highlight(1)
+		return 1
+	
+class FocusableWidget(Widget):
+	def __init__(self):
+		self.focus = 0
+	def on_focus (self, focus): pass
+	def set_focus(self, focus, from_side = -1):
+		global FOCUSED_WIDGET
+		if focus:
+			if FOCUSED_WIDGET is not self:
+				if FOCUSED_WIDGET: FOCUSED_WIDGET.set_focus(0)
+				FOCUSED_WIDGET = self
+				
+				window = self.get_window()
+				if window: window.last_focused_widget = self
+				
+				self.focus = 1
+				self.on_focus(1)
+		else:
+			if FOCUSED_WIDGET is self:
+				FOCUSED_WIDGET = None
+				self.focus = 0
+				self.on_focus(0)
+		return 1
+		
+	def on_mouse_pressed(self, button, x, y):
+		self.set_focus(1)
+		return 1
+		
 
 class Group(Widget):
 	def __init__(self, parent):
@@ -323,6 +417,14 @@ class Group(Widget):
 		self.widgets = []
 		self.visible = 1
 		
+	def recursive(self, l = None):
+		if not l: l = []
+		for widget in self.widgets:
+			if widget:
+				l.append(widget)
+				if isinstance(widget, Group): widget.recursive(l)
+		return l
+	
 	def add(self, widget):
 		self.widgets.append(widget)
 		widget.added_into(self)
@@ -336,16 +438,27 @@ class Group(Widget):
 		
 	def render(self):
 		if self.visible:
-			for widget in self.widgets: widget.render()
+			for widget in self.widgets:
+				if widget: widget.render()
 			
 	def begin_round(self):
 		if self.visible:
-			for widget in self.widgets: widget.begin_round()
+			for widget in self.widgets:
+				if widget: widget.begin_round()
 			
 	def advance_time(self, proportion):
 		if self.visible:
-			for widget in self.widgets: widget.advance_time(proportion)
+			for widget in self.widgets:
+				if widget: widget.advance_time(proportion)
 	
+	def move(self, x, y):
+		dx = x - self.x
+		dy = y - self.y
+		self.x = x
+		self.y = y
+		for widget in self.widgets:
+			if widget: widget.move(widget.x + dx, widget.y + dy)
+			
 	def __repr__(self): return """<%s widgets=[%s]>""" % (self.__class__.__name__, ", ".join([repr(widget) for widget in self.widgets]))
 
 
@@ -405,12 +518,13 @@ class Table(Group):
 	def skip_case(self, nb = 1):
 		self._next_index += nb
 		
-	def add(self, widget, col = None, row = None):
-		if col is None:
-			index = self._next_index
-			self._next_index += 1
-		else:
-			index = col + row * self.nb_col
+	def add(self, widget):
+		self.widgets[self._next_index] = widget
+		self._next_index += 1
+		widget.added_into(self)
+		
+	def set_widget_at(self, widget, col = None, row = None):
+		index = col + row * self.nb_col
 		if self.widgets[index]: self.remove(self.widgets[index])
 		self.widgets[index] = widget
 		widget.added_into(self)
@@ -505,23 +619,7 @@ class Table(Group):
 				wy += self.row_heights[row] + self.row_pad
 			wx += self.col_widths[col] + self.col_pad
 			
-	def render(self):
-		if self.visible:
-			for widget in self.widgets:
-				if widget: widget.render()
-			
-	def begin_round(self):
-		if self.visible:
-			for widget in self.widgets:
-				if widget: widget.begin_round()
-				
-	def advance_time(self, proportion):
-		if self.visible:
-			for widget in self.widgets:
-				if widget: widget.advance_time(proportion)
-				
 	def widget_at(self, x, y):
-		
 		if (x < 0) or (y < 0): return None
 		
 		wx = self.x
@@ -548,20 +646,183 @@ class Table(Group):
 		
 	def on_mouse_pressed(self, button, x, y):
 		widget = self.widget_at(x, y)
-		if widget: return widget.on_mouse_pressed(button, x, y)
-		else:      return Widget.on_mouse_pressed(self, button, x, y)
+		if widget and widget.on_mouse_pressed(button, x, y): return 1
+		return super(Table, self).on_mouse_pressed(button, x, y)
 		
 	def on_mouse_released(self, button, x, y):
 		widget = self.widget_at(x, y)
-		if widget: return widget.on_mouse_released(button, x, y)
-		else:      return Widget.on_mouse_released(self, button, x, y)
+		if widget and widget.on_mouse_released(button, x, y): return 1
+		return super(Table, self).on_mouse_released(button, x, y)
 		
 	def on_mouse_move(self, x, y, x_relative, y_relative, state):
 		widget = self.widget_at(x, y)
-		if widget: return widget.on_mouse_move(x, y, x_relative, y_relative, state)
-		else:      return Widget.on_mouse_move(self, x, y, x_relative, y_relative, state)
+		if widget and widget.on_mouse_move(x, y, x_relative, y_relative, state): return 1
+		return super(Table, self).on_mouse_move(x, y, x_relative, y_relative, state)
+
+	def set_focus(self, focus, from_side = -1):
+		if from_side == -1: widgets = self.widgets
+		else:               widgets = self.widgets[::-1]
+		for widget in widgets:
+			if widget and (isinstance(widget, FocusableWidget) or isinstance(widget, Group)) and widget.set_focus(focus, from_side): return 1
+			
+	def on_key_pressed (self, key, unicode_key, mods):
+		if key in _MOVING_KEYS:
+			widget = FOCUSED_WIDGET
+			while widget and (widget.parent is not self): widget = widget.parent
+			i = self.widgets.index(widget)
+			col = i %  self.nb_col
+			row = i // self.nb_col
+			
+			if   key == sdlconst.K_UP:
+				while row > 0:
+					row -= 1
+					widget = self.widgets[col + row * self.nb_col]
+					if widget and (isinstance(widget, FocusableWidget) or isinstance(widget, Group)) and widget.set_focus(1,  1): return 1
+					
+			elif key == sdlconst.K_DOWN:
+				while row < self.nb_row - 1:
+					row += 1
+					widget = self.widgets[col + row * self.nb_col]
+					if widget and (isinstance(widget, FocusableWidget) or isinstance(widget, Group)) and widget.set_focus(1, -1): return 1
+					
+			elif (key == sdlconst.K_LEFT) or ((key == sdlconst.K_TAB) and (mods & sdlconst.MOD_LSHIFT)):
+				while col > 0:
+					col -= 1
+					widget = self.widgets[col + row * self.nb_col]
+					if widget and (isinstance(widget, FocusableWidget) or isinstance(widget, Group)) and widget.set_focus(1,  1): return 1
+					
+			elif (key == sdlconst.K_RIGHT) or (key == sdlconst.K_TAB):
+				while col < self.nb_col - 1:
+					col += 1
+					widget = self.widgets[col + row * self.nb_col]
+					if widget and (isinstance(widget, FocusableWidget) or isinstance(widget, Group)) and widget.set_focus(1, -1): return 1
+					
+	def insert_row(self, index):
+		for i in range(index * self.nb_col, (index + 1) * self.nb_col): self.widgets.insert(i, None)
+		self.nb_row += 1
+		
+	def delete_row(self, index):
+		self.nb_row -= 1
+		del self.widgets[index * self.nb_col : (index + 1) * self.nb_col]
+		
+	def insert_col(self, index):
+		self.nb_col += 1
+		for i in range(self.nb_row): self.widgets.insert(i * self.nb_col + index, None)
+		
+	def delete_col(self, index):
+		self.nb_col -= 1
+		for i in range(self.nb_row): del self.widgets[i * self.nb_col + index]
+		
+_MOVING_KEYS = set([sdlconst.K_LEFT, sdlconst.K_UP, sdlconst.K_RIGHT, sdlconst.K_DOWN, sdlconst.K_TAB])
 
 
+class HTable(Table):
+	def __init__(self, parent, nb_row = 1):
+		Table.__init__(self, parent, 0, nb_row)
+		
+	def add(self, widget, col = None):
+		if col is None: col = self.nb_col - 1
+		
+		if col == -1: i = 0
+		else:
+			for i in range(col, len(self.widgets), self.nb_col):
+				if self.widgets[i] is None:
+					self.widgets[i] = widget
+					widget.added_into(self)
+					return
+				
+		self.insert_col(self.nb_col)
+		self.widgets[self.nb_col - 1] = widget
+		widget.added_into(self)
+		
+	def remove(self, widget):
+		i = self.widgets.index(widget)
+		self.widgets[i] = None
+		widget.added_into(None)
+		col = i % self.nb_col
+		for i in range(col, len(self.widgets), self.nb_col):
+			if self.widgets[i]: break
+		else: self.delete_col(col)			
+		
+class VTable(Table):
+	def __init__(self, parent, nb_col = 1):
+		Table.__init__(self, parent, nb_col, 0)
+		
+	def add(self, widget, row = None):
+		if row is None: row = self.nb_row - 1
+
+		if row == -1: i = 0
+		else:
+			for i in range(row * self.nb_col, (row + 1) * self.nb_col):
+				if self.widgets[i] is None:
+					self.widgets[i] = widget
+					widget.added_into(self)
+					return
+				
+		self.insert_row(self.nb_row)
+		self.widgets[(self.nb_row - 1) * self.nb_col] = widget
+		widget.added_into(self)
+		
+	def remove(self, widget):
+		i = self.widgets.index(widget)
+		self.widgets[i] = None
+		widget.added_into(None)
+		row = i // self.nb_col
+		for i in range(row * self.nb_col, (row + 1) * self.nb_col):
+			if self.widgets[i]: break
+		else: self.delete_row(row)
+		
+
+class List(VTable, HighlightableWidget, FocusableWidget):
+	def __init__(self, parent, nb_col = 1):
+		HighlightableWidget.__init__(self)
+		FocusableWidget    .__init__(self)
+		VTable             .__init__(self, parent, nb_col)
+		self.value = 1
+		
+	def add(self, widget, row = None):
+		if isinstance(widget, basestring): widget = Label(None, widget)
+		VTable.add(self, widget, row)
+		
+	def render(self):
+		if self.value != -1:
+			y = self.y + self.row_pad * self.value
+			if self.border_pad: y += self.row_pad
+			for i in range(self.value): y += self.row_heights[i]
+			STYLE.rectangle(self.x, y, self.x + self.width, y + self.row_heights[self.value], self.highlight or self.focus)
+		VTable.render(self)
+		
+	def set_focus(self, focus, from_side = -1):
+		FocusableWidget.set_focus(self, focus, from_side)
+		
+	def on_mouse_pressed(self, button, x, y):
+		self.set_focus(1)
+		widget = self.widget_at(x, y)
+		if widget and widget.on_mouse_pressed(button, x, y): pass
+		else:
+			wy = self.y
+			if self.border_pad: wy += self.col_pad
+			for row in range(self.nb_row):
+				wy += self.row_heights[row] + self.row_pad
+				if y <= wy:
+					self.set_value(row)
+					break
+			else: self.set_value(-1)
+			
+	def on_key_pressed (self, key, unicode_key, mods):
+		if   key == sdlconst.K_DOWN:
+			if self.value < self.nb_row - 1: self.set_value(self.value + 1); return 1
+		elif key == sdlconst.K_UP:
+			if self.value > 0              : self.set_value(self.value - 1); return 1
+			
+	def set_value(self, value):
+		if value != self.value:
+			self.value = value
+			self.on_value_changed()
+			
+	def on_value_changed(self): pass
+	
+	
 class Image(Widget):
 	def __init__(self, parent = None, material = None):
 		self.material = material
@@ -681,6 +942,10 @@ class Text(Widget):
 		if (width != self.width) or (height != self.height): self._changed = -2
 		Widget.allocate(self, x, y, width, height)
 		
+	def move(self, x, y):
+		self.x = x
+		self.y = y
+		
 	def build_display_list(self):
 		self._font.draw_area(self._text, 0.0, 0.0, 0.0, self.width, self.height, 0)
 		
@@ -702,36 +967,133 @@ class Text(Widget):
 			
 
 
-class Button(Label, HighlightableWidget):
+class Button(Label, HighlightableWidget, FocusableWidget):
 	def __init__(self, parent = None, text = "", color = None, font = None):
-		self.highlight = 0
+		HighlightableWidget.__init__(self)
+		FocusableWidget    .__init__(self)
 		Label.__init__(self, parent, text, color, font)
 		
+	def calc_ideal_size(self):
+		Label.calc_ideal_size(self)
+		self.ideal_width  += 6
+		self.ideal_height += 6
+		self.min_width    += 6
+		self.min_height   += 4
+		
 	def build_display_list(self):
-		self._font.draw(self._text, (self.width - self.ideal_width) // 2, 0.0)
+		self._font.draw(self._text, (self.width - self.ideal_width) // 2, 3.0)
 		
 	def render(self):
-		STYLE.rectangle(self.x, self.y, self.x + self.width, self.y + self.height, self.highlight)
+		STYLE.rectangle(self.x, self.y, self.x + self.width, self.y + self.height, self.highlight or self.focus)
 		Label.render(self)
 		
-	def clicked(self): pass
+	def on_clicked(self):
+		print "Button clicked !"
 	
-	def on_mouse_pressed(self, button, x, y): return 1 # Make the widget "opaque" : don't give the event to another one
 	def on_mouse_released(self, button, x, y):
-		if button == 1: self.clicked()
+		if button == 1: self.on_clicked()
 		return 1
 	
-	def set_highlight(self, highlight):
-		self.highlight = highlight
+	def on_key_pressed (self, key, unicode_key, mods):
+		if (key == sdlconst.K_SPACE) or (key == sdlconst.K_RETURN) or (key == sdlconst.K_KP_ENTER):
+			self.on_clicked()
+			return 1
+		
+	def on_highlight(self, highlight):
+		HighlightableWidget.on_highlight(self, highlight)
+		if highlight: self.color = STYLE.text_colors[1]
+		else:         self.color = STYLE.text_colors[0]
+
+class CancelButton(Button):
+	def __init__(self, parent = None, text = u"Cancel", color = None, font = None):
+		Button.__init__(self, parent, text, color, font)
+		
+	def on_clicked(self): self.get_window().close()
+	
+class ValidateButton(Button):
+	def __init__(self, parent = None, text = u"Ok", color = None, font = None):
+		Button.__init__(self, parent, text, color, font)
+
+	
+class Input(Label, HighlightableWidget, FocusableWidget):
+	def __init__(self, parent = None, text = "", color = None, font = None):
+		self.cursor_pos = len(text)
+		HighlightableWidget.__init__(self)
+		FocusableWidget    .__init__(self)
+		Label.__init__(self, parent, text, color, font)
+		
+	def calc_ideal_size(self):
+		Label.calc_ideal_size(self)
+		self.ideal_width  += 6
+		self.ideal_height += 6
+		self.min_width    += 6
+		self.min_height   += 5
+		
+	def build_display_list(self):
+		self._font.draw(self._text, 3.0, 3.0)
+		
+	def render(self):
+		STYLE.rectangle(self.x, self.y, self.x + self.width, self.y + self.height, self.highlight or self.focus)
+		Label.render(self)
+		if self.highlight or self.focus:
+			cursor_x = self.x + 3 + int(self._font.get_print_size(self._text[:self.cursor_pos])[0])
+			opengl.glColor4f(*STYLE.text_colors[self.highlight])
+			opengl.glBegin(opengl.GL_LINES)
+			opengl.glVertex2i(cursor_x, self.y + 3)
+			opengl.glVertex2i(cursor_x, self.y + self.height - 3)
+			opengl.glEnd()
+			
+	def on_text_changed(self): pass
+	def on_key_pressed (self, key, unicode_key, mods):
+		if   key == sdlconst.K_LEFT  : self.cursor_pos = max(self.cursor_pos - 1, 0)              ; return 1
+		elif key == sdlconst.K_RIGHT : self.cursor_pos = min(self.cursor_pos + 1, len(self._text)); return 1
+		elif key == sdlconst.K_HOME  : self.cursor_pos = 0                                        ; return 1
+		elif key == sdlconst.K_END   : self.cursor_pos = len(self._text)                          ; return 1
+		elif key == sdlconst.K_DELETE:
+			self.text = self._text[:self.cursor_pos] + self._text[self.cursor_pos + 1:]
+			self.on_text_changed()
+			return 1
+		elif key == sdlconst.K_BACKSPACE:
+			self.text = self._text[:self.cursor_pos - 1] + self._text[self.cursor_pos:]
+			self.cursor_pos = max(self.cursor_pos - 1, 0)
+			self.on_text_changed()
+			return 1
+		elif key == sdlconst.K_TAB   : return 0 # Not a valid character, but has a valid unicode!
+		elif key == sdlconst.K_ESCAPE: return 0 # Not a valid character, but has a valid unicode!
+		elif(key == sdlconst.K_RETURN) or (key == sdlconst.K_KP_ENTER): return 0 # Not a valid character, but has a valid unicode!
+		elif unicode_key:
+			self.text = self._text[:self.cursor_pos] + unichr(unicode_key) + self._text[self.cursor_pos:]
+			self.cursor_pos += 1
+			self.on_text_changed()
+			return 1
+		
+	def on_mouse_pressed(self, button, x, y):
+		super(Input, self).on_mouse_pressed(button, x, y)
+		x -= self.x + 3.0
+		i = 0
+		for char in self._text:
+			char_width = self._font.get_print_size(char)[0]
+			if x < char_width // 2: self.cursor_pos = i; break
+			i += 1
+			x -= char_width
+			if x < 0              : self.cursor_pos = i; break
+		self.cursor_pos = i
+		return 1
+	
+	def on_mouse_released(self, button, x, y): return 1 # Make the widget "opaque" : don't give the event to another one
+	
+	def on_highlight(self, highlight):
 		if highlight: self.color = STYLE.text_colors[1]
 		else:         self.color = STYLE.text_colors[0]
 		
 	
-class CheckBox(Label, HighlightableWidget):
+class CheckBox(Label, HighlightableWidget, FocusableWidget):
 	base_color_index = 0
 	def __init__(self, parent = None, text = "", value = 0, color = None, font = None):
 		self.value     = value
-		self.highlight = 0
+		self.focus     = 0
+		HighlightableWidget.__init__(self)
+		FocusableWidget    .__init__(self)
 		Label.__init__(self, parent, text, color, font)
 		
 		self.check_size = int(STYLE.get_char_height() * 0.9)
@@ -747,7 +1109,7 @@ class CheckBox(Label, HighlightableWidget):
 		self.min_height = self.ideal_height
 		
 	def build_display_list(self):
-		self._font.draw(self._text, self.x + self.check_size * 1.1, self.y)
+		self._font.draw(self._text, self.check_size * 1.1, 0.0)
 		
 	def render(self):
 		Label.render(self)
@@ -755,10 +1117,10 @@ class CheckBox(Label, HighlightableWidget):
 		y1 = self.y
 		x2 = x1 + self.check_size
 		y2 = y1 + self.check_size
-		STYLE.rectangle(x1, y1, x2, y2, self.base_color_index + self.highlight)
+		STYLE.rectangle(x1, y1, x2, y2, self.base_color_index + (self.highlight or self.focus))
 		if self.value:
 			opengl.glLineWidth(2.0)
-			opengl.glColor4f(*STYLE.line_colors[self.base_color_index + self.highlight])
+			opengl.glColor4f(*STYLE.line_colors[self.base_color_index + (self.highlight or self.focus)])
 			opengl.glBegin   (opengl.GL_LINES)
 			opengl.glVertex2i(x1, y1)
 			opengl.glVertex2i(x2, y2)
@@ -767,19 +1129,25 @@ class CheckBox(Label, HighlightableWidget):
 			opengl.glEnd()
 			opengl.glLineWidth(1.0)
 			
-	def on_mouse_pressed(self, button, x, y): return 1 # Make the widget "opaque" : don't give the event to another one
 	def on_mouse_released(self, button, x, y):
 		if button == 1:
 			self.set_value(not self.value)
-
+			
+	def on_key_pressed (self, key, unicode_key, mods):
+		if (key == sdlconst.K_SPACE) or (key == sdlconst.K_RETURN) or (key == sdlconst.K_KP_ENTER):
+			self.set_value(not self.value)
+			return 1
+		
 	def set_value(self, value):
 		self.value = value
+		self.on_value_changed()
 		
-	def set_highlight(self, highlight):
-		self.highlight = highlight
+	def on_value_changed(self): pass
+	
+	def on_highlight(self, highlight):
 		if highlight: self.color = STYLE.text_colors[1]
 		else:         self.color = STYLE.text_colors[0]
-
+	
 		
 class WindowCloseButton(CheckBox):
 	base_color_index = 2
@@ -789,23 +1157,45 @@ class WindowCloseButton(CheckBox):
 		
 class Window(Table, HighlightableWidget):
 	def __init__(self, parent = None, title = u"Window", closable = 1):
+		HighlightableWidget.__init__(self)
 		Table.__init__(self, parent, 1, 2)
 		self.border_pad = 1
-		self.highlight  = 0
 		if isinstance(title, Widget): title_widget = title; self.add(title)
 		else:                         title_widget = Label(None, title, color = STYLE.text_colors[2]); title_widget.extra_width = 1.0
 		if closable:
 			title_bar = Table(self, 2, 1)
 			title_bar.col_pad = 15
 			title_bar.add(title_widget)
-			WindowCloseButton(title_bar, u"", 1)
+			self.close_button = WindowCloseButton(title_bar, u"", 1)
 		else: self.add(title_widget)
-		self.max_width_percent  = 0.8
-		self.max_height_percent = 0.8
+		self.max_width_percent   = 0.8
+		self.max_height_percent  = 0.8
+		self.last_focused_widget = None
 		
+	def on_key_pressed (self, key, unicode_key, mods):
+		if    key == sdlconst.K_ESCAPE:
+			self.close()
+			return 1
+		elif (key == sdlconst.K_SPACE) or (key == sdlconst.K_RETURN) or (key == sdlconst.K_KP_ENTER):
+			for widget in self.recursive():
+				if isinstance(widget, ValidateButton):
+					widget.on_clicked()
+					return 1
+				
 	def close(self):
-		if self.parent: self.parent.remove(self)
-		
+		if self.parent:
+			parent = self.parent
+			self.parent.remove(self)
+			self.on_closed()
+			if FOCUSED_WIDGET.get_window() is self:
+				widget = parent.widgets[-1]
+				if   isinstance(widget, Window):
+					if widget.last_focused_widget: widget.last_focused_widget.set_focus(1)
+				elif isinstance(widget, FocusableWidget) or isinstance(widget, Table):
+					widget.set_focus(1)
+					
+	def on_closed(self): pass
+	
 	def calc_ideal_size(self):
 		Table.calc_ideal_size(self)
 		self.ideal_width  += 2 * self.border_pad
@@ -818,21 +1208,30 @@ class Window(Table, HighlightableWidget):
 	def allocate(self, x, y, width, height):
 		w_width  = min(width , self.ideal_width , int(self.max_width_percent  * self.parent.width ))
 		w_height = min(height, self.ideal_height, int(self.max_height_percent * self.parent.height))
-		if self.x + w_width  > x + width : x = x + width  - w_width
-		else:                              x = self.x
-		if self.y + w_height > y + height: y = y + height - w_height
-		else:                              y = self.y
-		
-		Table.allocate(self, x, y, w_width, w_height)
-		
-	def move_to(self, x, y, width = None, height = None):
 		
 		if   x < self.parent.x                                   : x = self.parent.x
 		elif x > self.parent.x + self.parent.width  - self.width : x = self.parent.x + self.parent.width  - self.width
 		if   y < self.parent.y                                   : y = self.parent.y
 		elif y > self.parent.y + self.parent.height - self.height: y = self.parent.y + self.parent.height - self.height
 		
-		Table.allocate(self, x, y, width or self.width, height or self.height)
+		Table.allocate(self, x, y, w_width, w_height)
+		
+		if self.last_focused_widget is None:
+			if isinstance(self.widgets[1], Group): widgets = self.widgets[1].recursive()
+			else:                                  widgets = [self.widgets[1]]
+			for widget in widgets:
+				if isinstance(widget, FocusableWidget):
+					widget.set_focus(1)
+					break
+			else:
+				self.close_button.set_focus(1)
+				
+	def move(self, x, y):
+		if   x < self.parent.x                                   : x = self.parent.x
+		elif x > self.parent.x + self.parent.width  - self.width : x = self.parent.x + self.parent.width  - self.width
+		if   y < self.parent.y                                   : y = self.parent.y
+		elif y > self.parent.y + self.parent.height - self.height: y = self.parent.y + self.parent.height - self.height
+		Table.move(self, x, y)
 		
 	def render(self):
 		if self.visible:
@@ -842,8 +1241,11 @@ class Window(Table, HighlightableWidget):
 			Group.render(self)
 			
 	def on_mouse_pressed(self, button, x, y):
-		if isinstance(self.parent, Layer): self.parent.set_on_top(self)
-		
+		if isinstance(self.parent, Layer):
+			self.parent.set_on_top(self)
+			if   self.last_focused_widget: self.last_focused_widget.set_focus(1)
+			elif FOCUSED_WIDGET: FOCUSED_WIDGET.set_focus(0)
+			
 		if not self is MOUSE_GRABBER_WIDGET:
 			r = Table.on_mouse_pressed(self, button, x, y)
 			if r: return r
@@ -863,34 +1265,33 @@ class Window(Table, HighlightableWidget):
 	
 	def on_mouse_move(self, x, y, x_relative, y_relative, state):
 		if not self is MOUSE_GRABBER_WIDGET:
-			r = Table.on_mouse_move(self, x, y, x_relative, y_relative, state)
-			if r: return r
+			widget = self.widget_at(x, y)
+			if widget and widget.on_mouse_move(x, y, x_relative, y_relative, state): return 1
 			
 		if y <= self.y + self.widgets[0].height + int(1.3 * self.row_pad):
 			HighlightableWidget.on_mouse_move(self, x, y, x_relative, y_relative, state)
 			
 		if state == 1:
-			self.move_to(self.x + x_relative, self.y + y_relative)
+			self.move(self.x + x_relative, self.y + y_relative)
 		return 1
 	
-	def set_highlight(self, highlight):
-		self.highlight = highlight
-		
 		
 
-class ScrollBar(HighlightableWidget):
+class ScrollBar(HighlightableWidget, FocusableWidget):
 	def __init__(self, parent = None, min = 0, max = 100, value = None, page_size = 0.0, step_size = 1.0):
 		self.min   = min
 		self.max   = max
 		if value is None: self.value = min
 		else:             self.value = value
-		self.page_size = page_size
-		self.step_size = step_size
-		self.bar_size  = int(0.9 * STYLE.get_char_height())
+		self.page_size      = page_size
+		self.step_size      = step_size
+		self.bar_size       = int(0.9 * STYLE.get_char_height())
 		self.highlight_part = 0
-		self.changing = 0.0
+		self.changing       = 0.0
 		self.changing_round = 0
-		Widget.__init__(self, parent)
+		HighlightableWidget.__init__(self)
+		FocusableWidget    .__init__(self)
+		Widget             .__init__(self, parent)
 		
 	def __repr__(self): return """<%s min=%s max=%s value=%s page_size=%s>""" % (self.__class__.__name__, self.min, self.max, self.value, self.page_size)
 	
@@ -899,6 +1300,9 @@ class ScrollBar(HighlightableWidget):
 		elif value > self.max - self.page_size: self.value = self.max - self.page_size
 		else:                                   self.value = value
 		self.update_bar()
+		self.on_value_changed()
+
+	def on_value_changed(self): pass
 		
 	def set_range(self, min, max, value, page_size, step_size):
 		self.min       = min
@@ -911,22 +1315,23 @@ class ScrollBar(HighlightableWidget):
 		Widget.allocate(self, x, y, width, height)
 		self.update_bar()
 		
-	def set_highlight(self, highlight):
+	def on_highlight(self, highlight):
 		if not highlight:
 			self.highlight_part = 0
-			#self.changing = 0.0
 			
 	def on_mouse_released(self, button, x, y):
 		self.set_grab_mouse(0)
 		self.changing = 0.0
-		
+
 	def begin_round(self):
 		if self.changing:
 			self.changing_round += 1
 			if self.changing_round == 4:
 				self.set_value(self.value + self.changing)
 				self.changing_round = 0
-			
+				
+	def on_key_released(self, key, mods): self.changing = 0.0
+	
 			
 class HScrollBar(ScrollBar):
 	def __init__(self, parent = None, min = 0, max = 100, value = None, page_size = 0.0, step_size = 1.0):
@@ -951,7 +1356,7 @@ class HScrollBar(ScrollBar):
 	def render(self):
 		STYLE.triangle(0, self.x, self.y, self.x + self.bar_size - 2, self.y + self.bar_size, self.highlight_part == 1)
 		STYLE.triangle(1, self.x + self.width - self.bar_size + 2, self.y, self.x + self.width, self.y + self.bar_size, self.highlight_part == 4)
-		STYLE.rectangle(self.page_x, self.y, self.page_x + self.page_width, self.y + self.bar_size, self.highlight_part == 2)
+		STYLE.rectangle(self.page_x, self.y, self.page_x + self.page_width, self.y + self.bar_size, (self.highlight_part == 2) or self.focus)
 		
 	def set_value_pixel(self, x):
 		self.set_value(self.min + float(x - (self.page_width) / 2.0 - self.x - self.bar_size) / (self.width - 2 * self.bar_size - self.additional_page_width) * (self.max - self.min))
@@ -970,6 +1375,7 @@ class HScrollBar(ScrollBar):
 		return 1
 	
 	def on_mouse_pressed(self, button, x, y):
+		ScrollBar.on_mouse_pressed(self, button, x, y)
 		self.changing_round = 0
 		if   button == 1:
 			if   x < self.x + self.bar_size                     : self.changing = -self.step_size
@@ -984,6 +1390,20 @@ class HScrollBar(ScrollBar):
 				self.set_grab_mouse(1)
 		return 1
 	
+	def on_key_pressed(self, key, unicode_key, mods):
+		if   key == sdlconst.K_LEFT :
+			if self.value == self.min: return 0
+			self.changing_round = -10
+			self.changing = -self.step_size
+			self.set_value(self.value + self.changing)
+			return 1
+		elif key == sdlconst.K_RIGHT:
+			if self.value + self.page_size == self.max: return 0
+			self.changing_round = -10
+			self.changing =  self.step_size
+			self.set_value(self.value + self.changing)
+			return 1
+			
 	
 class VScrollBar(ScrollBar):
 	def __init__(self, parent = None, min = 0, max = 100, value = None, page_size = 0.0, step_size = 1.0):
@@ -1008,8 +1428,8 @@ class VScrollBar(ScrollBar):
 	def render(self):
 		STYLE.triangle(2, self.x, self.y, self.x + self.bar_size, self.y + self.bar_size - 2, self.highlight_part == 1)
 		STYLE.triangle(3, self.x, self.y + self.height - self.bar_size + 2, self.x + self.bar_size, self.y + self.height, self.highlight_part == 4)
-		STYLE.rectangle(self.x, self.page_y, self.x + self.bar_size, self.page_y + self.page_height, self.highlight_part == 2)
-
+		STYLE.rectangle(self.x, self.page_y, self.x + self.bar_size, self.page_y + self.page_height, (self.highlight_part == 2 or self.focus))
+		
 	def set_value_pixel(self, y):
 		self.set_value(self.min + float(y - self.page_height / 2.0 - self.y - self.bar_size) / (self.height - 2 * self.bar_size - self.additional_page_height) * (self.max - self.min))
 		
@@ -1027,6 +1447,7 @@ class VScrollBar(ScrollBar):
 		return 1
 	
 	def on_mouse_pressed(self, button, x, y):
+		ScrollBar.on_mouse_pressed(self, button, x, y)
 		self.changing_round = 0
 		if   button == 1:
 			if   y < self.y + self.bar_size              : self.changing = -self.step_size
@@ -1042,15 +1463,28 @@ class VScrollBar(ScrollBar):
 		elif button == 4: self.set_value(self.value - self.step_size)
 		elif button == 5: self.set_value(self.value + self.step_size)
 		return 1
-
+	
+	def on_key_pressed(self, key, unicode_key, mods):
+		if   key == sdlconst.K_UP  :
+			if self.value == self.min: return 0
+			self.changing_round = -10
+			self.changing = -self.step_size
+			self.set_value(self.value + self.changing)
+			return 1
+		elif key == sdlconst.K_DOWN:
+			if self.value + self.page_size == self.max: return 0
+			self.changing_round = -10
+			self.changing =  self.step_size
+			self.set_value(self.value + self.changing)
+			return 1
+		
+		
 class _ScrollPaneHScrollBar(HScrollBar):
-	def set_value(self, value):
-		HScrollBar.set_value(self, value)
+	def on_value_changed(self):
 		self.parent.update_viewport()
 		
 class _ScrollPaneVScrollBar(VScrollBar):
-	def set_value(self, value):
-		VScrollBar.set_value(self, value)
+	def on_value_changed(self):
 		self.parent.update_viewport()
 		
 class ScrollPane(Table):
@@ -1093,12 +1527,10 @@ class ScrollPane(Table):
 		
 	def allocate(self, x, y, width, height):
 		if (self.hscroll.parent is None) and (width  < self.inner_min_width ):
-			print "ajoute hscroll !"
-			self.add(self.hscroll, 0, 1)
+			self.set_widget_at(self.hscroll, 0, 1)
 			raise CalcSizeRestart
 		if (self.vscroll.parent is None) and (height < self.inner_min_height):
-			print "ajoute Vscroll !"
-			self.add(self.vscroll, 1, 0)
+			self.set_widget_at(self.vscroll, 1, 0)
 			raise CalcSizeRestart
 		
 		Table.allocate(self, x, y, width, height)
@@ -1110,12 +1542,22 @@ class ScrollPane(Table):
 		if self.vscroll.parent: self.vscroll.set_range(0, max(self.widgets[0].min_height, self.row_heights[0]), self.vscroll.value, self.row_heights[0], 50.0)
 		else:                   self.vscroll.value = 0.0; self.vscroll.page_size = self.widgets[0].height; self.vscroll.max = max(self.widgets[0].min_height, self.row_heights[0])
 		
-	def update_viewport(self):
 		self.widgets[0].allocate(
 			int(self.scroll_x0 - self.hscroll.value),
 			int(self.scroll_y0 - self.vscroll.value),
 			max(self.widgets[0].min_width , self.col_widths [0]),
 			max(self.widgets[0].min_height, self.row_heights[0]),
+			)
+		
+	def move(self, x, y):
+		Table.move(self, x, y)
+		self.scroll_x0 = self.x + self.border_pad * self.col_pad
+		self.scroll_y0 = self.y + self.border_pad * self.row_pad
+		
+	def update_viewport(self):
+		self.widgets[0].move(
+			int(self.scroll_x0 - self.hscroll.value),
+			int(self.scroll_y0 - self.vscroll.value),
 			)
 		
 	def render(self):
@@ -1134,7 +1576,7 @@ class ScrollPane(Table):
 										 self.scroll_x0 + self.hscroll.page_size,
 										 self.scroll_y0 + self.vscroll.page_size,
 										 self.scroll_y0, -1.0, 1.0)
-
+			
 # 			soya.DEFAULT_MATERIAL.activate()
 # 			opengl.glColor4f(0.0, 1.0, 1.0, 1.0)
 # 			opengl.glBegin(opengl.GL_QUADS)
@@ -1266,15 +1708,35 @@ Jiba""")
 
 	
 	window = Window(layer)
-	table = Table(window, 2, 4)
+	table = Table(window, 2, 5)
+	table.row_pad = 20
 	Label(table, u"Fullscreen")
-	CheckBox(table, u"", 1)
+	CheckBox(table, u"bla bla", 1)
 	Label(table, u"Quality")
-	HScrollBar(table, 0, 3, 1, 1, 1)
+	HScrollBar(table, 0, 9, 1, 1, 1)
 	Label(table, u"Information")
-	Text(ScrollPane(table), u"This is a demo of a new widget module for the Soya 3D engine.\nIt features flying windows, scrolling panes, and the usual set of widgets : Label, Button, CheckBox, ScrollBar,...\nAnd it's only the third widget module for soya ;-)")
-	table.skip_case()
-	Button(table, u"Ok")
+	Text(ScrollPane(table), u"This is a small demo of a new widget module for the Soya 3D engine.\nIt features flying windows, scrolling panes, and the usual set of widgets :\n * Label\n * Image\n * Input\n * Button\n * CheckBox\n * ScrollBar\n * ...\nAnd it's only the third widget module for soya ;-)")
+	Label(table, u"Name")
+	Input(table, u"Jiba")
+	#table.skip_case()
+	CancelButton(table)
+	ValidateButton(table)
+	
+	window = Window(layer)
+	vbox = VTable(window)
+	box = List(vbox, 2)
+	l1 = Label(box, u"Jiba")
+	l12= Label(box, u"1")
+	l2 = Label(box, u"Blam")
+	l22= Label(box, u"2")
+	l3 = Label(box, u"Marmoute")
+	l32= Label(box, u"3")
+	
+	c = Button(vbox, u"Close")
+	#box.remove(l2)
+	#box.remove(l22)
+	#box.remove(l32)
+	print box.widgets
 	
 	root = Root(layer)
 	soya.set_root_widget(root)
