@@ -405,7 +405,9 @@ cdef class _SimpleModel(_Model):
 		nb_vertices = len(face._vertices)
 		if   nb_vertices == 3: sf.option = sf.option | FACE_TRIANGLE
 		elif nb_vertices == 4: sf.option = sf.option | FACE_QUAD
-		else: raise ValueError("Face with %s vertices are not supported in model." % nb_vertices)
+		else:
+			print "Face with %s vertices are not supported in model." % nb_vertices
+			raise ValueError("Face with %s vertices are not supported in model." % nb_vertices)
 		if face.is_alpha():                   sf.option = sf.option | FACE_ALPHA
 		if face._option & FACE2_DOUBLE_SIDED: sf.option = sf.option | FACE_DOUBLE_SIDED
 		if face._option & FACE2_SMOOTH_LIT:   sf.option = sf.option | FACE_SMOOTH_LIT
