@@ -262,7 +262,7 @@ Soya is designed with game in mind. It includes heightmaps, particles systems, a
 	
 	scripts      = ["soya_editor"],
 	package_dir  = {"soya" : ""},
-	packages     = ["soya", "soya.editor", "soya.pudding", "soya.pudding.ext", "soya.pudding.styles", "soya.blendercal", "soya.tofu"],
+	packages     = ["soya", "soya.gui", "soya.editor", "soya.pudding", "soya.pudding.ext", "soya.pudding.styles", "soya.blendercal", "soya.tofu"],
 	
 	data_files   = [(os.path.join("soya", "data"),
 									 [os.path.join("data", file) for file in os.listdir("data") if (file != "CVS") and (file != ".arch-ids") and (file != ".svn")]
