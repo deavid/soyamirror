@@ -1,5 +1,5 @@
-#LyX 1.4.3 created this file. For more info see http://www.lyx.org/
-\lyxformat 245
+#LyX 1.5.1 created this file. For more info see http://www.lyx.org/
+\lyxformat 276
 \begin_document
 \begin_header
 \textclass report
@@ -9,7 +9,14 @@
 \end_preamble
 \language english
 \inputencoding auto
-\fontscheme default
+\font_roman default
+\font_sans default
+\font_typewriter default
+\font_default_family default
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
 \graphics default
 \float_placement tp
 \paperfontsize default
@@ -17,6 +24,7 @@
 \papersize a4paper
 \use_geometry true
 \use_amsmath 1
+\use_esint 0
 \cite_engine basic
 \use_bibtopic false
 \paperorientation portrait
@@ -33,7 +41,8 @@
 \papersides 1
 \paperpagestyle default
 \tracking_changes false
-\output_changes true
+\output_changes false
+\author "" 
 \end_header
 
 \begin_body
@@ -127,7 +136,7 @@ Jiba
 \end_layout
 
 \begin_layout Standard
-\begin_inset LatexCommand \tableofcontents{}
+\begin_inset LatexCommand tableofcontents
 
 \end_inset
 
@@ -149,7 +158,8 @@ Permission is granted to copy, distribute and/or modify this document under
  no Front-Cover Texts, and no Back-Cover Texts.
  A copy of the license is included in the soya/doc directory, and can also
  be found online on 
-\begin_inset LatexCommand \url{http://gnu.org}
+\begin_inset LatexCommand url
+target "http://gnu.org"
 
 \end_inset
 
@@ -157,9 +167,10 @@ Permission is granted to copy, distribute and/or modify this document under
 \end_layout
 
 \begin_layout Standard
-The Yeti picture on the cover was drawn by Jean-noël Lafargue (jn (at) hyperbate
+The Yeti picture on the cover was drawn by Jean-noÃ«l Lafargue (jn (at) hyperbate
  (dot) com), and is available under the Free Art License (
-\begin_inset LatexCommand \url{http://artlibre.org/licence/lal/en/}
+\begin_inset LatexCommand url
+target "http://artlibre.org/licence/lal/en/"
 
 \end_inset
 
@@ -244,7 +255,8 @@ bad leader
 
 \begin_layout Standard
 You can find more historical information on 
-\begin_inset LatexCommand \htmlurl{http://home.gna.org/oomadness/en/soya/history.html}
+\begin_inset LatexCommand htmlurl
+target "http://home.gna.org/oomadness/en/soya/history.html"
 
 \end_inset
 
@@ -389,7 +401,8 @@ help(soya.Body)
 
  in a Python interpreter.
  You can also browse the doc online at 
-\begin_inset LatexCommand \htmlurl{http://home.gna.org/oomadness/en/soya/pydoc.html}
+\begin_inset LatexCommand htmlurl
+target "http://home.gna.org/oomadness/en/soya/pydoc.html"
 
 \end_inset
 
@@ -427,7 +440,8 @@ Getting help
 \begin_layout Standard
 You may ask for help either on the Soya's mailing list (soya-user@gna.org,
  suscribe from 
-\begin_inset LatexCommand \htmlurl{http://mail.gna.org/listinfo/soya-user}
+\begin_inset LatexCommand htmlurl
+target "http://mail.gna.org/listinfo/soya-user"
 
 \end_inset
 
@@ -474,7 +488,8 @@ Setting data path.
 \family default
  above) is referred as <data>/ in this documentation; it is expected to
  contain several subdirectories (see section 
-\begin_inset LatexCommand \ref{cha:Managing-data}
+\begin_inset LatexCommand ref
+reference "cha:Managing-data"
 
 \end_inset
 
@@ -554,7 +569,8 @@ e.g.
 
 \emph default
  with PyGame, see section 
-\begin_inset LatexCommand \ref{sec:PyGame}
+\begin_inset LatexCommand ref
+reference "sec:PyGame"
 
 \end_inset
 
@@ -566,7 +582,8 @@ sound is true to initialize 3D sound support (default to false for backward
  compatibility).
  There are other sound-related arguments, which are discussed in section
  
-\begin_inset LatexCommand \ref{sec:Sound-related-init-parameters}
+\begin_inset LatexCommand ref
+reference "sec:Sound-related-init-parameters"
 
 \end_inset
 
@@ -607,8 +624,12 @@ status open
 
 \end_layout
 
-\begin_layout Caption
-\begin_inset LatexCommand \label{cap:Soya's-basic-classes}
+\begin_layout Standard
+\begin_inset Caption
+
+\begin_layout Standard
+\begin_inset LatexCommand label
+name "cap:Soya's-basic-classes"
 
 \end_inset
 
@@ -620,9 +641,15 @@ Soya's basic classes (UML schema)
 
 \end_layout
 
+\end_inset
+
+
+\end_layout
+
 \begin_layout Standard
 The UML schema of figure 
-\begin_inset LatexCommand \ref{cap:Soya's-basic-classes}
+\begin_inset LatexCommand ref
+reference "cap:Soya's-basic-classes"
 
 \end_inset
 
@@ -631,7 +658,8 @@ The UML schema of figure
 
 \begin_layout Description
 MainLoop is in charge of managing and regulating time (see section 
-\begin_inset LatexCommand \ref{sub:Time-management}
+\begin_inset LatexCommand ref
+reference "sub:Time-management"
 
 \end_inset
 
@@ -694,7 +722,8 @@ abstract
  class, and Soya provides several Model subclasses (SimpleModel, AnimatedModel,...).
  Models are created either by exporting them from 3D modelers (see chapter
  
-\begin_inset LatexCommand \ref{cha:Blender-for-Soya}
+\begin_inset LatexCommand ref
+reference "cha:Blender-for-Soya"
 
 \end_inset
 
@@ -707,7 +736,8 @@ compiling
 \end_inset
 
  the World into a Model (see chapter 
-\begin_inset LatexCommand \ref{cha:Modeling}
+\begin_inset LatexCommand ref
+reference "cha:Modeling"
 
 \end_inset
 
@@ -803,7 +833,8 @@ Most of the more advanced Soya classes derive from these.
 \begin_layout Description
 Hint: some people find odd that World inherits from Body...
  but this will make sense in section 
-\begin_inset LatexCommand \ref{sec:Attaching-objects-to-bones}
+\begin_inset LatexCommand ref
+reference "sec:Attaching-objects-to-bones"
 
 \end_inset
 
@@ -824,7 +855,8 @@ folkloric
  (and archeologists :-).
  They are: Idler for MainLoop, Shape for Model, Volume for Body, Land for
  Terrain (see section 
-\begin_inset LatexCommand \ref{sec:Terrain}
+\begin_inset LatexCommand ref
+reference "sec:Terrain"
 
 \end_inset
 
@@ -865,7 +897,8 @@ i.e.
 
 \emph default
  the object Soya renders (see chapter 
-\begin_inset LatexCommand \ref{cha:Widget-systems}
+\begin_inset LatexCommand ref
+reference "cha:Widget-systems"
 
 \end_inset
 
@@ -995,7 +1028,8 @@ Loading Images, Materials and Models
 \begin_layout Standard
 Models are usually not created but loaded from a file (if you want to create
  Models directly from Soya, see chapter 
-\begin_inset LatexCommand \ref{cha:Modeling}
+\begin_inset LatexCommand ref
+reference "cha:Modeling"
 
 \end_inset
 
@@ -1029,12 +1063,14 @@ auto-exporters
 \end_inset
 
 ; for more details on auto-exporters or data management, see chapter 
-\begin_inset LatexCommand \ref{cha:Managing-data}
+\begin_inset LatexCommand ref
+reference "cha:Managing-data"
 
 \end_inset
 
 , and for more details on using Blender with Soya, see chapter 
-\begin_inset LatexCommand \ref{cha:Blender-for-Soya}
+\begin_inset LatexCommand ref
+reference "cha:Blender-for-Soya"
 
 \end_inset
 
@@ -1193,7 +1229,8 @@ Moving, rotating and scaling methods belong to the CoordSyst class, and
  are inherited to all CoordSyst children classes.
  This section shows the most common Moving, rotating and scaling methods;
  for a complete reference see section 
-\begin_inset LatexCommand \ref{sub:CoordSyst}
+\begin_inset LatexCommand ref
+reference "sub:CoordSyst"
 
 \end_inset
 
@@ -1230,7 +1267,8 @@ By default, a distance of 1.0 is considered as roughly one meter, although
 \end_layout
 
 \begin_layout Subsection
-\begin_inset LatexCommand \label{sub:Moving}
+\begin_inset LatexCommand label
+name "sub:Moving"
 
 \end_inset
 
@@ -1390,7 +1428,8 @@ e.g.
 \end_layout
 
 \begin_layout Section
-\begin_inset LatexCommand \label{sub:Time-management}
+\begin_inset LatexCommand label
+name "sub:Time-management"
 
 \end_inset
 
@@ -1416,12 +1455,21 @@ status open
 
 \end_layout
 
-\begin_layout Caption
-\begin_inset LatexCommand \label{cap:Time}
+\begin_layout Standard
+\begin_inset Caption
+
+\begin_layout Standard
+\begin_inset LatexCommand label
+name "cap:Time"
 
 \end_inset
 
 Time division in Soya
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \end_inset
@@ -1447,7 +1495,8 @@ Theorical duration
  is constant.
  The following three methods of CoordSysts are automatically called as time
  goes on (see figure 
-\begin_inset LatexCommand \ref{cap:Time}
+\begin_inset LatexCommand ref
+reference "cap:Time"
 
 \end_inset
 
@@ -1504,7 +1553,8 @@ MainLoop is responsible for cutting the time as exposed above, and it does
  Then the MainLoop is started by calling MainLoop.main_loop, and it loops
  until you call MainLoop.stop(arg); arg will be the value returned by MainLoop.mai
 n_loop (see section 
-\begin_inset LatexCommand \ref{sub:MainLoop}
+\begin_inset LatexCommand ref
+reference "sub:MainLoop"
 
 \end_inset
 
@@ -2008,7 +2058,8 @@ scene.search_all(lambda coord_syst: isinstance(coord_syst, soya.Body)
 Finally, Worlds can be turned into Model using the to_model() method.
  Models are faster than Worlds, but they are immutable (this will be discussed
  in detail in chapter 
-\begin_inset LatexCommand \ref{cha:Modeling}
+\begin_inset LatexCommand ref
+reference "cha:Modeling"
 
 \end_inset
 
@@ -2089,7 +2140,8 @@ print moon.distance_to(sun) # Notice that moon and sun are not defined in
 
 \begin_layout Standard
 Point provides the same moving methods than CoordSyst (see 
-\begin_inset LatexCommand \ref{sub:Moving}
+\begin_inset LatexCommand ref
+reference "sub:Moving"
 
 \end_inset
 
@@ -2200,7 +2252,8 @@ Like Point, Vector are not considered as
 
  and, in particular, they are not listed in World.children.
  Vector provides the same moving methods than CoordSyst (see 
-\begin_inset LatexCommand \ref{sub:Moving}
+\begin_inset LatexCommand ref
+reference "sub:Moving"
 
 \end_inset
 
@@ -2277,7 +2330,8 @@ Basic object reference
 \end_layout
 
 \begin_layout Subsection
-\begin_inset LatexCommand \label{sub:MainLoop}
+\begin_inset LatexCommand label
+name "sub:MainLoop"
 
 \end_inset
 
@@ -2286,7 +2340,8 @@ MainLoop
 
 \begin_layout Standard
 MainLoop is in charge of managing and regulating time (see section 
-\begin_inset LatexCommand \ref{sub:Time-management}
+\begin_inset LatexCommand ref
+reference "sub:Time-management"
 
 \end_inset
 
@@ -2388,7 +2443,8 @@ reset() rester the internal time counter.
 \begin_layout Description
 update() calling regularly MainLoop.update is an alternative to MainLoop.start
  (see section 
-\begin_inset LatexCommand \ref{sec:External-GUI-systems}
+\begin_inset LatexCommand ref
+reference "sec:External-GUI-systems"
 
 \end_inset
 
@@ -2438,7 +2494,8 @@ abstract
  class, and Soya provides several Model classes (SimpleModel, AnimatedModel,...).
  Models are created either by exporting them from 3D modelers (see chapter
  
-\begin_inset LatexCommand \ref{cha:Blender-for-Soya}
+\begin_inset LatexCommand ref
+reference "cha:Blender-for-Soya"
 
 \end_inset
 
@@ -2451,7 +2508,8 @@ compiling
 \end_inset
 
  the World into a Model (see chapter 
-\begin_inset LatexCommand \ref{cha:Modeling}
+\begin_inset LatexCommand ref
+reference "cha:Modeling"
 
 \end_inset
 
@@ -2471,7 +2529,8 @@ Models are not created by calling the Model constructor directly, they are
 Model.get("filename")\InsetSpace ~
 ->\InsetSpace ~
 Model (see section 
-\begin_inset LatexCommand \ref{cha:Managing-data}
+\begin_inset LatexCommand ref
+reference "cha:Managing-data"
 
 \end_inset
 
@@ -2498,7 +2557,8 @@ materials a tuples of the materials the model uses.
 \end_layout
 
 \begin_layout Subsection
-\begin_inset LatexCommand \label{sub:CoordSyst}
+\begin_inset LatexCommand label
+name "sub:CoordSyst"
 
 \end_inset
 
@@ -2554,7 +2614,8 @@ visible if false, the object is not displayed (defaults to true).
 \begin_layout Description
 solid if false, the object is not taken into account for collision and raypickin
 g (see section 
-\begin_inset LatexCommand \ref{cha:Collision-detection-and-physics}
+\begin_inset LatexCommand ref
+reference "cha:Collision-detection-and-physics"
 
 \end_inset
 
@@ -2829,7 +2890,8 @@ Point returns a Point at the same place than CoordSyst1,
 \end_layout
 
 \begin_layout Subsection
-\begin_inset LatexCommand \label{sub:Body}
+\begin_inset LatexCommand label
+name "sub:Body"
 
 \end_inset
 
@@ -2874,7 +2936,8 @@ opt=None)\InsetSpace ~
 Body where parent and model are obvious,
  and opt is an optional argument passed to the model (for AnimatedModel,
  it can be a list of the mesh names to attach, see chapter 
-\begin_inset LatexCommand \ref{cha:Animated-models}
+\begin_inset LatexCommand ref
+reference "cha:Animated-models"
 
 \end_inset
 
@@ -2893,7 +2956,8 @@ model the Model the Body displays.
 deforms the list of Deform applied to the Body (default to an empty list;
  you should not modify the list directly, but use the add_deform and remove_defo
 rm methods; see section 
-\begin_inset LatexCommand \ref{sec:Model-Deforms}
+\begin_inset LatexCommand ref
+reference "sec:Model-Deforms"
 
 \end_inset
 
@@ -2903,7 +2967,8 @@ rm methods; see section
 \begin_layout Standard
 The following attribute is only available if the Body's Model is an AnimatedMode
 l (see chapter 
-\begin_inset LatexCommand \ref{cha:Animated-models}
+\begin_inset LatexCommand ref
+reference "cha:Animated-models"
 
 \end_inset
 
@@ -2913,7 +2978,8 @@ l (see chapter
 \begin_layout Description
 attached_meshes the list of the attached meshes names (only with AnimatedModel,
  see chapter 
-\begin_inset LatexCommand \ref{cha:Animated-models}
+\begin_inset LatexCommand ref
+reference "cha:Animated-models"
 
 \end_inset
 
@@ -2926,7 +2992,8 @@ Noticeable methods are:
 
 \begin_layout Description
 add_deform(deform) applies the given Deform to the Body (see section 
-\begin_inset LatexCommand \ref{sec:Model-Deforms}
+\begin_inset LatexCommand ref
+reference "sec:Model-Deforms"
 
 \end_inset
 
@@ -2936,7 +3003,8 @@ add_deform(deform) applies the given Deform to the Body (see section
 \begin_layout Description
 remove_deform(deform) removes the given Deform from the Body (see section
  
-\begin_inset LatexCommand \ref{sec:Model-Deforms}
+\begin_inset LatexCommand ref
+reference "sec:Model-Deforms"
 
 \end_inset
 
@@ -2946,7 +3014,8 @@ remove_deform(deform) removes the given Deform from the Body (see section
 \begin_layout Standard
 The following methods are only available if the Body's Model is an AnimatedModel
  (see chapter 
-\begin_inset LatexCommand \ref{cha:Animated-models}
+\begin_inset LatexCommand ref
+reference "cha:Animated-models"
 
 \end_inset
 
@@ -3023,7 +3092,8 @@ set_lod_level() set the current LOD level (only if the Cal3D model file
 \end_layout
 
 \begin_layout Subsection
-\begin_inset LatexCommand \label{sub:World}
+\begin_inset LatexCommand label
+name "sub:World"
 
 \end_inset
 
@@ -3052,7 +3122,8 @@ World equivalent to Body's constructor.
 
 \begin_layout Description
 World.load(filename) loads a World (see section 
-\begin_inset LatexCommand \ref{sub:SavedInAPath}
+\begin_inset LatexCommand ref
+reference "sub:SavedInAPath"
 
 \end_inset
 
@@ -3062,7 +3133,8 @@ World.load(filename) loads a World (see section
 \begin_layout Description
 World.get(filename) loads a World, using a cache of already loaded Worlds
  (see section 
-\begin_inset LatexCommand \ref{sub:SavedInAPath}
+\begin_inset LatexCommand ref
+reference "sub:SavedInAPath"
 
 \end_inset
 
@@ -3086,7 +3158,8 @@ filename the World's filename (relative to the <data>/worlds/ directory;
 \begin_layout Description
 atmosphere the Atmosphere, defining the World atmospheric properties like
  fog, sky or background color (defaults to None, see section 
-\begin_inset LatexCommand \ref{sec:Atmosphere}
+\begin_inset LatexCommand ref
+reference "sec:Atmosphere"
 
 \end_inset
 
@@ -3101,7 +3174,8 @@ i.e.
 \emph default
  the object responsible for turning the World into a Model (defaults to
  None; in this case, a default ModelBuilder is used, see chapter 
-\begin_inset LatexCommand \ref{cha:Modeling}
+\begin_inset LatexCommand ref
+reference "cha:Modeling"
 
 \end_inset
 
@@ -3112,7 +3186,8 @@ i.e.
 \begin_layout Standard
 The following attributes are only available if the World's Model is an AnimatedM
 odel (see chapter 
-\begin_inset LatexCommand \ref{cha:Animated-models}
+\begin_inset LatexCommand ref
+reference "cha:Animated-models"
 
 \end_inset
 
@@ -3123,7 +3198,8 @@ odel (see chapter
 attached_coordsysts the list of the CoordSysts attached to a bone, containing
  (CoordSyst, bone_id, option_flags) tuples (only with AnimatedModel, see
  chapter 
-\begin_inset LatexCommand \ref{cha:Animated-models}
+\begin_inset LatexCommand ref
+reference "cha:Animated-models"
 
 \end_inset
 
@@ -3203,7 +3279,8 @@ e.g.
 to_model()\InsetSpace ~
 ->\InsetSpace ~
 Model turns the World into a Model (see chapter 
-\begin_inset LatexCommand \ref{cha:Modeling}
+\begin_inset LatexCommand ref
+reference "cha:Modeling"
 
 \end_inset
 
@@ -3223,7 +3300,8 @@ v=None)\InsetSpace ~
 oint,\InsetSpace ~
 Vector) performs a raypicking, and returns either a (impact_point,
  normal_at_the_impact) tuple, or None (see section 
-\begin_inset LatexCommand \ref{sec:Raypicking}
+\begin_inset LatexCommand ref
+reference "sec:Raypicking"
 
 \end_inset
 
@@ -3240,7 +3318,8 @@ cull_face=1)\InsetSpace ~
 int performs
  a raypicking, and returns 1 if there is a collision, and 0 if there is
  not (see section 
-\begin_inset LatexCommand \ref{sec:Raypicking}
+\begin_inset LatexCommand ref
+reference "sec:Raypicking"
 
 \end_inset
 
@@ -3259,7 +3338,8 @@ RaypickContext
  creates a RaypickingContext.
  RaypickingContext are used to perform several raypicking in the same region,
  faster than by calling raypick or raypick_b (see section 
-\begin_inset LatexCommand \ref{sec:Raypicking}
+\begin_inset LatexCommand ref
+reference "sec:Raypicking"
 
 \end_inset
 
@@ -3269,7 +3349,8 @@ RaypickContext
 \begin_layout Standard
 The following methods are only available if the World's Model is an AnimatedMode
 l (see chapter 
-\begin_inset LatexCommand \ref{cha:Animated-models}
+\begin_inset LatexCommand ref
+reference "cha:Animated-models"
 
 \end_inset
 
@@ -3312,7 +3393,8 @@ ear
 
 , for 3D sound.
  It also inherits from Widget (see section 
-\begin_inset LatexCommand \ref{cha:Widget-systems}
+\begin_inset LatexCommand ref
+reference "cha:Widget-systems"
 
 \end_inset
 
@@ -3394,7 +3476,8 @@ sound listener
 .
  A single Camera can be used so at the same time (defaults to true, see
  section 
-\begin_inset LatexCommand \ref{sec:Sound-and-multiple-Cameras}
+\begin_inset LatexCommand ref
+reference "sec:Sound-and-multiple-Cameras"
 
 \end_inset
 
@@ -3408,7 +3491,8 @@ to_render the world that is rendered by the Camera.
 
 \begin_layout Description
 master the master Widget (see section 
-\begin_inset LatexCommand \ref{sec:Widgets}
+\begin_inset LatexCommand ref
+reference "sec:Widgets"
 
 \end_inset
 
@@ -3833,7 +3917,8 @@ don't forget to call the super implementation
 
 \begin_layout Description
 CoordSyst.begin_round() (see section 
-\begin_inset LatexCommand \ref{sub:Time-management}
+\begin_inset LatexCommand ref
+reference "sub:Time-management"
 
 \end_inset
 
@@ -3842,7 +3927,8 @@ CoordSyst.begin_round() (see section
 
 \begin_layout Description
 CoordSyst.advance_time(proportion) (see section 
-\begin_inset LatexCommand \ref{sub:Time-management}
+\begin_inset LatexCommand ref
+reference "sub:Time-management"
 
 \end_inset
 
@@ -3851,7 +3937,8 @@ CoordSyst.advance_time(proportion) (see section
 
 \begin_layout Description
 CoordSyst.end_round() (see section 
-\begin_inset LatexCommand \ref{sub:Time-management}
+\begin_inset LatexCommand ref
+reference "sub:Time-management"
 
 \end_inset
 
@@ -3885,7 +3972,8 @@ World.add(coordsyst)
 \end_layout
 
 \begin_layout Chapter
-\begin_inset LatexCommand \label{cha:Managing-data}
+\begin_inset LatexCommand label
+name "cha:Managing-data"
 
 \end_inset
 
@@ -3918,7 +4006,8 @@ Soya stores each class of object in a separate subdirectory in <data>, the
 \begin_layout Description
 <data>/animated_models contains Soya AnimatedModels (in Cal3D format, using
  a directory per AnimatedModel, see chapter 
-\begin_inset LatexCommand \ref{cha:Animated-models}
+\begin_inset LatexCommand ref
+reference "cha:Animated-models"
 
 \end_inset
 
@@ -3932,7 +4021,8 @@ Soya stores each class of object in a separate subdirectory in <data>, the
 
 \begin_layout Description
 <data>/blender contains Blender models (see chapter 
-\begin_inset LatexCommand \ref{cha:Blender-for-Soya}
+\begin_inset LatexCommand ref
+reference "cha:Blender-for-Soya"
 
 \end_inset
 
@@ -3941,7 +4031,8 @@ Soya stores each class of object in a separate subdirectory in <data>, the
 
 \begin_layout Description
 <data>/sounds contains sound files (WAV or OGG Vorbis, see chapter 
-\begin_inset LatexCommand \ref{cha:Sounds}
+\begin_inset LatexCommand ref
+reference "cha:Sounds"
 
 \end_inset
 
@@ -3950,7 +4041,8 @@ Soya stores each class of object in a separate subdirectory in <data>, the
 
 \begin_layout Description
 <data>/fonts contains Fonts (see section 
-\begin_inset LatexCommand \ref{sec:Fonts-and-text}
+\begin_inset LatexCommand ref
+reference "sec:Fonts-and-text"
 
 \end_inset
 
@@ -3971,7 +4063,8 @@ bug: Currently, Camera cannot be saved in files.
 \end_layout
 
 \begin_layout Section
-\begin_inset LatexCommand \label{sec:File-formats}
+\begin_inset LatexCommand label
+name "sec:File-formats"
 
 \end_inset
 
@@ -3989,7 +4082,8 @@ Pickle is not secure
 \series default
  for networking game.
  Cerealizer (
-\begin_inset LatexCommand \url{http://home.gna.org/oomadness/en/cerealizer}
+\begin_inset LatexCommand url
+target "http://home.gna.org/oomadness/en/cerealizer"
 
 \end_inset
 
@@ -4263,7 +4357,8 @@ Models\InsetSpace ~
 and\InsetSpace ~
 Worlds, it can be used to generate several Worlds and Models
  from a single Blender file (see section 
-\begin_inset LatexCommand \ref{sec:Generating-several-Soya}
+\begin_inset LatexCommand ref
+reference "sec:Generating-several-Soya"
 
 \end_inset
 
@@ -4271,7 +4366,8 @@ Worlds, it can be used to generate several Worlds and Models
 \end_layout
 
 \begin_layout Section
-\begin_inset LatexCommand \label{sec:Auto-exporters}
+\begin_inset LatexCommand label
+name "sec:Auto-exporters"
 
 \end_inset
 
@@ -4315,7 +4411,8 @@ Similarly, when loading a World, Soya searches for a Blender model with
  When loading a Model, Soya searches for a World (and thus for a Blender
  model), and, if needed, will load the World and re-turn it to a Model (Models
  are generated from Worlds, see chapter 
-\begin_inset LatexCommand \ref{cha:Modeling}
+\begin_inset LatexCommand ref
+reference "cha:Modeling"
 
 \end_inset
 
@@ -4365,7 +4462,8 @@ Where can i obtain Models?
 \begin_layout Standard
 First, you can design model yourself, using a 3D modeler like Blender (see
  chapter 
-\begin_inset LatexCommand \ref{cha:Blender-for-Soya}
+\begin_inset LatexCommand ref
+reference "cha:Blender-for-Soya"
 
 \end_inset
 
@@ -4375,7 +4473,8 @@ e.g.
 
 \emph default
  for geometrical model; see chapter 
-\begin_inset LatexCommand \ref{cha:Modeling}
+\begin_inset LatexCommand ref
+reference "cha:Modeling"
 
 \end_inset
 
@@ -4389,7 +4488,8 @@ Nekeme Prod., an association for Free Game (as in Free Speech) Jiba is a
  The FDR is a database of free resources for games, including 3D models,
  images, musics, sounds,...
  It can be browsed at 
-\begin_inset LatexCommand \htmlurl{http://fdr.nekeme.net/}
+\begin_inset LatexCommand htmlurl
+target "http://fdr.nekeme.net/"
 
 \end_inset
 
@@ -4399,7 +4499,8 @@ Nekeme Prod., an association for Free Game (as in Free Speech) Jiba is a
 \begin_layout Itemize
 You can also re-use the model of an existing free game, such as Balazar
  Brother (
-\begin_inset LatexCommand \htmlurl{http://home.gna.org/oomadness/en/balazar_brother/index.html}
+\begin_inset LatexCommand htmlurl
+target "http://home.gna.org/oomadness/en/balazar_brother/index.html"
 
 \end_inset
 
@@ -4411,7 +4512,8 @@ Object reference
 \end_layout
 
 \begin_layout Subsection
-\begin_inset LatexCommand \label{sub:SavedInAPath}
+\begin_inset LatexCommand label
+name "sub:SavedInAPath"
 
 \end_inset
 
@@ -4509,7 +4611,8 @@ loaded() called when the object is loaded from a file; you may override
 \end_layout
 
 \begin_layout Chapter
-\begin_inset LatexCommand \label{cha:Animated-models}
+\begin_inset LatexCommand label
+name "cha:Animated-models"
 
 \end_inset
 
@@ -4710,7 +4813,8 @@ me, fade_in = 0.2, fade_out = 0.2).
 \end_layout
 
 \begin_layout Section
-\begin_inset LatexCommand \label{sec:Attaching-objects-to-bones}
+\begin_inset LatexCommand label
+name "sec:Attaching-objects-to-bones"
 
 \end_inset
 
@@ -4897,7 +5001,8 @@ e.g.
 
 \emph default
  sphere=0.0 0.0 0.0 2.0, see section 
-\begin_inset LatexCommand \ref{sec:Adding-Soya-specific-attributes-in-Blender}
+\begin_inset LatexCommand ref
+reference "sec:Adding-Soya-specific-attributes-in-Blender"
 
 \end_inset
 
@@ -4966,7 +5071,8 @@ ne_attenuation\InsetSpace ~
 \end_layout
 
 \begin_layout Chapter
-\begin_inset LatexCommand \label{cha:Blender-for-Soya}
+\begin_inset LatexCommand label
+name "cha:Blender-for-Soya"
 
 \end_inset
 
@@ -5190,7 +5296,8 @@ mask
 \begin_layout Itemize
 For special effects like spells or explosion, use additive blending (see
  section 
-\begin_inset LatexCommand \ref{sec:Materials}
+\begin_inset LatexCommand ref
+reference "sec:Materials"
 
 \end_inset
 
@@ -5572,7 +5679,8 @@ Auto-exporter
 \begin_layout Standard
 The easiest way to export Blender model is to use the auto-exporter (see
  section 
-\begin_inset LatexCommand \ref{sec:Auto-exporters}
+\begin_inset LatexCommand ref
+reference "sec:Auto-exporters"
 
 \end_inset
 
@@ -5631,7 +5739,8 @@ structure
 Face\InsetSpace ~
 UV\InsetSpace ~
 image (mapped to Face.material, see section 
-\begin_inset LatexCommand \ref{cha:Modeling}
+\begin_inset LatexCommand ref
+reference "cha:Modeling"
 
 \end_inset
 
@@ -5644,7 +5753,8 @@ UV\InsetSpace ~
 texture\InsetSpace ~
 coordinates (mapped to Vertex.tex_x and Vertex.tex_y, see section
  
-\begin_inset LatexCommand \ref{cha:Modeling}
+\begin_inset LatexCommand ref
+reference "cha:Modeling"
 
 \end_inset
 
@@ -5653,7 +5763,8 @@ coordinates (mapped to Vertex.tex_x and Vertex.tex_y, see section
 
 \begin_layout Description
 Face_twoside (mapped to Face.double_sided, see section 
-\begin_inset LatexCommand \ref{cha:Modeling}
+\begin_inset LatexCommand ref
+reference "cha:Modeling"
 
 \end_inset
 
@@ -5665,7 +5776,8 @@ Smooth\InsetSpace ~
 or\InsetSpace ~
 solid\InsetSpace ~
 lighting (mapped to Face.smooth_lit, see section 
-\begin_inset LatexCommand \ref{cha:Modeling}
+\begin_inset LatexCommand ref
+reference "cha:Modeling"
 
 \end_inset
 
@@ -5675,7 +5787,8 @@ lighting (mapped to Face.smooth_lit, see section
 \begin_layout Description
 Face\InsetSpace ~
 colors (mapped to Vertex.color, see section 
-\begin_inset LatexCommand \ref{cha:Modeling}
+\begin_inset LatexCommand ref
+reference "cha:Modeling"
 
 \end_inset
 
@@ -5773,7 +5886,8 @@ Objects or animations whose names start by "_" are not exported (hidden
 \end_layout
 
 \begin_layout Section
-\begin_inset LatexCommand \label{sec:Adding-Soya-specific-attributes-in-Blender}
+\begin_inset LatexCommand label
+name "sec:Adding-Soya-specific-attributes-in-Blender"
 
 \end_inset
 
@@ -5798,8 +5912,12 @@ status open
 
 \end_layout
 
-\begin_layout Caption
-\begin_inset LatexCommand \label{cap:Using-parameter-text}
+\begin_layout Standard
+\begin_inset Caption
+
+\begin_layout Standard
+\begin_inset LatexCommand label
+name "cap:Using-parameter-text"
 
 \end_inset
 
@@ -5819,6 +5937,11 @@ parameter text buffer
 
 \end_layout
 
+\end_inset
+
+
+\end_layout
+
 \begin_layout Standard
 Soya also provides some features that are not supported by Blender.
  These features can be defined using a 
@@ -5830,7 +5953,8 @@ parameter text buffer
 \end_inset
 
  (see figure 
-\begin_inset LatexCommand \ref{cap:Using-parameter-text}
+\begin_inset LatexCommand ref
+reference "cap:Using-parameter-text"
 
 \end_inset
 
@@ -5987,7 +6111,8 @@ config_file=file also read the given file (as if it was a parameter buffer).
 \end_layout
 
 \begin_layout Section
-\begin_inset LatexCommand \label{sec:Generating-several-Soya}
+\begin_inset LatexCommand label
+name "sec:Generating-several-Soya"
 
 \end_inset
 
@@ -6219,7 +6344,7 @@ An event is a tuple ; the first value of an event tuple is a constant from
 \end_layout
 
 \begin_layout LyX-Code
-(sdlconst.KEYUP, key, mods[, unicode_key])
+(sdlconst.KEYUP, key, mods)
 \end_layout
 
 \begin_layout LyX-Code
@@ -6343,7 +6468,8 @@ ition) -> (x, y), where position is either a Point or a CoordSyst.
 \end_layout
 
 \begin_layout Chapter
-\begin_inset LatexCommand \label{cha:Sounds}
+\begin_inset LatexCommand label
+name "cha:Sounds"
 
 \end_inset
 
@@ -6376,7 +6502,8 @@ Sound files should be placed in your
 <data>/sounds
 \family default
  directory (see chapter 
-\begin_inset LatexCommand \ref{cha:Managing-data}
+\begin_inset LatexCommand ref
+reference "cha:Managing-data"
 
 \end_inset
 
@@ -6451,7 +6578,8 @@ Hint: as WAV files are not seekable though the wave Python module, loading
 \end_layout
 
 \begin_layout Section
-\begin_inset LatexCommand \label{sec:Sound-related-init-parameters}
+\begin_inset LatexCommand label
+name "sec:Sound-related-init-parameters"
 
 \end_inset
 
@@ -6502,7 +6630,8 @@ Use soya.get_sound_volume() to get the current sound volume.
 \end_layout
 
 \begin_layout Section
-\begin_inset LatexCommand \label{sec:Sound-and-multiple-Cameras}
+\begin_inset LatexCommand label
+name "sec:Sound-and-multiple-Cameras"
 
 \end_inset
 
@@ -6666,7 +6795,8 @@ ended() this method is called when the sound is over.
 \end_layout
 
 \begin_layout Chapter
-\begin_inset LatexCommand \label{cha:Collision-detection-and-physics}
+\begin_inset LatexCommand label
+name "cha:Collision-detection-and-physics"
 
 \end_inset
 
@@ -6674,7 +6804,8 @@ Collision detection and physics
 \end_layout
 
 \begin_layout Section
-\begin_inset LatexCommand \label{sec:Raypicking}
+\begin_inset LatexCommand label
+name "sec:Raypicking"
 
 \end_inset
 
@@ -6698,7 +6829,8 @@ Advanced Soya objects
 \end_layout
 
 \begin_layout Section
-\begin_inset LatexCommand \label{sec:Terrain}
+\begin_inset LatexCommand label
+name "sec:Terrain"
 
 \end_inset
 
@@ -6730,7 +6862,8 @@ Portal
 \end_layout
 
 \begin_layout Section
-\begin_inset LatexCommand \label{sec:Atmosphere}
+\begin_inset LatexCommand label
+name "sec:Atmosphere"
 
 \end_inset
 
@@ -6750,7 +6883,8 @@ SkyAtmosphere
 \end_layout
 
 \begin_layout Section
-\begin_inset LatexCommand \label{sec:Model-Deforms}
+\begin_inset LatexCommand label
+name "sec:Model-Deforms"
 
 \end_inset
 
@@ -6786,7 +6920,8 @@ Sprite
 \end_layout
 
 \begin_layout Subsection
-\begin_inset LatexCommand \label{sub:Portal}
+\begin_inset LatexCommand label
+name "sub:Portal"
 
 \end_inset
 
@@ -6806,7 +6941,8 @@ Deform
 \end_layout
 
 \begin_layout Chapter
-\begin_inset LatexCommand \label{cha:Modeling}
+\begin_inset LatexCommand label
+name "cha:Modeling"
 
 \end_inset
 
@@ -6825,7 +6961,8 @@ Soya Model are created by putting several Faces (triangles or quads) in
 \end_layout
 
 \begin_layout Section
-\begin_inset LatexCommand \label{sec:Materials}
+\begin_inset LatexCommand label
+name "sec:Materials"
 
 \end_inset
 
@@ -6893,7 +7030,8 @@ ModelBuilder
 \end_layout
 
 \begin_layout Chapter
-\begin_inset LatexCommand \label{cha:Widget-systems}
+\begin_inset LatexCommand label
+name "cha:Widget-systems"
 
 \end_inset
 
@@ -6901,7 +7039,8 @@ Font, text, and widget systems
 \end_layout
 
 \begin_layout Section
-\begin_inset LatexCommand \label{sec:Fonts-and-text}
+\begin_inset LatexCommand label
+name "sec:Fonts-and-text"
 
 \end_inset
 
@@ -6909,7 +7048,8 @@ Fonts and text drawing
 \end_layout
 
 \begin_layout Section
-\begin_inset LatexCommand \label{sec:Widgets}
+\begin_inset LatexCommand label
+name "sec:Widgets"
 
 \end_inset
 
@@ -6959,7 +7099,8 @@ a player can control one or several characters,
 
 \begin_layout Itemize
 one or several players can play with the same client (see figure 
-\begin_inset LatexCommand \ref{fig:Tofu-client-server-model}
+\begin_inset LatexCommand ref
+reference "fig:Tofu-client-server-model"
 
 \end_inset
 
@@ -6985,12 +7126,21 @@ status open
 
 \end_layout
 
-\begin_layout Caption
-\begin_inset LatexCommand \label{fig:Tofu-client-server-model}
+\begin_layout Standard
+\begin_inset Caption
+
+\begin_layout Standard
+\begin_inset LatexCommand label
+name "fig:Tofu-client-server-model"
 
 \end_inset
 
 Tofu client-server model
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \end_inset
@@ -7079,12 +7229,21 @@ status open
 
 \end_layout
 
-\begin_layout Caption
-\begin_inset LatexCommand \label{fig:Players,-Mobiles-and-Levels}
+\begin_layout Standard
+\begin_inset Caption
+
+\begin_layout Standard
+\begin_inset LatexCommand label
+name "fig:Players,-Mobiles-and-Levels"
 
 \end_inset
 
 Players, Mobiles and Levels
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \end_inset
@@ -7101,7 +7260,8 @@ In client-server mode, Tofu sends various information over the network in
  order to maintain the state of the Mobiles identical on the server and
  on each client.
  Tofu distinguishes three types of information (see figure 
-\begin_inset LatexCommand \ref{fig:Action,-state-and-message}
+\begin_inset LatexCommand ref
+reference "fig:Action,-state-and-message"
 
 \end_inset
 
@@ -7188,12 +7348,21 @@ status open
 
 \end_layout
 
-\begin_layout Caption
-\begin_inset LatexCommand \label{fig:Action,-state-and-message}
+\begin_layout Standard
+\begin_inset Caption
+
+\begin_layout Standard
+\begin_inset LatexCommand label
+name "fig:Action,-state-and-message"
 
 \end_inset
 
 Actions, states and messages
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \end_inset
@@ -7366,7 +7535,8 @@ tofu.SAVED_GAME_DIR = "/tmp/tofu_demo"
 \begin_layout Description
 Warning: Tofu automatically imports and enables Cerealizer, and disables
  Pickle (see section 
-\begin_inset LatexCommand \ref{sec:File-formats}
+\begin_inset LatexCommand ref
+reference "sec:File-formats"
 
 \end_inset
 
@@ -7849,7 +8019,8 @@ send_action(action) sends the given action.
 \end_layout
 
 \begin_layout Subsubsection
-\begin_inset LatexCommand \label{sub:Doing-actions}
+\begin_inset LatexCommand label
+name "sub:Doing-actions"
 
 \end_inset
 
@@ -7982,7 +8153,8 @@ e.g.
 \begin_layout Standard
 In do_collision, you may want to call set_current_state_importance() too
  (see section 
-\begin_inset LatexCommand \ref{sub:Doing-actions}
+\begin_inset LatexCommand ref
+reference "sub:Doing-actions"
 
 \end_inset
 
@@ -8864,7 +9036,8 @@ Using Soya with...
 \end_layout
 
 \begin_layout Section
-\begin_inset LatexCommand \label{sec:External-GUI-systems}
+\begin_inset LatexCommand label
+name "sec:External-GUI-systems"
 
 \end_inset
 
@@ -8948,7 +9121,8 @@ See tutorial soya-with-tk-1.py for an example.
 \end_layout
 
 \begin_layout Section
-\begin_inset LatexCommand \label{sec:PyGame}
+\begin_inset LatexCommand label
+name "sec:PyGame"
 
 \end_inset
 
@@ -8996,7 +9170,8 @@ Hacking the Soya sources
 \begin_layout Standard
 The source of the development version of Soya can be found on our Subversion
  repository: 
-\begin_inset LatexCommand \htmlurl{http://gna.org/svn/?group=soya}
+\begin_inset LatexCommand htmlurl
+target "http://gna.org/svn/?group=soya"
 
 \end_inset
 
