@@ -283,6 +283,7 @@ cdef class Renderer:
 		cdef int* size
 		if (self.current_camera._option & CAMERA_PARTIAL):
 			size = self.current_camera._viewport
+			glPushAttrib(GL_ENABLE_BIT)
 			glDisable(GL_LIGHTING)
 			glDisable(GL_FOG)
 			glDisable(GL_TEXTURE_2D)
@@ -304,10 +305,7 @@ cdef class Renderer:
 			glMatrixMode(GL_PROJECTION)
 			glPopMatrix()
 			glMatrixMode(GL_MODELVIEW)
-			glEnable(GL_CULL_FACE)
-			glEnable(GL_TEXTURE_2D)
-			glEnable(GL_FOG)
-			glEnable(GL_LIGHTING)
+			glPopAttrib()
 			glDepthMask(GL_TRUE)
 			glClear(GL_DEPTH_BUFFER_BIT)
 		else:
