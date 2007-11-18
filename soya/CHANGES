@@ -314,3 +314,4 @@
     * Fix speed-1.py tuto
     * Fog was activated by error on partial camera with no atmosphere
     * Fix descender computation in font
+    * Fix ODE on terrain (tuto ode-collision-8-terrain.py)

@@ -20,8 +20,6 @@
 
 import soya, soya.sdlconst as sdlconst, soya.opengl as opengl
 
-soya.set_use_unicode(1)
-
 STYLE                = None
 HIGHLIGHT_WIDGET     = None
 MOUSE_GRABBER_WIDGET = None
@@ -111,7 +109,10 @@ class Widget(object):
 			elif event[0] == sdlconst.KEYDOWN:
 				widget = FOCUSED_WIDGET
 				while widget:
-					if widget.on_key_pressed(event[1], event[3], event[2]): break
+					if len(event) == 4:
+						if widget.on_key_pressed(event[1], event[2], event[3]): break
+					else:
+						if widget.on_key_pressed(event[1], event[2]): break
 					widget = widget.parent
 			elif event[0] == sdlconst.KEYUP:
 				widget = FOCUSED_WIDGET
@@ -162,7 +163,7 @@ class Widget(object):
 			HIGHLIGHT_WIDGET.set_highlight(0)
 			HIGHLIGHT_WIDGET = None
 		
-	def on_key_pressed (self, key, unicode_key, mods): pass
+	def on_key_pressed (self, key, mods, unicode_key = 0): pass
 	def on_key_released(self, key, mods): pass
 	
 	def on_joy_moved   (self, axis, value): pass
@@ -498,7 +499,7 @@ class Table(Group):
 		for widget in widgets:
 			if widget and (isinstance(widget, FocusableWidget) or isinstance(widget, Group)) and widget.set_focus(focus, from_side): return 1
 			
-	def on_key_pressed (self, key, unicode_key, mods):
+	def on_key_pressed (self, key, mods, unicode_key = 0):
 		if key in _MOVING_KEYS:
 			widget = FOCUSED_WIDGET
 			while widget and (widget.parent is not self): widget = widget.parent
@@ -643,7 +644,7 @@ class VList(VTable, HighlightableWidget, FocusableWidget):
 					break
 			else: self.set_value(-1)
 			
-	def on_key_pressed (self, key, unicode_key, mods):
+	def on_key_pressed (self, key, mods, unicode_key = 0):
 		if   key == sdlconst.K_DOWN:
 			if self.value < self.nb_row - 1: self.set_value(self.value + 1); return 1
 		elif key == sdlconst.K_UP:
@@ -693,7 +694,7 @@ class HList(HTable, HighlightableWidget, FocusableWidget):
 					break
 			else: self.set_value(-1)
 			
-	def on_key_pressed (self, key, unicode_key, mods):
+	def on_key_pressed (self, key, mods, unicode_key = 0):
 		if   key == sdlconst.K_RIGHT:
 			if self.value < self.nb_col - 1: self.set_value(self.value + 1); return 1
 		elif key == sdlconst.K_LEFT:
@@ -732,20 +733,20 @@ class Image(Widget):
 
 class Label(Widget):
 	def __init__(self, parent = None, text = u"", color = None, font = None):
+		Widget.__init__(self, parent)
 		self.color         = color or STYLE.text_colors[0]
 		self.text          = text
 		self._font         = font or STYLE.font
 		self._changed      = -2
 		self._display_list = soya.DisplayList()
-		Widget.__init__(self, parent)
 		self.extra_height = -1
 		
 	def __repr__(self): return """<%s text="%s">""" % (self.__class__.__name__, self._text.encode("latin"))
 	
 	def get_font (self): return self._font
-	def set_font (self, x): self._font  = x; self._changed = -2
+	def set_font (self, x): self._font = x; self._changed = -2
 	def get_text (self): return self._text
-	def set_text (self, x): self._text  = x; self._changed = -2
+	def set_text (self, x): self._text = x; self._changed = -2; self.request_resize()
 	font  = property(get_font, set_font)
 	text  = property(get_text, set_text)
 	
@@ -818,12 +819,12 @@ class FPSLabel(Label):
 				
 class Text(Widget):
 	def __init__(self, parent = None, text = u"", color = None, font = None):
+		Widget.__init__(self, parent)
 		self.color         = color or STYLE.text_colors[0]
 		self.text          = text
 		self._font         = font or STYLE.font
 		self._changed      = -2
 		self._display_list = soya.DisplayList()
-		Widget.__init__(self, parent)
 		self.min_width  = 300
 		self._wrap_at_width = 1000000.0
 		
@@ -832,7 +833,7 @@ class Text(Widget):
 	def get_font (self): return self._font
 	def set_font (self, x): self._font  = x; self._changed = -2
 	def get_text (self): return self._text
-	def set_text (self, x): self._text  = x; self._changed = -2
+	def set_text (self, x): self._text  = x; self._changed = -2; self.request_resize()
 	font  = property(get_font, set_font)
 	text  = property(get_text, set_text)
 
@@ -885,6 +886,7 @@ class Button(Label, HighlightableWidget, FocusableWidget):
 		FocusableWidget    .__init__(self)
 		Label.__init__(self, parent, text, color, font)
 		if on_clicked: self.on_clicked = on_clicked
+		self.extra_width = 1.0
 		
 	def calc_ideal_size(self):
 		Label.calc_ideal_size(self)
@@ -906,7 +908,7 @@ class Button(Label, HighlightableWidget, FocusableWidget):
 		if button == 1: self.on_clicked()
 		return 1
 	
-	def on_key_pressed (self, key, unicode_key, mods):
+	def on_key_pressed (self, key, mods, unicode_key = 0):
 		if (key == sdlconst.K_SPACE) or (key == sdlconst.K_RETURN) or (key == sdlconst.K_KP_ENTER):
 			self.on_clicked()
 			return 1
@@ -933,6 +935,7 @@ class Input(Label, HighlightableWidget, FocusableWidget):
 		HighlightableWidget.__init__(self)
 		FocusableWidget    .__init__(self)
 		Label.__init__(self, parent, text, color, font)
+		soya.set_use_unicode(1)
 		
 	def calc_ideal_size(self):
 		Label.calc_ideal_size(self)
@@ -956,7 +959,7 @@ class Input(Label, HighlightableWidget, FocusableWidget):
 			opengl.glEnd()
 			
 	def on_text_changed(self): pass
-	def on_key_pressed (self, key, unicode_key, mods):
+	def on_key_pressed (self, key, mods, unicode_key = 0):
 		if   key == sdlconst.K_LEFT  : self.cursor_pos = max(self.cursor_pos - 1, 0)              ; return 1
 		elif key == sdlconst.K_RIGHT : self.cursor_pos = min(self.cursor_pos + 1, len(self._text)); return 1
 		elif key == sdlconst.K_HOME  : self.cursor_pos = 0                                        ; return 1
@@ -1045,7 +1048,7 @@ class CheckBox(Label, HighlightableWidget, FocusableWidget):
 		if button == 1:
 			self.set_value(not self.value)
 			
-	def on_key_pressed (self, key, unicode_key, mods):
+	def on_key_pressed (self, key, mods, unicode_key = 0):
 		if (key == sdlconst.K_SPACE) or (key == sdlconst.K_RETURN) or (key == sdlconst.K_KP_ENTER):
 			self.set_value(not self.value)
 			return 1
@@ -1088,7 +1091,7 @@ class Window(Table, HighlightableWidget):
 		self.x = -1
 		self.y = -1
 		
-	def on_key_pressed (self, key, unicode_key, mods):
+	def on_key_pressed (self, key, mods, unicode_key = 0):
 		if    key == sdlconst.K_ESCAPE:
 			if self.close_button:
 				self.close()
@@ -1315,7 +1318,7 @@ class HScrollBar(ScrollBar):
 				self.set_grab_mouse(1)
 		return 1
 	
-	def on_key_pressed(self, key, unicode_key, mods):
+	def on_key_pressed(self, key, mods, unicode_key = 0):
 		if   key == sdlconst.K_LEFT :
 			if self.value == self.min: return 0
 			self.changing_round = -10
@@ -1389,7 +1392,7 @@ class VScrollBar(ScrollBar):
 		elif button == 5: self.set_value(self.value + self.step_size)
 		return 1
 	
-	def on_key_pressed(self, key, unicode_key, mods):
+	def on_key_pressed(self, key, mods, unicode_key = 0):
 		if   key == sdlconst.K_UP  :
 			if self.value == self.min: return 0
 			self.changing_round = -10

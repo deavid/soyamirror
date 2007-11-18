@@ -106,7 +106,7 @@ class Style(object):
 			(0.0, 0.2, 0.0, 1.0), # Selected
 			(0.7, 0.4, 0.0, 1.0), # Window title
 			]
-		self.line_width = 2
+		self.line_width = 1
     
 	def get_char_height(self):
 		return self.font.get_print_size("m")[1]

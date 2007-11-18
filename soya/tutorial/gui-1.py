@@ -18,7 +18,7 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-import sys, os, os.path
+import sys, os, os.path, random
 import soya, soya.gui
 
 soya.path.append(os.path.join(os.path.dirname(sys.argv[0]), "data"))
@@ -158,7 +158,16 @@ def fps_camera_demo(transparent = 0):
 	soya.gui.FPSLabel(layer)
 	soya.MAIN_LOOP.scenes.append(scene)
 
-
+def resize_demo():
+	window = soya.gui.Window(root, u"Resize demo")
+	table = soya.gui.VTable(window)
+	label = soya.gui.Label(table, u"???")
+	soya.gui.Input(table, u"")
+	def set_random_text():
+		label.text = u"".join([unichr(random.randint(65, 90)) for i in range(random.randint(3, 30))])
+	soya.gui.Button(table, u"Random text", set_random_text)
+	
+	
 root  = soya.gui.RootLayer(None)
 backg = soya.gui.Image(root, black)
 
@@ -170,6 +179,7 @@ soya.gui.Button(table, u"List demo", on_clicked = list_demo)
 soya.gui.Button(table, u"Camera demo", on_clicked = lambda: camera_demo(0))
 soya.gui.Button(table, u"Transparent camera demo", on_clicked = lambda: camera_demo(1))
 soya.gui.Button(table, u"FPS camera demo", on_clicked = lambda: fps_camera_demo(0))
+soya.gui.Button(table, u"Resize demo", on_clicked = resize_demo)
 soya.gui.CancelButton(table, u"Quit", on_clicked = sys.exit)
 
 

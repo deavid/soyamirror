@@ -23,7 +23,6 @@ from soya.gui.widgets import *
 
 set_style(Style())
 
-soya.set_use_unicode(1)
 
 
 
