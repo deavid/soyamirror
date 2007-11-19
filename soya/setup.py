@@ -66,13 +66,14 @@ from distutils.core import setup, Extension
 
 def framework_exist(framework_name): #Os X related stuff. test if a .Framework are present or not.
 	tmpnam = os.tmpnam()
-	ret = os.system("ld -framework %s -o %s 2> /dev/null"%(framework_name,tmpnam))
+	ret = os.system("ld -framework %s -o %s -r 2> /dev/null"%(framework_name,tmpnam))
 	if not ret:
 		os.remove(tmpnam)
 	return not ret
 
 
 BUILDING = ("build" in sys.argv[1:]) and not ("--help" in sys.argv[1:])
+INSTALLING = ("install" in sys.argv[1:]) and not ("--help" in sys.argv[1:])
 SDISTING = ("sdist" in sys.argv[1:]) and not ("--help" in sys.argv[1:])
 
 
@@ -120,6 +121,19 @@ if BUILDING:
 	else:
 		print "Sound support (with OpenAL) disabled..."
 		CONFIG_PYX_FILE.write("""include "sound/nosound.pyx"\n""")
+elif INSTALLING:
+		auto_files = ("config.pxd", "config.pyx")
+		missing_files = []
+		for f in auto_files:
+			if not os.path.exists(os.path.join(HERE,f)):
+				missing_files.append(f)
+		if missing_files:
+			if len(missing_files)>1:
+				s = ", ".join(missing_files[:-1])+" and "+missing_files[-1] + " have"
+			else :
+				s = missing_files[0]+ " has"
+			print >> sys.stderr, s ,"not been generated please run 'setup.py build'"
+			sys.exit(2)
 
 if USE_OPENAL:
 	#print "OpenAl exist :",framework_exist('OpenAL')
