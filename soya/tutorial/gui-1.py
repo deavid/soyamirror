@@ -167,6 +167,19 @@ def resize_demo():
 		label.text = u"".join([unichr(random.randint(65, 90)) for i in range(random.randint(3, 30))])
 	soya.gui.Button(table, u"Random text", set_random_text)
 	
+def tree_demo():
+	import soya.gui.tree
+	
+	window = soya.gui.Window(root, u"Tree demo")
+	tree = soya.gui.tree.Tree(soya.gui.ScrollPane(window))
+	soya_coders = soya.gui.tree.SimpleNode(tree, u"Soya coders")
+	lamy        = soya.gui.tree.SimpleNode(soya_coders, u"Lamy brothers", soya.Material.get("little-dunk"))
+	jiba        = soya.gui.tree.SimpleNode(lamy, u"Jiba", soya.Material.get("little-dunk"))
+	blam        = soya.gui.tree.SimpleNode(lamy, u"Blam", soya.Material.get("little-dunk"))
+	marmoute    = soya.gui.tree.SimpleNode(soya_coders, u"Marmoute", soya.Material.get("little-dunk"))
+	souvarine   = soya.gui.tree.SimpleNode(soya_coders, u"Souvarine", soya.Material.get("little-dunk"))
+	dunk        = soya.gui.tree.SimpleNode(soya_coders, u"Dunk", soya.Material.get("little-dunk"))
+	dunk        = soya.gui.tree.SimpleNode(soya_coders, u"...", soya.Material.get("little-dunk"))
 	
 root  = soya.gui.RootLayer(None)
 backg = soya.gui.Image(root, black)
@@ -180,6 +193,7 @@ soya.gui.Button(table, u"Camera demo", on_clicked = lambda: camera_demo(0))
 soya.gui.Button(table, u"Transparent camera demo", on_clicked = lambda: camera_demo(1))
 soya.gui.Button(table, u"FPS camera demo", on_clicked = lambda: fps_camera_demo(0))
 soya.gui.Button(table, u"Resize demo", on_clicked = resize_demo)
+soya.gui.Button(table, u"Tree demo", on_clicked = tree_demo)
 soya.gui.CancelButton(table, u"Quit", on_clicked = sys.exit)
 
 

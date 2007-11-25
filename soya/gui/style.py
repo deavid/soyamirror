@@ -29,7 +29,7 @@ class Style(object):
 		#self.font = soya.Font(os.path.join(soya.DATADIR, "FreeSans.ttf"), 30, 30)
 		self.font = soya.Font(os.path.join(soya.DATADIR, "FreeSans.ttf"), 20, 20)
 		self.font.filename = "DEFAULT_FONT"
-		self._char_height = None
+		self.char_height = self.font.height
 		
 		self.materials = [
 			soya.Material(),
@@ -103,14 +103,12 @@ class Style(object):
 			]
 		self.text_colors = [
 			(0.0, 0.0, 0.0, 1.0), # Base
-			(0.0, 0.2, 0.0, 1.0), # Selected
+			#(0.0, 0.2, 0.0, 1.0), # Selected
+			(0.4, 0.4, 0.0, 1.0), # Selected
 			(0.7, 0.4, 0.0, 1.0), # Window title
 			]
 		self.line_width = 1
     
-	def get_char_height(self):
-		return self.font.get_print_size("m")[1]
-	
 	def rectangle(self, x1, y1, x2, y2, material_index = 0):
 		self.materials[material_index].activate()
 		if self.materials[material_index].is_alpha(): opengl.glEnable(opengl.GL_BLEND)

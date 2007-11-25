@@ -67,14 +67,14 @@ class Widget(object):
 		self.reset_size()
 		while 1:
 			try:
-				self.calc_ideal_size()
+				self.calc_size()
 				self.allocate(x, y, width, height)
 			except CalcSizeRestart: continue
 			break
 		
 	def reset_size(self): pass
 	
-	def calc_ideal_size(self): pass
+	def calc_size(self): pass
 	
 	def allocate(self, x, y, width, height):
 		if self.extra_width == -1:
@@ -281,9 +281,9 @@ class Layer(Group):
 			self.widgets.remove(widget)
 			self.widgets.append(widget)
 			
-	def calc_ideal_size(self):
+	def calc_size(self):
 		for widget in self.widgets:
-			widget.calc_ideal_size()
+			widget.calc_size()
 
 		self.ideal_width  = max([widget.ideal_width  for widget in self.widgets])
 		self.ideal_height = max([widget.ideal_height for widget in self.widgets])
@@ -374,9 +374,9 @@ class Table(Group):
 		for widget in self.widgets:
 			if widget: widget.reset_size()
 		
-	def calc_ideal_size(self, calc_min = 1):
+	def calc_size(self, calc_min = 1):
 		for widget in self.widgets:
-			if widget: widget.calc_ideal_size()
+			if widget: widget.calc_size()
 			
 		cols = self.get_cols()
 		rows = self.get_rows()
@@ -739,7 +739,7 @@ class Label(Widget):
 		self._font         = font or STYLE.font
 		self._changed      = -2
 		self._display_list = soya.DisplayList()
-		self.extra_height = -1
+		self.extra_height  = -1
 		
 	def __repr__(self): return """<%s text="%s">""" % (self.__class__.__name__, self._text.encode("latin"))
 	
@@ -750,7 +750,7 @@ class Label(Widget):
 	font  = property(get_font, set_font)
 	text  = property(get_text, set_text)
 	
-	def calc_ideal_size(self):
+	def calc_size(self):
 		text_size = self._font.get_print_size(self._text)
 		self.ideal_width  = int(text_size[0])
 		self.ideal_height = int(text_size[1])
@@ -792,7 +792,7 @@ class FPSLabel(Label):
 		Label.__init__(self, parent, u"FPS", color)
 		self.fps = -1.0
 		
-	def calc_ideal_size(self):
+	def calc_size(self):
 		text_size = self._font.get_print_size(u"1000.0 FPS")
 		self.ideal_width  = int(text_size[0])
 		self.ideal_height = int(text_size[1])
@@ -840,7 +840,7 @@ class Text(Widget):
 	def reset_size(self):
 		self._wrap_at_width = 1000000.0
 		
-	def calc_ideal_size(self):
+	def calc_size(self):
 		max_line_width, total_height, wrapped_text = self._font.wordwrap(self._text, self._wrap_at_width)
 		self.ideal_width  = int(max_line_width)
 		self.ideal_height = int(total_height)
@@ -888,8 +888,8 @@ class Button(Label, HighlightableWidget, FocusableWidget):
 		if on_clicked: self.on_clicked = on_clicked
 		self.extra_width = 1.0
 		
-	def calc_ideal_size(self):
-		Label.calc_ideal_size(self)
+	def calc_size(self):
+		Label.calc_size(self)
 		self.ideal_width  += 6
 		self.ideal_height += 6
 		self.min_width    += 6
@@ -937,8 +937,8 @@ class Input(Label, HighlightableWidget, FocusableWidget):
 		Label.__init__(self, parent, text, color, font)
 		soya.set_use_unicode(1)
 		
-	def calc_ideal_size(self):
-		Label.calc_ideal_size(self)
+	def calc_size(self):
+		Label.calc_size(self)
 		self.ideal_width  += 6
 		self.ideal_height += 6
 		self.min_width    += 6
@@ -1011,9 +1011,9 @@ class CheckBox(Label, HighlightableWidget, FocusableWidget):
 		FocusableWidget    .__init__(self)
 		Label.__init__(self, parent, text, color, font)
 		
-		self.check_size = int(STYLE.get_char_height() * 0.9)
+		self.check_size = int(STYLE.char_height * 0.9)
 		
-	def calc_ideal_size(self):
+	def calc_size(self):
 		text_size = self._font.get_print_size(self._text)
 		self.text_width  = int(text_size[0])
 		self.text_height = int(text_size[1])
@@ -1121,8 +1121,8 @@ class Window(Table, HighlightableWidget):
 					
 	def on_closed(self): pass
 	
-	def calc_ideal_size(self):
-		Table.calc_ideal_size(self)
+	def calc_size(self):
+		Table.calc_size(self)
 		self.ideal_width  += 2 * self.border_pad
 		self.ideal_height += 2 * self.border_pad
 		self.min_width    += 2 * self.border_pad
@@ -1213,7 +1213,7 @@ class ScrollBar(HighlightableWidget, FocusableWidget):
 		else:             self.value = value
 		self.page_size      = page_size
 		self.step_size      = step_size
-		self.bar_size       = int(0.9 * STYLE.get_char_height())
+		self.bar_size       = int(0.9 * STYLE.char_height)
 		self.highlight_part = 0
 		self.changing       = 0.0
 		self.changing_round = 0
@@ -1420,8 +1420,8 @@ class ScrollPane(Table):
 		Table.__init__(self, parent, 2, 2)
 		self.hscroll = _ScrollPaneHScrollBar()
 		self.vscroll = _ScrollPaneVScrollBar()
-		self.hscroll.calc_ideal_size()
-		self.vscroll.calc_ideal_size()
+		self.hscroll.calc_size()
+		self.vscroll.calc_size()
 		self.min_width  = 200
 		self.min_height = 200
 		self.scroll_x0 = 0
@@ -1437,11 +1437,11 @@ class ScrollPane(Table):
 			self.widgets[1] = None
 			self.vscroll.added_into(None)
 			
-	def calc_ideal_size(self):
+	def calc_size(self):
 		min_width  = self.min_width
 		min_height = self.min_height
 		
-		Table.calc_ideal_size(self, calc_min = 1)
+		Table.calc_size(self, calc_min = 1)
 		if self.border_pad: nb_pad = 3
 		else:               nb_pad = 1
 
@@ -1537,9 +1537,9 @@ class ProgressBar(Widget):
 		self.value = value
 		Widget.__init__(self, parent)
 		self.extra_width = 1.0
-		self.min_height  = self.ideal_height = int(STYLE.get_char_height())
-		self.min_width   = int(3 * STYLE.get_char_height())
-		self.ideal_width = int(5 * STYLE.get_char_height())
+		self.min_height  = self.ideal_height = STYLE.char_height
+		self.min_width   = 3 * STYLE.char_height
+		self.ideal_width = 5 * STYLE.char_height
 
 	def render(self):
 		STYLE.rectangle(self.x, self.y, self.x + int(self.value * self.width), self.y + self.height)
