@@ -35,3 +35,10 @@ cdef class _Vector(_Point):
 	cdef void _into(self, CoordSyst coordsyst, float* result)
 	cdef void _out(self, float* result)
 
+cdef class _Plane(Position):
+	cdef float _matrix[4]
+	cdef void _into(self, CoordSyst coordsyst, float* result)
+	cdef void _out(self, float* result)
+	cdef void _init_from_equation(self, float a, float b, float c, float d)
+	cdef void _init_from_point_and_normal(self, _Point point, _Vector normal)
+	cdef void _init_from_3_points(self, _Point p1, _Point p2, _Point p3)

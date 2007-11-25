@@ -22,14 +22,6 @@
  * Copyright (C) 2003-2006 Jean-Baptiste 'Jiba' LAMY
  **********************************************/
 
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
-#include <stdarg.h>
-#include <float.h>
-#include <math.h>
-#include "include_glew.h"
-
 #include "matrix.h"
 
 
@@ -408,7 +400,19 @@ GLfloat point_square_distance_to (GLfloat a[3], GLfloat b[3]) {
 }
 
 GLfloat point_distance_plane (GLfloat a[3], GLfloat b[4]) {
-  return b[0] * a[0] + b[1] * a[1] + b[2] * a[2] + b[3];
+  return b[0] * a[0] + b[1] * a[1] + b[2] * a[2] - b[3];
+}
+
+// Test a sphere against a plane
+// Return 1 if the sphere is in front of the plane, 2 if it is behind, and 3 if it cross
+char sphere_side_plane (GLfloat sphere[4], GLfloat plane[4]) {
+  float dist;
+  char  sides;
+  dist = point_distance_plane(sphere, plane);
+  if (fabs(dist) < sphere[3]) sides = 3;
+  else if (dist >= 0)         sides = 1;
+  else                        sides = 2;
+  return sides;
 }
 
 void point_project_on_plane (GLfloat* a, GLfloat b[4]) {
@@ -424,6 +428,29 @@ void plane_vector_normalize (GLfloat v[4]) {
   v[1] *= l;
   v[2] *= l;
   v[3] *= l;
+}
+
+// If the ray cross the plane return the distance between start and intersection
+// Distance is posistive if start is in front of the plane and negative if it is behind.
+// If the ray does not cross the plane return INFINITY.
+// +INFINITY if the start is in front of the plane and -INFINITY if it is behind.
+// If length < 0 it is considered infinit
+float ray_distance_plane (GLfloat start[3], GLfloat vect[3], GLfloat length, GLfloat plane[4], GLfloat offset) {
+  float dem, num, dist;
+  dem = vector_dot_product(plane, vect);
+  num = point_distance_plane(start, plane) - offset;
+  dist = num / fabs(dem);
+  if ((fabs(dem) < EPSILON) || (num >= 0. && dem > 0.) || (num < 0. && dem < 0.))
+  {
+    if (num >= 0.) return  INFINITY;
+    else           return -INFINITY;
+  }
+  if (length >= 0.)
+  {
+    if (dist >= 0. &&  dist > length)      return  INFINITY;
+    else if (dist <  0. && -dist > length) return -INFINITY;
+  }
+  return dist;
 }
 
 void vector_normalize (GLfloat v[3]) {
@@ -738,12 +765,26 @@ void point_by_matrix_copy (GLfloat r[3], GLfloat p[3], GLfloat m[19]) {
   r[2] = p[0] * m[2] + p[1] * m[6] + p[2] * m[10] + m[14];
 }
 
+void sphere_by_matrix (GLfloat p[4], GLfloat m[19]) {
+  GLfloat scaling, a, b, c, d;
+  scaling = m[16];
+  if (m[17] > scaling) { scaling = m[17]; }
+  if (m[18] > scaling) { scaling = m[18]; }
+  a = p[0] * m[0] + p[1] * m[4] + p[2] * m[ 8] + m[12];
+  b = p[0] * m[1] + p[1] * m[5] + p[2] * m[ 9] + m[13];
+  c = p[0] * m[2] + p[1] * m[6] + p[2] * m[10] + m[14];
+  d = p[3] * scaling;
+	p[0] = a;
+  p[1] = b;
+  p[2] = c;
+  p[3] = d;
+}
+
 void sphere_by_matrix_copy (GLfloat r[4], GLfloat p[4], GLfloat m[19]) {
   GLfloat scaling;
   scaling = m[16];
   if (m[17] > scaling) { scaling = m[17]; }
   if (m[18] > scaling) { scaling = m[18]; }
-  
   r[0] = p[0] * m[0] + p[1] * m[4] + p[2] * m[ 8] + m[12];
   r[1] = p[0] * m[1] + p[1] * m[5] + p[2] * m[ 9] + m[13];
   r[2] = p[0] * m[2] + p[1] * m[6] + p[2] * m[10] + m[14];
@@ -851,6 +892,25 @@ void vector_by_matrix_copy (GLfloat r[3], GLfloat v[3], GLfloat m[19]) {
   r[0] = v[0] * m[0] + v[1] * m[4] + v[2] * m[ 8];
   r[1] = v[0] * m[1] + v[1] * m[5] + v[2] * m[ 9];
   r[2] = v[0] * m[2] + v[1] * m[6] + v[2] * m[10];
+}
+
+void plane_by_matrix (GLfloat p[4], GLfloat m[19]) {
+  GLfloat a; GLfloat b; GLfloat c; GLfloat d;
+  a = p[0] * m[ 0] + p[1] * m[ 4] + p[2] * m[ 8];
+  b = p[0] * m[ 1] + p[1] * m[ 5] + p[2] * m[ 9];
+  c = p[0] * m[ 2] + p[1] * m[ 6] + p[2] * m[10];
+  d = p[0] * m[12] + p[1] * m[13] + p[2] * m[14] + p[3];
+	p[0] = a;
+	p[1] = b;
+	p[2] = c;
+	p[3] = d;
+}
+
+void plane_by_matrix_copy (GLfloat r[4], GLfloat p[4], GLfloat m[19]) {
+  r[0] = p[0] * m[ 0] + p[1] * m[ 4] + p[2] * m[ 8];
+  r[1] = p[0] * m[ 1] + p[1] * m[ 5] + p[2] * m[ 9];
+  r[2] = p[0] * m[ 2] + p[1] * m[ 6] + p[2] * m[10];
+	r[3] = p[0] * m[12] + p[1] * m[13] + p[2] * m[14] + p[3];
 }
 
 GLfloat length_by_matrix (GLfloat length, GLfloat m[19]) {

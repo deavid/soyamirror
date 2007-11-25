@@ -146,6 +146,7 @@ cdef enum:
 cdef enum:
 	RAYPICK_CULL_FACE = 1 << 0
 	RAYPICK_HALF_LINE = 1 << 1
+	RAYPICK_BOOL      = 1 << 2
 cdef enum: # returned by math raypick functions
 	RAYPICK_DIRECT   = 1
 	RAYPICK_INDIRECT = 2

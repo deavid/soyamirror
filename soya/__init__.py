@@ -557,6 +557,9 @@ useful for 3D math computation.
 Most of the math operators, such as +, -, *, /, abs,... work on Vectors and do
 what they are intended to do ;-)"""
 
+class Plane(_soya._Plane):
+	"""A Plane in 3D space. Just used for math computation, doesn't display anything."""
+
 class Vertex(_soya._Vertex):
 	"""Vertex
 
@@ -570,8 +573,7 @@ Attributes are (see also Point for inherited attributes):
  - tex_x, tex_y: the text
 ure coordinates (sometime called U and V).
 """
-	
-	
+
 class Body(_soya._Body):
 	"""Body
 
@@ -1155,18 +1157,20 @@ _soya.SimpleModel      = SimpleModel
 _soya.SolidModel       = SolidModel
 _soya.TreeModel        = TreeModel
 _soya.CellShadingModel = CellShadingModel
+_soya.SplitedModel     = SplitedModel
 _soya.Point            = Point
 _soya.Vector           = Vector
+_soya.Plane            = Plane
 _soya.Camera           = Camera
 _soya.Light            = Light
 _soya.Body             = Body
 _soya.World            = World
-#_soya.Cal3dBody        = Cal3dBody
 _soya.AnimatedModel    = AnimatedModel
 _soya.Face             = Face
 _soya.Atmosphere       = Atmosphere
 _soya.Portal           = Portal
 _soya.Terrain          = Terrain
+_soya.BSPWorld         = BSPWorld
 _soya.Particles        = Particles
 _soya.Mass             = Mass
 _soya.Joint            = Joint

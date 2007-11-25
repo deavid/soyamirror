@@ -52,6 +52,7 @@ cdef extern from "matrix.h":
 	void     sphere_from_3_points        (GLfloat[4], GLfloat*, GLfloat*, GLfloat*)
 	void     sphere_from_spheres         (GLfloat[4], GLfloat*, int)
 	void     sphere_from_2_spheres       (GLfloat result[4], GLfloat[4], GLfloat[4])
+	char     sphere_side_plane           (GLfloat[4], GLfloat[4])
 
 	void     face_normal                 (GLfloat result[3], GLfloat[3], GLfloat[3], GLfloat[3])
 	void     face_plane                  (GLfloat result[4], GLfloat[3], GLfloat[3], GLfloat[3])
@@ -68,6 +69,7 @@ cdef extern from "matrix.h":
 	void     point_rotate                (GLfloat[3], GLfloat, GLfloat[3], GLfloat[3])
 
 	void     plane_vector_normalize      (GLfloat[4])
+	float    ray_distance_plane          (GLfloat[3], GLfloat[3], GLfloat, GLfloat[4], GLfloat)
 	
 	void     vector_normalize            (GLfloat[3])
 	void     vector_set_length           (GLfloat[3], GLfloat)
@@ -94,7 +96,10 @@ cdef extern from "matrix.h":
 	void     point4_by_matrix            (GLfloat[4], GLfloat[19])
 	void     vector_by_matrix            (GLfloat[3], GLfloat[19])
 	void     vector_by_matrix_copy       (GLfloat result[3], GLfloat[3], GLfloat[19])
+	void     plane_by_matrix             (GLfloat p[4], GLfloat m[19])
+	void     plane_by_matrix_copy        (GLfloat r[4], GLfloat p[4], GLfloat m[19])
 	GLfloat  length_by_matrix            (GLfloat, GLfloat[19])
+	void     sphere_by_matrix            (GLfloat[4], GLfloat[19])
 	void     sphere_by_matrix_copy       (GLfloat[4], GLfloat[4], GLfloat[19])
 
 	void     matrix_set_identity         (GLfloat[19])

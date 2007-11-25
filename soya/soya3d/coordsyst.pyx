@@ -159,7 +159,7 @@ Called when the CoordSyst is added into NEW_PARENT, or removed from its previous
 			self._go_not_static()
 		else:
 			self._auto_static_count = 3
-			
+	
 	cdef void _get_sphere(self, float* sphere):
 		sphere[0] = sphere[1] = sphere[2] = sphere[3] = 0.0
 		

@@ -22,6 +22,14 @@
  * Copyright (C) 2003-2006 Jean-Baptiste 'Jiba' LAMY
  **********************************************/
 
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
+#include <stdarg.h>
+#include <float.h>
+#include <math.h>
+#include "include_glew.h"
+
 #define FALSE  0
 #define TRUE   1
 
@@ -33,7 +41,7 @@
 #define RAYPICK_INDIRECT 2
 
 #define pi          3.1415927
-#define _2_pi        6.2831853  /* pi * 2 */
+#define _2_pi        6.2831853 /* pi * 2 */
 #define pi_2        1.5707963  /* pi / 2 */
 #define pi_180      0.0174533  /* pi / 180 */
 #define pi_180_inv  57.216848  /* 180 / pi */
@@ -41,6 +49,7 @@
 #define sqrt_2_2    0.7071068  /* sqrt(2) / 2 */
 #define EPSILON     0.001      /* values under this value are considered as 0.0 */
 #define UPSILON     0.00001
+#define INFINITY    HUGE_VAL
 
 #define to_radians(angle) ((angle) * pi_180)
 #define to_degrees(angle) ((angle) * pi_180_inv)
@@ -71,6 +80,7 @@ void     sphere_from_points          (GLfloat[4], GLfloat*, int);
 void     sphere_from_3_points        (GLfloat[4], GLfloat*, GLfloat*, GLfloat*);
 void     sphere_from_spheres         (GLfloat[4], GLfloat*, int);
 void     sphere_from_2_spheres       (GLfloat result[4], GLfloat[4], GLfloat[4]);
+char     sphere_side_plane           (GLfloat[4], GLfloat[4]);
 
 void     face_normal                 (GLfloat result[3], GLfloat[3], GLfloat[3], GLfloat[3]);
 void     face_plane                  (GLfloat result[4], GLfloat[3], GLfloat[3], GLfloat[3]);
@@ -87,6 +97,7 @@ void     point_rotate_axe            (GLfloat[3], GLfloat, GLfloat, GLfloat, GLf
 void     point_rotate                (GLfloat[3], GLfloat, GLfloat[3], GLfloat[3]);
 
 void     plane_vector_normalize      (GLfloat[4]);
+float    ray_distance_plane          (GLfloat[3], GLfloat[3], GLfloat, GLfloat[4], GLfloat);
 
 void     vector_normalize            (GLfloat[3]);
 void     vector_set_length           (GLfloat[3], GLfloat);
@@ -113,7 +124,10 @@ void     point_by_matrix_copy        (GLfloat result[3], GLfloat[3], GLfloat[19]
 void     point4_by_matrix            (GLfloat[4], GLfloat[19]);
 void     vector_by_matrix            (GLfloat[3], GLfloat[19]);
 void     vector_by_matrix_copy       (GLfloat result[3], GLfloat[3], GLfloat[19]);
+void     plane_by_matrix             (GLfloat p[4], GLfloat m[19]);
+void     plane_by_matrix_copy        (GLfloat r[4], GLfloat p[4], GLfloat m[19]);
 GLfloat  length_by_matrix            (GLfloat, GLfloat[19]);
+void     sphere_by_matrix            (GLfloat[4], GLfloat[19]);
 void     sphere_by_matrix_copy       (GLfloat result[4], GLfloat[4], GLfloat[19]);
 
 void     matrix_set_identity         (GLfloat[19]);

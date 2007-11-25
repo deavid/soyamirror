@@ -34,7 +34,7 @@
 # The main reason for this is that Pyrex classes cannot be weakref'ed until they are
 # extended in Python.
 
-Image = Material = Model = SimpleModel = SolidModel = TreeModel =  CellShadingModel = Point = Vector = Camera = Light = Body = World = Cal3dBody = AnimatedModel = Portal = WaterCube = Face = Atmosphere = Particles = None
+Image = Material = Model = SimpleModel = SolidModel = TreeModel =  CellShadingModel = SplitedModel = Point = Vector = Plane = Camera = Light = Vertex = Body = World = AnimatedModel = Portal = Face = Atmosphere = Particles = Terrain = BSPWorld = Mass = Joint = None
 
 # Constants and structs are now in definitions/base.pxd
 
