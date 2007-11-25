@@ -29,6 +29,10 @@ cdef class _Model(_CObj):
 	cdef void _get_box             (self, float* box, float* matrix): pass
 	cdef void _raypick             (self, RaypickData raypick_data, CoordSyst raypickable): pass
 	cdef int  _raypick_b           (self, RaypickData raypick_data, CoordSyst raypickable): return 0
+	cdef void _raypick_part(self, RaypickData raypick_data, float* raydata, int part, CoordSyst parent):
+		raise TypeError("This type of model doesn't support part raypicking !")
+	cdef int _raypick_part_b(self, RaypickData raypick_data, float* raydata, int part):
+		raise TypeError("This type of model doesn't support part raypicking !")
 	cdef void _collect_raypickables(self, Chunk* items, float* rsphere, float* sphere, CoordSyst parent): pass
 	
 	cdef void _attach(self, mesh_names): raise TypeError("This type of model doesn't support attach!")
