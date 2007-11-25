@@ -28,6 +28,7 @@ soya.init(width = 640, height = 480)
 
 # Adapter for the new GUI -- this will surely change !!!
 
+import soya.widget
 class Root(soya.widget.Widget):
 	def __init__(self, widget):
 		soya.widget.Widget.__init__(self)
