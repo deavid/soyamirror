@@ -19,7 +19,7 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #
-# Quake 3 BSP importer. Turn a quake 3 bsp file into a saved soya world.
+# Quake 3 BSP importer. Turn a quake 3 bsp file into a soya BSPWorld.
 #
 
 from struct import *
@@ -27,7 +27,8 @@ from math import *
 import sys, os, os.path
 import soya
 
-TESSELATE_LEVEL = 5
+TESSELATE_LEVEL = 3
+SHELL_TESSELATE_LEVEL = 3
 
 BSP_ENTITIES_LUMP     = 0
 BSP_TEXTURES_LUMP     = 1
@@ -47,6 +48,8 @@ BSP_LIGHTMAPS_LUMP    = 14
 BSP_LIGHTVOLS_LUMP    = 15
 BSP_VISDATA_LUMP      = 16
 NB_BSP_LUMPS          = 17
+
+CONTENT_SOLID         = 1
 
 
 class Q3BSPObject(object):
@@ -183,7 +186,8 @@ class Q3BSPBrush(Q3BSPObject):
 		self.brush_side_start = data[0]
 		self.nb_brush_side    = data[1]
 		self.texture          = data[2]
-		self.plane_indices    = []
+		self.plane_indices    = None
+		self.triangle_list    = None
 
 class Q3BSPBrushSide(Q3BSPObject):
 	format = "<2i"
@@ -335,29 +339,31 @@ def get_lump(lump, lumps, file):
 	data = file.read(lumps[lump.entry].length)
 	return lump.unpack(data)
 
-def tesselate_grid(grid, level):
-	vertices   = []
-	indices    = []
-	column0    = []
-	column1    = []
-	column2    = []
+def tesselate_grid(grid, widh, height, level):
+	collumns   = []
+	rows       = []
+	# Create collums
+	for i in range(0, widh):
+		col = []
+		collumns.append(col)
+	# Interpolate collumns
 	for i in range(0, level+1):
 		factor = float(i) / float(level)
-		column0.append(grid[0].interpolate(grid[3], grid[6], factor))
-		column1.append(grid[1].interpolate(grid[4], grid[7], factor))
-		column2.append(grid[2].interpolate(grid[5], grid[8], factor))
+		for j in range(0, widh):
+			for k in range(1, height-1):
+				collumns[j].append(grid[j][k-1].interpolate(grid[j][k], grid[j][k+1], factor))
+	# Create rows
 	for i in range(0, level+1):
+		row = []
+		rows.append(row)
+	# Interpolate rows
+	for i in range(0, level+1):
+		factor = float(i) / float(level)
+		# There is  level+1 rows
 		for j in range(0, level+1):
-			factor = float(j) / float(level)
-			vertices.append(column0[i].interpolate(column1[i], column2[i], factor))
-	for i in range(0, level):
-		for j in range(0, level+1):
-			indice = ((i+1) * (level+1)) + j
-			indices.append(indice)
-			indice = (i* (level+1)) + j
-			indices.append(indice)
-	return vertices, indices
-
+			for k in range(1, widh-1):
+				rows[j].append(collumns[k-1][j].interpolate(collumns[k][j], collumns[k+1][j], factor))
+	return rows
 
 
 
@@ -411,6 +417,18 @@ def loadObj(fileName):
 	model_parts       = []
 	# leaf2model_part
 	leaf2model_part   = {}
+	# Patch brush
+	facegroup2patch_brush_index = {}
+	
+	# Process every brush
+	# A brush is a list of planes that creat a convex volume used for collision detection
+	# Here we collect the planes of the brush
+	for brush in brushes:
+		# Get brush planes indices
+		brush.plane_indices = []
+		brush_sides = brushsides[brush.brush_side_start : brush.brush_side_start+brush.nb_brush_side]
+		for brushside in brush_sides:
+			brush.plane_indices.append(brushside.plane)
 	
 	# Creat all faces
 	# A Quake face is actually a group of faces
@@ -433,7 +451,6 @@ def loadObj(fileName):
 			if len(bsp_indices) % 3 != 0:
 				print "ERROR face num vertices not a multiple of 3 !!!"
 				return None
-			
 			for i in range(0, len(bsp_indices), 3):
 				f = soya.Face(world)
 				f.material = material
@@ -441,7 +458,6 @@ def loadObj(fileName):
 				bsp_vertices.append(vertexs[facegroup.vertex_start+bsp_indices[i].indice])
 				bsp_vertices.append(vertexs[facegroup.vertex_start+bsp_indices[i+2].indice])
 				bsp_vertices.append(vertexs[facegroup.vertex_start+bsp_indices[i+1].indice])
-				
 				for vertex in bsp_vertices:
 					v = soya.Vertex(world, vertex.x, vertex.y, vertex.z)
 					v.tex_x = vertex.texture_x
@@ -457,78 +473,92 @@ def loadObj(fileName):
 			patch_height   =  facegroup.patch_size_y
 			nb_grib_width  = (facegroup.patch_size_x-1) / 2
 			nb_grid_height = (facegroup.patch_size_y-1) / 2
-			
 			# Get control points
 			control_points = []
 			for i in range(0, (patch_width * patch_height)):
 				control_points.append(vertexs[facegroup.vertex_start + i])
-			for i in range(0, nb_grid_height):
-				for j in range(0, nb_grib_width):
-					grid = []
-					grid.append(control_points[i*patch_width*2 + j*2])
-					grid.append(control_points[i*patch_width*2 + j*2 + 1])
-					grid.append(control_points[i*patch_width*2 + j*2 + 2])
-					grid.append(control_points[i*patch_width*2 + patch_width + j*2])
-					grid.append(control_points[i*patch_width*2 + patch_width + j*2 + 1])
-					grid.append(control_points[i*patch_width*2 + patch_width + j*2 + 2])
-					grid.append(control_points[i*patch_width*2 + patch_width*2 + j*2])
-					grid.append(control_points[i*patch_width*2 + patch_width*2 + j*2 + 1])
-					grid.append(control_points[i*patch_width*2 + patch_width*2 + j*2 + 2])
-					bsp_vertexs, bsp_indices = tesselate_grid(grid, TESSELATE_LEVEL)
-					triangle_per_row = 2*(TESSELATE_LEVEL+1)
-					for k in range(0, TESSELATE_LEVEL):
-						for l in range(2, triangle_per_row):
-							f = soya.Face(world)
-							f.material = material
-							if l % 2:
-								v = soya.Vertex(world,  bsp_vertexs[bsp_indices[(k*triangle_per_row)+l]].x, \
-																				bsp_vertexs[bsp_indices[(k*triangle_per_row)+l]].y, \
-																				bsp_vertexs[bsp_indices[(k*triangle_per_row)+l]].z)
-								v.tex_x = bsp_vertexs[bsp_indices[(k*triangle_per_row)+l]].texture_x
-								v.tex_y = bsp_vertexs[bsp_indices[(k*triangle_per_row)+l]].texture_y
-								f.append(v)
-								v = soya.Vertex(world,  bsp_vertexs[bsp_indices[(k*triangle_per_row)+l-1]].x, \
-																				bsp_vertexs[bsp_indices[(k*triangle_per_row)+l-1]].y, \
-																				bsp_vertexs[bsp_indices[(k*triangle_per_row)+l-1]].z)
-								v.tex_x = bsp_vertexs[bsp_indices[(k*triangle_per_row)+l-1]].texture_x
-								v.tex_y = bsp_vertexs[bsp_indices[(k*triangle_per_row)+l-1]].texture_y
-								f.append(v)
-								v = soya.Vertex(world,  bsp_vertexs[bsp_indices[(k*triangle_per_row)+l-2]].x, \
-																				bsp_vertexs[bsp_indices[(k*triangle_per_row)+l-2]].y, \
-																				bsp_vertexs[bsp_indices[(k*triangle_per_row)+l-2]].z)
-								v.tex_x = bsp_vertexs[bsp_indices[(k*triangle_per_row)+l-2]].texture_x
-								v.tex_y = bsp_vertexs[bsp_indices[(k*triangle_per_row)+l-2]].texture_y
-							else:
-								v = soya.Vertex(world,  bsp_vertexs[bsp_indices[(k*triangle_per_row)+l-2]].x, \
-																				bsp_vertexs[bsp_indices[(k*triangle_per_row)+l-2]].y, \
-																				bsp_vertexs[bsp_indices[(k*triangle_per_row)+l-2]].z)
-								v.tex_x = bsp_vertexs[bsp_indices[(k*triangle_per_row)+l-2]].texture_x
-								v.tex_y = bsp_vertexs[bsp_indices[(k*triangle_per_row)+l-2]].texture_y
-								f.append(v)
-								v = soya.Vertex(world,  bsp_vertexs[bsp_indices[(k*triangle_per_row)+l-1]].x, \
-																				bsp_vertexs[bsp_indices[(k*triangle_per_row)+l-1]].y, \
-																				bsp_vertexs[bsp_indices[(k*triangle_per_row)+l-1]].z)
-								v.tex_x = bsp_vertexs[bsp_indices[(k*triangle_per_row)+l-1]].texture_x
-								v.tex_y = bsp_vertexs[bsp_indices[(k*triangle_per_row)+l-1]].texture_y
-								f.append(v)
-								v = soya.Vertex(world,  bsp_vertexs[bsp_indices[(k*triangle_per_row)+l]].x, \
-																				bsp_vertexs[bsp_indices[(k*triangle_per_row)+l]].y, \
-																				bsp_vertexs[bsp_indices[(k*triangle_per_row)+l]].z)
-								v.tex_x = bsp_vertexs[bsp_indices[(k*triangle_per_row)+l]].texture_x
-								v.tex_y = bsp_vertexs[bsp_indices[(k*triangle_per_row)+l]].texture_y
-							f.append(v)
-							model_face_group.append(f)
+			# Build Grid
+			grid = []
+			for i in range(0, patch_width):
+				col = []
+				grid.append(col)
+				for j in range(0, patch_height):
+					col.append(control_points[i*patch_width + j])
+			# Subdivide grid
+			tesselated_grid = tesselate_grid(grid, patch_width, patch_height, TESSELATE_LEVEL)
+			# Make faces from grid
+			for i in range(0, nb_grib_width*TESSELATE_LEVEL):
+				for j in range(0, nb_grid_height*TESSELATE_LEVEL):
+					# Use every square of the grid to make two triangle faces
+					# First triangle
+					f = soya.Face(world)
+					f.material = material
+					v = soya.Vertex(world, tesselated_grid[i][j].x, tesselated_grid[i][j].y, tesselated_grid[i][j].z)
+					v.tex_x = tesselated_grid[i][j].texture_x
+					v.tex_y = tesselated_grid[i][j].texture_y
+					f.append(v)
+					v = soya.Vertex(world, tesselated_grid[i+1][j].x, tesselated_grid[i+1][j].y, tesselated_grid[i+1][j].z)
+					v.tex_x = tesselated_grid[i+1][j].texture_x
+					v.tex_y = tesselated_grid[i+1][j].texture_y
+					f.append(v)
+					v = soya.Vertex(world, tesselated_grid[i+1][j+1].x, tesselated_grid[i+1][j+1].y, tesselated_grid[i+1][j+1].z)
+					v.tex_x = tesselated_grid[i+1][j+1].texture_x
+					v.tex_y = tesselated_grid[i+1][j+1].texture_y
+					f.append(v)
+					model_face_group.append(f)
+					# Second triangle
+					f = soya.Face(world)
+					f.material = material
+					v = soya.Vertex(world, tesselated_grid[i+1][j+1].x, tesselated_grid[i+1][j+1].y, tesselated_grid[i+1][j+1].z)
+					v.tex_x = tesselated_grid[i+1][j+1].texture_x
+					v.tex_y = tesselated_grid[i+1][j+1].texture_y
+					f.append(v)
+					v = soya.Vertex(world, tesselated_grid[i][j+1].x, tesselated_grid[i][j+1].y, tesselated_grid[i][j+1].z)
+					v.tex_x = tesselated_grid[i][j+1].texture_x
+					v.tex_y = tesselated_grid[i][j+1].texture_y
+					f.append(v)
+					v = soya.Vertex(world, tesselated_grid[i][j].x, tesselated_grid[i][j].y, tesselated_grid[i][j].z)
+					v.tex_x = tesselated_grid[i][j].texture_x
+					v.tex_y = tesselated_grid[i][j].texture_y
+					f.append(v)
+					model_face_group.append(f)
+			
+			# Make patch brush from grid if patch is solid
+			#if textures[facegroup.texture].contents & CONTENT_SOLID:
+				#triangle_list = []
+				## Subdivide grid again but with lower tesselation level
+				#tesselated_grid = tesselate_grid(grid, patch_width, patch_height, SHELL_TESSELATE_LEVEL)
+				## Make triangle from grid
+				#for i in range(0, nb_grib_width*SHELL_TESSELATE_LEVEL):
+					#for j in range(0, nb_grid_height*SHELL_TESSELATE_LEVEL):
+						## Use every square of the grid to make two triangle
+						## First triangle
+						#tri = soya.PatchShellTriangle()
+						#tri.right = soya.Point(world, x = tesselated_grid[i][j].x,     y = tesselated_grid[i][j].y,     z = tesselated_grid[i][j].z)
+						#tri.apex  = soya.Point(world, x = tesselated_grid[i+1][j].x,   y = tesselated_grid[i+1][j].y,   z = tesselated_grid[i+1][j].z)
+						#tri.left  = soya.Point(world, x = tesselated_grid[i+1][j+1].x, y = tesselated_grid[i+1][j+1].y, z = tesselated_grid[i+1][j+1].z)
+						#triangle_list.append(tri)
+						## Second triangle
+						#tri = soya.PatchShellTriangle()
+						#tri.right = soya.Point(world, x = tesselated_grid[i+1][j+1].x, y = tesselated_grid[i+1][j+1].y, z = tesselated_grid[i+1][j+1].z)
+						#tri.apex  = soya.Point(world, x = tesselated_grid[i][j+1].x,   y = tesselated_grid[i][j+1].y,   z = tesselated_grid[i][j+1].z)
+						#tri.left  = soya.Point(world, x = tesselated_grid[i][j].x,     y = tesselated_grid[i][j].y,     z = tesselated_grid[i][j].z)
+						## Set triangles neighbors
+						#triangle_list[-1].base_neighbor = tri
+						#tri.base_neighbor = triangle_list[-1]
+						#if j > 0:
+							#triangle_list[-1].right_neighbor = triangle_list[-2]
+							#triangle_list[-2].right_neighbor = triangle_list[-1]
+						#if i > 0:
+							#tri.left_neighbor = triangle_list[-((nb_grid_height*SHELL_TESSELATE_LEVEL*2)+1)]
+							#triangle_list[-((nb_grid_height*SHELL_TESSELATE_LEVEL*2)+1)].left_neighbor = tri
+						#triangle_list.append(tri)
+				#patch_brush = Q3BSPBrush((0, 0, textures[facegroup.texture]))
+				#patch_brush.triangle_list = triangle_list
+				#brushes.append(patch_brush)
+				#facegroup2patch_brush_index[facegroup] = brushes.index(patch_brush)
 		model_face_groups.append(model_face_group)
 		facegroup.facegroup_index = model_face_groups.index(model_face_group)
-	
-	# Process every brush
-	# A brush is a list of planes that creat a convex volume
-	# Used for raypicking
-	for brush in brushes:
-		# Get brush planes
-		brush_sides = brushsides[brush.brush_side_start : brush.brush_side_start+brush.nb_brush_side]
-		for brushside in brush_sides:
-			brush.plane_indices.append(brushside.plane)
 	
 	# Process brushes in leafs
 	for leaf in leafs:
@@ -538,9 +568,11 @@ def loadObj(fileName):
 		# Leaf without brush
 		if leaf.nb_leaf_brush == 0:
 			continue
+		# Add normal brush indices to leaf's brush list
+		# Patch brush will be added when processing facegroups in leaf
 		leaf_leafbrushes = leafbrushes[leaf.leaf_brush_start : leaf.leaf_brush_start+leaf.nb_leaf_brush]
 		for leafbrush in leaf_leafbrushes:
-			if brushes[leafbrush.brush].nb_brush_side > 0 and (textures[brushes[leafbrush.brush].texture].contents & 1):
+			if brushes[leafbrush.brush].nb_brush_side > 0 and (textures[brushes[leafbrush.brush].texture].contents & CONTENT_SOLID):
 				leaf.brush_indices.append(leafbrush.brush)
 	
 	# Process every cluster
@@ -557,16 +589,20 @@ def loadObj(fileName):
 		# Leaf without faces
 		if leaf.nb_leaf_face == 0:
 			continue
-		
 		# Get a list of all facegroups in that leaf
 		# Discare billboard faces (not implemented) and bad patchs (craps in bsp flies)
 		# BSP files use some kind of facegroup pointer called leaffaces
 		leaf_leaffaces  = leaffaces[leaf.leaf_face_start:leaf.leaf_face_start+leaf.nb_leaf_face]
 		leaf_facegroups = []
 		for leafface in leaf_leaffaces:
-			if facegroups[leafface.face].face_type == 4: continue
-			if facegroups[leafface.face].face_type == 2 and (facegroups[leafface.face].nb_vertex <= 0 or facegroups[leafface.face].patch_size_x <= 0): continue
+			if facegroups[leafface.face].face_type == 4:
+				continue
+			if facegroups[leafface.face].face_type == 2 and (facegroups[leafface.face].nb_vertex <= 0 or facegroups[leafface.face].patch_size_x <= 0):
+				continue
 			leaf_facegroups.append(facegroups[leafface.face])
+			# If there is a patch brush for this facegroup
+			if facegroup2patch_brush_index.has_key(facegroups[leafface.face]):
+				leaf.brush_indices.append(facegroup2patch_brush_index[facegroups[leafface.face]])
 		
 		# Creat the model part corresponding to the leaf
 		# The model part is a list contaning every facegroups of the leaf
@@ -576,6 +612,8 @@ def loadObj(fileName):
 		# This dict will be used when creaing the BSP world
 		#leaf2model_part[leaf] = model_parts.index(model_part)
 		leaf.model_part = model_parts.index(model_part)
+	
+	
 	
 	# Creat a splited model from our world
 	splited_model = soya.SplitedModel(world, model_face_groups, model_parts, 80., 0, None)
