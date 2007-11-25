@@ -33,3 +33,5 @@ cdef class _SplitedModel(_SimpleModel):
 	cdef void _batch_part(self, _Body body, int index)
 	cdef void _batch_end(self, _Body body)
 	cdef void _render(self, _Body body)
+	cdef void _raypick_part(self, RaypickData raypick_data, float* raydata, int part, CoordSyst parent)
+	cdef int  _raypick_part_b(self, RaypickData raypick_data, float* raydata, int part)
