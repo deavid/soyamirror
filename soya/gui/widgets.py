@@ -259,7 +259,7 @@ class Layer(Group):
 		for widget in self.widgets[::-1]:
 			if (widget.x <= x <= widget.x + widget.width) and (widget.y <= y <= widget.y + widget.height):
 				if widget.on_mouse_move(x, y, x_relative, y_relative, state): return 1
-			
+				
 class RootLayer(Layer):
 	def __init__(self, parent):
 		Layer.__init__(self, parent)
@@ -270,7 +270,6 @@ class RootLayer(Layer):
 		
 	def resize(self, x, y, width, height):
 		if width == 0: return # Not yet initialized
-		print "resize", x, y, width, height
 		Layer.resize(self, x, y, width, height)
 		
 	def begin_round(self):
