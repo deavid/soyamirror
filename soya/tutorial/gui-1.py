@@ -35,14 +35,14 @@ class Root(soya.widget.Widget):
 
 		self.widget = widget
 		self.widget.resize(0, 0, 640, 480)
-
+		
 	def render(self): self.widget.render()
 
 class MainLoop(soya.MainLoop):
 	def __init__(self, *worlds):
 		soya.MainLoop.__init__(self, *worlds)
 		self.events = []
-
+		
 	def begin_round(self):
 		self.events = soya.process_event()
 		soya.root_widget.widget.process_event(self.events)
@@ -52,7 +52,10 @@ class MainLoop(soya.MainLoop):
 	def advance_time(self, proportion):
 		soya.root_widget.widget.advance_time(proportion)
 		soya.MainLoop.advance_time(self, proportion)
-			
+
+
+
+		
 			
 	
 black = soya.Material()
@@ -63,8 +66,6 @@ red.diffuse = (1.0, 0.0, 0.0, 1.0)
 
 blue = soya.Material()
 blue.diffuse = (0.0, 0.0, 1.0, 1.0)
-	
-
 
 
 def widget_demo():

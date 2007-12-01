@@ -62,7 +62,7 @@ class Widget(object):
 			
 	def request_resize(self, widget = None):
 		if self.parent: self.parent.request_resize(self)
-	
+		
 	def resize(self, x, y, width, height):
 		self.reset_size()
 		while 1:
@@ -95,59 +95,6 @@ class Widget(object):
 	
 	def render(self): pass
 	
-	def process_event(self, events):
-		for event in events:
-			if   event[0] == sdlconst.MOUSEMOTION:
-				if MOUSE_GRABBER_WIDGET: MOUSE_GRABBER_WIDGET.on_mouse_move    (*event[1:])
-				else:                    self                .on_mouse_move    (*event[1:])
-			elif event[0] == sdlconst.MOUSEBUTTONDOWN:
-				if MOUSE_GRABBER_WIDGET: MOUSE_GRABBER_WIDGET.on_mouse_pressed (*event[1:])
-				else:                    self                .on_mouse_pressed (*event[1:])
-			elif event[0] == sdlconst.MOUSEBUTTONUP  :
-				if MOUSE_GRABBER_WIDGET: MOUSE_GRABBER_WIDGET.on_mouse_released(*event[1:])
-				else:                    self                .on_mouse_released(*event[1:])
-			elif event[0] == sdlconst.KEYDOWN:
-				widget = FOCUSED_WIDGET
-				while widget:
-					if len(event) == 4:
-						if widget.on_key_pressed(event[1], event[2], event[3]): break
-					else:
-						if widget.on_key_pressed(event[1], event[2]): break
-					widget = widget.parent
-			elif event[0] == sdlconst.KEYUP:
-				widget = FOCUSED_WIDGET
-				while widget:
-					if widget.on_key_released(event[1], event[2]): break
-					widget = widget.parent
-			elif event[0] == sdlconst.JOYBUTTONDOWN:
-				widget = FOCUSED_WIDGET
-				while widget:
-					if widget.on_joy_pressed(event[1]): break
-					widget = widget.parent
-				else:
-					if   event[1] == 0: self.process_event([(sdlconst.KEYDOWN, sdlconst.K_RETURN, 0, 0)])
-					elif event[1] == 1: self.process_event([(sdlconst.KEYDOWN, sdlconst.K_ESCAPE, 0, 0)])
-			elif event[0] == sdlconst.JOYBUTTONUP:
-				widget = FOCUSED_WIDGET
-				while widget:
-					if widget.on_joy_released(event[1]): break
-					widget = widget.parent
-				else:
-					if   event[1] == 0: self.process_event([(sdlconst.KEYUP, sdlconst.K_RETURN, 0)])
-					elif event[1] == 1: self.process_event([(sdlconst.KEYUP, sdlconst.K_ESCAPE, 0)])
-			elif event[0] == sdlconst.JOYAXISMOTION:
-				widget = FOCUSED_WIDGET
-				while widget:
-					if widget.on_joy_moved(event[1], event[2]): break
-					widget = widget.parent
-				else:
-					if   event[1] == 0:
-						if   event[2] < -1000: self.process_event([(sdlconst.KEYDOWN, sdlconst.K_LEFT , 0, 0), (sdlconst.KEYUP, sdlconst.K_LEFT , 0)])
-						elif event[2] >  1000: self.process_event([(sdlconst.KEYDOWN, sdlconst.K_RIGHT, 0, 0), (sdlconst.KEYUP, sdlconst.K_RIGHT, 0)])
-					if   event[1] == 1:
-						if   event[2] < -1000: self.process_event([(sdlconst.KEYDOWN, sdlconst.K_UP   , 0, 0), (sdlconst.KEYUP, sdlconst.K_UP   , 0)])
-						elif event[2] >  1000: self.process_event([(sdlconst.KEYDOWN, sdlconst.K_DOWN , 0, 0), (sdlconst.KEYUP, sdlconst.K_DOWN , 0)])
-						
 	def set_grab_mouse(self, grab):
 		global MOUSE_GRABBER_WIDGET
 		if   grab and not MOUSE_GRABBER_WIDGET:             MOUSE_GRABBER_WIDGET = self
@@ -321,6 +268,11 @@ class RootLayer(Layer):
 	def request_resize(self, widget):
 		self.widgets_needing_resize.add(widget)
 		
+	def resize(self, x, y, width, height):
+		if width == 0: return # Not yet initialized
+		print "resize", x, y, width, height
+		Layer.resize(self, x, y, width, height)
+		
 	def begin_round(self):
 		if self.widgets_needing_resize:
 			for widget in self.widgets_needing_resize:
@@ -328,7 +280,62 @@ class RootLayer(Layer):
 			self.widgets_needing_resize = set()
 		Layer.begin_round(self)
 		
-		
+	def process_event(self, events):
+		for event in events:
+			if   event[0] == sdlconst.MOUSEMOTION:
+				if MOUSE_GRABBER_WIDGET: MOUSE_GRABBER_WIDGET.on_mouse_move    (*event[1:])
+				else:                    self                .on_mouse_move    (*event[1:])
+			elif event[0] == sdlconst.MOUSEBUTTONDOWN:
+				if MOUSE_GRABBER_WIDGET: MOUSE_GRABBER_WIDGET.on_mouse_pressed (*event[1:])
+				else:                    self                .on_mouse_pressed (*event[1:])
+			elif event[0] == sdlconst.MOUSEBUTTONUP  :
+				if MOUSE_GRABBER_WIDGET: MOUSE_GRABBER_WIDGET.on_mouse_released(*event[1:])
+				else:                    self                .on_mouse_released(*event[1:])
+			elif event[0] == sdlconst.KEYDOWN:
+				widget = FOCUSED_WIDGET
+				while widget:
+					if len(event) == 4:
+						if widget.on_key_pressed(event[1], event[2], event[3]): break
+					else:
+						if widget.on_key_pressed(event[1], event[2]): break
+					widget = widget.parent
+			elif event[0] == sdlconst.KEYUP:
+				widget = FOCUSED_WIDGET
+				while widget:
+					if widget.on_key_released(event[1], event[2]): break
+					widget = widget.parent
+			elif event[0] == sdlconst.JOYBUTTONDOWN:
+				widget = FOCUSED_WIDGET
+				while widget:
+					if widget.on_joy_pressed(event[1]): break
+					widget = widget.parent
+				else:
+					if   event[1] == 0: self.process_event([(sdlconst.KEYDOWN, sdlconst.K_RETURN, 0, 0)])
+					elif event[1] == 1: self.process_event([(sdlconst.KEYDOWN, sdlconst.K_ESCAPE, 0, 0)])
+			elif event[0] == sdlconst.JOYBUTTONUP:
+				widget = FOCUSED_WIDGET
+				while widget:
+					if widget.on_joy_released(event[1]): break
+					widget = widget.parent
+				else:
+					if   event[1] == 0: self.process_event([(sdlconst.KEYUP, sdlconst.K_RETURN, 0)])
+					elif event[1] == 1: self.process_event([(sdlconst.KEYUP, sdlconst.K_ESCAPE, 0)])
+			elif event[0] == sdlconst.JOYAXISMOTION:
+				widget = FOCUSED_WIDGET
+				while widget:
+					if widget.on_joy_moved(event[1], event[2]): break
+					widget = widget.parent
+				else:
+					if   event[1] == 0:
+						if   event[2] < -1000: self.process_event([(sdlconst.KEYDOWN, sdlconst.K_LEFT , 0, 0), (sdlconst.KEYUP, sdlconst.K_LEFT , 0)])
+						elif event[2] >  1000: self.process_event([(sdlconst.KEYDOWN, sdlconst.K_RIGHT, 0, 0), (sdlconst.KEYUP, sdlconst.K_RIGHT, 0)])
+					if   event[1] == 1:
+						if   event[2] < -1000: self.process_event([(sdlconst.KEYDOWN, sdlconst.K_UP   , 0, 0), (sdlconst.KEYUP, sdlconst.K_UP   , 0)])
+						elif event[2] >  1000: self.process_event([(sdlconst.KEYDOWN, sdlconst.K_DOWN , 0, 0), (sdlconst.KEYUP, sdlconst.K_DOWN , 0)])
+			elif event[0] == sdlconst.VIDEORESIZE:
+				self.resize(0, 0, event[1], event[2])
+						
+						
 class Table(Group):
 	def __init__(self, parent, nb_col = 1, nb_row = 1):
 		Group.__init__(self, parent)
