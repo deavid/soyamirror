@@ -374,7 +374,7 @@ def set_use_unicode(state):
 	the fourth part contains the unicode symbol for the key.
 	usefull for getting CAPITALS and !$% etc in text boxes for example """
 	global SDL_UNICODE
-
+	
 	if state:
 		SDL_UNICODE=1
 		SDL_EnableUNICODE( 1 )
@@ -383,8 +383,14 @@ def set_use_unicode(state):
 		SDL_EnableUNICODE( 0 )
 
 # SDL-related funcs, though not initialization-related
-	
+
 def process_event():
+	if isinstance(soya.MAIN_LOOP, MainLoop):
+		return (<MainLoop> soya.MAIN_LOOP)._events
+	else: # Backward compatibility
+		return _process_event()
+	
+cdef _process_event():
 	cdef object    events
 	cdef SDL_Event event
 

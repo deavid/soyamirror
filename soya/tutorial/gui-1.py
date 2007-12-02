@@ -20,44 +20,13 @@
 
 import sys, os, os.path, random
 import soya, soya.gui
+import soya.widget
 
 soya.path.append(os.path.join(os.path.dirname(sys.argv[0]), "data"))
 
 soya.init(width = 640, height = 480)
 
 
-# Adapter for the new GUI -- this will surely change !!!
-
-import soya.widget
-class Root(soya.widget.Widget):
-	def __init__(self, widget):
-		soya.widget.Widget.__init__(self)
-
-		self.widget = widget
-		self.widget.resize(0, 0, 640, 480)
-		
-	def render(self): self.widget.render()
-
-class MainLoop(soya.MainLoop):
-	def __init__(self, *worlds):
-		soya.MainLoop.__init__(self, *worlds)
-		self.events = []
-		
-	def begin_round(self):
-		self.events = soya.process_event()
-		soya.root_widget.widget.process_event(self.events)
-		soya.root_widget.widget.begin_round()
-		soya.MainLoop.begin_round(self)
-		
-	def advance_time(self, proportion):
-		soya.root_widget.widget.advance_time(proportion)
-		soya.MainLoop.advance_time(self, proportion)
-
-
-
-		
-			
-	
 black = soya.Material()
 black.diffuse = (0.0, 0.0, 0.0, 1.0)
 
@@ -199,7 +168,6 @@ soya.gui.Button(table, u"Tree demo", on_clicked = tree_demo)
 soya.gui.CancelButton(table, u"Quit", on_clicked = sys.exit)
 
 
-root2 = Root(root)
-soya.set_root_widget(root2)
-MainLoop().main_loop()
+soya.set_root_widget(root)
+soya.MainLoop().main_loop()
 

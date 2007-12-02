@@ -273,11 +273,15 @@ class RootLayer(Layer):
 		Layer.resize(self, x, y, width, height)
 		
 	def begin_round(self):
+		self.process_event(soya.process_event())
 		if self.widgets_needing_resize:
 			for widget in self.widgets_needing_resize:
 				widget.resize(self.x, self.y, self.width, self.height)
 			self.widgets_needing_resize = set()
 		Layer.begin_round(self)
+	widget_begin_round  = begin_round
+	widget_advance_time = Layer.advance_time
+	def widget_end_round(self): pass
 		
 	def process_event(self, events):
 		for event in events:

@@ -47,6 +47,7 @@ cdef class _Font:
 	#cdef readonly int _current_height, _pixels_height
 	#cdef int          _rendering
 	#cdef GLuint       _tex_id
+	#cdef float        _ascender, _descender
 	
 	property height:
 		def __get__(self):

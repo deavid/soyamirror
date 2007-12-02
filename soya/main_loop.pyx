@@ -19,6 +19,7 @@
 
 import weakref, time
 
+
 MAIN_LOOP = None
 IDLER = None # Backward compatibility
 BEFORE_RENDER = []
@@ -57,6 +58,7 @@ Interesting attributes:
 	
 	#cdef                 _next_round_tasks, _return_value
 	#cdef                 _scenes
+	#cdef                 _events
 	#cdef public   double round_duration, min_frame_duration
 	#cdef readonly double fps
 	#cdef public   int    running
@@ -89,6 +91,7 @@ Creates a new main_loop for scenes SCENE1, SCENE2,...."""
 		self.round_duration     = 0.030
 		self.min_frame_duration = 0.020
 		self.will_render        = 0
+		self._events            = []
 		
 		import soya
 		soya.MAIN_LOOP = self
@@ -223,6 +226,7 @@ Starts idling with the current thread. This method never finishes, until you cal
 
 Called by MainLoop.main_loop when a new round begins; default implementation delegates to MainLoop.scene.begin_round."""
 		cdef _World scene
+		self._events = _process_event()
 		for item in MAIN_LOOP_ITEMS: item.begin_round()
 		for scene in self._scenes: scene.begin_round()
 		if root_widget: root_widget.widget_begin_round()

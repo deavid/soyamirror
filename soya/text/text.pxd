@@ -37,6 +37,7 @@ cdef class _Font:
 	cdef readonly int _current_height, _pixels_height
 	cdef int          _rendering
 	cdef GLuint       _tex_id
+	cdef float        _ascender, _descender
 	
 	cdef Glyph _get_glyph(self, char_)
 	cdef _gen_glyph(self, char_, int code)
