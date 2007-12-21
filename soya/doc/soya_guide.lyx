@@ -43,6 +43,7 @@
 \tracking_changes false
 \output_changes false
 \author "" 
+\author "" 
 \end_header
 
 \begin_body
@@ -6329,8 +6330,8 @@ XXX Soya's event system is still quite primitive and need a rewrite.
 \end_layout
 
 \begin_layout Standard
-soya.process_events() computes and returns all events that have occured since
- the last call to process_events.
+soya.process_event() computes and returns all events that have occured since
+ the last call to process_event.
 \end_layout
 
 \begin_layout Standard
@@ -6392,7 +6393,7 @@ Converting mouse 2D coordinates to 3D coordinates
 \end_layout
 
 \begin_layout Standard
-Mouse coordinates are returned as pixel values by process_events().
+Mouse coordinates are returned as pixel values by process_event().
  These 2D pixel values can be converted into 3D coordinates using Camera.coord2d_
 to_3d(x, y, z = -1.0) -> Point.
  As mouse coordinates are2D, the Z value cannot be guessed; if not given,
