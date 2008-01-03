@@ -117,10 +117,13 @@ cdef class _CObj:
 		try:
 			d = getattr(self, "__dict__")
 		except:
-			return self.__getcstate__()
+			return (self.__getcstate__(),)
 		else:
-			return self.__getcstate__(), d
-		
+			if d:
+				return (self.__getcstate__(), d)
+			else:
+				return (self.__getcstate__(),)
+			
 	def __setstate__(self, state):
 		self.__setcstate__(state[0])
 		if len(state) > 1: self.__dict__ = state[1]

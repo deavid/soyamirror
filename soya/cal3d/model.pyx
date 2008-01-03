@@ -1169,7 +1169,6 @@ cdef class _AnimatedModelData(_ModelData):
 		return ((self._body, self._model, self._attached_meshes, self._attached_coordsysts),)
 	
 	cdef void __setcstate__(self, cstate):
-		if len(cstate) == 1: cstate = cstate[0]
 		self._body, self._model, self._attached_meshes, self._attached_coordsysts = cstate
 		
 		self._cal_model = CalModel_New(self._model._core_model)

@@ -180,6 +180,8 @@ class Blender2Soya:
 						image_filename    = face.image.name
 						if "." in image_filename:
 							material_filename = image_filename[:image_filename.rfind(".")]
+						else:
+							material_filename = image_filename
 						material_filename = self.materials_map.get(material_filename, material_filename)
 						print >> self.f, """f.material = soya.Material.get('%s')""" % material_filename
 						print >> self.f
