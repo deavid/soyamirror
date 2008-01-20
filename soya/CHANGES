@@ -300,7 +300,7 @@
     * World -> Model compilation (and thus Blender export) was broken
       on Python 2.4
 
-* November 2007 : Soya3D 0.13.3
+* January 2008 : Soya3D 0.14rc1
   * Allow the centre of mass of a Body to be anywhere in its local
     coordinate system (thanks Greg Ewing)
   * Improve tutorial README (thanks Jacques Rebourcier)
