@@ -306,6 +306,7 @@
   * Improve tutorial README (thanks Jacques Rebourcier)
   * Update for Pyrex 0.9.6.2 (thanks Greg Ewing)
   * Blender => Cal3D can now run with Python 2.3 (thanks Greg Ewing)
+  * New GUI module soya.gui
   * Bugfixes:
     * Fix the weird segfaulting bug in terrain (thanks Souvarine)
     * Fix GL_INVALID_ENUM crash with the OSS ATI DRI driver

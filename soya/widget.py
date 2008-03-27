@@ -1,4 +1,5 @@
 # -*- indent-tabs-mode: t -*-
+# -*- coding: latin -*-
 
 # Soya 3D
 # Copyright (C) 2001-2002 Jean-Baptiste LAMY -- jiba@tuxfamily.org
