@@ -1,5 +1,6 @@
 # Cerealizer
-# Copyright (C) 2005-2007 Jean-Baptiste LAMY
+# Copyright (C) 2005-2008 Jean-Baptiste LAMY
+# Copyright (C) 2008 Peter Eckersley
 #
 # This program is free software.
 # It is available under the Python licence.
@@ -115,7 +116,7 @@ same file, or a raw value (e.g. an integer).
 """
 
 __alls__ = ["load", "dump", "loads", "dumps", "freeze_configuration", "register"]
-VERSION = "0.5"
+VERSION = "0.6"
 
 import logging
 logger = logging.getLogger("cerealizer")
@@ -124,6 +125,7 @@ logger = logging.getLogger("cerealizer")
 from cStringIO import StringIO
 from new       import instance
 
+class EndOfFile(StandardError): pass
 class NotCerealizerFileError(StandardError): pass
 class NonCerealizableObjectError(StandardError): pass
 
@@ -158,7 +160,11 @@ class Dumper(object):
     self.init()
     
   def undump(self, s):
-    if s.read(8) != "cereal1\n": raise NotCerealizerFileError("Not a cerealizer file!")
+    txt = s.read(8)
+    if txt != "cereal1\n": 
+      if txt == "":
+        raise EndOfFile("")
+      raise NotCerealizerFileError('Not a cerealizer file:\n"%s"' % txt)
     
     nb = int(s.readline())
     self.id2obj = [ None ] * nb  # DO NOT DO  self.id2obj = [comprehension list], since undump_ref may access id2obj during its construction
@@ -573,13 +579,15 @@ def dump(obj, file, protocol = 0):
   """dump(obj, file, protocol = 0)
 
 Serializes object OBJ in FILE.
+FILE should be an opened file in *** binary *** mode.
 PROTOCOL is unused, it exists only for compatibility with Pickle."""
   Dumper().dump(obj, file)
   
 def load(file):
   """load(file) -> obj
 
-De-serializes an object from FILE."""
+De-serializes an object from FILE.
+FILE should be an opened file in *** binary *** mode."""
   return Dumper().undump(file)
 
 def dumps(obj, protocol = 0):
