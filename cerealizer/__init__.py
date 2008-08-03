@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 # Cerealizer
 # Copyright (C) 2005-2008 Jean-Baptiste LAMY
 # Copyright (C) 2008 Peter Eckersley
