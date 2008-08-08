@@ -1,6 +1,5 @@
-# -*- indent-tabs-mode: t -*-
-
 #! /usr/bin/env python
+# -*- indent-tabs-mode: t -*-
 
 # Soya 3D
 # Copyright (C) 2001-2002 Jean-Baptiste LAMY -- jiba@tuxfamily
@@ -35,7 +34,9 @@ INCDIR = [
 	"/usr/include",
 	"/usr/local/include",
 	"/usr/X11R6/include",
+	"/usr/X11/include",
 	"/usr/include/freetype2",
+	"/usr/X11/include/freetype2",
 	"/usr/local/include/freetype2",
 	"/usr/include/cal3d",
 	"/usr/local/include/cal3d",
@@ -50,6 +51,7 @@ LIBDIR = [
 	"/usr/local/lib",
 	"/opt/local/lib", # For Mac OS X "darwin port"
 	"/usr/X11R6/lib",
+	"/usr/X11/lib",
 	"/sw/lib/", # For Mac OS X
 	#"/System/Library/Frameworks/OpenAL.framework/"
 	]
@@ -63,12 +65,12 @@ COMPILE_ARGS = [
 import os, os.path, sys, glob, distutils.core, distutils.sysconfig
 from distutils.core import setup, Extension
 
+from tempfile import NamedTemporaryFile
+
 
 def framework_exist(framework_name): #Os X related stuff. test if a .Framework are present or not.
-	tmpnam = os.tmpnam()
-	ret = os.system("ld -framework %s -o %s -r 2> /dev/null"%(framework_name,tmpnam))
-	if not ret:
-		os.remove(tmpnam)
+	tmp = NamedTemporaryFile()
+	ret = os.system("ld -framework %s -o %s -r 2> /dev/null"%(framework_name,tmp.name))
 	return not ret
 
 
@@ -76,12 +78,17 @@ BUILDING = ("build" in sys.argv[1:]) and not ("--help" in sys.argv[1:])
 INSTALLING = ("install" in sys.argv[1:]) and not ("--help" in sys.argv[1:])
 SDISTING = ("sdist" in sys.argv[1:]) and not ("--help" in sys.argv[1:])
 
-
+MACOSX_DEPLOYMENT_TARGET  = os.getenv('MACOSX_DEPLOYMENT_TARGET')
 try:
 	from Pyrex.Distutils import build_ext
 	HAVE_PYREX = 1
 except:
 	HAVE_PYREX = 0
+# env hack as pyrex change this variable
+if MACOSX_DEPLOYMENT_TARGET is None:
+	del os.environ['MACOSX_DEPLOYMENT_TARGET']
+else:
+	os.environ['MACOSX_DEPLOYMENT_TARGET'] = MACOSX_DEPLOYMENT_TARGET
 
 HERE = os.path.dirname(sys.argv[0])
 #ODE_DIR = os.path.join(HERE, "ode-0.5")
@@ -165,6 +172,7 @@ if "darwin" in sys.platform:
 		DEFINES.append(('HAS_FRAMEWORK_%s'%framework.upper(),1))
 		#os.environ['CFLAGS']= ('-DHAS_FRAMEWORK_%s '%framework.upper()) + os.environ.get('CFLAGS','')
 		os.environ['CFLAGS']= ('-framework %s '%framework) + os.environ.get('CFLAGS','')
+	os.environ['LDFLAGS']= '-Wl,-dylib_file,/System/Library/Frameworks/OpenGL.framework/Versions/A/Libraries/libGL.dylib:/System/Library/Frameworks/OpenGL.framework/Versions/A/Libraries/libGL.dylib '+os.environ.get('LDFLAGS','')
 
 # Taken from Twisted ; thanks to Christopher Armstrong :
 #   make sure data files are installed in twisted package
