@@ -536,17 +536,11 @@ The returned RaypickContext has raypick and raypick_b method similar to the Worl
 
 Called (by the main_loop) when a new round begins; default implementation calls all children's begin_round."""
 		
-		# XXX copied from CoordSyst.begin_round and Body.begin_round
-		
-		if (self._option & COORDSYS_NON_AUTO_STATIC) == 0:
-			if self._auto_static_count == 0:
-				if not (self._option & COORDSYS_STATIC): self._go_static()
-			else:
-				self._auto_static_count = self._auto_static_count - 1
-		if self._data: self._data._begin_round()
+		_Body.begin_round(self)
 		
 		cdef CoordSyst child
-		for child in self.children: child.begin_round()
+		for child in self.children:
+			child.begin_round()
 		
 		if self._space is not None:
 			#print "I'm a world, I will call collide"
@@ -564,7 +558,10 @@ Called (by the main_loop) when a new round begins; default implementation calls 
 
 Called (by the main_loop) when a round is finished; default implementation calls all children's end_round."""
 		cdef CoordSyst child
-		for child in self.children: child.end_round()
+		for child in self.children:
+			child.end_round()
+		_Body.end_round(self)
+
 		
 	def advance_time(self, float proportion):
 		"""World.advance_time(proportion)
@@ -573,11 +570,11 @@ Called (by the main_loop) when a piece of a round is achieved; default implement
 PROPORTION is the proportion of the current round's time that has passed (1.0 for an entire round)."""
 		cdef CoordSyst child
 		
-		# XXX copied from Body.begin_round
+		_Body.advance_time(self, proportion)
 		
-		if self._data: self._data._advance_time(proportion)
 		
-		for child in self.children: child.advance_time(proportion)
+		for child in self.children:
+			child.advance_time(proportion)
 		
 	def to_model(self):
 		"""World.to_model() -> Model
