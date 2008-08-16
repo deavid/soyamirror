@@ -20,12 +20,18 @@
 
 import objc
 from Foundation import NSObject, NSLog, NSBundle, NSDictionary
-from AppKit import NSApplicationDelegate, NSTerminateLater, NSApplication, NSCriticalRequest, NSImage, NSApp, NSMenu, NSMenuItem
+#from AppKit import NSApplicationDelegate, NSTerminateLater, NSApplication, NSCriticalRequest, NSImage, NSApp, NSMenu, NSMenuItem
+from AppKit import NSTerminateLater, NSApplication, NSCriticalRequest, NSImage, NSApp, NSMenu, NSMenuItem
+try:
+	from AppKit import NSApplicationDelegate
+except ImportError:
+	NSApplicationDelegate = None
+
 import os, sys
 
 # Make a good guess at the name of the application
-if len(sys.argv) > 1:
-		MyAppName = os.path.splitext(sys.argv[1])[0]
+if len(sys.argv) > 0:
+		MyAppName = os.path.splitext(sys.argv[0])[0]
 else:
 		MyAppname = 'Soya on Mac'
 		
@@ -50,22 +56,24 @@ def setupWindowMenu():
 		NSApp().mainMenu().addItem_(windowMenuItem)
 		NSApp().setWindowsMenu_(windowMenu)
 
+if NSApplicationDelegate is not None:
 # Used to cleanly terminate
-class MyAppDelegate(NSObject, NSApplicationDelegate):
-		def init(self):
-				return self
+	class MyAppDelegate(NSObject, NSApplicationDelegate):
+			def init(self):
+					return self
 
-		def applicationDidFinishLaunching_(self, aNotification):
-				pass
+			def applicationDidFinishLaunching_(self, aNotification):
+					pass
 
-		def applicationShouldTerminate_(self, app):
-				return NSTerminateLater
+			def applicationShouldTerminate_(self, app):
+					return NSTerminateLater
 
 # Start it up!
 app = NSApplication.sharedApplication()
 
-DELEGATE = MyAppDelegate.alloc().init()
-app.setDelegate_(DELEGATE)
+if NSApplicationDelegate is not None:
+	DELEGATE = MyAppDelegate.alloc().init()
+	app.setDelegate_(DELEGATE)
 if not app.mainMenu():
 		mainMenu = NSMenu.alloc().init()
 		app.setMainMenu_(mainMenu)
