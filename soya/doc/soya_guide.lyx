@@ -1,4 +1,4 @@
-#LyX 1.5.1 created this file. For more info see http://www.lyx.org/
+#LyX 1.5.4 created this file. For more info see http://www.lyx.org/
 \lyxformat 276
 \begin_document
 \begin_header
@@ -7529,10 +7529,6 @@ soya.path.append(os.path.join(os.path.dirname(sys.argv[0]), "data"))
 tofu.SAVED_GAME_DIR = "/tmp/tofu_demo"
 \end_layout
 
-\begin_layout LyX-Code
-
-\end_layout
-
 \begin_layout Description
 Warning: Tofu automatically imports and enables Cerealizer, and disables
  Pickle (see section 
@@ -7587,9 +7583,14 @@ class PlayerID(tofu.PlayerID):
 \end_layout
 
 \begin_layout LyX-Code
-    return tofu.PlayerID.dumps() + len(self.character_name) + "
+    return "%s%s
 \backslash
-n" + self.character_name
+n%s" % (tofu.PlayerID.dumps(self), len(self.character_name), self.character_name)
+        
+\end_layout
+
+\begin_layout LyX-Code
+
 \end_layout
 
 \begin_layout LyX-Code
@@ -8223,8 +8224,8 @@ Doing messages
 \end_layout
 
 \begin_layout Standard
-Messages are performed client-side, by the following method that must be
- overriden:
+Messages are performed both client-side and server-side, by the following
+ method that must be overriden:
 \end_layout
 
 \begin_layout Description
@@ -8744,7 +8745,7 @@ X
 \begin_inset Text
 
 \begin_layout Standard
-
+X
 \end_layout
 
 \end_inset
