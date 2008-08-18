@@ -78,7 +78,6 @@ class RotatingBody(soya.Body):
 		
 		self.rotate_y(proportion * 5.0)
 
-
 # Creates a rotating body in the scene, using the sword model.
 
 sword = RotatingBody(scene, sword_model)

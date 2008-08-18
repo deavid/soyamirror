@@ -814,6 +814,7 @@ class Level(soya.World, Unique):
     mobile.level = self
     self.mobiles.append(mobile)
     self.add(mobile)
+    mobile.added_into_level(self)
     self.check_active()
     
     if not _send_later: self._send_mobile(mobile)

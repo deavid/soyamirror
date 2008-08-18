@@ -44,7 +44,7 @@ Image = Material = Model = SimpleModel = SolidModel = TreeModel =  CellShadingMo
 cdef float LIGHT_NULL_ATTENUATION
 LIGHT_NULL_ATTENUATION = 0.05
 	
-VERSION     = "0.14rc1"
+VERSION     = "0.14"
 
 BLACK       = (0.0, 0.0, 0.0, 1.0)
 WHITE       = (1.0, 1.0, 1.0, 1.0)

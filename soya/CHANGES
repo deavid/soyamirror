@@ -317,3 +317,9 @@
     * Fix descender computation in font
     * Fix ODE on terrain (tuto ode-collision-8-terrain.py)
 
+* August 2008 : Soya3D 0.14
+  * Improved the cell-shading algorithm, by anti-aliasing outlines
+    and disabling normal lighting when cell-shading is used
+  * Bugfixes:
+    * When re-starting a MainLoop, define it as the current MainLoop
+      (aka. soya.MAIN_LOOP)

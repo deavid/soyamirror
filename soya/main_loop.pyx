@@ -132,6 +132,10 @@ Starts idling with the current thread. This method never finishes, until you cal
 		self._time = last_fps_computation_time = time.time()
 		self._time_since_last_round = 0.0
 		
+		import soya
+		soya.MAIN_LOOP = self
+		soya.IDLER     = self
+		
 		self.begin_round()
 		
 		while self.running == 1:

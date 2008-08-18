@@ -22,14 +22,9 @@ import Blender
 
 __file__ = sys.argv[sys.argv.index("-P") + 1]
 
-#sys.path.append("/home/jiba/src/pysoy/branches/cal3d-new")
 sys.path.append(os.path.dirname(__file__))
 
 import cal3d_export
-
-print cal3d_export
-print cal3d_export.blendercal
-print dir(cal3d_export.blendercal)
 
 cal3d_export.blendercal.bcconf.EXPORTGL    = True
 cal3d_export.blendercal.bcconf.SUBMESHMODE = "object"
