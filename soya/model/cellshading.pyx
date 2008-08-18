@@ -197,6 +197,7 @@ cdef class _CellShadingModel(_SimpleModel):
 			glTexEnvi         (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL)
 			glBindTexture     (GL_TEXTURE_2D, self._shader._id)
 			glActiveTextureARB(GL_TEXTURE0)
+			glDisable         (GL_LIGHTING)
 			
 			for i from start <= i < end:
 				display_list = self._display_lists.display_lists + i
@@ -227,8 +228,9 @@ cdef class _CellShadingModel(_SimpleModel):
 			glActiveTextureARB(GL_TEXTURE1)
 			glDisable         (GL_TEXTURE_2D)
 			glActiveTextureARB(GL_TEXTURE0)
-				
-				
+			glEnable          (GL_LIGHTING)
+			
+			
 			drop_chunk(chunk)
 			model_option_inactivate(self._option)
 			if body._option & LEFTHANDED: glFrontFace(GL_CCW)
@@ -250,6 +252,8 @@ cdef class _CellShadingModel(_SimpleModel):
 		_DEFAULT_MATERIAL._activate()
 		glLineWidth(d)
 		glColor4fv (self._outline_color)
+		glEnable   (GL_BLEND)
+		glEnable   (GL_LINE_SMOOTH)
 		glDisable  (GL_LIGHTING)
 		glDepthFunc(GL_LEQUAL)
 		
