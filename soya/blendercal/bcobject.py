@@ -106,17 +106,17 @@ class Mesh(Cal3DObject):
 class SubMesh(Cal3DObject):
 	def __init__(self, mesh, material):
 		Cal3DObject.__init__(self)
-	
+		
 		self.material = material
 		self.vertices = []
 		self.faces    = []
 		self.springs  = []
 		self.mesh     = mesh
-
+		
 		self.num_lodsteps = 0
 		
 		mesh.submeshes.append(self)
-
+		
 		if not material: self.material = Material("Default")
 
 	# These are all small classes for the creation of a very specific,

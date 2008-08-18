@@ -18,7 +18,7 @@ def __yieldBlenderObj(t, objlist=None):
 	# This function yields the Blender Object and the result of getData() on
 	# that Object for each instance that is a type of t. Futher, you can specify
 	# a list of objects to traverse rather than Blender.Object.Get().
-
+	
 	for obj in objlist or Blender.Object.Get():
 		# Ignore anything that begins with an underscore as a kind
 		# of "agreed-upon" technique.
@@ -258,7 +258,8 @@ def MeshData():
 			for i, v in enumerate(vlist):
 				weights = data.getVertexInfluences(v.index)
 				total   = sum([w for b, w in weights])
-			
+				if total == 0: total = 1
+				
 				for b, w in weights:
 					vertices[i].influences.append(bcobject.Influence(
 						bcobject.Bone.BONES[b.replace(".", "_")],
@@ -376,13 +377,13 @@ AnimationData = blendercal.exception(AnimationData)
 def ExportData(filename, skeldata, meshdata, animdata, prefixfiles=False):
 	dirname  = os.path.dirname(filename)
 	basename = os.path.splitext(os.path.basename(filename))[0]
-		
+	
 	try:
 		os.makedirs(dirname)
 	
 	except OSError, e:
 		pass
-
+	
 	cfg = file(os.path.join(dirname, "%s.cfg" % basename), "w")
 	
 	if prefixfiles:
