@@ -438,6 +438,8 @@ cdef class _AnimatedModel(_Model):
 					glBindTexture     (GL_TEXTURE_2D, self._shader._id)
 					glActiveTextureARB(GL_TEXTURE0)
 					
+					glDisable         (GL_LIGHTING)
+					
 					glBegin(GL_TRIANGLES)
 					for j from 0 <= j < submesh._nb_faces * 3:
 						glMultiTexCoord2fARB(GL_TEXTURE1, shades[submesh._faces[j]], shades[submesh._faces[j]])
@@ -451,6 +453,8 @@ cdef class _AnimatedModel(_Model):
 					glActiveTextureARB(GL_TEXTURE1)
 					glDisable         (GL_TEXTURE_2D)
 					glActiveTextureARB(GL_TEXTURE0)
+
+					glEnable          (GL_LIGHTING)
 					
 				else:
 					if (self._option & CAL3D_SHADOW) and not (submesh._option & CAL3D_NEIGHBORS):
@@ -623,7 +627,7 @@ cdef class _AnimatedModel(_Model):
 						
 		glEnd()
 		
-		glPointSize(d / 2)
+		glPointSize(d * 0.7)
 		
 		glBegin(GL_POINTS)
 		for i from 0 <= i < submesh._nb_vertices:
@@ -1166,16 +1170,17 @@ cdef class _AnimatedModelData(_ModelData):
 		if self._face_planes != NULL: free(self._face_planes)
 		
 	cdef __getcstate__(self):
-		return ((self._body, self._model, self._attached_meshes, self._attached_coordsysts),)
+		return (self._body, self._model, self._attached_meshes, self._attached_coordsysts)
 	
 	cdef void __setcstate__(self, cstate):
+		print "SETCSTATE", cstate
 		self._body, self._model, self._attached_meshes, self._attached_coordsysts = cstate
 		
 		self._cal_model = CalModel_New(self._model._core_model)
 		if self._cal_model == NULL:
 			print "error CalModel_Create", CalError_GetLastErrorDescription()
 			raise RuntimeError("CalModel_Create failed: %s" % CalError_GetLastErrorDescription())
-
+		
 		for i from 0 <= i < len(self._attached_meshes):
 			if self._attached_meshes[i] == 1:
 				if CalModel_AttachMesh(self._cal_model, i) == 0:
