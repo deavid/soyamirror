@@ -84,6 +84,14 @@ try:
 	HAVE_PYREX = 1
 except:
 	HAVE_PYREX = 0
+
+# Only enable Pyrex compilation for SVN sources
+if not os.path.exists(os.path.join(os.path.dirname(__file__), ".svn")):
+	HAVE_PYREX = 0
+
+if HAVE_PYREX: print "Pyrex compilation enabled!"
+else:          print "Pyrex compilation disabled."
+	
 # env hack as pyrex change this variable
 if MACOSX_DEPLOYMENT_TARGET is None:
 	try: del os.environ['MACOSX_DEPLOYMENT_TARGET']
