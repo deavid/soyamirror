@@ -373,8 +373,8 @@ Attributes are:
 """
 	DIRNAME = "images"
 	_alls = weakref.WeakValueDictionary()
-	def __reduce__(self): return _CObj.__reduce__(self)
-	def __reduce_ex__(self, arg): return _CObj.__reduce_ex__(self, arg)
+	#def __reduce__(self): return _CObj.__reduce__(self)
+	#def __reduce_ex__(self, arg): return _CObj.__reduce_ex__(self, arg)
 		
 	palette = None
 	
