@@ -86,7 +86,8 @@ except:
 	HAVE_PYREX = 0
 # env hack as pyrex change this variable
 if MACOSX_DEPLOYMENT_TARGET is None:
-	del os.environ['MACOSX_DEPLOYMENT_TARGET']
+	try: del os.environ['MACOSX_DEPLOYMENT_TARGET']
+	except: pass
 else:
 	os.environ['MACOSX_DEPLOYMENT_TARGET'] = MACOSX_DEPLOYMENT_TARGET
 
