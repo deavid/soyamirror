@@ -102,12 +102,17 @@ cdef extern from "ode/ode.h":
 				dRayClass,
 				dGeomTransformClass,
 
+		cdef enum:
+				dAllocateFlagBasicData = 0
+				dAllocateFlagCollisionData = 0x00000001
+				dAllocateMaskAll = ~0
 
 		# World
 		dWorldID dWorldCreate()
 		void dWorldDestroy (dWorldID)
 
 		void dCloseODE()
+		int dInitODE2(unsigned int uiInitFlags)
 
 		void dWorldSetGravity (dWorldID, dReal x, dReal y, dReal z)
 		void dWorldGetGravity (dWorldID, dVector3 gravity)
