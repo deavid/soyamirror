@@ -84,6 +84,7 @@ try:
 	HAVE_PYREX = 1
 except:
 	HAVE_PYREX = 0
+	print "No Pyrex found"
 
 # Only enable Pyrex compilation for SVN sources
 if not os.path.exists(os.path.join(os.path.dirname(__file__), ".svn")):
