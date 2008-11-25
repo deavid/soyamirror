@@ -58,6 +58,8 @@ class GeomTestCase(TestCase):
 
 		self.assertTrue(geom.space is None)
 		self.assertTrue(geom not in self.scene.space)
+		del geom
+		del body
 
 
 if __name__ == '__main__':
