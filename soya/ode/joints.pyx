@@ -1033,7 +1033,6 @@ cdef class FixedJoint(_Joint):
 # AMotor
 cdef class AngularMotor(_Joint):
 	"""AMotor joint.
-	
 	"""
 
 	#def __new__(self, _World world not None, jointgroup=None, *args, **kw):
@@ -1064,6 +1063,7 @@ cdef class AngularMotor(_Joint):
 		self._OdeJointID = dJointCreateAMotor(world._OdeWorldID,gid)
 		self.world = world
 		self.attach(body1, body2)
+		self.mode = dAMotorUser
 		
 					
 	property mode:
@@ -1088,7 +1088,7 @@ cdef class AngularMotor(_Joint):
 			Get the number of angular axes that are controlled by the AMotor.
 			"""
 			return dJointGetAMotorNumAxes(self._OdeJointID)
-		def __set__(self,num):
+		def __set__(self, int num):
 			"""set nb_Axes(num)
 
 			Set the number of angular axes that will be controlled by the AMotor.
@@ -1097,18 +1097,15 @@ cdef class AngularMotor(_Joint):
 			@param num: Number of axes (0-3)
 			@type num: int
 			"""
-			if 0<num<=3:
+			if 0 < num <= 3:
+				dJointSetAMotorNumAxes(self._OdeJointID, num)
+			else:
 				raise RuntimeError("An the number of angle must be in the range 0-3")
-			dJointSetAMotorNumAxes(self._OdeJointID, num)
 
 			
 			
 	
 
-	# XXX this can be converted to properties by using Soya vectors and
-	# choosing the relative orientation mode automatically based on the
-	# coordinate system of the vector.
-	# setAxis
 	def setAxis(self, int anum, _Vector axis):
 			"""setAxis(anum, rel, axis)
 
@@ -1142,9 +1139,6 @@ cdef class AngularMotor(_Joint):
 			return Vector(self.world,a[0],a[1],a[2])
 
 	
-	# XXX these should be converted to three properties each, one for each
-	# axis.
-	# setAngle
 	def setAngle(self, int anum, angle):
 			"""setAngle(anum, angle)
 
@@ -1178,6 +1172,20 @@ cdef class AngularMotor(_Joint):
 			@type anum: int        
 			"""
 			return dJointGetAMotorAngleRate(self._OdeJointID, anum)
+
+	# setAngleRate
+	def setAngleRate(self, int anum, dReal rate):
+			"""getAngleRate(anum) -> float
+
+			Set the angle rate for axis anum.
+
+			@param anum: Axis index
+			@type anum: int        
+
+			@param anum: Angular Rate
+			@type anum: float
+			"""
+			dJointSetAMotorParam(self._OdeJointID, anum, rate)
 
 	# setParam
 	cdef void _setParam(self, int param, dReal value):
