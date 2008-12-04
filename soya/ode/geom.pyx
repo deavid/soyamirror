@@ -55,11 +55,13 @@ cdef class _Geom:
 			dGeomSetCollideBits(self._OdeGeomID, bits)
 		def __get__(self):
 			return dGeomGetCollideBits(self._OdeGeomID)
+
 	property category_bits:
 		def __set__(self,bits):
 			dGeomSetCategoryBits(self._OdeGeomID, bits)
 		def __get__(self):
 			return dGeomGetCategoryBits(self._OdeGeomID)
+
 	property enabled:
 		def __set__(self, flag):
 			if flag:
