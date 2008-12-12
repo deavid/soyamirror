@@ -1,17 +1,20 @@
 # -*- indent-tabs-mode: t -*-
 
-# This tutorial show the use of the hit function.
-# If define, this function is called when the body collide with another (pushable or not)
-# It usefull to trigger action when body it heac other
+INTRO = """
+  This tutorial show the use of the hit function.
+  If define, this function is called when the body collide with another (pushable or not)
+  It usefull to trigger action when body hit's each other
+"""
 
 import sys, os
 import soya
 
 
 
-soya.init("collision-1-base",width=1024,height=768)
+soya.init("collision-5-hit_func",width=1024,height=768)
 soya.path.append(os.path.join(os.path.dirname(sys.argv[0]), "data"))
 
+print INTRO
 
 class SpeakingHead(soya.Body):
 	head_model = soya.Model.get("caterpillar_head")
@@ -19,7 +22,7 @@ class SpeakingHead(soya.Body):
 		soya.Body.__init__(self,parent,self.head_model)
 		self.name = name
 	def hit(self,*args,**kargs):
-		print "<%s> outch I'm it !"%self.name
+		print "<%s> outch I'm hit !"%self.name
 
 
 

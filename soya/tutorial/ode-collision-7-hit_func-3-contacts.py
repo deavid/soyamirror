@@ -1,13 +1,16 @@
 # -*- indent-tabs-mode: t -*-
 
-# the hit function take arguments, the first one is the body you collide and the
-# second is a list of Contact object containing information about the Point of contact
-# 
-# In this tutorial you will learn to use the second argument.
-# this argument are the list of all Contact betwen self and other this contact
-# have many usefull attribut descripting the Contact. This time We are using the
-# pos attribut to find the position of the contact and create some particule
+INTRO = """
+  the hit function take arguments, the first one is the body you collide and the
+  second is a list of Contact object containing information about the Point of contact
+  
+  In this tutorial you will learn to use the second argument.
+  this argument are the list of all Contact betwen self and other this contact
+  have many usefull attribut descripting the Contact. This time We are using the
+  pos attribut to find the position of the contact and create some particule
+"""
 
+print '===== Control ====='
 print 'arrows: move'
 print 'espace: up'
 print 'left:   down'
@@ -27,9 +30,9 @@ import soya.laser
 from soya import Vector, Point
 
 if '-f' in sys.argv:
-	soya.init("first ODE test",width=1280,height=854,fullscreen=True)
+	soya.init("ode-collision-7-hit_func-3-contacts",width=1280,height=854,fullscreen=True)
 else:
-	soya.init("first ODE test",width=1024,height=768)
+	soya.init("ode-collision-7-hit_func-3-contacts",width=1024,height=768)
 soya.cursor_set_visible(False)
 soya.set_mouse_pos(1280/2,854/2)
 soya.process_event()

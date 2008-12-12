@@ -1,9 +1,8 @@
 # -*- indent-tabs-mode: t -*-
 
-# the hit function take arguments, the first one is the body you collide and the
-# second is a list of Contact object containing information about the Point of contact
-# 
-# In this more complex scene Head will tell who they hit when collision occured
+INTRO = """
+  You can also collide with terrain
+"""
 
 import sys, os
 from random import choice, gauss as normalvariate, randint, random, expovariate
@@ -16,9 +15,12 @@ from soya import Vector
 
 
 
-soya.init("first ODE test",width=1024,height=768)
+soya.init("ode-collision-8-terrain",width=1024,height=768)
 soya.process_event()
 soya.path.append(os.path.join(os.path.dirname(sys.argv[0]), "data"))
+
+print INTRO
+
 scene = soya.World()
 
 # Gets the image "map1.png" from the tutorial data dir, and create the terrain

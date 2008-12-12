@@ -1,11 +1,8 @@
 # -*- indent-tabs-mode: t -*-
 
-# In this tutorial we'll learn how made soya detect collision with ODE
-# 
-# Our example is to simple head going on eatch other
-#
-# To enable ODE's collision detection, you only have create a Geom for bodys 
-# you want to collide. here we use : "GeomSphere(body,radius)"
+INTRO = """
+  You can also use Box Geometry for collision with GeomBox object
+"""
 
 import sys, os
 import soya
@@ -13,8 +10,10 @@ import soya.sphere, soya.cube
 
 #evil hack
 
-soya.init("collision-1-base",width=1024,height=768)
+soya.init("ode-collision-9-box",width=1024,height=768)
 soya.path.append(os.path.join(os.path.dirname(sys.argv[0]), "data"))
+
+print INTRO
 
 # create world
 scene = soya.World()

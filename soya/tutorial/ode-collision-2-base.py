@@ -8,7 +8,7 @@ import sys, os
 import soya
 
 
-soya.init("collision-1-base",width=1024,height=768)
+soya.init("collision-2-base",width=1024,height=768)
 soya.path.append(os.path.join(os.path.dirname(sys.argv[0]), "data"))
 
 # create world

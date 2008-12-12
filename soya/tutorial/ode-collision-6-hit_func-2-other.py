@@ -1,9 +1,11 @@
 # -*- indent-tabs-mode: t -*-
 
-# the hit function take arguments, the first one is the body you collide and the
-# second is a list of Contact object containing information about the Point of contact
-# 
-# In this more complex scene Head will tell who they hit when collision occured
+INTRO = """
+  the hit function take arguments, the first one is the body you collide and the
+  second is a list of Contact object containing information about the Point of contact
+  
+ In this more complex scene Head will tell who they hit when collision occured
+"""
 
 import sys, os
 from random import choice
@@ -11,13 +13,10 @@ import soya
 from soya import Vector
 
 
-
-
-
-
-soya.init("first ODE test",width=1024,height=768)
-
+soya.init("ode-collision-6-hit_func-2",width=1024,height=768)
 soya.path.append(os.path.join(os.path.dirname(sys.argv[0]), "data"))
+
+print INTRO
 
 class PoliteHead(soya.Body):
 	head_model = soya.Model.get("caterpillar_head")
