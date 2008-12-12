@@ -1134,7 +1134,7 @@ cdef class AngularMotor(_Joint):
 				axis._into(self._body1, a)
 			elif rel == 2:
 				axis._into(self._body2, a)
-			 else:
+			else:
 				raise RuntimeError("rel paramets must be in the range 0, 1 or 2")
 			dJointSetAMotorAxis(self._OdeJointID, anum, rel, a[0], a[1], a[2])
 
