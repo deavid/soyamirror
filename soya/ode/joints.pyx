@@ -1106,12 +1106,18 @@ cdef class AngularMotor(_Joint):
 			
 	
 
-	def setAxis(self, int anum, _Vector axis):
+	def setAxis(self, int anum, int rel, _Vector axis):
 			"""setAxis(anum, rel, axis)
 
 			Set an AMotor axis.
 
 			The anum argument selects the axis to change (0,1 or 2).
+
+			rel:    Each axis can have one of three ``relative orientation'' modes.
+				0: The axis is anchored to the global frame.
+				1: The axis is anchored to the first body.
+				2: The axis is anchored to the second body.
+
 
 			The axis vector is always specified in global coordinates
 			regardless of the setting of rel.
@@ -1122,8 +1128,15 @@ cdef class AngularMotor(_Joint):
 			@type axis: Vector
 			"""
 			cdef float a[3]
-			axis._into(self.world, a)
-			dJointSetAMotorAxis(self._OdeJointID, anum, 0, a[0], a[1], a[2])
+			if rel == 0:
+				axis._into(self.world, a)
+			elif rel == 1:
+				axis._into(self._body1, a)
+			elif rel == 2:
+				axis._into(self._body2, a)
+			 else:
+				raise RuntimeError("rel paramets must be in the range 0, 1 or 2")
+			dJointSetAMotorAxis(self._OdeJointID, anum, rel, a[0], a[1], a[2])
 
 	# getAxis
 	def getAxis(self, int anum):
