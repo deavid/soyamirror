@@ -344,8 +344,8 @@ SOUND_DOPPLER_FACTOR can be used to increase or decrease the Doppler effect."""
 		init_joysticks()
 		init_gl()
 		glewInit()
-		#dInitODE2(dAllocateMaskAll)
-		#dInitODE2(~0)
+		dInitODE2(dAllocateMaskAll)
+		dInitODE2(~0)
 		
 		SDL_UNICODE=0
 		
