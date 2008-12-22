@@ -95,8 +95,7 @@ else:          print "Pyrex compilation disabled."
 	
 # env hack as pyrex change this variable
 if MACOSX_DEPLOYMENT_TARGET is None:
-	try: del os.environ['MACOSX_DEPLOYMENT_TARGET']
-	except: pass
+	os.environ.pop('MACOSX_DEPLOYMENT_TARGET',None)
 else:
 	os.environ['MACOSX_DEPLOYMENT_TARGET'] = MACOSX_DEPLOYMENT_TARGET
 
@@ -169,13 +168,14 @@ if "darwin" in sys.platform:
 		os.environ['CFLAGS'] = "-arch ppc -arch i386"+ os.environ.get('CFLAGS','')
 		#try to use framework if present.
 	to_be_remove_lib =[]
+	print "Looking for available framework to use instead of a UNIX library"
 	for lib in LIBS:
 		if framework_exist(lib):
 			to_be_remove_lib.append(lib)
 			FRAMEWORKS.append(lib)
-			print "%s.Framework found in the system, using it instead of an unix lib."%lib
+			print "%-64sfound" % ("%s.framework" % lib)
 		else:
-			print "%s.framework not found in the system, trying to use an unix lib instead"%lib
+			print "%-60snot found" % ("%s.framework" % lib)
 	for lib in to_be_remove_lib:
 		LIBS.remove(lib)
 	for framework in FRAMEWORKS:
