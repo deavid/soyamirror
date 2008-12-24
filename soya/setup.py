@@ -17,6 +17,8 @@
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+from StringIO import StringIO
+from os.path import exists
 
 
 # Modify the following if needed :
@@ -26,8 +28,6 @@ USE_OPENAL = 1     # use OpenAL
 # Modify the following if needed :
 UNIVERSAL_BINARY = True #try to build a UB if possible
 
-	
-	
 
 INCDIR = [
 	#"ode-0.5/include",
@@ -81,16 +81,16 @@ SDISTING = ("sdist" in sys.argv[1:]) and not ("--help" in sys.argv[1:])
 MACOSX_DEPLOYMENT_TARGET  = os.getenv('MACOSX_DEPLOYMENT_TARGET')
 try:
 	from Pyrex.Distutils import build_ext
-	HAVE_PYREX = 1
+	USE_PYREX = 1
 except:
-	HAVE_PYREX = 0
+	USE_PYREX = 0
 	print "No Pyrex found"
 
 # Only enable Pyrex compilation for SVN sources
 if not os.path.exists(os.path.join(os.path.dirname(__file__), ".svn")):
-	HAVE_PYREX = 0
+	USE_PYREX = 0
 
-if HAVE_PYREX: print "Pyrex compilation enabled!"
+if USE_PYREX: print "Pyrex compilation enabled!"
 else:          print "Pyrex compilation disabled."
 	
 # env hack as pyrex change this variable
@@ -120,15 +120,15 @@ SOYA_C_SOURCES      = ["_soya.c"  , "matrix.c", "chunk.c"]
 
 print "BUILDING", BUILDING
 # Generate config.pxd and config.pyx
+
 if BUILDING:
-	CONFIG_PXD_FILE = open(os.path.join(HERE,"config.pxd"), "w", 0)
-	CONFIG_PXD_FILE.write("""# Machine-generated file, DO NOT EDIT!
+	CONFIG_PXD_PATH = os.path.join(HERE,"config.pxd")
+	CONFIG_PYX_PATH = os.path.join(HERE,"config.pyx")
+	CONFIG_PXD_FILE = StringIO()
+	CONFIG_PYX_FILE = StringIO()
+	CONFIG_PXD_FILE.write("""# Machine-generated file, DO NOT EDIT!\n\n""")
+	CONFIG_PYX_FILE.write("""# Machine-generated file, DO NOT EDIT!\n\n""")
 
-""")
-	CONFIG_PYX_FILE = open(os.path.join(HERE,"config.pyx"), "w", 0)
-	CONFIG_PYX_FILE.write("""# Machine-generated file, DO NOT EDIT!
-
-""")
 	if USE_OPENAL:
 		print "Sound support (with OpenAL) enabled..."
 
@@ -137,6 +137,21 @@ if BUILDING:
 	else:
 		print "Sound support (with OpenAL) disabled..."
 		CONFIG_PYX_FILE.write("""include "sound/nosound.pyx"\n""")
+	if exists(CONFIG_PXD_PATH) and exists(CONFIG_PYX_PATH):
+		config_pxd_orig = open(CONFIG_PXD_PATH).read()
+		config_pyx_orig = open(CONFIG_PYX_PATH).read()
+		write = config_pxd_orig != CONFIG_PXD_FILE.getvalue() or \
+		        config_pyx_orig != CONFIG_PYX_FILE.getvalue()
+	else:
+		write = True
+	
+	if write:
+		print "\twriting new sound configuration"
+		config_pxd_orig = open(CONFIG_PXD_PATH,'w',0).write(CONFIG_PXD_FILE.getvalue())
+		config_pyx_orig = open(CONFIG_PYX_PATH,'w',0).write(CONFIG_PYX_FILE.getvalue())
+
+
+	
 elif INSTALLING:
 		auto_files = ("config.pxd", "config.pyx")
 		missing_files = []
@@ -167,6 +182,8 @@ if "darwin" in sys.platform:
 	if UNIVERSAL_BINARY and major_version >=8 :
 		os.environ['CFLAGS'] = "-arch ppc -arch i386"+ os.environ.get('CFLAGS','')
 		#try to use framework if present.
+	else:
+		os.environ['ARCHFLAGS'] = ' '
 	to_be_remove_lib =[]
 	print "Looking for available framework to use instead of a UNIX library"
 	for lib in LIBS:
@@ -204,7 +221,7 @@ def do(command):
 		
 	
 	
-if HAVE_PYREX:
+if USE_PYREX:
 	# make pyrex recompile the soya module if any of the .pyx files have changed
 	# should probably recurse directories
 	# much nicer than having to use --force

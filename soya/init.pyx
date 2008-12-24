@@ -345,7 +345,7 @@ SOUND_DOPPLER_FACTOR can be used to increase or decrease the Doppler effect."""
 		init_gl()
 		glewInit()
 		#dInitODE2(dAllocateMaskAll)
-		dInitODE2(~0)
+		
 		
 		SDL_UNICODE=0
 		
@@ -372,7 +372,7 @@ def quit():
 		soya.inited = 0
 		base_quit()
 		quit_cal3d()
-		dCloseODE()
+		#dCloseODE()
 
 def set_use_unicode(state):
 	"""when set, process_event will return a 4 part tuple for a keydown event.
