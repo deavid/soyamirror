@@ -320,8 +320,8 @@ cdef void init_video(char* title, int width, int height, int fullscreen, int res
 
 #def init(title = "Soya 3D", int width = 640, int height = 480, int fullscreen = 0, int resizeable = 1, int create_surface = 1, int sound = 0, sound_device = "'( ( devices '( native esd sdl alsa arts null ) ) )", int sound_frequency = 44100, float sound_reference_distance = 1.0, float sound_doppler_factor = 0.01):
 #	"""init(title = "Soya 3D", width = 640, height = 480, fullscreen = 0, resizeable = 1, create_surface = 1, sound = 0, sound_device = "'( ( devices '( native esd sdl alsa arts null ) ) )", sound_frequency = 44100, sound_reference_distance = 1.0, sound_doppler_factor = 0.01)
-def init(title = "Soya 3D", int width = 640, int height = 480, int fullscreen = 0, int resizeable = 1, int create_surface = 1, int sound = 0, sound_device = "", int sound_frequency = 44100, float sound_reference_distance = 1.0, float sound_doppler_factor = 0.01):
-	"""init(title = "Soya 3D", width = 640, height = 480, fullscreen = 0, resizeable = 1, create_surface = 1, sound = 0, sound_device = "", sound_frequency = 44100, sound_reference_distance = 1.0, sound_doppler_factor = 0.01)
+def init(title = "Soya 3D", int width = 640, int height = 480, int fullscreen = 0, int resizeable = 1, int create_surface = 1, int sound = 0, sound_device = "", int sound_frequency = 44100, float sound_reference_distance = 1.0, float sound_doppler_factor = 0.01, quiet=False):
+	"""init(title = "Soya 3D", width = 640, height = 480, fullscreen = 0, resizeable = 1, create_surface = 1, sound = 0, sound_device = "", sound_frequency = 44100, sound_reference_distance = 1.0, sound_doppler_factor = 0.01, quiet=False)
 
 Inits Soya 3D and display the 3D view.
 
@@ -329,6 +329,7 @@ TITLE is the title of the window.
 WIDTH and HEIGHT the dimensions of the 3D view.
 FULLSCREEN is true for fullscreen and false for windowed mode.
 RESIZEABLE is true for a resizeable window.
+QUIET is true to hide the soya initialisation message
 
 Set SOUND to true to initialize 3D sound support (default to false for backward compatibility)
 The following arguments are meaningful only if SOUND is true:
@@ -359,7 +360,8 @@ SOUND_DOPPLER_FACTOR can be used to increase or decrease the Doppler effect."""
 		import soya
 		soya.inited = 1
 
-	dump_info()
+	if not quiet:
+		dump_info()
 	
 	if sound:
 		_init_sound(sound_device, sound_frequency, sound_reference_distance, sound_doppler_factor)
