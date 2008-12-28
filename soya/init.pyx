@@ -178,9 +178,10 @@ cdef void base_init():
 
 cdef void base_quit():
 	cdef int i
-	global JOYSTICKS, NB_JOYSTICK
- 
-	print "* Soya3D * Quit..."
+	import soya
+	global JOYSTICKS, NB_JOYSTICK 
+	if not soya.quiet:
+		print "* Soya3D * Quit..."
 	
 	# renderer
 	#P3_list_dealloc(terrain_tri_recycler)
@@ -229,7 +230,7 @@ def set_gamma(float r_gamma,float g_gamma,float b_gamma):
 				print s
 				raise RuntimeError(s)
 
-def set_video(int width, int height, int fullscreen, int resizable):
+def set_video(int width, int height, int fullscreen, int resizable, int quiet=False):
 	cdef int stencil, bits_per_pixel
 	#cdef unsigned int flags
 	cdef int flags
@@ -278,7 +279,8 @@ def set_video(int width, int height, int fullscreen, int resizable):
 		renderer.engine_option = renderer.engine_option & ~HAS_STENCIL
 		renderer.engine_option = renderer.engine_option & ~SHADOWS
 	else:
-		print "* Soya * Using %i bits stencil buffer" % stencil
+		if not quiet:
+			print "* Soya * Using %i bits stencil buffer" % stencil
 		renderer.engine_option = renderer.engine_option | HAS_STENCIL
 
 	# Wait until OpenGL is REALLY ready
@@ -303,10 +305,11 @@ def set_video(int width, int height, int fullscreen, int resizable):
 		root_widget.resize(0, 0, renderer.screen_width, renderer.screen_height)
 		
 		
-cdef void init_video(char* title, int width, int height, int fullscreen, int resizable):
+cdef void init_video(char* title, int width, int height, int fullscreen, int resizable, int quiet):
 	import sys
 	if sys.platform == "darwin":
-		print "* Soya * Initializing for MacOSX..."
+		if not quiet:
+			print "* Soya * Initializing for MacOSX..."
 		import soya.macosx
 		
 	# initialize SDL
@@ -314,13 +317,13 @@ cdef void init_video(char* title, int width, int height, int fullscreen, int res
 		s = "Could not initialize SDL : %s" % SDL_GetError()
 		print s
 		raise RuntimeError(s)
-	set_video(width, height, fullscreen, resizable)
+	set_video(width, height, fullscreen, resizable, quiet)
 	if title != NULL: SDL_WM_SetCaption(title, NULL)
 
 
 #def init(title = "Soya 3D", int width = 640, int height = 480, int fullscreen = 0, int resizeable = 1, int create_surface = 1, int sound = 0, sound_device = "'( ( devices '( native esd sdl alsa arts null ) ) )", int sound_frequency = 44100, float sound_reference_distance = 1.0, float sound_doppler_factor = 0.01):
 #	"""init(title = "Soya 3D", width = 640, height = 480, fullscreen = 0, resizeable = 1, create_surface = 1, sound = 0, sound_device = "'( ( devices '( native esd sdl alsa arts null ) ) )", sound_frequency = 44100, sound_reference_distance = 1.0, sound_doppler_factor = 0.01)
-def init(title = "Soya 3D", int width = 640, int height = 480, int fullscreen = 0, int resizeable = 1, int create_surface = 1, int sound = 0, sound_device = "", int sound_frequency = 44100, float sound_reference_distance = 1.0, float sound_doppler_factor = 0.01, quiet=False):
+def init(title = "Soya 3D", int width = 640, int height = 480, int fullscreen = 0, int resizeable = 1, int create_surface = 1, int sound = 0, sound_device = "", int sound_frequency = 44100, float sound_reference_distance = 1.0, float sound_doppler_factor = 0.01, int quiet=False):
 	"""init(title = "Soya 3D", width = 640, height = 480, fullscreen = 0, resizeable = 1, create_surface = 1, sound = 0, sound_device = "", sound_frequency = 44100, sound_reference_distance = 1.0, sound_doppler_factor = 0.01, quiet=False)
 
 Inits Soya 3D and display the 3D view.
@@ -337,11 +340,12 @@ SOUND_DEVICE is the OpenAL device names, the default value should be nice.
 SOUND_FREQUENCY is the sound frequency.
 SOUND_REFERENCE_DISTANCE is the reference distance for sound attenuation.
 SOUND_DOPPLER_FACTOR can be used to increase or decrease the Doppler effect."""
-
+	import soya
+	soya.quiet = quiet
 	if not(renderer.engine_option & INITED):
 		base_init()
 		if create_surface:
-			init_video(title, width, height, fullscreen, resizeable)
+			init_video(title, width, height, fullscreen, resizeable, quiet)
 		init_joysticks()
 		init_gl()
 		glewInit()
@@ -424,8 +428,8 @@ cdef _process_event():
 		elif (event.type == SDL_QUIT) or (event.type == SDL_VIDEOEXPOSE):
 			events.append((event.type,))
 		elif  event.type == SDL_VIDEORESIZE:
-			if renderer.engine_option & FULLSCREEN: set_video(event.resize.w, event.resize.h, 1, 1)
-			else:                                   set_video(event.resize.w, event.resize.h, 0, 1)
+			if renderer.engine_option & FULLSCREEN: set_video(event.resize.w, event.resize.h, 1, 1) # XXX ignore quiet argument
+			else:                                   set_video(event.resize.w, event.resize.h, 0, 1) # XXX ignore quiet argument
 			
 			events.append((SDL_VIDEORESIZE, event.resize.w, event.resize.h))
 						
