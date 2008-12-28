@@ -3,7 +3,7 @@ import soya
 from soya import Vector
 soya.path.append(os.path.join(os.path.dirname(__file__), "data"))
 from unittest import TestCase, main as unittest_main
-soya.init("gravity test case",width=1024,height=768)
+soya.init("gravity test case", width=1024, height=768, quiet=True)
 
 class GravityTestCase(TestCase):
 

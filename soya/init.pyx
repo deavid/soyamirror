@@ -22,6 +22,8 @@ cdef SDL_Joystick** JOYSTICKS
 cdef                DRIVER_3D
 cdef int            SDL_UNICODE
 
+import sys
+
 def set_quality(int q):
 	global quality
 	quality = q
@@ -58,7 +60,7 @@ def toggle_wireframe():
 		renderer.engine_option = renderer.engine_option | WIREFRAME
 		
 cdef void dump_info():
-	print """
+	sys.stdout.write("""
 * Soya * version %s
 * Using OpenGL %s
 *   - renderer : %s
@@ -66,7 +68,8 @@ cdef void dump_info():
 *   - maximum number of lights        : %s
 *   - maximum number of clip planes   : %s
 *   - maximum number of texture units : %s
-*   - maximum texture size            : %s pixels""" % (
+*   - maximum texture size            : %s pixels
+""" % (
 		VERSION,
 		PyString_FromString(<char*> glGetString(GL_VERSION)),
 		PyString_FromString(<char*> glGetString(GL_RENDERER)),
@@ -75,7 +78,7 @@ cdef void dump_info():
 		MAX_CLIP_PLANES,
 		MAX_TEXTURES,
 		MAX_TEXTURE_SIZE,
-		)
+		))
 		
 cdef void init_gl():
 	global DRIVER_3D
@@ -152,7 +155,7 @@ cdef void init_gl():
 	gl_renderer = <char*> glGetString(GL_RENDERER)
 	if gl_renderer == NULL:
 		DRIVER_3D = ""
-		print "* Soya 3D * Warning : glGetString returns NULL!"
+		sys.stderr.write("* Soya 3D * Warning : glGetString returns NULL!\n")
 		check_gl_error()
 	else:
 		DRIVER_3D = PyString_FromString(<char*> glGetString(GL_RENDERER))
@@ -181,7 +184,7 @@ cdef void base_quit():
 	import soya
 	global JOYSTICKS, NB_JOYSTICK 
 	if not soya.quiet:
-		print "* Soya3D * Quit..."
+		sys.stdout.write("* Soya3D * Quit...\n")
 	
 	# renderer
 	#P3_list_dealloc(terrain_tri_recycler)
@@ -227,7 +230,7 @@ def set_gamma(float r_gamma,float g_gamma,float b_gamma):
 		i=SDL_SetGamma(r_gamma,g_gamma,b_gamma)   
 		if i<0:
 				s = "Video query failed : %s" % SDL_GetError()
-				print s
+				sys.stderr.write(s + '\n')
 				raise RuntimeError(s)
 
 def set_video(int width, int height, int fullscreen, int resizable, int quiet=False):
@@ -241,7 +244,7 @@ def set_video(int width, int height, int fullscreen, int resizable, int quiet=Fa
 	info = <SDL_VideoInfo*> SDL_GetVideoInfo() # cast for constness adjustment
 	if info == NULL:
 		s = "Video query failed : %s" % SDL_GetError()
-		print s
+		sys.stderr.write(s + '\n')
 		raise RuntimeError(s)
 	
 	# On X11, VidMode can't change resolution, so this is probably being overly safe.
@@ -273,14 +276,14 @@ def set_video(int width, int height, int fullscreen, int resizable, int quiet=Fa
 		renderer.screen = SDL_SetVideoMode(width, height, bits_per_pixel, flags)
 		if renderer.screen == NULL:
 			s = "Video mode set failed : %s" % SDL_GetError()
-			print s
+			sys.stderr.write(s + '\n')
 			raise RuntimeError(s)
-		print "* Soya * Failed to set stencil buffer, shadows will be disabled."
+		sys.stderr.write("* Soya * Failed to set stencil buffer, shadows will be disabled.\n")
 		renderer.engine_option = renderer.engine_option & ~HAS_STENCIL
 		renderer.engine_option = renderer.engine_option & ~SHADOWS
 	else:
 		if not quiet:
-			print "* Soya * Using %i bits stencil buffer" % stencil
+			sys.stdout.write("* Soya * Using %i bits stencil buffer\n" % stencil)
 		renderer.engine_option = renderer.engine_option | HAS_STENCIL
 
 	# Wait until OpenGL is REALLY ready
@@ -290,7 +293,7 @@ def set_video(int width, int height, int fullscreen, int resizable, int quiet=Fa
 		if glGetString(GL_RENDERER) != NULL: break
 		sleep(0.1)
 	else:
-		print "* Soya * ERROR : OpenGL is not ready... Soya will crash soon i guess :-("
+		sys.stderr.write("* Soya * ERROR : OpenGL is not ready... Soya will crash soon i guess :-(\n")
 	
 		
 	glViewport(0, 0, renderer.screen_width, renderer.screen_height)
@@ -309,13 +312,13 @@ cdef void init_video(char* title, int width, int height, int fullscreen, int res
 	import sys
 	if sys.platform == "darwin":
 		if not quiet:
-			print "* Soya * Initializing for MacOSX..."
+			sys.stdout.write("* Soya * Initializing for MacOSX...\n")
 		import soya.macosx
 		
 	# initialize SDL
 	if SDL_Init(SDL_INIT_VIDEO | SDL_INIT_JOYSTICK  | SDL_INIT_NOPARACHUTE) < 0:
 		s = "Could not initialize SDL : %s" % SDL_GetError()
-		print s
+		sys.stderr.write(s + '\n')
 		raise RuntimeError(s)
 	set_video(width, height, fullscreen, resizable, quiet)
 	if title != NULL: SDL_WM_SetCaption(title, NULL)
@@ -370,7 +373,8 @@ SOUND_DOPPLER_FACTOR can be used to increase or decrease the Doppler effect."""
 	if sound:
 		_init_sound(sound_device, sound_frequency, sound_reference_distance, sound_doppler_factor)
 		
-	print
+	if not quiet:
+		sys.stdout.write('\n')
 		
 def quit():
 	import soya
