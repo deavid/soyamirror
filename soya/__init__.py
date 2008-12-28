@@ -1201,6 +1201,7 @@ _soya._set_shader_default_material(SHADER_DEFAULT_MATERIAL)
 
 
 inited = 0
+quiet = 0
 
 
 # Backward compatibility

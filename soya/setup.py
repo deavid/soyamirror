@@ -87,8 +87,9 @@ except:
 	print "No Pyrex found"
 
 # Only enable Pyrex compilation for SVN sources
-if not os.path.exists(os.path.join(os.path.dirname(__file__), ".svn")):
-	USE_PYREX = 0
+#if not os.path.exists(os.path.join(os.path.dirname(__file__), ".svn")):
+#	print "None repository source, pyrex disabled"
+#	USE_PYREX = 0
 
 if USE_PYREX: print "Pyrex compilation enabled!"
 else:          print "Pyrex compilation disabled."
