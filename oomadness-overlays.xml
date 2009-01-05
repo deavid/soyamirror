@@ -1,10 +1,10 @@
 <?xml version="1.0" ?>
-<layman>
-
+<overlays>
     <overlay
             type = "svn"
             src  = "http://svn.gna.org/svn/soya/trunk/ebuilds"
-            name = "oomadness">
+            name = "oomadness"
+            contact = "jibalamy@free.fr">
 
         <link>
             http://home.gna.org/oomadness/en/
@@ -17,4 +17,4 @@
         </description>
 
   </overlay>
-</layman>
+</overlays>
