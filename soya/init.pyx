@@ -25,6 +25,8 @@ cdef int            SDL_UNICODE
 import sys
 from warnings import warn
 
+from soya.sdlconst import MOUSEMOTION
+
 def set_quality(int q):
 	global quality
 	quality = q
@@ -416,8 +418,9 @@ def coalesce_motion_event(events):
 You should look the MainLoop.events property instead of using this function.
 
 Prunes from EVENTS all mouse motion events except the last one.
-This is usefull since only the last one is usually releavant (Though
-be carrefull if you use the relative mouse coordinate !).
+This is usefull since only the last one is usually releavant. The relative
+motion data is updated. The last mouse motion events is put at the very end of
+the list.
 
 EVENTS should be a list of events, as returned by soya.process_event().
 The returned list has the same structure."""
@@ -426,47 +429,32 @@ The returned list has the same structure."""
 
 cdef _coalesce_motion_event(events):
 	"""see soya.coalesce_motion_event for detail"""
-	cdef int already_found
-	cdef int current_index
-	cdef int last_motion_index
-	cdef int motion_data[4]
-	already_found = 0
+	cdef int first_motion
+	cdef int base_x
+	cdef int base_y
+
+	first_motion = 1
 	current_index = 0
-	last_motion_index = -1
+	last_motion = None
 
-	motion_data[0] = 0
-	motion_data[1] = 0
-	motion_data[2] = 0
-	motion_data[3] = 0
-
-
-	from soya.sdlconst import MOUSEMOTION
 	
 	new_events = []
 	events = list(events)
 	for event in events:
 		if event[0] == MOUSEMOTION:
-			last_motion_index = current_index
-			motion_data[0] = event[1]
-			motion_data[1] = event[2]
-			motion_data[2] = event[3] + motion_data[2]
-			motion_data[3] = event[4] + motion_data[3]
+			last_motion = event
+			if first_motion:
+				first_motion = False
+				base_x = event[1] - event[3]
+				base_y = event[2] - event[4]
 		else:
-			current_index = current_index + 1
 			new_events.append(event)
-	if last_motion_index >= 0:
-		motion = (MOUSEMOTION, motion_data[0], motion_data[1], motion_data[2],
-		          motion_data[3])
-		new_events.insert(last_motion_index, motion)
-#	events.reverse()
-#	
-#	for event in events:
-#		if event[0] == soya.sdlconst.MOUSEMOTION:
-#			if already_found:
-#				continue
-#			already_found = 1
-#		new_events.append(event)
-#	new_events.reverse()
+	if last_motion is not None:
+		new_events.append( (MOUSEMOTION,
+			last_motion[1], last_motion[2],
+			last_motion[1] - base_x, # relative x
+			last_motion[2] - base_y) # relative y
+			)
 	return new_events
 
 cdef _process_event():
