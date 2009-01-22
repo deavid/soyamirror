@@ -16,7 +16,7 @@ from soya import Vector
 
 
 soya.init("ode-collision-8-terrain",width=1024,height=768)
-soya.process_event()
+soya.MAIN_LOOP.events
 soya.path.append(os.path.join(os.path.dirname(sys.argv[0]), "data"))
 
 print INTRO
@@ -124,7 +124,7 @@ class MainLoop(soya.MainLoop):
 		soya.MainLoop.begin_round(self)
 
 		# wait for any keystoke to quit
-		#for e in soya.process_event():
+		#for e in soya.MAIN_LOOP.events:
 		#	if e[0]==sdlconst.KEYDOWN and e[1]!=0:
 		if random() < self.prob:
 			print "let's add another one \o/"

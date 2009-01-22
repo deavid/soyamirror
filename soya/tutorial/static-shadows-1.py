@@ -58,7 +58,7 @@ class DragDropWorld(soya.World):
 				else:                       print self.children[i].name, "is no longer static"
 			
 		
-		for event in soya.process_event():
+		for event in soya.MAIN_LOOP.events:
 			
 			if   event[0] == soya.sdlconst.MOUSEBUTTONDOWN:
 				mouse = camera.coord2d_to_3d(event[2], event[3])

@@ -56,7 +56,7 @@ class CaterpillarHead(soya.Body):
 	def begin_round(self):
 		soya.Body.begin_round(self)
 		
-		for event in soya.process_event():
+		for event in soya.MAIN_LOOP.events:
 			if event[0] == soya.sdlconst.KEYDOWN:
 				if   event[1] == soya.sdlconst.K_UP:     self.speed.z = -0.2
 				elif event[1] == soya.sdlconst.K_DOWN:   self.speed.z =  0.1

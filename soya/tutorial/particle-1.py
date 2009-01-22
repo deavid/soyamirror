@@ -97,7 +97,7 @@ class MainLoop(soya.MainLoop):
 		soya.MainLoop.begin_round(self)
 
 		# wait for any keystoke to quit
-		for e in soya.process_event():
+		for e in soya.MAIN_LOOP.events:
 			if e[0]==sdlconst.KEYDOWN and e[1]!=0:
 				self.stop()        
 

@@ -77,7 +77,7 @@ class MovableCamera(soya.Camera):
 	def begin_round(self):
 		soya.Camera.begin_round(self)
 		
-		for event in soya.process_event():
+		for event in soya.MAIN_LOOP.events:
 			if event[0] == soya.sdlconst.KEYDOWN:
 				if   event[1] == soya.sdlconst.K_UP:     self.speed.z = -1.0
 				elif event[1] == soya.sdlconst.K_DOWN:   self.speed.z =  1.0

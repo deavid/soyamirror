@@ -92,6 +92,8 @@ Creates a new main_loop for scenes SCENE1, SCENE2,...."""
 		self.min_frame_duration = 0.020
 		self.will_render        = 0
 		self._events            = []
+		self._raw_events        = []
+		self._queued_events     = []
 		
 		import soya
 		soya.MAIN_LOOP = self
@@ -230,7 +232,10 @@ Starts idling with the current thread. This method never finishes, until you cal
 
 Called by MainLoop.main_loop when a new round begins; default implementation delegates to MainLoop.scene.begin_round."""
 		cdef _World scene
-		self._events = _process_event()
+		self._raw_events = self._queued_events
+		self._queued_events = []
+		self._raw_events.extend(_process_event())
+		self._events = _coalesce_motion_event(self._raw_events)
 		for item in MAIN_LOOP_ITEMS: item.begin_round()
 		for scene in self._scenes: scene.begin_round()
 		if root_widget: root_widget.widget_begin_round()
@@ -262,5 +267,23 @@ PROPORTION is the proportion of the current round's time that has passed (1.0 fo
 Called by MainLoop.main_loop when rendering is needed; default implementation calls soya.render."""
 		for i in BEFORE_RENDER: i()
 		render()
-		
-		
+
+	property events:
+		"""List of useful events for this round.
+
+		Those events are all the yet unfetched event since the last fetch. In
+		general case, it means since the very beginning of the previous round.
+
+		Take note that Mouse motion have been coalesced. If you what them all, see
+		the raw_event property."""
+		def __get__(self):
+			return self._events
+
+	property raw_events:
+		"""List all events from the round. Mouse motion have not yet coalesced"""
+		def __get__(self):
+			return self._raw_events
+
+	def queue_event(self, event):
+		"""Queue event which be included in next round event"""
+		self._queued_events.append(event)

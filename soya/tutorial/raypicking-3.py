@@ -70,7 +70,7 @@ class MouseLaser(soya.laser.Laser):
 		
 		# Processes the events
 		
-		for event in soya.process_event():
+		for event in soya.MAIN_LOOP.events:
 			if event[0] == soya.sdlconst.MOUSEMOTION:
 
 				# For mouse motion event, rotate the laser (quite) toward the mouse.

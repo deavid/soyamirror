@@ -47,7 +47,7 @@ class MainLoop(soya.MainLoop):
 	def begin_round(self):
 		soya.MainLoop.begin_round(self)
 
-		pudding.process_event()
+		pudding.MAIN_LOOP.events
 
 pudding.main_loop.MainLoop(scene).main_loop()
 

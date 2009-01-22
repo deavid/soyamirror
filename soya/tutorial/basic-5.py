@@ -72,7 +72,7 @@ class CaterpillarHead(soya.Body):
 		#  - (JOYBUTTONDOWN, button) XXX
 		#  - (VIDEORESIZE, new_width, new_height)
 		
-		for event in soya.process_event():
+		for event in soya.MAIN_LOOP.events:
 			
 			# Checks for key down (press) events.
 			

@@ -75,7 +75,7 @@ class DragDropWorld(soya.World):
 		
 		# Processes the events
 		
-		for event in soya.process_event():
+		for event in soya.MAIN_LOOP.events:
 			
 			# Mouse down initiates the dragdrop.
 			

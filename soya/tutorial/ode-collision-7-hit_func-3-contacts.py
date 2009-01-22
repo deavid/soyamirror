@@ -35,7 +35,7 @@ else:
 	soya.init("ode-collision-7-hit_func-3-contacts",width=1024,height=768)
 soya.cursor_set_visible(False)
 soya.set_mouse_pos(1280/2,854/2)
-soya.process_event()
+soya.MAIN_LOOP.events
 
 soya.path.append(os.path.join(os.path.dirname(sys.argv[0]), "data"))
 scene = soya.World()
@@ -146,7 +146,7 @@ class LaserCamera(soya.Camera):
 		
 	def begin_round(self):
 		soya.Camera.begin_round(self)
-		events = soya.process_event()
+		events = soya.MAIN_LOOP.events
 		
 		for evenement in soya.coalesce_motion_event(events) :
 			# mouvement de la souris

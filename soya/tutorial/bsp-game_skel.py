@@ -58,7 +58,7 @@ class KeyboardController:
 		
 	def next(self):
 		jump = 0
-		for event in soya.process_event():
+		for event in soya.MAIN_LOOP.events:
 			if   event[0] == sdlconst.KEYDOWN:
 				if   (event[1] == sdlconst.K_q) or (event[1] == sdlconst.K_ESCAPE):
 					sys.exit() # Quit the game

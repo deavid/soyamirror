@@ -44,7 +44,7 @@ class Cursor(soya.Body):
 		
 		# Processes the events
 		
-		for event in soya.process_event():
+		for event in soya.MAIN_LOOP.events:
 			
 			if event[0] == soya.sdlconst.MOUSEMOTION:
 				self.mouse_pos = camera.coord2d_to_3d(event[1], event[2], -15.0)

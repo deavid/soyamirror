@@ -50,7 +50,7 @@ class CaterpillarHead(soya.Body):
 		
 		# Loops over all Soya / SDL events.
 		
-		for event in soya.process_event():
+		for event in soya.MAIN_LOOP.events:
 			
 			# Checks for mouse motion events, and store the mouse cursor X, Y coordinates.
 			

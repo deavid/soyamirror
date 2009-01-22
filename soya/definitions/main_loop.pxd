@@ -21,6 +21,8 @@ cdef class MainLoop:
 	cdef                 _next_round_tasks, _return_value
 	cdef                 _scenes
 	cdef                 _events
+	cdef                 _raw_events
+	cdef                 _queued_events
 	cdef public   double round_duration, min_frame_duration
 	cdef readonly double fps
 	cdef public   int    running

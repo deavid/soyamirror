@@ -47,7 +47,7 @@ class Input(widget.Label):
 	 widget.Label.__init__(self,master,text,align,color,font,resize_style) 
 
  def widget_begin_round(self):
-	 for event in soya.process_event():
+	 for event in soya.MAIN_LOOP.events:
 		 self.process_event(event) 
 
  def process_event(self,event):
@@ -80,7 +80,7 @@ class PasswordInput(widget.Label):
 	 widget.Label.__init__(self,master,text,align,color,font,resize_style) 
 
  def widget_begin_round(self):
-	 for event in soya.process_event():
+	 for event in soya.MAIN_LOOP.events:
 		 self.process_event(event) 
 
  def process_event(self,event):
@@ -220,7 +220,7 @@ class EffectChoice(EffectWidget,widget.ChoiceList):
  def widget_begin_round(self):
 	 if not self.faded:
 		 widget.ChoiceList.widget_begin_round(self)
-		 for event in soya.process_event():
+		 for event in soya.MAIN_LOOP.events:
 			 self.process_event(event) 
 
  def widget_advance_time(self,proportion):

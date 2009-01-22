@@ -119,30 +119,6 @@ It defaults to the first Camera you create."""
 	_soya.set_root_widget(widget)
 	
 
-def coalesce_motion_event(events):
-	"""coalesce_motion_event(events) -> sequence
-
-Prunes from EVENTS all mouse motion events except the last one.
-This is usefull since only the last one is usually releavant (Though
-be carrefull if you use the relative mouse coordinate !).
-
-EVENTS should be a list of events, as returned by soya.process_event().
-The returned list has the same structure."""
-	import soya.sdlconst
-	
-	events = list(events)
-	events.reverse()
-	
-	def keep_last(event):
-		if event[0] == soya.sdlconst.MOUSEMOTION:
-			if keep_last.last_found: return 0
-			else: keep_last.last_found = 1
-		return 1
-	keep_last.last_found = 0
-	
-	events = filter(keep_last, events)
-	events.reverse()
-	return events
 
 
 DATADIR = os.path.join(os.path.dirname(__file__), "data")
