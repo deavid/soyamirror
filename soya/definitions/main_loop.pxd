@@ -18,7 +18,9 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 cdef class MainLoop:
-	cdef                 _next_round_tasks, _return_value
+	cdef                 _next_round_tasks
+	cdef                 _round_tasks
+	cdef                 _return_value
 	cdef                 _scenes
 	cdef                 _events
 	cdef                 _raw_events

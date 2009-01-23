@@ -37,6 +37,9 @@ Interesting attributes:
 
  - running (read only): true if the MainLoop is idling (=running).
 
+ - round_tasks: a list of callable (taking no arg) called at the very beginning of each round
+                (betwenn event processing and begin_round call)
+
  - next_round_tasks: a list of callable (taking no arg) that will be called once, just
 	 after the beginning of the next round.
 
@@ -75,6 +78,10 @@ Interesting attributes:
 	property next_round_tasks:
 		def __get__(self):
 			return self._next_round_tasks
+
+	property round_tasks:
+		def __get__(self):
+			return self._round_tasks
 		
 	property return_value:
 		def __get__(self):
@@ -84,6 +91,7 @@ Interesting attributes:
 		"""MainLoop(scene1, scene2,...) -> MainLoop
 
 Creates a new main_loop for scenes SCENE1, SCENE2,...."""
+		self._round_tasks       = []
 		self._next_round_tasks  = []
 		self.fps                = 0.0
 		self.running            = 0
@@ -236,6 +244,7 @@ Called by MainLoop.main_loop when a new round begins; default implementation del
 		self._queued_events = []
 		self._raw_events.extend(_process_event())
 		self._events = _coalesce_motion_event(self._raw_events)
+		for task in self._round_tasks: task()
 		for item in MAIN_LOOP_ITEMS: item.begin_round()
 		for scene in self._scenes: scene.begin_round()
 		if root_widget: root_widget.widget_begin_round()
