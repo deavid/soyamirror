@@ -46,8 +46,8 @@ Creates and returns a Soya image from PIL image PIL_IMAGE."""
 	image.pixels = pil_image.tostring()
 	return image
 
-def screenshot(filename = None, int x = 0, int y = 0, int width = 0, int height = 0):
-	"""screenshot(filename = None, x = 0, y = 0, width = soya.get_screen_width(), height = soya.get_screen_height()) -> PIL.Image.Image
+def screenshot(filename = None, int x = 0, int y = 0, int width = 0, int height = 0, use_back_buffer=False):
+	"""screenshot(filename = None, x = 0, y = 0, width = soya.get_screen_width(), height = soya.get_screen_height(), use_back_buffer=False) -> PIL.Image.Image
 
 Take a screenshot of the soya rendering screen, and return it as a PIL image object.
 If given, the image is saved under FILENAME.
@@ -56,16 +56,21 @@ an MainLoop)."""
 	import PIL.Image
 	cdef GLubyte* pixels
 	cdef int      size
+	cdef int      gl_buffer
+	if use_back_buffer:
+		gl_buffer = GL_BACK
+	else:
+		gl_buffer = GL_FRONT
 	width  = width  or renderer.screen_width
 	height = height or renderer.screen_height
 	size   = 3 * width * height
 	pixels = <GLubyte*> malloc(size * sizeof(GLubyte))
-	glReadBuffer(GL_FRONT)
+	glReadBuffer(gl_buffer)
 	glReadPixels(x, y, width, height, GL_RGB, GL_UNSIGNED_BYTE, pixels)
 	image = PIL.Image.fromstring("RGB", (width, height), PyString_FromStringAndSize(<char*> pixels, size))
 	image = image.transpose(PIL.Image.FLIP_TOP_BOTTOM)
 	free(pixels)
-	if not filename is None: image.save(filename)
+	if filename is not None: image.save(filename)
 	return image
 
 
