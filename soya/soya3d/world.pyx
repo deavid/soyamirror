@@ -548,7 +548,10 @@ Called (by the main_loop) when a new round begins; default implementation calls 
 		if self._option & WORLD_HAS_ODE:
 			#print "Gonna Step"
 			#print len(self._contact_group), "contacts this round"
-			dWorldQuickStep(self._OdeWorldID,soya.MAIN_LOOP.round_duration)
+			if self._option & WORLD_ODE_USE_QUICKSTEP:
+				dWorldQuickStep(self._OdeWorldID, soya.MAIN_LOOP.round_duration)
+			else:
+				dWorldStep(self._OdeWorldID, soya.MAIN_LOOP.round_duration)
 			#print "Have  Step"
 			self._contact_group.empty()
 			#print "Have Clean"
@@ -592,7 +595,7 @@ trees, cell-shading or shadow)."""
 	cdef void _activate_ode_world(self):
 		if not (self._option & WORLD_HAS_ODE):
 			self._OdeWorldID = dWorldCreate()
-			self._option = self._option | WORLD_HAS_ODE
+			self._option = self._option | WORLD_HAS_ODE | WORLD_ODE_USE_QUICKSTEP
 
 	cdef void _deactivate_ode_world(self):
 		if self._option & WORLD_HAS_ODE:
@@ -674,6 +677,27 @@ trees, cell-shading or shadow)."""
 			return dWorldGetCFM(self._OdeWorldID)
 	
 		
+	property use_quickstep:
+		"""Choose the use Standard or QuickStep resolution. Default to QuickStep
+
+		QuickStep takes time on the order of m*N and memory on the order of
+		m, where m is the total number of constraint rows and N is the number
+		of iterations.
+
+		Standard uses a "big matrix" method that takes time on the order of m^3
+		and memory on the order of m^2, where m is the total number of
+		constraint rows.
+		"""
+		def __set__(self, use_quickstep):
+			if not (self._option & WORLD_HAS_ODE): self._activate_ode_world()
+			if use_quickstep:
+				self._option = self._option | WORLD_ODE_USE_QUICKSTEP
+			else:
+				self._option = self._option & ~WORLD_ODE_USE_QUICKSTEP
+
+		def __get__(self):
+			if not (self._option & WORLD_HAS_ODE): return None
+			return self._option & WORLD_ODE_USE_QUICKSTEP
 		
 	property quickstep_num_iterations:
 		"""setQuickStepNumIterations(num)
