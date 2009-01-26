@@ -1,4 +1,3 @@
-
 * Jul 2002 : Soya3D 0.1
   * First release
 
@@ -323,3 +322,17 @@
   * Bugfixes:
     * When re-starting a MainLoop, define it as the current MainLoop
       (aka. soya.MAIN_LOOP)
+
+* January 2009 :
+    * ODE 10 compatibility (required)
+    * New collide property for lazer.
+    * Quiet mode for soya initialisation and quit
+    * New event management system. round event are now stored in
+      main_loop.event and main_loop.raw_event.
+    * New round_task attribut for main_loop.
+    * Allow screenshot from backbuffer.
+    * Allow to use WorldStep instead of WorldQuickStep for ODE iteration.
+    * Bugfixes
+      * Fix delta_x and delta_y in coalesced event
+      * Fix AngularMotorJoint API
+      * soya initialisation now write in the common stdout and stderr
