@@ -664,8 +664,11 @@ It also resets the cycle animation time : i.e. cycles will restart from their be
 		def __set__(self,_Vector vel):
 			cdef float v[3]
 			if not (self._option & BODY_HAS_ODE): self._activate_ode_body()
-			vel._into(self._ode_parent, v)
-			dBodySetLinearVel(self._OdeBodyID, v[0], v[1], v[2])
+			if vel is None:
+				dBodySetLinearVel(self._OdeBodyID, 0, 0, 0)
+			else:
+				vel._into(self._ode_parent, v)
+				dBodySetLinearVel(self._OdeBodyID, v[0], v[1], v[2])
 
 
 		def __get__(self):
@@ -686,8 +689,11 @@ It also resets the cycle animation time : i.e. cycles will restart from their be
 			cdef float v[3]
 			if not (self._option & BODY_HAS_ODE):
 				self._activate_ode_body()
-			vel._into(self._ode_parent, v)
-			dBodySetAngularVel(self._OdeBodyID, v[0], v[1], v[2])
+			if vel is None:
+				dBodySetAngularVel(self._OdeBodyID, 0, 0, 0)
+			else:
+				vel._into(self._ode_parent, v)
+				dBodySetAngularVel(self._OdeBodyID, v[0], v[1], v[2])
 
 		def __get__(self):
 			"""getAngularVel() -> 3-tuple
@@ -813,8 +819,11 @@ It also resets the cycle animation time : i.e. cycles will restart from their be
 			cdef float f[3]
 			if not (self._option & BODY_HAS_ODE):
 				self._activate_ode_body()
-			force._into(self._ode_parent, f)
-			dBodySetForce(self._OdeBodyID, f[0], f[1], f[2])
+			if force is None:
+				dBodySetForce(self._OdeBodyID, 0, 0, 0)
+			else:
+				force._into(self._ode_parent, f)
+				dBodySetForce(self._OdeBodyID, f[0], f[1], f[2])
 
 	property torque:
 	# getTorque
@@ -830,16 +839,19 @@ It also resets the cycle animation time : i.e. cycles will restart from their be
 			return Vector(self._ode_parent,f[0],f[1],f[2])
 			# setTorque
 		def __set__(self,_Vector torque):
-				"""setTorque(t)
+			"""setTorque(t)
 		
-				Set the body torque accumulation vector.
+			Set the body torque accumulation vector.
 		
-				@param t: Torque
-				@type t: 3-tuple of floats
-				"""
-				cdef float t[3]
-				if not (self._option & BODY_HAS_ODE):
-					self._activate_ode_body()
+			@param t: Torque
+			@type t: 3-tuple of floats
+			"""
+			cdef float t[3]
+			if not (self._option & BODY_HAS_ODE):
+				self._activate_ode_body()
+			if torque is None:
+				dBodySetTorque(self._OdeBodyID, 0, 0, 0)
+			else:
 				torque._into(self._ode_parent, t)
 				dBodySetTorque(self._OdeBodyID, t[0], t[1], t[2])
 
