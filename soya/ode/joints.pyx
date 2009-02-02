@@ -275,6 +275,8 @@ cdef class _Joint:
 					return self._getParam(ParamLoStop)
 
 			def __set__(self, dReal value):
+					if value is None:
+						value = -dInfinity
 					self._setParam(ParamLoStop, value)
 	
 	property hi_stop:
@@ -282,6 +284,8 @@ cdef class _Joint:
 					return self._getParam(ParamHiStop)
 
 			def __set__(self, dReal value):
+					if value is None:
+						value = dInfinity
 					self._setParam(ParamHiStop, value)
 	
 	property velocity:
@@ -349,10 +353,10 @@ cdef class _Joint:
 	
 	property lo_stop2:
 			def __get__(self):
-					return self._getParam(ParamLoStop)
+					return self._getParam(ParamLoStop2)
 
 			def __set__(self, dReal value):
-					self._setParam(ParamLoStop, value)
+					self._setParam(ParamLoStop2, value)
 	
 	property hi_stop2:
 			def __get__(self):
