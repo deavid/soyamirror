@@ -5,6 +5,8 @@ cdef class _Geom:
 			space.geoms.append(self)
 		self._create()
 		dGeomSetData(self._OdeGeomID, <void *>self)
+		self.bounce = 0
+		self.grip = dInfinity
 		
 	
 	cdef _create(self):
@@ -76,6 +78,11 @@ cdef class _Geom:
 			return self._bounce
 		def __set__(self,float value):
 			self._bounce = value
+	property grip:
+		def __get__(self):
+			return self._grip
+		def __set__(self,float value):
+			self._grip = value
 		
 cdef class _PlaceableGeom(_Geom):
 	def __init__(_PlaceableGeom self,_Body body):

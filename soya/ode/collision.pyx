@@ -77,27 +77,29 @@ def collide(_Geom geom1, _Geom geom2, int max_contacts=8):
 	
 	if max_contacts < 1 or max_contacts > 150:
 			raise ValueError, "max_contacts must be between 1 and 150"
-	
-	n = dCollide(geom1._OdeGeomID, geom2._OdeGeomID, max_contacts, c, sizeof(dContactGeom))
+	# WTH is n ?
+	nb_contact = dCollide(geom1._OdeGeomID, geom2._OdeGeomID,
+	                      max_contacts, c, sizeof(dContactGeom))
 	res = []
 	body = geom1.body
 	if body is None:
 		body = geom2.body
 	root = body.ode_parent
-	if n:
-		bounce = (geom1._bounce+geom2._bounce)/2.
-	for i from 0 <= i < n:
-			cont = Contact(bounce=bounce,ode_root=root)
-			cont._contact.geom = c[i]
-			res.append(cont)
+	if nb_contact:
+		bounce = (geom1._bounce + geom2._bounce)/2.
+		grip = (geom1._grip * geom2._grip)
+	for i from 0 <= i < nb_contact:
+		cont = Contact(bounce=bounce,mu=grip, ode_root=root)
+		cont._contact.geom = c[i]
+		res.append(cont)
 
 	# Set collision flag on trimeshes when they're colliding with one
 	# another so that they don't update their last transformations
 	# This could probably be done more genericly in a collision notification
 	# method.
 	#if n and isinstance(geom1, _TriMesh) and isinstance(geom2, _TriMesh):
-	#		(<_TriMesh>geom1)._colliding = 1
-	#		(<_TriMesh>geom2)._colliding = 1
+	#	(<_TriMesh>geom1)._colliding = 1
+	#	(<_TriMesh>geom2)._colliding = 1
 
 	return res
 

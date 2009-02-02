@@ -22,10 +22,11 @@ cdef class Contact:
 		def __cinit__(self, *args, **kw):
 				self._contact.surface.mode = ContactBounce
 				self._contact.surface.mu   = dInfinity
-
 				self._contact.surface.bounce = 0
-		def __init__(self,bounce=0,_World ode_root=None):
+		def __init__(self,bounce=0, mu=dInfinity,
+		             _World ode_root=None):
 			self._contact.surface.bounce = bounce
+			self._contact.surface.mu = mu
 			self_ode_root = ode_root
 				
 		def __getitem__(self,index):

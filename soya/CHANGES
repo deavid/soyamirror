@@ -332,6 +332,8 @@
     * New round_task attribut for main_loop.
     * Allow screenshot from backbuffer.
     * Allow to use WorldStep instead of WorldQuickStep for ODE iteration.
+    * Allow None as angular_velocity, linear_velocity, torque, or force.
+    * Allow None as hi_stop, lo_stop
     * Bugfixes
       * Fix delta_x and delta_y in coalesced event
       * Fix AngularMotorJoint API
