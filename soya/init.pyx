@@ -405,7 +405,7 @@ def set_use_unicode(state):
 def process_event():
 	"""Deprecated, see MainLoop.events insteads"""
 	warn("process_event is deprecated, use MainLoop's events attributs instead",
-	     DeprecationWarning, stacklevel=2)
+	     DeprecationWarning, stacklevel=1)
 	main_loop = soya.MAIN_LOOP
 	if hasattr(main_loop,"raw_events"):
 		return main_loop.raw_events
