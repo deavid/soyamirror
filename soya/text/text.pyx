@@ -63,7 +63,13 @@ cdef class _Font:
 		
 		self._width         = width
 		self._height        = height + 4
-		self._pixels_height = -1 # Needed, because if the first glyph generated is " " (with a height of 0), the texture won't be resized, and OpenGL doesn't accept a texture with a zero dimension.
+		self._pixels_height = -1
+		# Needed, because if the first glyph generated is " " (with a height of 0),
+		# the texture won't be resized, and OpenGL doesn't accept a texture with a
+		# zero dimension.
+		# /!\ this field is also used to check initialisation of the font
+		#    -1 mean not uninitialized
+		#     0 mean font inited but not pixel height
 		self._glyphs        = {}
 		self.filename       = filename
 		
@@ -79,32 +85,40 @@ initialized to make OpenGL calls."""
 		# init FreeType
 		global library_inited
 		if library_inited == 0:
-			if FT_Init_FreeType(&library): raise ImportError("Cannot init FreeType")
+			if FT_Init_FreeType(&library):
+				raise ImportError("Cannot init FreeType")
 			library_inited = 1
-		
+
 		# init FreeType face
-		if FT_New_Face(library, self.filename, 0, &self._face): raise ValueError("Cannot open font file %s", self.filename)
-		if FT_Set_Char_Size(self._face, 0, self._face.units_per_EM * 64, 0, 0): raise ValueError("Cannot set char size")
-		
-		if self._face.face_flags & FT_FACE_FLAG_SCALABLE: FT_Set_Pixel_Sizes(self._face, self._width, self._height)
-		else:                                             FT_Set_Pixel_Sizes(self._face, 0    , 0)
-		
+		if FT_New_Face(library, self.filename, 0, &self._face):
+			raise ValueError("Cannot open font file %s", self.filename)
+
+		if FT_Set_Char_Size(self._face, 0, self._face.units_per_EM * 64, 0, 0):
+			raise ValueError("Cannot set char size")
+
+		if self._face.face_flags & FT_FACE_FLAG_SCALABLE:
+			FT_Set_Pixel_Sizes(self._face, self._width, self._height)
+		else:
+			FT_Set_Pixel_Sizes(self._face, 0    , 0)
+
 		# As of FreeType 2.1: only a UNICODE charmap is automatically activated.
 		# If no charmap is activated automatically, just use the first one.
 		# BUT I NEED A UNICODE CHARMAP !!!!!
 		#if (self._face.charmap == 0) and (self._face.num_charmaps > 0):
 		#  FT_Select_Charmap(self._face, self._face.charmaps[0].encoding)
-		
-		#self._ascender  = self._scale * (<float> self._face.ascender )
-		#self._descender = self._scale * (<float> self._face.descender)
+	
+		# XXX Why 64.0 ?
 		self._ascender  = (<float> self._face.size.metrics.ascender ) / 64.0
-		#self._descender = (<float> self._face.descender)
 		self._descender = (<float> self._face.size.metrics.descender) / 64.0
-		
+
+		if self._pixels_height <= -1:
+			self._pixels_height = 0
+
 	def __dealloc__(self):
-		FT_Done_Face(self._face)
-		glDeleteTextures(1, &(self._tex_id))
-		
+		if self._pixels_height > -1:
+			FT_Done_Face(self._face)
+			glDeleteTextures(1, &(self._tex_id))
+
 	cdef Glyph _get_glyph(self, char_):
 		cdef int   code
 		cdef Glyph glyph
@@ -112,25 +126,27 @@ initialized to make OpenGL calls."""
 		glyph = self._glyphs.get(code)
 		if glyph is None: glyph = self._glyphs[code] = self._gen_glyph(char_, code)
 		return glyph
-	
+
 	cdef _gen_glyph(self, char_, int code):
 		cdef int             glyph_index, j
 		cdef Glyph           glyph
 		cdef FT_Bitmap       bitmap
 		cdef int             g_height
-		
+
 		# Initialize if needed.
-		if self._pixels_height == -1: self._init()
-		
-		if self._rendering: glEnd(); self._rendering = 0
-		
+		if self._pixels_height <= 0:
+			self._init()
+
+		if self._rendering:
+			glEnd(); self._rendering = 0
+
 		glyph = Glyph(char_)
 		glyph_index = FT_Get_Char_Index(self._face, code)
-		
+
 		if FT_Load_Glyph(self._face, glyph_index, FT_LOAD_DEFAULT) != 0: raise ValueError("Glyph %s does not exist !" % glyph_index)
 		if self._face.glyph.format != FT_GLYPH_FORMAT_BITMAP:
 			FT_Render_Glyph(self._face.glyph, FT_RENDER_MODE_NORMAL)
-			
+
 		bitmap = self._face.glyph.bitmap
 		g_height = bitmap.rows
 		
