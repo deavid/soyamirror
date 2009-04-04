@@ -16,7 +16,6 @@ from soya import Vector
 
 
 soya.init("ode-collision-8-terrain",width=1024,height=768)
-soya.MAIN_LOOP.events
 soya.path.append(os.path.join(os.path.dirname(sys.argv[0]), "data"))
 
 print INTRO
