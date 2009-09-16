@@ -36,7 +36,7 @@ class MainLoop(soya.MainLoop):
 		""" resize all widgets and start the main_loop """
 		soya.root_widget.on_resize()
 
-		soya.MainLoop.main_loop(self)
+		return soya.MainLoop.main_loop(self)
 
 class TestMainLoop(unittest.TestCase):
 	def testCreate(self):
