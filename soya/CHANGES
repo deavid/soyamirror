@@ -338,3 +338,6 @@
       * Fix delta_x and delta_y in coalesced event
       * Fix AngularMotorJoint API
       * soya initialisation now write in the common stdout and stderr
+      * Fix font related segfault when soya wasn't initialised
+      * Fix Pudding MainLoop (thanks David Martinez)
+
