@@ -82,7 +82,7 @@ MACOSX_DEPLOYMENT_TARGET  = os.getenv('MACOSX_DEPLOYMENT_TARGET')
 try:
 	from Pyrex.Distutils import build_ext
 	USE_PYREX = 1
-except:
+except ImportError:
 	USE_PYREX = 0
 	print "No Pyrex found"
 
