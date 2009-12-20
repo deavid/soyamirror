@@ -26,9 +26,13 @@ cdef void collide_callback(void* data, dGeomID o1, dGeomID o2):
 		g2  = <object>gv2
 		contacts = collide(g1, g2)
 		if len(contacts):
-			geom = g1
-			body = geom.body
-			world = body.ode_parent
+			#print "collide_callback called (two obj collide %s, %s) and %d contacts found" % (repr(g1.body),repr(g2.body),len(contacts))
+			
+			if hasattr(g1.body,'ode_parent'):
+				world = g1.body.ode_parent
+			else:
+				world = g2.body.ode_parent
+				
 			contact_group = world._contact_group
 			if hasattr(g1.body,'hit'):
 				g1.body.hit(g2.body,contacts)
@@ -75,6 +79,7 @@ def collide(_Geom geom1, _Geom geom2, int max_contacts=8):
 	cdef int i, n
 	cdef Contact cont
 	
+	cdef long nb_contact
 	if max_contacts < 1 or max_contacts > 150:
 			raise ValueError, "max_contacts must be between 1 and 150"
 	# WTH is n ?
