@@ -463,17 +463,20 @@ cdef dColliderFn * _TerrainGetColliderFn(int gclass):
 #U#		pass
 
 
-cdef dGeomClass dTerrainGeomClass
 
-dTerrainGeomClass.bytes = 0
-dTerrainGeomClass.collider = _TerrainGetColliderFn
-dTerrainGeomClass.aabb = _TerrainGetAABB
-dTerrainGeomClass.aabb_test = NULL # Need to write this function
-dTerrainGeomClass.dtor = NULL
 		
 cdef int dTerrainClass
 
-dTerrainClass = dCreateGeomClass(&dTerrainGeomClass)
 
+cdef void geomterrain_init():
+	global dTerrainClass 
+	cdef dGeomClass dTerrainGeomClass
+
+	dTerrainGeomClass.bytes = 0
+	dTerrainGeomClass.collider = _TerrainGetColliderFn
+	dTerrainGeomClass.aabb = _TerrainGetAABB
+	dTerrainGeomClass.aabb_test = NULL # Need to write this function
+	dTerrainGeomClass.dtor = NULL	
+	dTerrainClass = dCreateGeomClass(&dTerrainGeomClass)
 
 
