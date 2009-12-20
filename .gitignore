@@ -1,0 +1,8 @@
+*.svn
+soya/build
+*~
+soya/_soya.c
+soya/config.pxd
+soya/config.pyx
+soya/opengl.c
+soya/sdlconst.c
