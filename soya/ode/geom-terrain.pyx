@@ -438,13 +438,17 @@ _terrain_ray = dCreateRay(NULL, 1.0)
 
 cdef void _TerrainGetAABB(dGeomID geom, dReal aabb[6]):
 		cdef _GeomTerrain geom_terrain
-		geom_terrain = <_GeomTerrain>dGeomGetData(geom)
+		cdef void* tmp_ptr
+		tmp_ptr = dGeomGetData(geom)
+		geom_terrain = <_GeomTerrain>tmp_ptr
 		geom_terrain._get_aabb(aabb)
 
 cdef int _TerrainCollide(dGeomID o1, dGeomID o2, int flags,
 										 dContactGeom *contact, int skip):
 		cdef _GeomTerrain geom_terrain
-		geom_terrain = <_GeomTerrain>dGeomGetData(o1)
+		cdef void* tmp_ptr
+		tmp_ptr = dGeomGetData(o1)
+		geom_terrain = <_GeomTerrain>tmp_ptr
 		return geom_terrain._collide(o1, o2, flags, contact, skip)
 
 

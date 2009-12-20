@@ -87,6 +87,7 @@ See World.raypick"""
 		cdef CoordSyst   coordsyst
 		cdef float*      d
 		cdef int         max
+		cdef void*       tmp_ptr
 		data = get_raypick_data()
 		
 		origin   ._out(data.root_data)
@@ -98,7 +99,8 @@ See World.raypick"""
 		max = items.nb
 		items.nb = 0
 		while items.nb < max:
-			obj = <_CObj> chunk_get_ptr(items)
+			tmp_ptr = chunk_get_ptr(items)
+			obj = <_CObj> tmp_ptr
 			if   isinstance(obj, _TreeModel):
 				(<_TreeModel> obj)._raypick_from_context(data, items)
 			elif isinstance(obj, _BSPWorld):
@@ -112,7 +114,8 @@ See World.raypick"""
 		max = data.raypicked.nb
 		data.raypicked.nb = 0
 		while data.raypicked.nb < max:
-			coordsyst = <CoordSyst> chunk_get_ptr(data.raypicked)
+			tmp_ptr = chunk_get_ptr(data.raypicked)
+			coordsyst = <CoordSyst> tmp_ptr
 			coordsyst.__raypick_data = -1
 			
 		return make_raypick_result(d, data.result, data.normal, data.result_coordsyst, p, v)
@@ -129,6 +132,7 @@ See World.raypick_b"""
 		cdef _CObj       obj
 		cdef CoordSyst   coordsyst
 		cdef int         result, max
+		cdef void*       tmp_ptr
 		data = get_raypick_data()
 		origin   ._out(data.root_data)
 		direction._out(&data.root_data[0] + 3)
@@ -139,7 +143,8 @@ See World.raypick_b"""
 		max = items.nb
 		items.nb = 0
 		while items.nb < max:
-			obj = <_CObj> chunk_get_ptr(items)
+			tmp_ptr = chunk_get_ptr(items) 
+			obj = <_CObj> tmp_ptr
 			if isinstance(obj, _TreeModel):
 				if (<_TreeModel> obj)._raypick_from_context_b(data, items): result = 1; break
 			elif isinstance(obj, _BSPWorld):
@@ -151,7 +156,8 @@ See World.raypick_b"""
 		max = data.raypicked.nb
 		data.raypicked.nb = 0
 		while data.raypicked.nb < max:
-			coordsyst = <CoordSyst> chunk_get_ptr(data.raypicked)
+			tmp_ptr = chunk_get_ptr(data.raypicked)
+			coordsyst = <CoordSyst> tmp_ptr
 			coordsyst.__raypick_data = -1
 			
 		return result
@@ -161,6 +167,7 @@ See World.raypick_b"""
 		cdef Chunk* items
 		cdef _CObj obj
 		cdef int max
+		cdef void* tmp_ptr
 		
 		items = self._items
 		if items.nb == 0:
@@ -169,6 +176,7 @@ See World.raypick_b"""
 		max = items.nb
 		items.nb = 0
 		while items.nb < max:
-			obj = <_CObj> chunk_get_ptr(items)
+			tmp_ptr = chunk_get_ptr(items)
+			obj = <_CObj> tmp_ptr
 			result.append(obj)
 		return result

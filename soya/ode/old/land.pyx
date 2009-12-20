@@ -404,13 +404,17 @@ _land_ray = dCreateRay(NULL, 1.0)
 
 cdef void LandGetAABB(dGeomID geom, dReal aabb[6]):
 		cdef _Land land
-		land = <_Land>dGeomGetData(geom)
+		cdef void* tmp_ptr
+		tmp_ptr = dGeomGetData(geom)
+		land = <_Land>tmp_ptr
 		land._get_aabb(aabb)
 
 cdef int LandCollide(dGeomID o1, dGeomID o2, int flags,
 										 dContactGeom *contact, int skip):
 		cdef _Land land
-		land = <_Land>dGeomGetData(o1)
+		cdef void* tmp_ptr
+		tmp_ptr = dGeomGetData(o1)
+		land = <_Land>tmp_ptr
 		return land._collide(o1, o2, flags, contact, skip)
 
 

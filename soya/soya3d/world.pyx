@@ -287,6 +287,7 @@ NORMAL is the normal of the object at the impact point.
 		cdef _World      root
 		cdef CoordSyst   coordsyst
 		cdef float*      d
+		cdef void*       tmp_ptr
 		data = get_raypick_data()
 		origin   ._out(data.root_data)
 		direction._out(&data.root_data[0] + 3)
@@ -302,7 +303,8 @@ NORMAL is the normal of the object at the impact point.
 		max = data.raypicked.nb
 		data.raypicked.nb = 0
 		while data.raypicked.nb < max:
-			coordsyst = <CoordSyst> chunk_get_ptr(data.raypicked)
+			tmp_ptr = chunk_get_ptr(data.raypicked)
+			coordsyst = <CoordSyst> tmp_ptr
 			coordsyst.__raypick_data = -1
 		return make_raypick_result(d, data.result, data.normal, data.result_coordsyst, p, v)
 	
@@ -334,6 +336,7 @@ CATEGORY is a 32 bit wide bitfield identifying witch categories the methode shou
 		cdef _World      root
 		cdef CoordSyst   coordsyst
 		cdef int         result
+		cdef void*       tmp_ptr
 		data = get_raypick_data()
 		origin   ._out(data.root_data)
 		direction._out(&data.root_data[0] + 3)
@@ -347,7 +350,8 @@ CATEGORY is a 32 bit wide bitfield identifying witch categories the methode shou
 		max = data.raypicked.nb
 		data.raypicked.nb = 0
 		while data.raypicked.nb < max:
-			coordsyst = <CoordSyst> chunk_get_ptr(data.raypicked)
+			tmp_ptr = chunk_get_ptr(data.raypicked)
+			coordsyst = <CoordSyst> tmp_ptr
 			coordsyst.__raypick_data = -1
 		return result
 	
