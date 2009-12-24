@@ -446,16 +446,18 @@ cdef class _SimpleModel(_Model):
 		cdef int     coord, texcoord, diffuse, emissive
 		cdef _Light  light
 		cdef _Vertex ivertex
+		cdef int     i
 		ivertex = vertex2ivertex[vertex]
 		
 		coord = 3 * ivertex2index[vertex2ivertex[vertex]]
-		
+
+
 		if self._option & MODEL_TEXCOORDS:
 			value[0] = vertex._tex_x
 			value[1] = vertex._tex_y
 			texcoord = self._register_value(value, 2)
 		else: texcoord = -1
-		
+
 		if self._option & MODEL_DIFFUSES:
 			if not vertex._diffuse is None:
 				value[0] = vertex._diffuse[0]
@@ -466,7 +468,7 @@ cdef class _SimpleModel(_Model):
 				memcpy(&value[0], &vertex._face._material._diffuse[0], 4 * sizeof(float))
 			diffuse = self._register_color(value)
 		else: diffuse = -1
-		
+
 		if self._option & MODEL_EMISSIVES:
 			if not vertex._emissive is None:
 				value[0] = vertex._emissive[0]
@@ -476,11 +478,11 @@ cdef class _SimpleModel(_Model):
 			else: # the face use emissive color, but not for this vertex. the default emissive is BLACK, i.e. no emission.
 				value[0] = value[1] = value[2] = 0.0
 				value[3] = 1.0
-				
+
 		elif lights:
 			value[0] = value[1] = value[2] = 0.0
 			value[3] = 1.0
-			
+
 		if lights: # Apply static lighting
 			for light in lights:
 				vertex._into(light, p)
@@ -489,24 +491,24 @@ cdef class _SimpleModel(_Model):
 				light._static_light_at(p, v, static_shadow, value)
 		if self._option & MODEL_EMISSIVES: emissive = self._register_color(value)
 		else: emissive = -1
-		
-		cdef int i
+
 		for i from 0 <= i < self._nb_vertices:
 			if                  ((self._vertex_coords   [i] == coord   )  and
 			((texcoord == -1) or (self._vertex_texcoords[i] == texcoord)) and
 			((diffuse  == -1) or (self._vertex_diffuses [i] == diffuse )) and
 			((emissive == -1) or (self._vertex_emissives[i] == emissive))): return i
-		
+
 		i = self._nb_vertices
 		self._nb_vertices = self._nb_vertices + 1
 		self._vertex_coords = <int*> realloc(self._vertex_coords, self._nb_vertices * sizeof(int))
 		self._vertex_coords[i] = coord
-		
+
 		if self._option & MODEL_TEXCOORDS: self._vertex_texcoords = <int*> realloc(self._vertex_texcoords, self._nb_vertices * sizeof(int)); self._vertex_texcoords[i] = texcoord
 		if self._option & MODEL_DIFFUSES : self._vertex_diffuses  = <int*> realloc(self._vertex_diffuses , self._nb_vertices * sizeof(int)); self._vertex_diffuses [i] = diffuse
 		if self._option & MODEL_EMISSIVES: self._vertex_emissives = <int*> realloc(self._vertex_emissives, self._nb_vertices * sizeof(int)); self._vertex_emissives[i] = emissive
+
 		return i
-		
+
 #     if texcoord != -1:
 #       self._vertex_texcoords = <int*> realloc(self._vertex_texcoords, self._nb_vertices * sizeof(int))
 #       self._vertex_texcoords[i] = texcoord
@@ -517,7 +519,7 @@ cdef class _SimpleModel(_Model):
 #       self._vertex_emissives = <int*> realloc(self._vertex_emissives, self._nb_vertices * sizeof(int))
 #       self._vertex_emissives[i] = emissive
 #     return i
-	
+			
 	cdef object _identify_vertices(self, faces, float angle):
 		"""Finds which vertices are at the same position, for vertex sharing capabilities.
 2 vertices are considered at the same position if the distance between them is > EPSILON,
