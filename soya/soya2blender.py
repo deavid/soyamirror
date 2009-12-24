@@ -1,5 +1,4 @@
 # -*- indent-tabs-mode: t -*-
-
 #!BPY
 """
 Name: 'Soya2Blender'
@@ -25,6 +24,7 @@ Tooltip: 'Import Soya worlds in Blender.'
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
+import os
 import soya
 import Blender
 
@@ -55,18 +55,15 @@ def import_soya_model(model):
 			# XXX TODO vertex color
 			
 			if i.material.texture:
-				face.image = Blender.Image.Load(i.material.texture.filename)
+				#print i.material.texture.filename
+				face.image = Blender.Image.Load(os.path.join(soya.path[0], "images", i.material.texture.filename))
 				
 			mesh.faces.append(face)
-			print face
 			
-	#obj = Blender.Object.New("Mesh")
-	#obj.link(mesh)
-	#Blender.Scene.getCurrent().link(obj)
 	Blender.NMesh.PutRaw(mesh)
+	
+	model.rotate_x(-90.0)
+	
+soya.path.append("/home/jiba/src/arkanae3")
 
-
-soya.path.append("/home/jiba/src/balazar")
-soya.path.append("/home/jiba/src/slune")
-
-import_soya_model(soya.World.get("echassien"))
+import_soya_model(soya.World.get("room_0_0"))
