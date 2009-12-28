@@ -1,5 +1,5 @@
-#LyX 1.5.4 created this file. For more info see http://www.lyx.org/
-\lyxformat 276
+#LyX 1.6.4 created this file. For more info see http://www.lyx.org/
+\lyxformat 345
 \begin_document
 \begin_header
 \textclass report
@@ -7,6 +7,7 @@
 \usepackage{ae,aecompl}
 \usepackage{hyperref}
 \end_preamble
+\use_default_options false
 \language english
 \inputencoding auto
 \font_roman default
@@ -17,10 +18,12 @@
 \font_osf false
 \font_sf_scale 100
 \font_tt_scale 100
+
 \graphics default
 \float_placement tp
 \paperfontsize default
 \spacing single
+\use_hyperref false
 \papersize a4paper
 \use_geometry true
 \use_amsmath 1
@@ -57,60 +60,129 @@
 \end_inset
 
 
-\newline
-\InsetSpace ~
+\begin_inset Newline newline
+\end_inset
 
-\newline
-\InsetSpace ~
 
-\newline
-\InsetSpace ~
+\begin_inset space ~
+\end_inset
 
-\newline
+
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
 
 \family sans
 \series bold
 \size giant
 The
-\newline
-\InsetSpace ~
+\begin_inset Newline newline
+\end_inset
 
-\newline
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
 (yet-in)
-\newline
-\InsetSpace ~
+\begin_inset Newline newline
+\end_inset
 
-\newline
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
 complete
-\newline
-\InsetSpace ~
+\begin_inset Newline newline
+\end_inset
 
-\newline
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
 guide
-\newline
-\InsetSpace ~
+\begin_inset Newline newline
+\end_inset
 
-\newline
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
 to
-\newline
-\InsetSpace ~
+\begin_inset Newline newline
+\end_inset
 
-\newline
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
 Soya 3D
 \family default
 \series default
 \size default
 
-\newline
-\InsetSpace ~
+\begin_inset Newline newline
+\end_inset
 
-\newline
-\InsetSpace ~
 
-\newline
-\InsetSpace ~
+\begin_inset space ~
+\end_inset
 
-\newline
+
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
 
 \size normal
 (also known as 
@@ -137,7 +209,8 @@ Jiba
 \end_layout
 
 \begin_layout Standard
-\begin_inset LatexCommand tableofcontents
+\begin_inset CommandInset toc
+LatexCommand tableofcontents
 
 \end_inset
 
@@ -159,8 +232,13 @@ Permission is granted to copy, distribute and/or modify this document under
  no Front-Cover Texts, and no Back-Cover Texts.
  A copy of the license is included in the soya/doc directory, and can also
  be found online on 
-\begin_inset LatexCommand url
-target "http://gnu.org"
+\begin_inset Flex URL
+status collapsed
+
+\begin_layout Plain Layout
+
+http://gnu.org
+\end_layout
 
 \end_inset
 
@@ -170,8 +248,13 @@ target "http://gnu.org"
 \begin_layout Standard
 The Yeti picture on the cover was drawn by Jean-noël Lafargue (jn (at) hyperbate
  (dot) com), and is available under the Free Art License (
-\begin_inset LatexCommand url
-target "http://artlibre.org/licence/lal/en/"
+\begin_inset Flex URL
+status collapsed
+
+\begin_layout Plain Layout
+
+http://artlibre.org/licence/lal/en/
+\end_layout
 
 \end_inset
 
@@ -256,8 +339,13 @@ bad leader
 
 \begin_layout Standard
 You can find more historical information on 
-\begin_inset LatexCommand htmlurl
-target "http://home.gna.org/oomadness/en/soya/history.html"
+\begin_inset Flex URL
+status collapsed
+
+\begin_layout Plain Layout
+
+http://home.gna.org/oomadness/en/soya/history.html
+\end_layout
 
 \end_inset
 
@@ -282,11 +370,12 @@ should
 Soya's goal #1 is to allow to develop as rapidly as possible
 \series default
  3D games and other 3D apps
-\newline
-(Rationale: Soya targets "amateur" developpers,
- who code during their limited free time! Moreover, rapid development allows
- to gain a precious time that can be re-invested in improving your code
- or testing your app.
+\begin_inset Newline newline
+\end_inset
+
+(Rationale: Soya targets "amateur" developpers, who code during their limited
+ free time! Moreover, rapid development allows to gain a precious time that
+ can be re-invested in improving your code or testing your app.
  For game, it leads to a better gameplay)
 \end_layout
 
@@ -296,10 +385,11 @@ Soya's goal #1 is to allow to develop as rapidly as possible
 Soya's goal #2 is to be as easy as possible to learn
 \series default
 , in particular for people with no 3D background at all
-\newline
-(Rationale: Soya
- is not a toy; to be easy to learn is only goal #2 since any newbie will,
- a day, not longer be a newbie)
+\begin_inset Newline newline
+\end_inset
+
+(Rationale: Soya is not a toy; to be easy to learn is only goal #2 since
+ any newbie will, a day, not longer be a newbie)
 \end_layout
 
 \begin_layout Itemize
@@ -308,7 +398,9 @@ Soya's goal #2 is to be as easy as possible to learn
 Despite its simplicity, Soya never sacrifices performance and speed
 \series default
 
-\newline
+\begin_inset Newline newline
+\end_inset
+
 (Rationale: speed is important for 3D game!)
 \end_layout
 
@@ -320,9 +412,10 @@ Soya's API does not necessarily fit to the mathematical, computational or
 \series default
 , e.g.
  Soya API does not require the use of matrices
-\newline
-(Rationale: math are not the
- natural way to represent 3D object.
+\begin_inset Newline newline
+\end_inset
+
+(Rationale: math are not the natural way to represent 3D object.
  Soya should be useable without an important mathematical background.
  However, Soya provides matrices, mainly for debug purpose)
 \end_layout
@@ -336,10 +429,11 @@ Soya relies a lot on Python facilities and modules
  saving 3D model is done through object serialization.
  As a consequence, Soya won't evolve toward a multi-language 3D engine and
  will stay Python-centred
-\newline
-(Rationale: Python modules ease the Soya development,
- but also the use of Soya, since they are already well-known to Python developer
-s)
+\begin_inset Newline newline
+\end_inset
+
+(Rationale: Python modules ease the Soya development, but also the use of
+ Soya, since they are already well-known to Python developers)
 \end_layout
 
 \begin_layout Itemize
@@ -348,7 +442,9 @@ s)
 Soya has plenty of dependencies
 \series default
 
-\newline
+\begin_inset Newline newline
+\end_inset
+
 (Rationale: any good OS has a package system tools today)
 \end_layout
 
@@ -358,7 +454,9 @@ Soya has plenty of dependencies
 Soya always assumes by default the most common usecase
 \series default
 
-\newline
+\begin_inset Newline newline
+\end_inset
+
 (Rationale: doing so lead to a substencial time gain)
 \end_layout
 
@@ -369,11 +467,12 @@ Soya is an "atypic" 3D engine and relies on a certain number of controversal
  choices
 \series default
  that are somehow debatable ; however, most of these choices are deliberate
-\newline
-(Rati
-onale: Soya should be seen as a "research project" aiming at "a new way
- for 3D" ; the objective is not to satisfy anyone, but to be the ideal 3D
- engine for a few persons.
+\begin_inset Newline newline
+\end_inset
+
+(Rationale: Soya should be seen as a "research project" aiming at "a new
+ way for 3D" ; the objective is not to satisfy anyone, but to be the ideal
+ 3D engine for a few persons.
  Python does similarly)
 \end_layout
 
@@ -402,8 +501,13 @@ help(soya.Body)
 
  in a Python interpreter.
  You can also browse the doc online at 
-\begin_inset LatexCommand htmlurl
-target "http://home.gna.org/oomadness/en/soya/pydoc.html"
+\begin_inset Flex URL
+status collapsed
+
+\begin_layout Plain Layout
+
+http://home.gna.org/oomadness/en/soya/pydoc.html
+\end_layout
 
 \end_inset
 
@@ -441,8 +545,13 @@ Getting help
 \begin_layout Standard
 You may ask for help either on the Soya's mailing list (soya-user@gna.org,
  suscribe from 
-\begin_inset LatexCommand htmlurl
-target "http://mail.gna.org/listinfo/soya-user"
+\begin_inset Flex URL
+status collapsed
+
+\begin_layout Plain Layout
+
+http://mail.gna.org/listinfo/soya-user
+\end_layout
 
 \end_inset
 
@@ -489,7 +598,8 @@ Setting data path.
 \family default
  above) is referred as <data>/ in this documentation; it is expected to
  contain several subdirectories (see section 
-\begin_inset LatexCommand ref
+\begin_inset CommandInset ref
+LatexCommand ref
 reference "cha:Managing-data"
 
 \end_inset
@@ -547,7 +657,10 @@ Soya 3D
 \end_layout
 
 \begin_layout Description
-width,\InsetSpace ~
+width,
+\begin_inset space ~
+\end_inset
+
 height the dimensions of the 3D screen (default to 640, 480).
 \end_layout
 
@@ -570,7 +683,8 @@ e.g.
 
 \emph default
  with PyGame, see section 
-\begin_inset LatexCommand ref
+\begin_inset CommandInset ref
+LatexCommand ref
 reference "sec:PyGame"
 
 \end_inset
@@ -583,7 +697,8 @@ sound is true to initialize 3D sound support (default to false for backward
  compatibility).
  There are other sound-related arguments, which are discussed in section
  
-\begin_inset LatexCommand ref
+\begin_inset CommandInset ref
+LatexCommand ref
 reference "sec:Sound-related-init-parameters"
 
 \end_inset
@@ -613,7 +728,7 @@ wide false
 sideways false
 status open
 
-\begin_layout Standard
+\begin_layout Plain Layout
 \noindent
 \align center
 \begin_inset Graphics
@@ -625,11 +740,12 @@ status open
 
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 \begin_inset Caption
 
-\begin_layout Standard
-\begin_inset LatexCommand label
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
 name "cap:Soya's-basic-classes"
 
 \end_inset
@@ -649,7 +765,8 @@ Soya's basic classes (UML schema)
 
 \begin_layout Standard
 The UML schema of figure 
-\begin_inset LatexCommand ref
+\begin_inset CommandInset ref
+LatexCommand ref
 reference "cap:Soya's-basic-classes"
 
 \end_inset
@@ -659,7 +776,8 @@ reference "cap:Soya's-basic-classes"
 
 \begin_layout Description
 MainLoop is in charge of managing and regulating time (see section 
-\begin_inset LatexCommand ref
+\begin_inset CommandInset ref
+LatexCommand ref
 reference "sub:Time-management"
 
 \end_inset
@@ -723,7 +841,8 @@ abstract
  class, and Soya provides several Model subclasses (SimpleModel, AnimatedModel,...).
  Models are created either by exporting them from 3D modelers (see chapter
  
-\begin_inset LatexCommand ref
+\begin_inset CommandInset ref
+LatexCommand ref
 reference "cha:Blender-for-Soya"
 
 \end_inset
@@ -737,7 +856,8 @@ compiling
 \end_inset
 
  the World into a Model (see chapter 
-\begin_inset LatexCommand ref
+\begin_inset CommandInset ref
+LatexCommand ref
 reference "cha:Modeling"
 
 \end_inset
@@ -834,7 +954,8 @@ Most of the more advanced Soya classes derive from these.
 \begin_layout Description
 Hint: some people find odd that World inherits from Body...
  but this will make sense in section 
-\begin_inset LatexCommand ref
+\begin_inset CommandInset ref
+LatexCommand ref
 reference "sec:Attaching-objects-to-bones"
 
 \end_inset
@@ -856,7 +977,8 @@ folkloric
  (and archeologists :-).
  They are: Idler for MainLoop, Shape for Model, Volume for Body, Land for
  Terrain (see section 
-\begin_inset LatexCommand ref
+\begin_inset CommandInset ref
+LatexCommand ref
 reference "sec:Terrain"
 
 \end_inset
@@ -898,7 +1020,8 @@ i.e.
 
 \emph default
  the object Soya renders (see chapter 
-\begin_inset LatexCommand ref
+\begin_inset CommandInset ref
+LatexCommand ref
 reference "cha:Widget-systems"
 
 \end_inset
@@ -1029,7 +1152,8 @@ Loading Images, Materials and Models
 \begin_layout Standard
 Models are usually not created but loaded from a file (if you want to create
  Models directly from Soya, see chapter 
-\begin_inset LatexCommand ref
+\begin_inset CommandInset ref
+LatexCommand ref
 reference "cha:Modeling"
 
 \end_inset
@@ -1064,13 +1188,15 @@ auto-exporters
 \end_inset
 
 ; for more details on auto-exporters or data management, see chapter 
-\begin_inset LatexCommand ref
+\begin_inset CommandInset ref
+LatexCommand ref
 reference "cha:Managing-data"
 
 \end_inset
 
 , and for more details on using Blender with Soya, see chapter 
-\begin_inset LatexCommand ref
+\begin_inset CommandInset ref
+LatexCommand ref
 reference "cha:Blender-for-Soya"
 
 \end_inset
@@ -1230,7 +1356,8 @@ Moving, rotating and scaling methods belong to the CoordSyst class, and
  are inherited to all CoordSyst children classes.
  This section shows the most common Moving, rotating and scaling methods;
  for a complete reference see section 
-\begin_inset LatexCommand ref
+\begin_inset CommandInset ref
+LatexCommand ref
 reference "sub:CoordSyst"
 
 \end_inset
@@ -1268,7 +1395,8 @@ By default, a distance of 1.0 is considered as roughly one meter, although
 \end_layout
 
 \begin_layout Subsection
-\begin_inset LatexCommand label
+\begin_inset CommandInset label
+LatexCommand label
 name "sub:Moving"
 
 \end_inset
@@ -1429,7 +1557,8 @@ e.g.
 \end_layout
 
 \begin_layout Section
-\begin_inset LatexCommand label
+\begin_inset CommandInset label
+LatexCommand label
 name "sub:Time-management"
 
 \end_inset
@@ -1443,7 +1572,7 @@ wide false
 sideways false
 status open
 
-\begin_layout Standard
+\begin_layout Plain Layout
 \noindent
 \align center
 \begin_inset Graphics
@@ -1456,11 +1585,12 @@ status open
 
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 \begin_inset Caption
 
-\begin_layout Standard
-\begin_inset LatexCommand label
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
 name "cap:Time"
 
 \end_inset
@@ -1496,7 +1626,8 @@ Theorical duration
  is constant.
  The following three methods of CoordSysts are automatically called as time
  goes on (see figure 
-\begin_inset LatexCommand ref
+\begin_inset CommandInset ref
+LatexCommand ref
 reference "cap:Time"
 
 \end_inset
@@ -1554,7 +1685,8 @@ MainLoop is responsible for cutting the time as exposed above, and it does
  Then the MainLoop is started by calling MainLoop.main_loop, and it loops
  until you call MainLoop.stop(arg); arg will be the value returned by MainLoop.mai
 n_loop (see section 
-\begin_inset LatexCommand ref
+\begin_inset CommandInset ref
+LatexCommand ref
 reference "sub:MainLoop"
 
 \end_inset
@@ -1597,14 +1729,38 @@ class RotatingBody(soya.Body):
 
 \end_inset
 
-\InsetSpace ~
-\InsetSpace ~
-\InsetSpace ~
-\InsetSpace ~
-\InsetSpace ~
-\InsetSpace ~
-\InsetSpace ~
-\InsetSpace ~
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
 
 \begin_inset Graphics
 	filename /home/jiba/src/soya/tutorial/results/basic-2_1.jpeg
@@ -1613,14 +1769,38 @@ class RotatingBody(soya.Body):
 
 \end_inset
 
-\InsetSpace ~
-\InsetSpace ~
-\InsetSpace ~
-\InsetSpace ~
-\InsetSpace ~
-\InsetSpace ~
-\InsetSpace ~
-\InsetSpace ~
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
 
 \begin_inset Graphics
 	filename /home/jiba/src/soya/tutorial/results/basic-2_2.jpeg
@@ -1715,14 +1895,38 @@ class RandomlyMovingBody(soya.Body):
 
 \end_inset
 
-\InsetSpace ~
-\InsetSpace ~
-\InsetSpace ~
-\InsetSpace ~
-\InsetSpace ~
-\InsetSpace ~
-\InsetSpace ~
-\InsetSpace ~
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
 
 \begin_inset Graphics
 	filename /home/jiba/src/soya/tutorial/results/basic-3_1.jpeg
@@ -1731,14 +1935,38 @@ class RandomlyMovingBody(soya.Body):
 
 \end_inset
 
-\InsetSpace ~
-\InsetSpace ~
-\InsetSpace ~
-\InsetSpace ~
-\InsetSpace ~
-\InsetSpace ~
-\InsetSpace ~
-\InsetSpace ~
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
 
 \begin_inset Graphics
 	filename /home/jiba/src/soya/tutorial/results/basic-3_2.jpeg
@@ -1919,14 +2147,38 @@ soya.set_root_widget(camera)
 
 \end_inset
 
-\InsetSpace ~
-\InsetSpace ~
-\InsetSpace ~
-\InsetSpace ~
-\InsetSpace ~
-\InsetSpace ~
-\InsetSpace ~
-\InsetSpace ~
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
 
 \begin_inset Graphics
 	filename /home/jiba/src/soya/tutorial/results/nested-world-1_1.jpeg
@@ -1935,14 +2187,38 @@ soya.set_root_widget(camera)
 
 \end_inset
 
-\InsetSpace ~
-\InsetSpace ~
-\InsetSpace ~
-\InsetSpace ~
-\InsetSpace ~
-\InsetSpace ~
-\InsetSpace ~
-\InsetSpace ~
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
 
 \begin_inset Graphics
 	filename /home/jiba/src/soya/tutorial/results/nested-world-1_2.jpeg
@@ -2059,7 +2335,8 @@ scene.search_all(lambda coord_syst: isinstance(coord_syst, soya.Body)
 Finally, Worlds can be turned into Model using the to_model() method.
  Models are faster than Worlds, but they are immutable (this will be discussed
  in detail in chapter 
-\begin_inset LatexCommand ref
+\begin_inset CommandInset ref
+LatexCommand ref
 reference "cha:Modeling"
 
 \end_inset
@@ -2141,7 +2418,8 @@ print moon.distance_to(sun) # Notice that moon and sun are not defined in
 
 \begin_layout Standard
 Point provides the same moving methods than CoordSyst (see 
-\begin_inset LatexCommand ref
+\begin_inset CommandInset ref
+LatexCommand ref
 reference "sub:Moving"
 
 \end_inset
@@ -2253,7 +2531,8 @@ Like Point, Vector are not considered as
 
  and, in particular, they are not listed in World.children.
  Vector provides the same moving methods than CoordSyst (see 
-\begin_inset LatexCommand ref
+\begin_inset CommandInset ref
+LatexCommand ref
 reference "sub:Moving"
 
 \end_inset
@@ -2331,7 +2610,8 @@ Basic object reference
 \end_layout
 
 \begin_layout Subsection
-\begin_inset LatexCommand label
+\begin_inset CommandInset label
+LatexCommand label
 name "sub:MainLoop"
 
 \end_inset
@@ -2341,7 +2621,8 @@ MainLoop
 
 \begin_layout Standard
 MainLoop is in charge of managing and regulating time (see section 
-\begin_inset LatexCommand ref
+\begin_inset CommandInset ref
+LatexCommand ref
 reference "sub:Time-management"
 
 \end_inset
@@ -2355,9 +2636,18 @@ Constructor:
 \end_layout
 
 \begin_layout Description
-MainLoop(scene1,\InsetSpace ~
-scene2,...)\InsetSpace ~
-->\InsetSpace ~
+MainLoop(scene1,
+\begin_inset space ~
+\end_inset
+
+scene2,...)
+\begin_inset space ~
+\end_inset
+
+->
+\begin_inset space ~
+\end_inset
+
 MainLoop
 \end_layout
 
@@ -2420,8 +2710,14 @@ Noticeable methods are:
 \end_layout
 
 \begin_layout Description
-main_loop()\InsetSpace ~
-->\InsetSpace ~
+main_loop()
+\begin_inset space ~
+\end_inset
+
+->
+\begin_inset space ~
+\end_inset
+
 return_value starts the MainLoop.
  This method returns only after MainLoop.stop is called, and it returns the
  argument given to MainLoop.stop.
@@ -2444,7 +2740,8 @@ reset() rester the internal time counter.
 \begin_layout Description
 update() calling regularly MainLoop.update is an alternative to MainLoop.start
  (see section 
-\begin_inset LatexCommand ref
+\begin_inset CommandInset ref
+LatexCommand ref
 reference "sec:External-GUI-systems"
 
 \end_inset
@@ -2495,7 +2792,8 @@ abstract
  class, and Soya provides several Model classes (SimpleModel, AnimatedModel,...).
  Models are created either by exporting them from 3D modelers (see chapter
  
-\begin_inset LatexCommand ref
+\begin_inset CommandInset ref
+LatexCommand ref
 reference "cha:Blender-for-Soya"
 
 \end_inset
@@ -2509,7 +2807,8 @@ compiling
 \end_inset
 
  the World into a Model (see chapter 
-\begin_inset LatexCommand ref
+\begin_inset CommandInset ref
+LatexCommand ref
 reference "cha:Modeling"
 
 \end_inset
@@ -2527,10 +2826,17 @@ Models are not created by calling the Model constructor directly, they are
 \end_layout
 
 \begin_layout Description
-Model.get("filename")\InsetSpace ~
-->\InsetSpace ~
+Model.get("filename")
+\begin_inset space ~
+\end_inset
+
+->
+\begin_inset space ~
+\end_inset
+
 Model (see section 
-\begin_inset LatexCommand ref
+\begin_inset CommandInset ref
+LatexCommand ref
 reference "cha:Managing-data"
 
 \end_inset
@@ -2539,8 +2845,14 @@ reference "cha:Managing-data"
 \end_layout
 
 \begin_layout Description
-World.to_model()\InsetSpace ~
-->\InsetSpace ~
+World.to_model()
+\begin_inset space ~
+\end_inset
+
+->
+\begin_inset space ~
+\end_inset
+
 Model
 \end_layout
 
@@ -2558,7 +2870,8 @@ materials a tuples of the materials the model uses.
 \end_layout
 
 \begin_layout Subsection
-\begin_inset LatexCommand label
+\begin_inset CommandInset label
+LatexCommand label
 name "sub:CoordSyst"
 
 \end_inset
@@ -2581,10 +2894,16 @@ Constructor is:
 \end_layout
 
 \begin_layout Description
-CoordSyst(parent=None)\InsetSpace ~
-->\InsetSpace ~
-CoordSyst where parent is the World in which the
- CoordSyst will be added (use None for no addition).
+CoordSyst(parent=None)
+\begin_inset space ~
+\end_inset
+
+->
+\begin_inset space ~
+\end_inset
+
+CoordSyst where parent is the World in which the CoordSyst will be added
+ (use None for no addition).
 \end_layout
 
 \begin_layout Standard
@@ -2597,14 +2916,26 @@ parent the World that contains this CoordSyst (None if no such parent; read-only
 \end_layout
 
 \begin_layout Description
-x,\InsetSpace ~
-y,\InsetSpace ~
+x,
+\begin_inset space ~
+\end_inset
+
+y,
+\begin_inset space ~
+\end_inset
+
 z the X, Y and Z coordinates (defaults to 0.0, 0.0, 0.0).
 \end_layout
 
 \begin_layout Description
-scale_x,\InsetSpace ~
-scale_y,\InsetSpace ~
+scale_x,
+\begin_inset space ~
+\end_inset
+
+scale_y,
+\begin_inset space ~
+\end_inset
+
 scale_z the X, Y and Z scaling factors.
 \end_layout
 
@@ -2615,7 +2946,8 @@ visible if false, the object is not displayed (defaults to true).
 \begin_layout Description
 solid if false, the object is not taken into account for collision and raypickin
 g (see section 
-\begin_inset LatexCommand ref
+\begin_inset CommandInset ref
+LatexCommand ref
 reference "cha:Collision-detection-and-physics"
 
 \end_inset
@@ -2635,10 +2967,15 @@ auto_static if true, Soya automatically determines and sets the static attribute
 \end_layout
 
 \begin_layout Description
-matrix,\InsetSpace ~
-root_matrix,\InsetSpace ~
-inverted_root_matrix the underlying 4x4 matrix, the root
- matrix (
+matrix,
+\begin_inset space ~
+\end_inset
+
+root_matrix,
+\begin_inset space ~
+\end_inset
+
+inverted_root_matrix the underlying 4x4 matrix, the root matrix (
 \emph on
 i.e.
 
@@ -2648,9 +2985,11 @@ i.e.
 \end_layout
 
 \begin_layout Description
-left_handed true if the CoordSyst is left_handed (read only,\InsetSpace ~
-for debugging
- or hacking purpose only).
+left_handed true if the CoordSyst is left_handed (read only,
+\begin_inset space ~
+\end_inset
+
+for debugging or hacking purpose only).
 \end_layout
 
 \begin_layout Standard
@@ -2658,8 +2997,14 @@ Noticeable methods are:
 \end_layout
 
 \begin_layout Description
-get_root()\InsetSpace ~
-->\InsetSpace ~
+get_root()
+\begin_inset space ~
+\end_inset
+
+->
+\begin_inset space ~
+\end_inset
+
 World get the root parent of the CoordSyst (the scene).
 \end_layout
 
@@ -2675,25 +3020,43 @@ i.e.
 \end_layout
 
 \begin_layout Description
-position()\InsetSpace ~
-->\InsetSpace ~
-Point creates a Point in the same parent and at the same place
- than the CoordSyst.
+position()
+\begin_inset space ~
+\end_inset
+
+->
+\begin_inset space ~
+\end_inset
+
+Point creates a Point in the same parent and at the same place than the
+ CoordSyst.
 \end_layout
 
 \begin_layout Description
-distance_to(position)\InsetSpace ~
-->\InsetSpace ~
-float returns the distance between the CoordSyst
- and position (another CoordSyst or a Point).
+distance_to(position)
+\begin_inset space ~
+\end_inset
+
+->
+\begin_inset space ~
+\end_inset
+
+float returns the distance between the CoordSyst and position (another CoordSyst
+ or a Point).
 \end_layout
 
 \begin_layout Description
-vector_to(position)\InsetSpace ~
-->\InsetSpace ~
-Vector creates a Vector that starts at the CoordSyst
- position, and ends at the given position (another CoordSyst or a Point;
- aliased to the >> operator).
+vector_to(position)
+\begin_inset space ~
+\end_inset
+
+->
+\begin_inset space ~
+\end_inset
+
+Vector creates a Vector that starts at the CoordSyst position, and ends
+ at the given position (another CoordSyst or a Point; aliased to the >>
+ operator).
 \end_layout
 
 \begin_layout Description
@@ -2701,26 +3064,50 @@ set_identity() resets the CoordSyst position, orientation and scaling.
 \end_layout
 
 \begin_layout Description
-get_sphere()\InsetSpace ~
-->\InsetSpace ~
-(Point,\InsetSpace ~
-float) returns a sphere (defined by the center Point,
- and the radius) that includes all elements in the CoordSyst.
-\end_layout
+get_sphere()
+\begin_inset space ~
+\end_inset
 
-\begin_layout Description
-get_box()\InsetSpace ~
-->\InsetSpace ~
-(Point,\InsetSpace ~
-Point) returns a sphere (defined by two corners) that
+->
+\begin_inset space ~
+\end_inset
+
+(Point,
+\begin_inset space ~
+\end_inset
+
+float) returns a sphere (defined by the center Point, and the radius) that
  includes all elements in the CoordSyst.
 \end_layout
 
 \begin_layout Description
-interpolate(state1,\InsetSpace ~
-state2,\InsetSpace ~
-factor) moves, rotates and scales the CoordSyst
- by interpolating between the two CoordSystStates state1 and state2.
+get_box()
+\begin_inset space ~
+\end_inset
+
+->
+\begin_inset space ~
+\end_inset
+
+(Point,
+\begin_inset space ~
+\end_inset
+
+Point) returns a sphere (defined by two corners) that includes all elements
+ in the CoordSyst.
+\end_layout
+
+\begin_layout Description
+interpolate(state1,
+\begin_inset space ~
+\end_inset
+
+state2,
+\begin_inset space ~
+\end_inset
+
+factor) moves, rotates and scales the CoordSyst by interpolating between
+ the two CoordSystStates state1 and state2.
  factor indicates the weight of the two CoordSystStates (0.0 means state1,
  1.0 state2, and 0.5 half-way).
  XXX details interpolation in an other chapter; this feature is not yet
@@ -2728,8 +3115,14 @@ factor) moves, rotates and scales the CoordSyst
 \end_layout
 
 \begin_layout Description
-set_xyz(x,\InsetSpace ~
-y,\InsetSpace ~
+set_xyz(x,
+\begin_inset space ~
+\end_inset
+
+y,
+\begin_inset space ~
+\end_inset
+
 z) set the x, y and z attributes in a single call.
 \end_layout
 
@@ -2744,91 +3137,156 @@ add_vector(vector) translates the CoordSyst by the given Vector (aliased
 \end_layout
 
 \begin_layout Description
-add_mul_vector(k,\InsetSpace ~
-vector) translates the CoordSyst by k times the given Vector
- (equivalent to, but faster than, add_vector(k * vector)).
+add_mul_vector(k,
+\begin_inset space ~
+\end_inset
+
+vector) translates the CoordSyst by k times the given Vector (equivalent
+ to, but faster than, add_vector(k * vector)).
 \end_layout
 
 \begin_layout Description
-add_xyz(x,\InsetSpace ~
-y,\InsetSpace ~
-z) translates the CoordSyst by (x, y, z) (expressed in the CoordSyst
-'s parent coordinate system).
-\end_layout
+add_xyz(x,
+\begin_inset space ~
+\end_inset
 
-\begin_layout Description
-shift(x,\InsetSpace ~
-y,\InsetSpace ~
-z) translates the CoordSyst by (x, y, z) (expressed in the CoordSyst
+y,
+\begin_inset space ~
+\end_inset
+
+z) translates the CoordSyst by (x, y, z) (expressed in the CoordSyst's parent
  coordinate system).
 \end_layout
 
 \begin_layout Description
-rotate_x(angle),\InsetSpace ~
-rotate_vertical(angle) rotates arround the CoordSyst's parent
- X axis (like of you rotate the head vertically).
+shift(x,
+\begin_inset space ~
+\end_inset
+
+y,
+\begin_inset space ~
+\end_inset
+
+z) translates the CoordSyst by (x, y, z) (expressed in the CoordSyst coordinate
+ system).
 \end_layout
 
 \begin_layout Description
-rotate_y(angle),\InsetSpace ~
-rotate_lateral(angle) rotates arround the CoordSyst's parent
- Y axis (like of you rotate the head laterally).
+rotate_x(angle),
+\begin_inset space ~
+\end_inset
+
+rotate_vertical(angle) rotates arround the CoordSyst's parent X axis (like
+ of you rotate the head vertically).
 \end_layout
 
 \begin_layout Description
-rotate_z(angle),\InsetSpace ~
-rotate_incline(angle) rotates arround the CoordSyst's parent
- Z axis(like of you roll the head).
+rotate_y(angle),
+\begin_inset space ~
+\end_inset
+
+rotate_lateral(angle) rotates arround the CoordSyst's parent Y axis (like
+ of you rotate the head laterally).
 \end_layout
 
 \begin_layout Description
-turn_x(angle),\InsetSpace ~
-turn_vertical(angle) rotates arround the CoordSyst local X
+rotate_z(angle),
+\begin_inset space ~
+\end_inset
+
+rotate_incline(angle) rotates arround the CoordSyst's parent Z axis(like
+ of you roll the head).
+\end_layout
+
+\begin_layout Description
+turn_x(angle),
+\begin_inset space ~
+\end_inset
+
+turn_vertical(angle) rotates arround the CoordSyst local X axis.
+\end_layout
+
+\begin_layout Description
+turn_y(angle),
+\begin_inset space ~
+\end_inset
+
+turn_lateral(angle) rotates arround the CoordSyst local Y axis.
+\end_layout
+
+\begin_layout Description
+turn_z(angle),
+\begin_inset space ~
+\end_inset
+
+turn_incline(angle) rotates arround the CoordSyst local Z axis.
+\end_layout
+
+\begin_layout Description
+rotate(angle,
+\begin_inset space ~
+\end_inset
+
+a,
+\begin_inset space ~
+\end_inset
+
+b) rotates around the axis defined by the a and b position (CoordSysts or
+ Points).
+\end_layout
+
+\begin_layout Description
+rotate_axis(angle,
+\begin_inset space ~
+\end_inset
+
+axis) rotates around the axis defined by the origin (0, 0, 0) and the Vector
  axis.
 \end_layout
 
 \begin_layout Description
-turn_y(angle),\InsetSpace ~
-turn_lateral(angle) rotates arround the CoordSyst local Y
- axis.
+rotate_xyz(angle,
+\begin_inset space ~
+\end_inset
+
+a_x,
+\begin_inset space ~
+\end_inset
+
+a_y,
+\begin_inset space ~
+\end_inset
+
+a_z,
+\begin_inset space ~
+\end_inset
+
+b_x,
+\begin_inset space ~
+\end_inset
+
+b_y,
+\begin_inset space ~
+\end_inset
+
+b_z) rotates around the axis defined by (a_x, a_y, a_z) and (b_x, b_y, b_z).
 \end_layout
 
 \begin_layout Description
-turn_z(angle),\InsetSpace ~
-turn_incline(angle) rotates arround the CoordSyst local Z
- axis.
-\end_layout
+rotate_axis_xyz(angle,
+\begin_inset space ~
+\end_inset
 
-\begin_layout Description
-rotate(angle,\InsetSpace ~
-a,\InsetSpace ~
-b) rotates around the axis defined by the a and b position
- (CoordSysts or Points).
-\end_layout
+axis_x,
+\begin_inset space ~
+\end_inset
 
-\begin_layout Description
-rotate_axis(angle,\InsetSpace ~
-axis) rotates around the axis defined by the origin (0,
- 0, 0) and the Vector axis.
-\end_layout
+axis_y,
+\begin_inset space ~
+\end_inset
 
-\begin_layout Description
-rotate_xyz(angle,\InsetSpace ~
-a_x,\InsetSpace ~
-a_y,\InsetSpace ~
-a_z,\InsetSpace ~
-b_x,\InsetSpace ~
-b_y,\InsetSpace ~
-b_z) rotates around the axis defined
- by (a_x, a_y, a_z) and (b_x, b_y, b_z).
-\end_layout
-
-\begin_layout Description
-rotate_axis_xyz(angle,\InsetSpace ~
-axis_x,\InsetSpace ~
-axis_y,\InsetSpace ~
-axis_z) rotates around the axis defined
- by the origin (0, 0, 0) and the (axis_x, axis_y, axis_z) Vector.
+axis_z) rotates around the axis defined by the origin (0, 0, 0) and the
+ (axis_x, axis_y, axis_z) Vector.
 \end_layout
 
 \begin_layout Description
@@ -2852,46 +3310,87 @@ look_at_y(target) is similar to look_at, but makes the Y direction looking
 \end_layout
 
 \begin_layout Description
-scale(x,\InsetSpace ~
-y,\InsetSpace ~
+scale(x,
+\begin_inset space ~
+\end_inset
+
+y,
+\begin_inset space ~
+\end_inset
+
 z) scales the CoordSyst by x, y and z.
 \end_layout
 
 \begin_layout Description
-set_scale_factors(scale_x,\InsetSpace ~
-scale_y,\InsetSpace ~
-scale_z) sets the scale_x, scale_y and
- scale_z attributes in a single call.
+set_scale_factors(scale_x,
+\begin_inset space ~
+\end_inset
+
+scale_y,
+\begin_inset space ~
+\end_inset
+
+scale_z) sets the scale_x, scale_y and scale_z attributes in a single call.
 \end_layout
 
 \begin_layout Description
-get_dimension()\InsetSpace ~
-->\InsetSpace ~
-(float,\InsetSpace ~
-float,\InsetSpace ~
-float) returns the width, height and depth
- dimension of the CoordSyst.
+get_dimension()
+\begin_inset space ~
+\end_inset
+
+->
+\begin_inset space ~
+\end_inset
+
+(float,
+\begin_inset space ~
+\end_inset
+
+float,
+\begin_inset space ~
+\end_inset
+
+float) returns the width, height and depth dimension of the CoordSyst.
 \end_layout
 
 \begin_layout Description
-set_dimension(width,\InsetSpace ~
-height,\InsetSpace ~
-depth) scales the CoordSyst so as its dimensions
- are the given width, height and depth.
+set_dimension(width,
+\begin_inset space ~
+\end_inset
+
+height,
+\begin_inset space ~
+\end_inset
+
+depth) scales the CoordSyst so as its dimensions are the given width, height
+ and depth.
 \end_layout
 
 \begin_layout Description
-CoordSyst1\InsetSpace ~
-%\InsetSpace ~
-CoordSyst2\InsetSpace ~
-->\InsetSpace ~
-Point returns a Point at the same place than CoordSyst1,
- but in the CoordSyst2 coordinate system (the returned value may be CoordSyst1
- itself if it is already in CoordSyst2, or a newly created Point).
+CoordSyst1
+\begin_inset space ~
+\end_inset
+
+%
+\begin_inset space ~
+\end_inset
+
+CoordSyst2
+\begin_inset space ~
+\end_inset
+
+->
+\begin_inset space ~
+\end_inset
+
+Point returns a Point at the same place than CoordSyst1, but in the CoordSyst2
+ coordinate system (the returned value may be CoordSyst1 itself if it is
+ already in CoordSyst2, or a newly created Point).
 \end_layout
 
 \begin_layout Subsection
-\begin_inset LatexCommand label
+\begin_inset CommandInset label
+LatexCommand label
 name "sub:Body"
 
 \end_inset
@@ -2930,14 +3429,27 @@ Constructor is:
 \end_layout
 
 \begin_layout Description
-Body(parent=None,\InsetSpace ~
-model=None,\InsetSpace ~
-opt=None)\InsetSpace ~
-->\InsetSpace ~
-Body where parent and model are obvious,
- and opt is an optional argument passed to the model (for AnimatedModel,
- it can be a list of the mesh names to attach, see chapter 
-\begin_inset LatexCommand ref
+Body(parent=None,
+\begin_inset space ~
+\end_inset
+
+model=None,
+\begin_inset space ~
+\end_inset
+
+opt=None)
+\begin_inset space ~
+\end_inset
+
+->
+\begin_inset space ~
+\end_inset
+
+Body where parent and model are obvious, and opt is an optional argument
+ passed to the model (for AnimatedModel, it can be a list of the mesh names
+ to attach, see chapter 
+\begin_inset CommandInset ref
+LatexCommand ref
 reference "cha:Animated-models"
 
 \end_inset
@@ -2957,7 +3469,8 @@ model the Model the Body displays.
 deforms the list of Deform applied to the Body (default to an empty list;
  you should not modify the list directly, but use the add_deform and remove_defo
 rm methods; see section 
-\begin_inset LatexCommand ref
+\begin_inset CommandInset ref
+LatexCommand ref
 reference "sec:Model-Deforms"
 
 \end_inset
@@ -2968,7 +3481,8 @@ reference "sec:Model-Deforms"
 \begin_layout Standard
 The following attribute is only available if the Body's Model is an AnimatedMode
 l (see chapter 
-\begin_inset LatexCommand ref
+\begin_inset CommandInset ref
+LatexCommand ref
 reference "cha:Animated-models"
 
 \end_inset
@@ -2979,7 +3493,8 @@ reference "cha:Animated-models"
 \begin_layout Description
 attached_meshes the list of the attached meshes names (only with AnimatedModel,
  see chapter 
-\begin_inset LatexCommand ref
+\begin_inset CommandInset ref
+LatexCommand ref
 reference "cha:Animated-models"
 
 \end_inset
@@ -2993,7 +3508,8 @@ Noticeable methods are:
 
 \begin_layout Description
 add_deform(deform) applies the given Deform to the Body (see section 
-\begin_inset LatexCommand ref
+\begin_inset CommandInset ref
+LatexCommand ref
 reference "sec:Model-Deforms"
 
 \end_inset
@@ -3004,7 +3520,8 @@ reference "sec:Model-Deforms"
 \begin_layout Description
 remove_deform(deform) removes the given Deform from the Body (see section
  
-\begin_inset LatexCommand ref
+\begin_inset CommandInset ref
+LatexCommand ref
 reference "sec:Model-Deforms"
 
 \end_inset
@@ -3015,7 +3532,8 @@ reference "sec:Model-Deforms"
 \begin_layout Standard
 The following methods are only available if the Body's Model is an AnimatedModel
  (see chapter 
-\begin_inset LatexCommand ref
+\begin_inset CommandInset ref
+LatexCommand ref
 reference "cha:Animated-models"
 
 \end_inset
@@ -3024,30 +3542,46 @@ reference "cha:Animated-models"
 \end_layout
 
 \begin_layout Description
-attach(mesh_name1,\InsetSpace ~
+attach(mesh_name1,
+\begin_inset space ~
+\end_inset
+
 mesh_name2,...) attaches the meshes of the given names.
 \end_layout
 
 \begin_layout Description
-detach(mesh_name1,\InsetSpace ~
+detach(mesh_name1,
+\begin_inset space ~
+\end_inset
+
 mesh_name2,...) detaches the meshes of the given names.
 \end_layout
 
 \begin_layout Description
-is_attached(mesh_name)\InsetSpace ~
-->\InsetSpace ~
-int returns true if the mesh named mesh_name is
- attached.
+is_attached(mesh_name)
+\begin_inset space ~
+\end_inset
+
+->
+\begin_inset space ~
+\end_inset
+
+int returns true if the mesh named mesh_name is attached.
 \end_layout
 
 \begin_layout Description
-animate_blend_cycle(animation_name,\InsetSpace ~
-weight=1.0,\InsetSpace ~
-fade_in=0.2) plays the animation
- of the given name in cycle, with the given weight (usefull is several animation
-s are cycled simultaneously, which is possible), and fade_in is the time
- (in second) needed to reach the full weight, in order to avoid a brutal
- transition.
+animate_blend_cycle(animation_name,
+\begin_inset space ~
+\end_inset
+
+weight=1.0,
+\begin_inset space ~
+\end_inset
+
+fade_in=0.2) plays the animation of the given name in cycle, with the given
+ weight (usefull is several animations are cycled simultaneously, which
+ is possible), and fade_in is the time (in second) needed to reach the full
+ weight, in order to avoid a brutal transition.
  The animation will 
 \series bold
 not
@@ -3058,19 +3592,26 @@ not
 \end_layout
 
 \begin_layout Description
-animate_clear_cycle(animation_name,\InsetSpace ~
-fade_out=0.2) stops cycling the animation
- of the given name; fade_out is the time (in second) needed to stop the
- animation.
+animate_clear_cycle(animation_name,
+\begin_inset space ~
+\end_inset
+
+fade_out=0.2) stops cycling the animation of the given name; fade_out is
+ the time (in second) needed to stop the animation.
 \end_layout
 
 \begin_layout Description
-animate_execute_action(animation_name,\InsetSpace ~
-fade_in=0.2,\InsetSpace ~
-fade_out=0.2) plays the
- animation of the given name once; fade_in and fade_out are the time (in
- second) needed to reach full weight, and to stop the animation, in order
- to avoid brutal transitions.
+animate_execute_action(animation_name,
+\begin_inset space ~
+\end_inset
+
+fade_in=0.2,
+\begin_inset space ~
+\end_inset
+
+fade_out=0.2) plays the animation of the given name once; fade_in and fade_out
+ are the time (in second) needed to reach full weight, and to stop the animation
+, in order to avoid brutal transitions.
 \end_layout
 
 \begin_layout Description
@@ -3093,7 +3634,8 @@ set_lod_level() set the current LOD level (only if the Cal3D model file
 \end_layout
 
 \begin_layout Subsection
-\begin_inset LatexCommand label
+\begin_inset CommandInset label
+LatexCommand label
 name "sub:World"
 
 \end_inset
@@ -3114,16 +3656,29 @@ Constructor and loading class methods are:
 \end_layout
 
 \begin_layout Description
-World(parent=None,\InsetSpace ~
-model=None,\InsetSpace ~
-opt=None)\InsetSpace ~
-->\InsetSpace ~
+World(parent=None,
+\begin_inset space ~
+\end_inset
+
+model=None,
+\begin_inset space ~
+\end_inset
+
+opt=None)
+\begin_inset space ~
+\end_inset
+
+->
+\begin_inset space ~
+\end_inset
+
 World equivalent to Body's constructor.
 \end_layout
 
 \begin_layout Description
 World.load(filename) loads a World (see section 
-\begin_inset LatexCommand ref
+\begin_inset CommandInset ref
+LatexCommand ref
 reference "sub:SavedInAPath"
 
 \end_inset
@@ -3134,7 +3689,8 @@ reference "sub:SavedInAPath"
 \begin_layout Description
 World.get(filename) loads a World, using a cache of already loaded Worlds
  (see section 
-\begin_inset LatexCommand ref
+\begin_inset CommandInset ref
+LatexCommand ref
 reference "sub:SavedInAPath"
 
 \end_inset
@@ -3159,7 +3715,8 @@ filename the World's filename (relative to the <data>/worlds/ directory;
 \begin_layout Description
 atmosphere the Atmosphere, defining the World atmospheric properties like
  fog, sky or background color (defaults to None, see section 
-\begin_inset LatexCommand ref
+\begin_inset CommandInset ref
+LatexCommand ref
 reference "sec:Atmosphere"
 
 \end_inset
@@ -3175,7 +3732,8 @@ i.e.
 \emph default
  the object responsible for turning the World into a Model (defaults to
  None; in this case, a default ModelBuilder is used, see chapter 
-\begin_inset LatexCommand ref
+\begin_inset CommandInset ref
+LatexCommand ref
 reference "cha:Modeling"
 
 \end_inset
@@ -3187,7 +3745,8 @@ reference "cha:Modeling"
 \begin_layout Standard
 The following attributes are only available if the World's Model is an AnimatedM
 odel (see chapter 
-\begin_inset LatexCommand ref
+\begin_inset CommandInset ref
+LatexCommand ref
 reference "cha:Animated-models"
 
 \end_inset
@@ -3199,7 +3758,8 @@ reference "cha:Animated-models"
 attached_coordsysts the list of the CoordSysts attached to a bone, containing
  (CoordSyst, bone_id, option_flags) tuples (only with AnimatedModel, see
  chapter 
-\begin_inset LatexCommand ref
+\begin_inset CommandInset ref
+LatexCommand ref
 reference "cha:Animated-models"
 
 \end_inset
@@ -3216,9 +3776,12 @@ add(CoordSyst) adds the given CoordSyst inside the World.
 \end_layout
 
 \begin_layout Description
-insert(index,\InsetSpace ~
-CoordSyst) is similar to add, but insert the CoordSyst at the
- given index in the children list.
+insert(index,
+\begin_inset space ~
+\end_inset
+
+CoordSyst) is similar to add, but insert the CoordSyst at the given index
+ in the children list.
 \end_layout
 
 \begin_layout Description
@@ -3226,12 +3789,23 @@ remove(CoordSyst) removes the given CoordSyst from the World.
 \end_layout
 
 \begin_layout Description
-recursive()\InsetSpace ~
-->\InsetSpace ~
-list\InsetSpace ~
-of\InsetSpace ~
-CoordSysts returns the recursive list of children CoordSysts,
- 
+recursive()
+\begin_inset space ~
+\end_inset
+
+->
+\begin_inset space ~
+\end_inset
+
+list
+\begin_inset space ~
+\end_inset
+
+of
+\begin_inset space ~
+\end_inset
+
+CoordSysts returns the recursive list of children CoordSysts, 
 \emph on
 i.e.
 
@@ -3241,32 +3815,62 @@ i.e.
 \end_layout
 
 \begin_layout Description
-search(predicate)\InsetSpace ~
-->\InsetSpace ~
-CoordSyst searches (recursively) for a CoordSyst that
- satisfies the given predicate; predicate is callable that take a CoordSyst
- argument and that return true of false.
+search(predicate)
+\begin_inset space ~
+\end_inset
+
+->
+\begin_inset space ~
+\end_inset
+
+CoordSyst searches (recursively) for a CoordSyst that satisfies the given
+ predicate; predicate is callable that take a CoordSyst argument and that
+ return true of false.
 \end_layout
 
 \begin_layout Description
-search_all(predicate)\InsetSpace ~
-->\InsetSpace ~
-list\InsetSpace ~
-of\InsetSpace ~
-CoordSysts is like search, but returns the
- list of all CoordSysts that satisfy the predicate.
+search_all(predicate)
+\begin_inset space ~
+\end_inset
+
+->
+\begin_inset space ~
+\end_inset
+
+list
+\begin_inset space ~
+\end_inset
+
+of
+\begin_inset space ~
+\end_inset
+
+CoordSysts is like search, but returns the list of all CoordSysts that satisfy
+ the predicate.
 \end_layout
 
 \begin_layout Description
-search_name(name)\InsetSpace ~
-->\InsetSpace ~
-CoordSyst searches (recursively) for a CoordSyst whose
- name attribute is the given name (aliased to World[name]).
+search_name(name)
+\begin_inset space ~
+\end_inset
+
+->
+\begin_inset space ~
+\end_inset
+
+CoordSyst searches (recursively) for a CoordSyst whose name attribute is
+ the given name (aliased to World[name]).
 \end_layout
 
 \begin_layout Description
-subitem(namepath)\InsetSpace ~
-->\InsetSpace ~
+subitem(namepath)
+\begin_inset space ~
+\end_inset
+
+->
+\begin_inset space ~
+\end_inset
+
 CoordSyst returns the CoordSyst denoted by namepath.
  namepath is one or more names separated by dots, 
 \emph on
@@ -3277,10 +3881,17 @@ e.g.
 \end_layout
 
 \begin_layout Description
-to_model()\InsetSpace ~
-->\InsetSpace ~
+to_model()
+\begin_inset space ~
+\end_inset
+
+->
+\begin_inset space ~
+\end_inset
+
 Model turns the World into a Model (see chapter 
-\begin_inset LatexCommand ref
+\begin_inset CommandInset ref
+LatexCommand ref
 reference "cha:Modeling"
 
 \end_inset
@@ -3289,19 +3900,46 @@ reference "cha:Modeling"
 \end_layout
 
 \begin_layout Description
-raypick(origin,\InsetSpace ~
-direction,\InsetSpace ~
-distance=-1.0,\InsetSpace ~
-half_line=1,\InsetSpace ~
-cull_face=1,\InsetSpace ~
-p=None,\InsetSpace ~
-v=None)\InsetSpace ~
-->\InsetSpace ~
-(P
-oint,\InsetSpace ~
-Vector) performs a raypicking, and returns either a (impact_point,
- normal_at_the_impact) tuple, or None (see section 
-\begin_inset LatexCommand ref
+raypick(origin,
+\begin_inset space ~
+\end_inset
+
+direction,
+\begin_inset space ~
+\end_inset
+
+distance=-1.0,
+\begin_inset space ~
+\end_inset
+
+half_line=1,
+\begin_inset space ~
+\end_inset
+
+cull_face=1,
+\begin_inset space ~
+\end_inset
+
+p=None,
+\begin_inset space ~
+\end_inset
+
+v=None)
+\begin_inset space ~
+\end_inset
+
+->
+\begin_inset space ~
+\end_inset
+
+(Point,
+\begin_inset space ~
+\end_inset
+
+Vector) performs a raypicking, and returns either a (impact_point, normal_at_the
+_impact) tuple, or None (see section 
+\begin_inset CommandInset ref
+LatexCommand ref
 reference "sec:Raypicking"
 
 \end_inset
@@ -3310,16 +3948,34 @@ reference "sec:Raypicking"
 \end_layout
 
 \begin_layout Description
-raypick_b(origin,\InsetSpace ~
-direction,\InsetSpace ~
-distance=-1.0,\InsetSpace ~
-half_line=1,\InsetSpace ~
-cull_face=1)\InsetSpace ~
-->\InsetSpace ~
-int performs
- a raypicking, and returns 1 if there is a collision, and 0 if there is
- not (see section 
-\begin_inset LatexCommand ref
+raypick_b(origin,
+\begin_inset space ~
+\end_inset
+
+direction,
+\begin_inset space ~
+\end_inset
+
+distance=-1.0,
+\begin_inset space ~
+\end_inset
+
+half_line=1,
+\begin_inset space ~
+\end_inset
+
+cull_face=1)
+\begin_inset space ~
+\end_inset
+
+->
+\begin_inset space ~
+\end_inset
+
+int performs a raypicking, and returns 1 if there is a collision, and 0
+ if there is not (see section 
+\begin_inset CommandInset ref
+LatexCommand ref
 reference "sec:Raypicking"
 
 \end_inset
@@ -3328,18 +3984,39 @@ reference "sec:Raypicking"
 \end_layout
 
 \begin_layout Description
-RaypickContext(center,\InsetSpace ~
-radius,\InsetSpace ~
-RaypickContext=None,\InsetSpace ~
-items\InsetSpace ~
-=\InsetSpace ~
-None)\InsetSpace ~
-->\InsetSpace ~
-RaypickContext
- creates a RaypickingContext.
+RaypickContext(center,
+\begin_inset space ~
+\end_inset
+
+radius,
+\begin_inset space ~
+\end_inset
+
+RaypickContext=None,
+\begin_inset space ~
+\end_inset
+
+items
+\begin_inset space ~
+\end_inset
+
+=
+\begin_inset space ~
+\end_inset
+
+None)
+\begin_inset space ~
+\end_inset
+
+->
+\begin_inset space ~
+\end_inset
+
+RaypickContext creates a RaypickingContext.
  RaypickingContext are used to perform several raypicking in the same region,
  faster than by calling raypick or raypick_b (see section 
-\begin_inset LatexCommand ref
+\begin_inset CommandInset ref
+LatexCommand ref
 reference "sec:Raypicking"
 
 \end_inset
@@ -3350,7 +4027,8 @@ reference "sec:Raypicking"
 \begin_layout Standard
 The following methods are only available if the World's Model is an AnimatedMode
 l (see chapter 
-\begin_inset LatexCommand ref
+\begin_inset CommandInset ref
+LatexCommand ref
 reference "cha:Animated-models"
 
 \end_inset
@@ -3359,10 +4037,12 @@ reference "cha:Animated-models"
 \end_layout
 
 \begin_layout Description
-attach_to_bone(CoordSyst,\InsetSpace ~
-bone_name) attaches the given CoordSyst (which
- is understood to be a direct child of the World) to the bone of the given
- name.
+attach_to_bone(CoordSyst,
+\begin_inset space ~
+\end_inset
+
+bone_name) attaches the given CoordSyst (which is understood to be a direct
+ child of the World) to the bone of the given name.
  When the bone is moved by the animation, the CoordSyst moves too.
 \end_layout
 
@@ -3394,7 +4074,8 @@ ear
 
 , for 3D sound.
  It also inherits from Widget (see section 
-\begin_inset LatexCommand ref
+\begin_inset CommandInset ref
+LatexCommand ref
 reference "cha:Widget-systems"
 
 \end_inset
@@ -3419,8 +4100,14 @@ Constructor is:
 \end_layout
 
 \begin_layout Description
-Camera(CoordSyst)\InsetSpace ~
-->\InsetSpace ~
+Camera(CoordSyst)
+\begin_inset space ~
+\end_inset
+
+->
+\begin_inset space ~
+\end_inset
+
 Camera
 \end_layout
 
@@ -3445,9 +4132,18 @@ fov the field of vision (or FOV), in degrees.
 \end_layout
 
 \begin_layout Description
-left,\InsetSpace ~
-top,\InsetSpace ~
-width,\InsetSpace ~
+left,
+\begin_inset space ~
+\end_inset
+
+top,
+\begin_inset space ~
+\end_inset
+
+width,
+\begin_inset space ~
+\end_inset
+
 height the viewport rectangle, in pixel.
  Use it if you want the Camera to render only on a part of the screen.
  It defaults to the whole screen.
@@ -3477,7 +4173,8 @@ sound listener
 .
  A single Camera can be used so at the same time (defaults to true, see
  section 
-\begin_inset LatexCommand ref
+\begin_inset CommandInset ref
+LatexCommand ref
 reference "sec:Sound-and-multiple-Cameras"
 
 \end_inset
@@ -3492,7 +4189,8 @@ to_render the world that is rendered by the Camera.
 
 \begin_layout Description
 master the master Widget (see section 
-\begin_inset LatexCommand ref
+\begin_inset CommandInset ref
+LatexCommand ref
 reference "sec:Widgets"
 
 \end_inset
@@ -3505,29 +4203,59 @@ Noticeable methods are:
 \end_layout
 
 \begin_layout Description
-set_viewport(left,\InsetSpace ~
-top,\InsetSpace ~
-width,\InsetSpace ~
-height) sets left, top, width and height in
- a single call.
+set_viewport(left,
+\begin_inset space ~
+\end_inset
+
+top,
+\begin_inset space ~
+\end_inset
+
+width,
+\begin_inset space ~
+\end_inset
+
+height) sets left, top, width and height in a single call.
 \end_layout
 
 \begin_layout Description
-get_screen_width(),\InsetSpace ~
-get_screen_height()\InsetSpace ~
-->\InsetSpace ~
-int gets the width and the height
- of the rendering screen, in pixel.
+get_screen_width(),
+\begin_inset space ~
+\end_inset
+
+get_screen_height()
+\begin_inset space ~
+\end_inset
+
+->
+\begin_inset space ~
+\end_inset
+
+int gets the width and the height of the rendering screen, in pixel.
 \end_layout
 
 \begin_layout Description
-coord2d_to_3d(x,\InsetSpace ~
-y,\InsetSpace ~
-z,\InsetSpace ~
-reused_Point=None)\InsetSpace ~
-->\InsetSpace ~
-Point converts 2D coordinates X
- and Y (in pixel, 
+coord2d_to_3d(x,
+\begin_inset space ~
+\end_inset
+
+y,
+\begin_inset space ~
+\end_inset
+
+z,
+\begin_inset space ~
+\end_inset
+
+reused_Point=None)
+\begin_inset space ~
+\end_inset
+
+->
+\begin_inset space ~
+\end_inset
+
+Point converts 2D coordinates X and Y (in pixel, 
 \emph on
 e.g.
 
@@ -3541,24 +4269,41 @@ e.g.
 \end_layout
 
 \begin_layout Description
-coord3d_to_2d(Point)\InsetSpace ~
-->\InsetSpace ~
-(x,\InsetSpace ~
-y) converts a Point (or a CoordSyst) into 2D screen
- coordinates X, Y (in pixel).
+coord3d_to_2d(Point)
+\begin_inset space ~
+\end_inset
+
+->
+\begin_inset space ~
+\end_inset
+
+(x,
+\begin_inset space ~
+\end_inset
+
+y) converts a Point (or a CoordSyst) into 2D screen coordinates X, Y (in
+ pixel).
 \end_layout
 
 \begin_layout Description
-render_to_material(Material,\InsetSpace ~
+render_to_material(Material,
+\begin_inset space ~
+\end_inset
+
 what) renders the camera to a Material's texture.
  'what' is one of GL_RGBA, GL_LUMINANCE, GL_ALPHA.
 \end_layout
 
 \begin_layout Description
-is_in_frustum(CoordSyst)\InsetSpace ~
-->\InsetSpace ~
-int returns true if the given CoordSyst is inside
- the Camera's frustum.
+is_in_frustum(CoordSyst)
+\begin_inset space ~
+\end_inset
+
+->
+\begin_inset space ~
+\end_inset
+
+int returns true if the given CoordSyst is inside the Camera's frustum.
 \end_layout
 
 \begin_layout Subsection
@@ -3578,8 +4323,14 @@ Constructor is:
 \end_layout
 
 \begin_layout Description
-Light(CoordSyst)\InsetSpace ~
-->\InsetSpace ~
+Light(CoordSyst)
+\begin_inset space ~
+\end_inset
+
+->
+\begin_inset space ~
+\end_inset
+
 Light
 \end_layout
 
@@ -3690,11 +4441,26 @@ Constructor is:
 \end_layout
 
 \begin_layout Description
-Point(CoordSyst,\InsetSpace ~
-x,\InsetSpace ~
-y,\InsetSpace ~
-z)\InsetSpace ~
-->\InsetSpace ~
+Point(CoordSyst,
+\begin_inset space ~
+\end_inset
+
+x,
+\begin_inset space ~
+\end_inset
+
+y,
+\begin_inset space ~
+\end_inset
+
+z)
+\begin_inset space ~
+\end_inset
+
+->
+\begin_inset space ~
+\end_inset
+
 Point
 \end_layout
 
@@ -3703,8 +4469,14 @@ Noticeable attributes are:
 \end_layout
 
 \begin_layout Description
-x,\InsetSpace ~
-y,\InsetSpace ~
+x,
+\begin_inset space ~
+\end_inset
+
+y,
+\begin_inset space ~
+\end_inset
+
 z the X, Y and Z coordinates (defaults to 0.0, 0.0, 0.0).
 \end_layout
 
@@ -3717,36 +4489,65 @@ Noticeable methods are:
 \end_layout
 
 \begin_layout Description
-get_root()\InsetSpace ~
-->\InsetSpace ~
+get_root()
+\begin_inset space ~
+\end_inset
+
+->
+\begin_inset space ~
+\end_inset
+
 World get the root parent of the Point (the scene).
 \end_layout
 
 \begin_layout Description
-position()\InsetSpace ~
-->\InsetSpace ~
-Point creates a Point in the same parent and at the same place
- than the Point.
+position()
+\begin_inset space ~
+\end_inset
+
+->
+\begin_inset space ~
+\end_inset
+
+Point creates a Point in the same parent and at the same place than the
+ Point.
 \end_layout
 
 \begin_layout Description
-distance_to(position)\InsetSpace ~
-->\InsetSpace ~
-float returns the distance between the Point and
- position (another CoordSyst or a Point).
+distance_to(position)
+\begin_inset space ~
+\end_inset
+
+->
+\begin_inset space ~
+\end_inset
+
+float returns the distance between the Point and position (another CoordSyst
+ or a Point).
 \end_layout
 
 \begin_layout Description
-vector_to(position)\InsetSpace ~
-->\InsetSpace ~
-Vector creates a Vector that starts at the Point position,
- and ends at the given position (another CoordSyst or a Point; aliased to
- the >> operator).
+vector_to(position)
+\begin_inset space ~
+\end_inset
+
+->
+\begin_inset space ~
+\end_inset
+
+Vector creates a Vector that starts at the Point position, and ends at the
+ given position (another CoordSyst or a Point; aliased to the >> operator).
 \end_layout
 
 \begin_layout Description
-set_xyz(x,\InsetSpace ~
-y,\InsetSpace ~
+set_xyz(x,
+\begin_inset space ~
+\end_inset
+
+y,
+\begin_inset space ~
+\end_inset
+
 z) set the x, y and z attributes in a single call.
 \end_layout
 
@@ -3761,21 +4562,36 @@ add_vector(vector) translates the Point by the given Vector (aliased to
 \end_layout
 
 \begin_layout Description
-add_mul_vector(k,\InsetSpace ~
-vector) translates the Point by k times the given Vector
- (equivalent to, but faster than, add_vector(k * vector)).
+add_mul_vector(k,
+\begin_inset space ~
+\end_inset
+
+vector) translates the Point by k times the given Vector (equivalent to,
+ but faster than, add_vector(k * vector)).
 \end_layout
 
 \begin_layout Description
-add_xyz(x,\InsetSpace ~
-y,\InsetSpace ~
-z) translates the Point by (x, y, z) (expressed in the CoordSyst's
- parent coordinate system).
+add_xyz(x,
+\begin_inset space ~
+\end_inset
+
+y,
+\begin_inset space ~
+\end_inset
+
+z) translates the Point by (x, y, z) (expressed in the CoordSyst's parent
+ coordinate system).
 \end_layout
 
 \begin_layout Description
-copy()\InsetSpace ~
-->\InsetSpace ~
+copy()
+\begin_inset space ~
+\end_inset
+
+->
+\begin_inset space ~
+\end_inset
+
 Point returns a copy of the Point 
 \end_layout
 
@@ -3792,23 +4608,56 @@ convert_to(CoordSyst) converts in place the Point to the CoordSyst coordinates
 \end_layout
 
 \begin_layout Description
-Point\InsetSpace ~
-%\InsetSpace ~
-CoordSyst\InsetSpace ~
-->\InsetSpace ~
-Point returns a Point at the same place than the Point,
- but in the CoordSyst coordinate system (the returned value may be the Point
- itself if it is already in the right CoordSyst, or a newly created Point).
+Point
+\begin_inset space ~
+\end_inset
+
+%
+\begin_inset space ~
+\end_inset
+
+CoordSyst
+\begin_inset space ~
+\end_inset
+
+->
+\begin_inset space ~
+\end_inset
+
+Point returns a Point at the same place than the Point, but in the CoordSyst
+ coordinate system (the returned value may be the Point itself if it is
+ already in the right CoordSyst, or a newly created Point).
 \end_layout
 
 \begin_layout Description
-Point\InsetSpace ~
-+\InsetSpace ~
-Vector,\InsetSpace ~
-Point\InsetSpace ~
--\InsetSpace ~
-Vector\InsetSpace ~
-->\InsetSpace ~
+Point
+\begin_inset space ~
+\end_inset
+
++
+\begin_inset space ~
+\end_inset
+
+Vector,
+\begin_inset space ~
+\end_inset
+
+Point
+\begin_inset space ~
+\end_inset
+
+-
+\begin_inset space ~
+\end_inset
+
+Vector
+\begin_inset space ~
+\end_inset
+
+->
+\begin_inset space ~
+\end_inset
+
 Point translates the Point by the Vector.
 \end_layout
 
@@ -3826,17 +4675,38 @@ Constructor is:
 \end_layout
 
 \begin_layout Description
-Vector(CoordSyst,\InsetSpace ~
-x,\InsetSpace ~
-y,\InsetSpace ~
-z)\InsetSpace ~
-->\InsetSpace ~
+Vector(CoordSyst,
+\begin_inset space ~
+\end_inset
+
+x,
+\begin_inset space ~
+\end_inset
+
+y,
+\begin_inset space ~
+\end_inset
+
+z)
+\begin_inset space ~
+\end_inset
+
+->
+\begin_inset space ~
+\end_inset
+
 Vector
 \end_layout
 
 \begin_layout Description
-CoordSyst_or_Point.vector_to(CoordSyst_or_Point)\InsetSpace ~
-->\InsetSpace ~
+CoordSyst_or_Point.vector_to(CoordSyst_or_Point)
+\begin_inset space ~
+\end_inset
+
+->
+\begin_inset space ~
+\end_inset
+
 Vector (aliased to >>).
 \end_layout
 
@@ -3845,8 +4715,14 @@ Noticeable methods are:
 \end_layout
 
 \begin_layout Description
-length()\InsetSpace ~
-->\InsetSpace ~
+length()
+\begin_inset space ~
+\end_inset
+
+->
+\begin_inset space ~
+\end_inset
+
 float returns the length of the Vector.
 \end_layout
 
@@ -3859,48 +4735,104 @@ normalize() scales the Vector so as its length is 1.0.
 \end_layout
 
 \begin_layout Description
-dot_product(Vector)\InsetSpace ~
-->\InsetSpace ~
+dot_product(Vector)
+\begin_inset space ~
+\end_inset
+
+->
+\begin_inset space ~
+\end_inset
+
 float returns the dot product of two Vectors.
 \end_layout
 
 \begin_layout Description
-cross_product(Vector,\InsetSpace ~
-reused_Vector\InsetSpace ~
-=\InsetSpace ~
-None)\InsetSpace ~
-->\InsetSpace ~
-Vector returns the cross product
- of two Vectors; if reused_Vector is given, the result will be written in
- it instead of creating a new Vector.
+cross_product(Vector,
+\begin_inset space ~
+\end_inset
+
+reused_Vector
+\begin_inset space ~
+\end_inset
+
+=
+\begin_inset space ~
+\end_inset
+
+None)
+\begin_inset space ~
+\end_inset
+
+->
+\begin_inset space ~
+\end_inset
+
+Vector returns the cross product of two Vectors; if reused_Vector is given,
+ the result will be written in it instead of creating a new Vector.
 \end_layout
 
 \begin_layout Description
-angle_to(Vector)\InsetSpace ~
-->\InsetSpace ~
+angle_to(Vector)
+\begin_inset space ~
+\end_inset
+
+->
+\begin_inset space ~
+\end_inset
+
 float returns the angle between the two Vectors (in degrees).
 \end_layout
 
 \begin_layout Description
-set_start_end(start,\InsetSpace ~
-end) changes the Vector in place so as it starts and
- ends at the given start and end (Point or CoordSyst).
+set_start_end(start,
+\begin_inset space ~
+\end_inset
+
+end) changes the Vector in place so as it starts and ends at the given start
+ and end (Point or CoordSyst).
 \end_layout
 
 \begin_layout Description
-Vector\InsetSpace ~
-+\InsetSpace ~
-Vector,\InsetSpace ~
-Vector\InsetSpace ~
--\InsetSpace ~
-Vector\InsetSpace ~
-->\InsetSpace ~
+Vector
+\begin_inset space ~
+\end_inset
+
++
+\begin_inset space ~
+\end_inset
+
+Vector,
+\begin_inset space ~
+\end_inset
+
+Vector
+\begin_inset space ~
+\end_inset
+
+-
+\begin_inset space ~
+\end_inset
+
+Vector
+\begin_inset space ~
+\end_inset
+
+->
+\begin_inset space ~
+\end_inset
+
 Vector vectorial addition.
 \end_layout
 
 \begin_layout Description
-float\InsetSpace ~
-*\InsetSpace ~
+float
+\begin_inset space ~
+\end_inset
+
+*
+\begin_inset space ~
+\end_inset
+
 Vector scales the Vector.
 \end_layout
 
@@ -3918,7 +4850,8 @@ don't forget to call the super implementation
 
 \begin_layout Description
 CoordSyst.begin_round() (see section 
-\begin_inset LatexCommand ref
+\begin_inset CommandInset ref
+LatexCommand ref
 reference "sub:Time-management"
 
 \end_inset
@@ -3928,7 +4861,8 @@ reference "sub:Time-management"
 
 \begin_layout Description
 CoordSyst.advance_time(proportion) (see section 
-\begin_inset LatexCommand ref
+\begin_inset CommandInset ref
+LatexCommand ref
 reference "sub:Time-management"
 
 \end_inset
@@ -3938,7 +4872,8 @@ reference "sub:Time-management"
 
 \begin_layout Description
 CoordSyst.end_round() (see section 
-\begin_inset LatexCommand ref
+\begin_inset CommandInset ref
+LatexCommand ref
 reference "sub:Time-management"
 
 \end_inset
@@ -3973,7 +4908,8 @@ World.add(coordsyst)
 \end_layout
 
 \begin_layout Chapter
-\begin_inset LatexCommand label
+\begin_inset CommandInset label
+LatexCommand label
 name "cha:Managing-data"
 
 \end_inset
@@ -4007,7 +4943,8 @@ Soya stores each class of object in a separate subdirectory in <data>, the
 \begin_layout Description
 <data>/animated_models contains Soya AnimatedModels (in Cal3D format, using
  a directory per AnimatedModel, see chapter 
-\begin_inset LatexCommand ref
+\begin_inset CommandInset ref
+LatexCommand ref
 reference "cha:Animated-models"
 
 \end_inset
@@ -4022,7 +4959,8 @@ reference "cha:Animated-models"
 
 \begin_layout Description
 <data>/blender contains Blender models (see chapter 
-\begin_inset LatexCommand ref
+\begin_inset CommandInset ref
+LatexCommand ref
 reference "cha:Blender-for-Soya"
 
 \end_inset
@@ -4032,7 +4970,8 @@ reference "cha:Blender-for-Soya"
 
 \begin_layout Description
 <data>/sounds contains sound files (WAV or OGG Vorbis, see chapter 
-\begin_inset LatexCommand ref
+\begin_inset CommandInset ref
+LatexCommand ref
 reference "cha:Sounds"
 
 \end_inset
@@ -4042,7 +4981,8 @@ reference "cha:Sounds"
 
 \begin_layout Description
 <data>/fonts contains Fonts (see section 
-\begin_inset LatexCommand ref
+\begin_inset CommandInset ref
+LatexCommand ref
 reference "sec:Fonts-and-text"
 
 \end_inset
@@ -4059,12 +4999,16 @@ th (excepted for Blender model, which are not Soya objects, of course).
 \end_layout
 
 \begin_layout Description
-Known\InsetSpace ~
+Known
+\begin_inset space ~
+\end_inset
+
 bug: Currently, Camera cannot be saved in files.
 \end_layout
 
 \begin_layout Section
-\begin_inset LatexCommand label
+\begin_inset CommandInset label
+LatexCommand label
 name "sec:File-formats"
 
 \end_inset
@@ -4083,8 +5027,13 @@ Pickle is not secure
 \series default
  for networking game.
  Cerealizer (
-\begin_inset LatexCommand url
-target "http://home.gna.org/oomadness/en/cerealizer"
+\begin_inset Flex URL
+status collapsed
+
+\begin_layout Plain Layout
+
+http://home.gna.org/oomadness/en/cerealizer
+\end_layout
 
 \end_inset
 
@@ -4105,14 +5054,23 @@ To set the file formats, use the following function:
 \end_layout
 
 \begin_layout Description
-set_file_format(saving_format,\InsetSpace ~
-loading_formats\InsetSpace ~
-=\InsetSpace ~
-None) where saving_format
- is the format for saving files (either a function with a signature like
- pickle.dumps, or a module with a dumps function), and loading_formats is
- the format for loading files (either a function with a signature like pickle.loa
-ds, or a module with a loads function), or a list of formats.
+set_file_format(saving_format,
+\begin_inset space ~
+\end_inset
+
+loading_formats
+\begin_inset space ~
+\end_inset
+
+=
+\begin_inset space ~
+\end_inset
+
+None) where saving_format is the format for saving files (either a function
+ with a signature like pickle.dumps, or a module with a dumps function),
+ and loading_formats is the format for loading files (either a function
+ with a signature like pickle.loads, or a module with a loads function),
+ or a list of formats.
  If loading_formats is None, the loading formats are left unmodified.
 \end_layout
 
@@ -4298,14 +5256,26 @@ Objects can be loaded with one of these class methods:
 \end_layout
 
 \begin_layout Description
-SavedInAPath.load(filename)\InsetSpace ~
-->\InsetSpace ~
+SavedInAPath.load(filename)
+\begin_inset space ~
+\end_inset
+
+->
+\begin_inset space ~
+\end_inset
+
 SavedInAPath
 \end_layout
 
 \begin_layout Description
-SavedInAPath.get(filename)\InsetSpace ~
-->\InsetSpace ~
+SavedInAPath.get(filename)
+\begin_inset space ~
+\end_inset
+
+->
+\begin_inset space ~
+\end_inset
+
 SavedInAPath
 \end_layout
 
@@ -4335,7 +5305,10 @@ The @ character is used to indicate some optional parameters in a filename:
 \end_layout
 
 \begin_layout Description
-For\InsetSpace ~
+For
+\begin_inset space ~
+\end_inset
+
 Fonts, it can be used to indicate the horizontal and vertical Font size
  (the horizontal size follows the @, then an x, then the vertical size).
  It can be used to create several Font objects of various sizes from a single
@@ -4353,12 +5326,22 @@ font = soya.Font.get("indigo.ttf@20x30")
 \end_layout
 
 \begin_layout Description
-For\InsetSpace ~
-Models\InsetSpace ~
-and\InsetSpace ~
-Worlds, it can be used to generate several Worlds and Models
- from a single Blender file (see section 
-\begin_inset LatexCommand ref
+For
+\begin_inset space ~
+\end_inset
+
+Models
+\begin_inset space ~
+\end_inset
+
+and
+\begin_inset space ~
+\end_inset
+
+Worlds, it can be used to generate several Worlds and Models from a single
+ Blender file (see section 
+\begin_inset CommandInset ref
+LatexCommand ref
 reference "sec:Generating-several-Soya"
 
 \end_inset
@@ -4367,7 +5350,8 @@ reference "sec:Generating-several-Soya"
 \end_layout
 
 \begin_layout Section
-\begin_inset LatexCommand label
+\begin_inset CommandInset label
+LatexCommand label
 name "sec:Auto-exporters"
 
 \end_inset
@@ -4412,7 +5396,8 @@ Similarly, when loading a World, Soya searches for a Blender model with
  When loading a Model, Soya searches for a World (and thus for a Blender
  model), and, if needed, will load the World and re-turn it to a Model (Models
  are generated from Worlds, see chapter 
-\begin_inset LatexCommand ref
+\begin_inset CommandInset ref
+LatexCommand ref
 reference "cha:Modeling"
 
 \end_inset
@@ -4463,7 +5448,8 @@ Where can i obtain Models?
 \begin_layout Standard
 First, you can design model yourself, using a 3D modeler like Blender (see
  chapter 
-\begin_inset LatexCommand ref
+\begin_inset CommandInset ref
+LatexCommand ref
 reference "cha:Blender-for-Soya"
 
 \end_inset
@@ -4474,7 +5460,8 @@ e.g.
 
 \emph default
  for geometrical model; see chapter 
-\begin_inset LatexCommand ref
+\begin_inset CommandInset ref
+LatexCommand ref
 reference "cha:Modeling"
 
 \end_inset
@@ -4489,8 +5476,13 @@ Nekeme Prod., an association for Free Game (as in Free Speech) Jiba is a
  The FDR is a database of free resources for games, including 3D models,
  images, musics, sounds,...
  It can be browsed at 
-\begin_inset LatexCommand htmlurl
-target "http://fdr.nekeme.net/"
+\begin_inset Flex URL
+status collapsed
+
+\begin_layout Plain Layout
+
+http://fdr.nekeme.net/
+\end_layout
 
 \end_inset
 
@@ -4500,8 +5492,13 @@ target "http://fdr.nekeme.net/"
 \begin_layout Itemize
 You can also re-use the model of an existing free game, such as Balazar
  Brother (
-\begin_inset LatexCommand htmlurl
-target "http://home.gna.org/oomadness/en/balazar_brother/index.html"
+\begin_inset Flex URL
+status collapsed
+
+\begin_layout Plain Layout
+
+http://home.gna.org/oomadness/en/balazar_brother/index.html
+\end_layout
 
 \end_inset
 
@@ -4513,7 +5510,8 @@ Object reference
 \end_layout
 
 \begin_layout Subsection
-\begin_inset LatexCommand label
+\begin_inset CommandInset label
+LatexCommand label
 name "sub:SavedInAPath"
 
 \end_inset
@@ -4571,28 +5569,51 @@ Noticeable class methods are:
 \end_layout
 
 \begin_layout Description
-load(filename)\InsetSpace ~
-->\InsetSpace ~
-SavedInAPath loads the object saved in the <data>/<class>/<filen
-ame> file.
+load(filename)
+\begin_inset space ~
+\end_inset
+
+->
+\begin_inset space ~
+\end_inset
+
+SavedInAPath loads the object saved in the <data>/<class>/<filename> file.
  Depending of the object, it may perform automatic conversion.
 \end_layout
 
 \begin_layout Description
-get(filename)\InsetSpace ~
-->\InsetSpace ~
-SavedInAPath is similar to load, but, if called several times
- with the same with the same filename, it returns the same (cached) object
- instead of loading it twice.
+get(filename)
+\begin_inset space ~
+\end_inset
+
+->
+\begin_inset space ~
+\end_inset
+
+SavedInAPath is similar to load, but, if called several times with the same
+ with the same filename, it returns the same (cached) object instead of
+ loading it twice.
 \end_layout
 
 \begin_layout Description
-availables()\InsetSpace ~
-->\InsetSpace ~
-list\InsetSpace ~
-of\InsetSpace ~
-strings returns the list of the filename of all the
- objects available in the <data>/<class>/ directory.
+availables()
+\begin_inset space ~
+\end_inset
+
+->
+\begin_inset space ~
+\end_inset
+
+list
+\begin_inset space ~
+\end_inset
+
+of
+\begin_inset space ~
+\end_inset
+
+strings returns the list of the filename of all the objects available in
+ the <data>/<class>/ directory.
 \end_layout
 
 \begin_layout Standard
@@ -4612,7 +5633,8 @@ loaded() called when the object is loaded from a file; you may override
 \end_layout
 
 \begin_layout Chapter
-\begin_inset LatexCommand label
+\begin_inset CommandInset label
+LatexCommand label
 name "cha:Animated-models"
 
 \end_inset
@@ -4634,7 +5656,7 @@ AnimatedModels are loaded as usual, excepted that the model is in the Cal3D
 \begin_inset Foot
 status collapsed
 
-\begin_layout Standard
+\begin_layout Plain Layout
 \begin_inset Quotes eld
 \end_inset
 
@@ -4733,14 +5755,38 @@ sorcerer.animate_blend_cycle("walk")
 
 \end_inset
 
-\InsetSpace ~
-\InsetSpace ~
-\InsetSpace ~
-\InsetSpace ~
-\InsetSpace ~
-\InsetSpace ~
-\InsetSpace ~
-\InsetSpace ~
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
 
 \begin_inset Graphics
 	filename /home/jiba/src/soya/tutorial/results/character-animation-1_1.jpeg
@@ -4749,14 +5795,38 @@ sorcerer.animate_blend_cycle("walk")
 
 \end_inset
 
-\InsetSpace ~
-\InsetSpace ~
-\InsetSpace ~
-\InsetSpace ~
-\InsetSpace ~
-\InsetSpace ~
-\InsetSpace ~
-\InsetSpace ~
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
 
 \begin_inset Graphics
 	filename /home/jiba/src/soya/tutorial/results/character-animation-1_2.jpeg
@@ -4814,7 +5884,8 @@ me, fade_in = 0.2, fade_out = 0.2).
 \end_layout
 
 \begin_layout Section
-\begin_inset LatexCommand label
+\begin_inset CommandInset label
+LatexCommand label
 name "sec:Attaching-objects-to-bones"
 
 \end_inset
@@ -5002,7 +6073,8 @@ e.g.
 
 \emph default
  sphere=0.0 0.0 0.0 2.0, see section 
-\begin_inset LatexCommand ref
+\begin_inset CommandInset ref
+LatexCommand ref
 reference "sec:Adding-Soya-specific-attributes-in-Blender"
 
 \end_inset
@@ -5054,25 +6126,57 @@ Noticeable methods are:
 \end_layout
 
 \begin_layout Description
-set_cellshading(shader\InsetSpace ~
-=\InsetSpace ~
-DEFAULT_SHADER,\InsetSpace ~
-outline_color\InsetSpace ~
-=\InsetSpace ~
-BLACK,\InsetSpace ~
-outline_width\InsetSpace ~
-=\InsetSpace ~
-4.0,\InsetSpace ~
-outli
-ne_attenuation\InsetSpace ~
-=\InsetSpace ~
-0.3) enable cellshading, with the given shader and outline
- properties.
+set_cellshading(shader
+\begin_inset space ~
+\end_inset
+
+=
+\begin_inset space ~
+\end_inset
+
+DEFAULT_SHADER,
+\begin_inset space ~
+\end_inset
+
+outline_color
+\begin_inset space ~
+\end_inset
+
+=
+\begin_inset space ~
+\end_inset
+
+BLACK,
+\begin_inset space ~
+\end_inset
+
+outline_width
+\begin_inset space ~
+\end_inset
+
+=
+\begin_inset space ~
+\end_inset
+
+4.0,
+\begin_inset space ~
+\end_inset
+
+outline_attenuation
+\begin_inset space ~
+\end_inset
+
+=
+\begin_inset space ~
+\end_inset
+
+0.3) enable cellshading, with the given shader and outline properties.
  Set outline_width to 0.0 to disable outline.
 \end_layout
 
 \begin_layout Chapter
-\begin_inset LatexCommand label
+\begin_inset CommandInset label
+LatexCommand label
 name "cha:Blender-for-Soya"
 
 \end_inset
@@ -5264,9 +6368,12 @@ Hint: In Blender, the length of the name given to a texture is limited to
 \end_layout
 
 \begin_layout Description
-Known\InsetSpace ~
-bug: When two semi-transparent objects overlap, because one of them
- is in front of the other, Soya may not render them well, i.e.
+Known
+\begin_inset space ~
+\end_inset
+
+bug: When two semi-transparent objects overlap, because one of them is in
+ front of the other, Soya may not render them well, i.e.
  the farther object in front of the other one.
  There are two possible workaround for this bug:
 \end_layout
@@ -5297,7 +6404,8 @@ mask
 \begin_layout Itemize
 For special effects like spells or explosion, use additive blending (see
  section 
-\begin_inset LatexCommand ref
+\begin_inset CommandInset ref
+LatexCommand ref
 reference "sec:Materials"
 
 \end_inset
@@ -5332,7 +6440,9 @@ a
  Then go the the UV/image editor window, and use the Image->Open menu to
  open your texture.
  Finally, position the UV coordinates by moving the vertex of the triangle
- or quad over the texture.
+ or quad over the texture (NB if Blender does not show UV coordinates in
+ the UV/image editor window, click on the Mesh -> UV Unwrap -> Reset menu
+ in the 3D editor window).
 \end_layout
 
 \begin_layout Standard
@@ -5344,14 +6454,38 @@ a
 
 \end_inset
 
-\InsetSpace ~
-\InsetSpace ~
-\InsetSpace ~
-\InsetSpace ~
-\InsetSpace ~
-\InsetSpace ~
-\InsetSpace ~
-\InsetSpace ~
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
 
 \begin_inset Graphics
 	filename blender_uv_image_editor2.png
@@ -5364,7 +6498,9 @@ a
 \end_layout
 
 \begin_layout Standard
-\InsetSpace ~
+\begin_inset space ~
+\end_inset
+
 
 \end_layout
 
@@ -5452,14 +6588,38 @@ twoside
 
 \end_inset
 
-\InsetSpace ~
-\InsetSpace ~
-\InsetSpace ~
-\InsetSpace ~
-\InsetSpace ~
-\InsetSpace ~
-\InsetSpace ~
-\InsetSpace ~
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
 
 \begin_inset Graphics
 	filename blender_two_side.png
@@ -5500,14 +6660,38 @@ In Blender, SubSurf can be used to automatically increase the details of
 
 \end_inset
 
-\InsetSpace ~
-\InsetSpace ~
-\InsetSpace ~
-\InsetSpace ~
-\InsetSpace ~
-\InsetSpace ~
-\InsetSpace ~
-\InsetSpace ~
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
 
 \begin_inset Graphics
 	filename blender_subsurf2.png
@@ -5566,10 +6750,22 @@ The second step for AnimatedModels is to link the armature's bones to the
 
 \begin_layout Itemize
 Using vertex groups: select both the model and the armature (in that order),
- and click the Object->Parent->Make\InsetSpace ~
-parent->Armature->Create\InsetSpace ~
-from\InsetSpace ~
-closest\InsetSpace ~
+ and click the Object->Parent->Make
+\begin_inset space ~
+\end_inset
+
+parent->Armature->Create
+\begin_inset space ~
+\end_inset
+
+from
+\begin_inset space ~
+\end_inset
+
+closest
+\begin_inset space ~
+\end_inset
+
 bones.
  Vertex groups corresponding to the various bones will be automatically
  created, and can then be refined manually.
@@ -5641,9 +6837,11 @@ Action editor
 
  window, add a new action, and give it a name.
  In the 3D window, select the armature and enter in the pose mode.
- Then move and rotate the bones, and add a keyframe with the Pose->Insert\InsetSpace ~
-keyfram
-e menu.
+ Then move and rotate the bones, and add a keyframe with the Pose->Insert
+\begin_inset space ~
+\end_inset
+
+keyframe menu.
 \end_layout
 
 \begin_layout Standard
@@ -5655,14 +6853,38 @@ e menu.
 
 \end_inset
 
-\InsetSpace ~
-\InsetSpace ~
-\InsetSpace ~
-\InsetSpace ~
-\InsetSpace ~
-\InsetSpace ~
-\InsetSpace ~
-\InsetSpace ~
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
 
 \begin_inset Graphics
 	filename blender_action_editor2.png
@@ -5680,7 +6902,8 @@ Auto-exporter
 \begin_layout Standard
 The easiest way to export Blender model is to use the auto-exporter (see
  section 
-\begin_inset LatexCommand ref
+\begin_inset CommandInset ref
+LatexCommand ref
 reference "sec:Auto-exporters"
 
 \end_inset
@@ -5732,15 +6955,25 @@ Here is a summary of the following Blender features that are correctly exported
 \end_layout
 
 \begin_layout Description
-Mesh\InsetSpace ~
+Mesh
+\begin_inset space ~
+\end_inset
+
 structure
 \end_layout
 
 \begin_layout Description
-Face\InsetSpace ~
-UV\InsetSpace ~
+Face
+\begin_inset space ~
+\end_inset
+
+UV
+\begin_inset space ~
+\end_inset
+
 image (mapped to Face.material, see section 
-\begin_inset LatexCommand ref
+\begin_inset CommandInset ref
+LatexCommand ref
 reference "cha:Modeling"
 
 \end_inset
@@ -5749,12 +6982,21 @@ reference "cha:Modeling"
 \end_layout
 
 \begin_layout Description
-Vertex\InsetSpace ~
-UV\InsetSpace ~
-texture\InsetSpace ~
-coordinates (mapped to Vertex.tex_x and Vertex.tex_y, see section
- 
-\begin_inset LatexCommand ref
+Vertex
+\begin_inset space ~
+\end_inset
+
+UV
+\begin_inset space ~
+\end_inset
+
+texture
+\begin_inset space ~
+\end_inset
+
+coordinates (mapped to Vertex.tex_x and Vertex.tex_y, see section 
+\begin_inset CommandInset ref
+LatexCommand ref
 reference "cha:Modeling"
 
 \end_inset
@@ -5764,7 +7006,8 @@ reference "cha:Modeling"
 
 \begin_layout Description
 Face_twoside (mapped to Face.double_sided, see section 
-\begin_inset LatexCommand ref
+\begin_inset CommandInset ref
+LatexCommand ref
 reference "cha:Modeling"
 
 \end_inset
@@ -5773,11 +7016,21 @@ reference "cha:Modeling"
 \end_layout
 
 \begin_layout Description
-Smooth\InsetSpace ~
-or\InsetSpace ~
-solid\InsetSpace ~
+Smooth
+\begin_inset space ~
+\end_inset
+
+or
+\begin_inset space ~
+\end_inset
+
+solid
+\begin_inset space ~
+\end_inset
+
 lighting (mapped to Face.smooth_lit, see section 
-\begin_inset LatexCommand ref
+\begin_inset CommandInset ref
+LatexCommand ref
 reference "cha:Modeling"
 
 \end_inset
@@ -5786,9 +7039,13 @@ reference "cha:Modeling"
 \end_layout
 
 \begin_layout Description
-Face\InsetSpace ~
+Face
+\begin_inset space ~
+\end_inset
+
 colors (mapped to Vertex.color, see section 
-\begin_inset LatexCommand ref
+\begin_inset CommandInset ref
+LatexCommand ref
 reference "cha:Modeling"
 
 \end_inset
@@ -5841,8 +7098,11 @@ AnimatedModel are exported to the Cal3D file format using BlenderCal (included
 \begin_inset Note Comment
 status open
 
-\begin_layout Standard
-Known\InsetSpace ~
+\begin_layout Plain Layout
+Known
+\begin_inset space ~
+\end_inset
+
 bug: Blender2Cal3D.py is known to have several bugs.
  I encourage you to export your model as early as possible, to ensure it
  exports well and to avoid loosing too much works.
@@ -5850,7 +7110,7 @@ bug: Blender2Cal3D.py is known to have several bugs.
  (for more information, read the comment at the beginning of Blender2Cal3D.py):
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 \series bold
 Avoid moving, rotating or resizing objects
@@ -5859,24 +7119,24 @@ Avoid moving, rotating or resizing objects
  all points / bones (with "a"), and move / rotate / resize them.
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 Use only a single armature
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 Use only a single rootbone (Cal3D doesn't support floating bones)
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 Use only locrot keys (Cal3D doesn't support bone's size change)
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 Don't try to create child/parent constructs in blender object, that gets
  exported incorrectly at the moment
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 Objects or animations whose names start by "_" are not exported (hidden
  object) 
 \end_layout
@@ -5887,7 +7147,8 @@ Objects or animations whose names start by "_" are not exported (hidden
 \end_layout
 
 \begin_layout Section
-\begin_inset LatexCommand label
+\begin_inset CommandInset label
+LatexCommand label
 name "sec:Adding-Soya-specific-attributes-in-Blender"
 
 \end_inset
@@ -5901,7 +7162,7 @@ wide false
 sideways false
 status open
 
-\begin_layout Standard
+\begin_layout Plain Layout
 \noindent
 \align center
 \begin_inset Graphics
@@ -5913,11 +7174,12 @@ status open
 
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 \begin_inset Caption
 
-\begin_layout Standard
-\begin_inset LatexCommand label
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
 name "cap:Using-parameter-text"
 
 \end_inset
@@ -5954,7 +7216,8 @@ parameter text buffer
 \end_inset
 
  (see figure 
-\begin_inset LatexCommand ref
+\begin_inset CommandInset ref
+LatexCommand ref
 reference "cap:Using-parameter-text"
 
 \end_inset
@@ -6112,7 +7375,8 @@ config_file=file also read the given file (as if it was a parameter buffer).
 \end_layout
 
 \begin_layout Section
-\begin_inset LatexCommand label
+\begin_inset CommandInset label
+LatexCommand label
 name "sec:Generating-several-Soya"
 
 \end_inset
@@ -6292,7 +7556,10 @@ The script soya/soya2blender.py (in the Soya sources) can import a Soya Model
 \end_layout
 
 \begin_layout Description
-Known\InsetSpace ~
+Known
+\begin_inset space ~
+\end_inset
+
 bug: It seems that soya2blender.py doesn't export texture well, so you'll
  have to re-set the texture.
 \end_layout
@@ -6469,7 +7736,8 @@ ition) -> (x, y), where position is either a Point or a CoordSyst.
 \end_layout
 
 \begin_layout Chapter
-\begin_inset LatexCommand label
+\begin_inset CommandInset label
+LatexCommand label
 name "cha:Sounds"
 
 \end_inset
@@ -6503,7 +7771,8 @@ Sound files should be placed in your
 <data>/sounds
 \family default
  directory (see chapter 
-\begin_inset LatexCommand ref
+\begin_inset CommandInset ref
+LatexCommand ref
 reference "cha:Managing-data"
 
 \end_inset
@@ -6579,7 +7848,8 @@ Hint: as WAV files are not seekable though the wave Python module, loading
 \end_layout
 
 \begin_layout Section
-\begin_inset LatexCommand label
+\begin_inset CommandInset label
+LatexCommand label
 name "sec:Sound-related-init-parameters"
 
 \end_inset
@@ -6631,7 +7901,8 @@ Use soya.get_sound_volume() to get the current sound volume.
 \end_layout
 
 \begin_layout Section
-\begin_inset LatexCommand label
+\begin_inset CommandInset label
+LatexCommand label
 name "sec:Sound-and-multiple-Cameras"
 
 \end_inset
@@ -6705,10 +7976,16 @@ Loading Sounds:
 \end_layout
 
 \begin_layout Description
-Sound.get(filename)\InsetSpace ~
-->\InsetSpace ~
-Sound loads a Sound from the <data>/sounds/ directory;
- filename should include the sound extension (
+Sound.get(filename)
+\begin_inset space ~
+\end_inset
+
+->
+\begin_inset space ~
+\end_inset
+
+Sound loads a Sound from the <data>/sounds/ directory; filename should include
+ the sound extension (
 \emph on
 e.g.
 
@@ -6745,15 +8022,35 @@ Constructor is:
 \end_layout
 
 \begin_layout Description
-SoundPlayer(parent,\InsetSpace ~
-sound,\InsetSpace ~
-loop,\InsetSpace ~
-play_in_3D,\InsetSpace ~
-gain,\InsetSpace ~
-auto_remove)\InsetSpace ~
-->\InsetSpace ~
-SoundPlayer
- the parameters directly match the attributes.
+SoundPlayer(parent,
+\begin_inset space ~
+\end_inset
+
+sound,
+\begin_inset space ~
+\end_inset
+
+loop,
+\begin_inset space ~
+\end_inset
+
+play_in_3D,
+\begin_inset space ~
+\end_inset
+
+gain,
+\begin_inset space ~
+\end_inset
+
+auto_remove)
+\begin_inset space ~
+\end_inset
+
+->
+\begin_inset space ~
+\end_inset
+
+SoundPlayer the parameters directly match the attributes.
 \end_layout
 
 \begin_layout Standard
@@ -6796,7 +8093,8 @@ ended() this method is called when the sound is over.
 \end_layout
 
 \begin_layout Chapter
-\begin_inset LatexCommand label
+\begin_inset CommandInset label
+LatexCommand label
 name "cha:Collision-detection-and-physics"
 
 \end_inset
@@ -6805,7 +8103,8 @@ Collision detection and physics
 \end_layout
 
 \begin_layout Section
-\begin_inset LatexCommand label
+\begin_inset CommandInset label
+LatexCommand label
 name "sec:Raypicking"
 
 \end_inset
@@ -6830,7 +8129,8 @@ Advanced Soya objects
 \end_layout
 
 \begin_layout Section
-\begin_inset LatexCommand label
+\begin_inset CommandInset label
+LatexCommand label
 name "sec:Terrain"
 
 \end_inset
@@ -6863,7 +8163,8 @@ Portal
 \end_layout
 
 \begin_layout Section
-\begin_inset LatexCommand label
+\begin_inset CommandInset label
+LatexCommand label
 name "sec:Atmosphere"
 
 \end_inset
@@ -6884,7 +8185,8 @@ SkyAtmosphere
 \end_layout
 
 \begin_layout Section
-\begin_inset LatexCommand label
+\begin_inset CommandInset label
+LatexCommand label
 name "sec:Model-Deforms"
 
 \end_inset
@@ -6921,7 +8223,8 @@ Sprite
 \end_layout
 
 \begin_layout Subsection
-\begin_inset LatexCommand label
+\begin_inset CommandInset label
+LatexCommand label
 name "sub:Portal"
 
 \end_inset
@@ -6942,7 +8245,8 @@ Deform
 \end_layout
 
 \begin_layout Chapter
-\begin_inset LatexCommand label
+\begin_inset CommandInset label
+LatexCommand label
 name "cha:Modeling"
 
 \end_inset
@@ -6962,7 +8266,8 @@ Soya Model are created by putting several Faces (triangles or quads) in
 \end_layout
 
 \begin_layout Section
-\begin_inset LatexCommand label
+\begin_inset CommandInset label
+LatexCommand label
 name "sec:Materials"
 
 \end_inset
@@ -7031,7 +8336,8 @@ ModelBuilder
 \end_layout
 
 \begin_layout Chapter
-\begin_inset LatexCommand label
+\begin_inset CommandInset label
+LatexCommand label
 name "cha:Widget-systems"
 
 \end_inset
@@ -7040,7 +8346,8 @@ Font, text, and widget systems
 \end_layout
 
 \begin_layout Section
-\begin_inset LatexCommand label
+\begin_inset CommandInset label
+LatexCommand label
 name "sec:Fonts-and-text"
 
 \end_inset
@@ -7049,7 +8356,8 @@ Fonts and text drawing
 \end_layout
 
 \begin_layout Section
-\begin_inset LatexCommand label
+\begin_inset CommandInset label
+LatexCommand label
 name "sec:Widgets"
 
 \end_inset
@@ -7100,7 +8408,8 @@ a player can control one or several characters,
 
 \begin_layout Itemize
 one or several players can play with the same client (see figure 
-\begin_inset LatexCommand ref
+\begin_inset CommandInset ref
+LatexCommand ref
 reference "fig:Tofu-client-server-model"
 
 \end_inset
@@ -7114,7 +8423,7 @@ wide false
 sideways false
 status open
 
-\begin_layout Standard
+\begin_layout Plain Layout
 \noindent
 \align center
 \begin_inset Graphics
@@ -7127,11 +8436,12 @@ status open
 
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 \begin_inset Caption
 
-\begin_layout Standard
-\begin_inset LatexCommand label
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
 name "fig:Tofu-client-server-model"
 
 \end_inset
@@ -7217,7 +8527,7 @@ wide false
 sideways false
 status open
 
-\begin_layout Standard
+\begin_layout Plain Layout
 \noindent
 \align center
 \begin_inset Graphics
@@ -7230,11 +8540,12 @@ status open
 
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 \begin_inset Caption
 
-\begin_layout Standard
-\begin_inset LatexCommand label
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
 name "fig:Players,-Mobiles-and-Levels"
 
 \end_inset
@@ -7261,7 +8572,8 @@ In client-server mode, Tofu sends various information over the network in
  order to maintain the state of the Mobiles identical on the server and
  on each client.
  Tofu distinguishes three types of information (see figure 
-\begin_inset LatexCommand ref
+\begin_inset CommandInset ref
+LatexCommand ref
 reference "fig:Action,-state-and-message"
 
 \end_inset
@@ -7336,7 +8648,7 @@ wide false
 sideways false
 status open
 
-\begin_layout Standard
+\begin_layout Plain Layout
 \noindent
 \align center
 \begin_inset Graphics
@@ -7349,11 +8661,12 @@ status open
 
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 \begin_inset Caption
 
-\begin_layout Standard
-\begin_inset LatexCommand label
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
 name "fig:Action,-state-and-message"
 
 \end_inset
@@ -7417,31 +8730,64 @@ These variables can be used in various ways:
 \end_layout
 
 \begin_layout Description
-In\InsetSpace ~
-single\InsetSpace ~
-player\InsetSpace ~
-mode one usually wants a game per player, which can be obtained
- by using the player name as the game name.
+In
+\begin_inset space ~
+\end_inset
+
+single
+\begin_inset space ~
+\end_inset
+
+player
+\begin_inset space ~
+\end_inset
+
+mode one usually wants a game per player, which can be obtained by using
+ the player name as the game name.
 \end_layout
 
 \begin_layout Description
-In\InsetSpace ~
-single\InsetSpace ~
-client-server\InsetSpace ~
+In
+\begin_inset space ~
+\end_inset
+
+single
+\begin_inset space ~
+\end_inset
+
+client-server
+\begin_inset space ~
+\end_inset
+
 mode :
 \end_layout
 
 \begin_deeper
 \begin_layout Description
-For\InsetSpace ~
-persistent\InsetSpace ~
+For
+\begin_inset space ~
+\end_inset
+
+persistent
+\begin_inset space ~
+\end_inset
+
 universe a single game is needed (use any name of your choice).
 \end_layout
 
 \begin_layout Description
-For\InsetSpace ~
-game\InsetSpace ~
-with\InsetSpace ~
+For
+\begin_inset space ~
+\end_inset
+
+game
+\begin_inset space ~
+\end_inset
+
+with
+\begin_inset space ~
+\end_inset
+
 
 \begin_inset Quotes eld
 \end_inset
@@ -7532,7 +8878,8 @@ tofu.SAVED_GAME_DIR = "/tmp/tofu_demo"
 \begin_layout Description
 Warning: Tofu automatically imports and enables Cerealizer, and disables
  Pickle (see section 
-\begin_inset LatexCommand ref
+\begin_inset CommandInset ref
+LatexCommand ref
 reference "sec:File-formats"
 
 \end_inset
@@ -7751,7 +9098,10 @@ remove_mobile(mobile) is called when the player loose the control of a mobile
 \end_layout
 
 \begin_layout Description
-login(socket,\InsetSpace ~
+login(socket,
+\begin_inset space ~
+\end_inset
+
 udp_address) is called when the Player connects to the game
 \end_layout
 
@@ -8021,7 +9371,8 @@ send_action(action) sends the given action.
 \end_layout
 
 \begin_layout Subsubsection
-\begin_inset LatexCommand label
+\begin_inset CommandInset label
+LatexCommand label
 name "sub:Doing-actions"
 
 \end_inset
@@ -8155,7 +9506,8 @@ e.g.
 \begin_layout Standard
 In do_collision, you may want to call set_current_state_importance() too
  (see section 
-\begin_inset LatexCommand ref
+\begin_inset CommandInset ref
+LatexCommand ref
 reference "sub:Doing-actions"
 
 \end_inset
@@ -8262,53 +9614,53 @@ The following table indicates which methods is called on which mode.
 \begin_inset Tabular
 <lyxtabular version="3" rows="13" columns="4">
 <features>
-<column alignment="left" valignment="top" leftline="true" width="0">
-<column alignment="center" valignment="top" leftline="true" width="0">
-<column alignment="center" valignment="top" leftline="true" width="0">
-<column alignment="center" valignment="top" leftline="true" rightline="true" width="0">
-<row topline="true" bottomline="true">
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+<column alignment="left" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 methods (*= called every round)
 \end_layout
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 single mode
 \end_layout
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 server mode
 \end_layout
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 client mode
 \end_layout
 
 \end_inset
 </cell>
 </row>
-<row topline="true">
+<row>
 <cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 control_owned
 \end_layout
 
@@ -8317,7 +9669,7 @@ control_owned
 <cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 X
 \end_layout
 
@@ -8326,27 +9678,27 @@ X
 <cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 X
 \end_layout
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 X
 \end_layout
 
 \end_inset
 </cell>
 </row>
-<row topline="true">
+<row>
 <cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 control_lost
 \end_layout
 
@@ -8355,7 +9707,7 @@ control_lost
 <cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 X
 \end_layout
 
@@ -8364,27 +9716,27 @@ X
 <cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 X
 \end_layout
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 X
 \end_layout
 
 \end_inset
 </cell>
 </row>
-<row topline="true">
+<row>
 <cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 generate_actions (*)
 \end_layout
 
@@ -8393,7 +9745,7 @@ generate_actions (*)
 <cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 X
 \end_layout
 
@@ -8402,7 +9754,7 @@ X
 <cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 X (for bots)
 \end_layout
 
@@ -8411,18 +9763,18 @@ X (for bots)
 <cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 X (for human player)
 \end_layout
 
 \end_inset
 </cell>
 </row>
-<row topline="true">
+<row>
 <cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 send_action
 \end_layout
 
@@ -8431,7 +9783,7 @@ send_action
 <cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 X
 \end_layout
 
@@ -8440,27 +9792,27 @@ X
 <cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 X
 \end_layout
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 X
 \end_layout
 
 \end_inset
 </cell>
 </row>
-<row topline="true">
+<row>
 <cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 do_action
 \end_layout
 
@@ -8469,7 +9821,7 @@ do_action
 <cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 X
 \end_layout
 
@@ -8478,7 +9830,7 @@ X
 <cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 X
 \end_layout
 
@@ -8487,18 +9839,18 @@ X
 <cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 \end_layout
 
 \end_inset
 </cell>
 </row>
-<row topline="true">
+<row>
 <cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 do_physics (*)
 \end_layout
 
@@ -8507,7 +9859,7 @@ do_physics (*)
 <cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 X
 \end_layout
 
@@ -8516,7 +9868,7 @@ X
 <cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 X
 \end_layout
 
@@ -8525,18 +9877,18 @@ X
 <cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 X
 \end_layout
 
 \end_inset
 </cell>
 </row>
-<row topline="true">
+<row>
 <cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 set_current_state_importance
 \end_layout
 
@@ -8545,7 +9897,7 @@ set_current_state_importance
 <cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 X
 \end_layout
 
@@ -8554,27 +9906,27 @@ X
 <cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 X
 \end_layout
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 X
 \end_layout
 
 \end_inset
 </cell>
 </row>
-<row topline="true">
+<row>
 <cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 get_network_state
 \end_layout
 
@@ -8583,7 +9935,7 @@ get_network_state
 <cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 \end_layout
 
@@ -8592,27 +9944,27 @@ get_network_state
 <cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 X
 \end_layout
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 \end_layout
 
 \end_inset
 </cell>
 </row>
-<row topline="true">
+<row>
 <cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 read_network_state
 \end_layout
 
@@ -8621,7 +9973,7 @@ read_network_state
 <cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 \end_layout
 
@@ -8630,27 +9982,27 @@ read_network_state
 <cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 \end_layout
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 X
 \end_layout
 
 \end_inset
 </cell>
 </row>
-<row topline="true">
+<row>
 <cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 do_collisions (*)
 \end_layout
 
@@ -8659,7 +10011,7 @@ do_collisions (*)
 <cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 X
 \end_layout
 
@@ -8668,7 +10020,7 @@ X
 <cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 X
 \end_layout
 
@@ -8677,18 +10029,18 @@ X
 <cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 \end_layout
 
 \end_inset
 </cell>
 </row>
-<row topline="true">
+<row>
 <cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 send_message
 \end_layout
 
@@ -8697,7 +10049,7 @@ send_message
 <cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 X
 \end_layout
 
@@ -8706,45 +10058,7 @@ X
 <cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
-X
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Standard
-
-\end_layout
-
-\end_inset
-</cell>
-</row>
-<row topline="true" bottomline="true">
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Standard
-do_message
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Standard
-X
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Standard
+\begin_layout Plain Layout
 X
 \end_layout
 
@@ -8753,7 +10067,45 @@ X
 <cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+do_message
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+X
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+X
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
 X
 \end_layout
 
@@ -8908,33 +10260,33 @@ Same as RaypickCollidedMobile, but with gravitational force.
 \begin_inset Tabular
 <lyxtabular version="3" rows="4" columns="2">
 <features>
-<column alignment="left" valignment="top" leftline="true" width="0">
-<column alignment="left" valignment="top" leftline="true" rightline="true" width="0">
-<row topline="true" bottomline="true">
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+<column alignment="left" valignment="top" width="0">
+<column alignment="left" valignment="top" width="0">
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 game examples
 \end_layout
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 Mobile classes to extend
 \end_layout
 
 \end_inset
 </cell>
 </row>
-<row topline="true">
+<row>
 <cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 a racing game
 \end_layout
 
@@ -8943,18 +10295,18 @@ a racing game
 <cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 SpeedInterpolatedMobile, RaypickCollidedMobileWithGravity
 \end_layout
 
 \end_inset
 </cell>
 </row>
-<row topline="true">
+<row>
 <cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 a spatial simulation
 \end_layout
 
@@ -8963,27 +10315,27 @@ a spatial simulation
 <cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 SpeedInterpolatedMobile, RaypickCollidedMobile
 \end_layout
 
 \end_inset
 </cell>
 </row>
-<row topline="true" bottomline="true">
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 a character-based game
 \end_layout
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 SpeedInterpolatedMobile, RaypickCollidedMobileWithGravity, AnimatedMobile
 \end_layout
 
@@ -9038,7 +10390,8 @@ Using Soya with...
 \end_layout
 
 \begin_layout Section
-\begin_inset LatexCommand label
+\begin_inset CommandInset label
+LatexCommand label
 name "sec:External-GUI-systems"
 
 \end_inset
@@ -9123,7 +10476,8 @@ See tutorial soya-with-tk-1.py for an example.
 \end_layout
 
 \begin_layout Section
-\begin_inset LatexCommand label
+\begin_inset CommandInset label
+LatexCommand label
 name "sec:PyGame"
 
 \end_inset
@@ -9172,8 +10526,13 @@ Hacking the Soya sources
 \begin_layout Standard
 The source of the development version of Soya can be found on our Subversion
  repository: 
-\begin_inset LatexCommand htmlurl
-target "http://gna.org/svn/?group=soya"
+\begin_inset Flex URL
+status collapsed
+
+\begin_layout Plain Layout
+
+http://gna.org/svn/?group=soya
+\end_layout
 
 \end_inset
 
