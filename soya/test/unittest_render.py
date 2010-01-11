@@ -36,35 +36,35 @@ class ScreenShotTC(SoyaTestCase):
 		soya.set_root_widget(self.blue_camera)
 		soya.render()
 		screenshot = soya.screenshot()
-		assert(screenshot.getpixel((0,0)), (0, 0, 255))
+		self.assertEquals(screenshot.getpixel((0,0)), (0, 0, 255))
 
 		soya.set_root_widget(self.red_camera)
 		soya.render()
 		screenshot = soya.screenshot()
-		assert(screenshot.getpixel((0,0)), (255, 0, 0))
+		self.assertEquals(screenshot.getpixel((0,0)),(255, 0, 0))
 
 	def test_render_back(self):
 		# Screenshot in front buffer
 		soya.set_root_widget(self.blue_camera)
 		soya.render()
 		screenshot = soya.screenshot()
-		assert(screenshot.getpixel((0,0)), (0, 0, 255))
+		self.assertEquals(screenshot.getpixel((0,0)),(0, 0, 255))
 
 		# Screenshot in back buffer
 		soya.set_root_widget(self.red_camera)
 		soya.render(False)
 		screenshot = soya.screenshot(use_back_buffer=True)
-		assert(screenshot.getpixel((0,0)), (255, 0, 0))
+		self.assertEquals(screenshot.getpixel((0,0)),(255, 0, 0))
 
 		# Front buffer didn't changed
 		screenshot = soya.screenshot()
-		assert(screenshot.getpixel((0,0)), (0, 0, 255))
+		self.assertEquals(screenshot.getpixel((0,0)),(0, 0, 255))
 
 		# Everything still work fine
 		soya.set_root_widget(self.blue_camera)
 		soya.render()
 		screenshot = soya.screenshot()
-		assert(screenshot.getpixel((0,0)), (0, 0, 255))
+		self.assertEquals(screenshot.getpixel((0,0)),(0, 0, 255))
 
 
 if __name__ == '__main__':

@@ -55,10 +55,10 @@ cdef class Contact:
 			else:
 				raise IndexError("(%i) Only two body may be stored into a Contact"%index)
 		
-		def eraseGeom1(self):
+		def erase_Geom1(self):
 			self._contact.geom.g1 = NULL
 			
-		def eraseGeom2(self):
+		def erase_Geom2(self):
 			self._contact.geom.g2 = NULL
 			
 				

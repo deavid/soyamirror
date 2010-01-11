@@ -51,6 +51,43 @@ class Laser(PythonCoordSyst):
 		else:                   return 1, self, None
 		
 	def render(self):
+		
+		self.points = []
+
+		#list containing a couple of (point, direc)
+		to_draw = []
+		
+		pos   = self.position()
+		direc = Vector(self, 0.0, 0.0, -1.0)
+		if self.collide:
+			i = 0
+			raypicker = self.get_root()
+			while direc is not None and (i <= self.max_reflect):
+				i = i + 1
+
+				impact = raypicker.raypick(pos, direc, -1.0)
+				if not impact:
+					pos   = pos + (direc * 32000.0)
+					direc = None
+				else:
+					pos = impact[0]
+					
+					if self.reflect:
+						normal = impact[1] % self
+						normal.normalize() # changing coordsys can alterate normal size
+						normal.set_length(-2.0 * direc.dot_product(normal))
+						direc = normal + direc
+						
+					else:
+						direc = None
+				
+				to_draw.append((pos, direct))
+				self.points.append(pos)
+		else:
+			pos   = pos + (direc * 32000.0)
+			to_draw.append((pos, None))
+
+		#rendering part
 		DEFAULT_MATERIAL.activate()
 		glDisable(GL_TEXTURE_2D)
 		glDisable(GL_LIGHTING)
@@ -58,36 +95,9 @@ class Laser(PythonCoordSyst):
 		glColor4f(*self.color)
 		glBegin(GL_LINES)
 		glVertex3f(0.0, 0.0, 0.0)
-		
-		self.points = []
-		
-		i     = 0
-		pos   = self.position()
-		direc = Vector(self, 0.0, 0.0, -1.0)
-
-		raypicker = self.get_root()
-		while direc and (i < 50):
-			i = i + 1
-
-			impact = raypicker.raypick(pos, direc, -1.0)
-			if not impact:
-				pos   = pos + (direc * 32000.0)
-				direc = None
-			else:
-				pos = impact[0]
-				
-				if self.reflect:
-					normal = impact[1] % self
-					normal.normalize() # changing coordsys can alterate normal size
-					normal.set_length(-2.0 * direc.dot_product(normal))
-					direc = normal + direc
-					
-				else: direc = None
-				
+		for pos, direct in to_draw:
 			glVertex3f(*self.transform_point(pos.x, pos.y, pos.z, pos.parent))
 			if direc: glVertex3f(*self.transform_point(pos.x, pos.y, pos.z, pos.parent))
-			
-			self.points.append(pos)
 			
 			
 		glEnd()
@@ -95,3 +105,4 @@ class Laser(PythonCoordSyst):
 		glEnable(GL_LIGHTING)
 		glEnable(GL_TEXTURE_2D)
 		
+

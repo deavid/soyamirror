@@ -274,7 +274,8 @@ PROPORTION is the proportion of the current round's time that has passed (1.0 fo
 		"""MainLoop.render()
 
 Called by MainLoop.main_loop when rendering is needed; default implementation calls soya.render."""
-		for i in BEFORE_RENDER: i()
+		for function in BEFORE_RENDER:
+			function()
 		render()
 
 	property events:
@@ -288,10 +289,6 @@ Called by MainLoop.main_loop when rendering is needed; default implementation ca
 		def __get__(self):
 			return self._events
 
-		def __set__(self,val):
-			"""Deprecated: Mainloop.events will be not writable in the future"""
-			self._events = val
-			
 	property raw_events:
 		"""List all events from the round. Mouse motion have not yet coalesced"""
 		def __get__(self):

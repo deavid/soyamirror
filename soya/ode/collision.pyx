@@ -43,10 +43,10 @@ cdef void collide_callback(void* data, dGeomID o1, dGeomID o2):
 					return
 				elif not g1.body.pushable:
 					for contact in contacts:
-						contact.eraseGeom1()
+						contact.erase_Geom1()
 				elif not g2.body.pushable:
 					for contact in contacts:
-						contact.eraseGeom2()
+						contact.erase_Geom2()
 				
 			for contact in contacts:
 				#print "bouh"
