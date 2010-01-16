@@ -107,9 +107,9 @@ if endian == "big":
 #from config import *
 
 if sys.platform[:3] == "win":
-	LIBS = ["m", "glew32", "SDL", "SDL_mixer", "freetype", "cal3d", "stdc++", "ode"]
+	LIBS = ["m", "glew32", "SDL", "SDL_mixer", "freetype", "cal3d", "ode"]
 else:
-	LIBS = ["m", "GLEW", "SDL", "freetype", "cal3d", "stdc++","ode"]
+	LIBS = ["m", "GLEW", "SDL", "freetype", "cal3d","ode"]
 	FRAMEWORKS=[]
 
 SOYA_PYREX_SOURCES  = ["_soya.pyx", "matrix.c", "chunk.c"]
