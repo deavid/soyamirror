@@ -379,10 +379,10 @@ cdef class _SoundPlayer(CoordSyst):
 			alSourcefv(self._source, AL_POSITION, self._old_pos)
 			alSource3f(self._source, AL_VELOCITY, 0.0, 0.0, 0.0)
 			
-			alSourcef(self._source, AL_SOURCE_RELATIVE, AL_TRUE)
+			alSourcei(self._source, AL_SOURCE_RELATIVE, AL_TRUE)
 			
 		else:
-			alSourcef(self._source, AL_SOURCE_RELATIVE, AL_FALSE)
+			alSourcei(self._source, AL_SOURCE_RELATIVE, AL_FALSE)
 			
 			
 		if not sound is None:
@@ -439,10 +439,10 @@ cdef class _SoundPlayer(CoordSyst):
 		
 		if self._option & SOUND_PLAY_IN_3D:
 			alSourcefv(self._source, AL_POSITION, self._old_pos)
-			alSourcef(self._source, AL_SOURCE_RELATIVE, AL_TRUE)
+			alSourcei(self._source, AL_SOURCE_RELATIVE, AL_TRUE)
 			
 		else:
-			alSourcef(self._source, AL_SOURCE_RELATIVE, AL_FALSE)
+			alSourcei(self._source, AL_SOURCE_RELATIVE, AL_FALSE)
 			
 		if self._sound:
 			self._current_buffer = self._sound._getbuffer(self._current_buffer_id)
