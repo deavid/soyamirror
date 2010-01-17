@@ -198,7 +198,7 @@ class LaserCamera(soya.Camera):
 				target.add_force(self.laser_vector*self.laser_power,impact)
 				
 				l = sqrt(self.laser_power/1000.)
-				nl = sqrt(l)
+				nl = int(sqrt(l))
 				#create particle
 				# first corresponding to the dust of the planet
 				s = soya.Smoke(self.parent,nb_particles=12*nl)
