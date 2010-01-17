@@ -7,7 +7,7 @@ import sys, os
 import soya
 import soya.pudding as pudding
 
-import pudding.ext.meter
+import soya.pudding.ext.meter
 
 soya.init()
 soya.path.append(os.path.join(os.path.dirname(sys.argv[0]), "data"))
@@ -33,7 +33,7 @@ camera.z = 3.
 
 soya.set_root_widget(pudding.core.RootWidget())
 
-meter = pudding.ext.meter.Meter(soya.root_widget, min=0, max=100,
+meter = soya.pudding.ext.meter.Meter(soya.root_widget, min=0, max=100,
 																left=10, top=10, width=100, height=20)
 meter.border_color = (1, 1, 1, 1)
 
