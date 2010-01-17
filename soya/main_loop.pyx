@@ -41,21 +41,23 @@ Interesting attributes:
                 (betwenn event processing and begin_round call)
 
  - next_round_tasks: a list of callable (taking no arg) that will be called once, just
-	 after the beginning of the next round.
+                     after the beginning of the next round.
 
  - scenes: the scenes associated to this main_loop.
 
- - round_duration: The duration of a round. Round is the main_loop's time unit. The main_loop calls
-	 successively begin_round(), advance_time() (possibly several times) and end_round(); it
-	 is granted that ALL rounds correspond to a period of duration ROUND_DURATION (though
-	 the different period may not be regularly spread over time).
-	 Default is 0.030.
+ - round_duration: The duration of a round. Round is the main_loop's time unit.
+                   The main_loop calls successively begin_round(),
+                   advance_time() (possibly several times) and end_round(); it
+                   is granted that ALL rounds correspond to a period of
+                   duration ROUND_DURATION (though the different period may not
+                   be regularly spread over time).  Default is 0.030.
 
- - min_frame_duration: minimum duration for a frame. This attribute can be used to limit
-	 the maximum FPS to save CPU time; e.g. FPS higher than 30-40 is usually useless.
-	 Default is 0.020, which limits FPS to 40 in theory and to about 33 in practice
-	 (I don't know why there is a difference between theory and practice !).
-"""
+ - min_frame_duration: Minimum duration for a frame. This attribute can be used
+                       to limit the maximum FPS to save CPU time; e.g. FPS
+                       higher than 30-40 is usually useless.  Default is 0.020,
+                       which limits FPS to 40 in theory and to about 33 in
+                       practice (I don't know why there is a difference between
+                       theory and practice !).  """
 	
 	# for time computation, double precision is needed
 	
