@@ -1,0 +1,7 @@
+syntax:glob
+soya/_soya.c
+soya/build/*
+soya/config.pxd
+soya/config.pyx
+soya/opengl.c
+soya/sdlconst.c
