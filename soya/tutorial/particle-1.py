@@ -53,12 +53,12 @@ scene = soya.World()
 
 # this is slightly more dull
 # you will notice that this doesnt automatically set auto_generate_particle
-smoke=soya.Smoke(scene)
+#smoke=soya.Smoke(scene)
 
 # here we use the same smoke particle system but set auto_generate_particle
 # so that it continues
-#smoke=soya.Smoke(scene)
-#smoke.auto_generate_particle=1
+smoke=soya.Smoke(scene)
+smoke.auto_generate_particle=1
 
 # its also possible to create your own particle systems
 # i dont think you can beat looking at the source file model/particle.pyx
