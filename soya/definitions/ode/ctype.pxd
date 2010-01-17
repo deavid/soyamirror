@@ -471,6 +471,7 @@ cdef extern from "ode/ode.h":
 		ctypedef dColliderFn * dGetColliderFnFn (int num)
 		ctypedef void dGeomDtorFn (dGeomID o)
 		ctypedef int dAABBTestFn (dGeomID o1, dGeomID o2, dReal aabb[6])
+		void dSetColliderOverride (int i, int j, dColliderFn *fn)
 
 		ctypedef struct dGeomClass:
 			int bytes
