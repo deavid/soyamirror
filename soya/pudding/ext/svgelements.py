@@ -20,7 +20,9 @@ import soya
 from soya.opengl import *
 
 try:
-	from elementtree import ElementTree
+       from elementtree import ElementTree
+except ImportError:
+       from xml.etree import ElementTree
 except ImportError:
 	raise "You need elementtree from http://effbot.org/zone/element-index.htm"
 
