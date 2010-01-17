@@ -54,36 +54,38 @@ class Laser(PythonCoordSyst):
 		
 		self.points = []
 
-		#list containing a couple of (point, direc)
+		#list containing points
 		to_draw = []
 		
 		pos   = self.position()
 		direc = Vector(self, 0.0, 0.0, -1.0)
-		if not self.collide:
-			pos   = pos + (direc * 32000.0)
-			to_draw.append((pos, None))
-		else:
-			nb_reflect = 0
+		if self.collide:
+			i = 0
 			raypicker = self.get_root()
-			while direc is not None and (nb_reflect <= self.max_reflect):
-				nb_reflect = nb_reflect + 1
+			while direc is not None and (i <= self.max_reflect):
+				i = i + 1
+
 				impact = raypicker.raypick(pos, direc, -1.0)
 				if not impact:
-					direc = None
 					pos   = pos + (direc * 32000.0)
+					direc = None
 				else:
 					pos = impact[0]
 					
-					if not self.reflect:
-						direc = None
-					else:
+					if self.reflect:
 						normal = impact[1] % self
 						normal.normalize() # changing coordsys can alterate normal size
 						normal.set_length(-2.0 * direc.dot_product(normal))
 						direc = normal + direc
-				
-				to_draw.append((pos, direc))
+						
+					else:
+						direc = None
+						
+				to_draw.append(pos)
 				self.points.append(pos)
+		else:
+			pos   = pos + (direc * 32000.0)
+			to_draw.append(pos)
 
 		#rendering part
 		DEFAULT_MATERIAL.activate()
@@ -91,16 +93,13 @@ class Laser(PythonCoordSyst):
 		glDisable(GL_LIGHTING)
 		
 		glColor4f(*self.color)
-		glBegin(GL_LINES)
+		glBegin(GL_LINE_STRIP)
 		glVertex3f(0.0, 0.0, 0.0)
-		for pos, direct in to_draw:
+		for pos in to_draw:
 			glVertex3f(*self.transform_point(pos.x, pos.y, pos.z, pos.parent))
-			if direc: glVertex3f(*self.transform_point(pos.x, pos.y, pos.z, pos.parent))
-			
 			
 		glEnd()
 		
 		glEnable(GL_LIGHTING)
 		glEnable(GL_TEXTURE_2D)
-		
-
+	
