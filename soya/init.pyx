@@ -241,10 +241,12 @@ def set_video(int width, int height, int fullscreen, int resizable, int quiet=Fa
 	#cdef unsigned int flags
 	cdef int flags
 	cdef SDL_VideoInfo* info
+	cdef void* tmp
 	renderer.screen_width  = width
 	renderer.screen_height = height
 	# Information about the current video settings
-	info = <SDL_VideoInfo*> SDL_GetVideoInfo() # cast for constness adjustment
+	tmp = SDL_GetVideoInfo()
+	info = <SDL_VideoInfo*> tmp  # cast for constness adjustment
 	if info == NULL:
 		s = "Video query failed : %s" % SDL_GetError()
 		sys.stderr.write(s + '\n')
@@ -260,9 +262,16 @@ def set_video(int width, int height, int fullscreen, int resizable, int quiet=Fa
 		renderer.engine_option = renderer.engine_option |  FULLSCREEN
 		flags = flags | SDL_FULLSCREEN
 	
-	if resizable == 1:    flags = flags | SDL_RESIZABLE
-	if info.hw_available: flags = flags | SDL_HWSURFACE
-	else:                 flags = flags | SDL_SWSURFACE
+	if resizable == 1:
+		flags = flags | SDL_RESIZABLE
+	if info.hw_available:
+		if not quiet:
+			sys.stdout.write("* Soya * Using Hardware Surface.\n")
+		flags = flags | SDL_HWSURFACE
+	else:
+		if not quiet:
+			sys.stdout.write("* Soya * Using Software Surface.\n")
+		flags = flags | SDL_SWSURFACE
 # Useless (see http://www.devolution.com/pipermail/sdl/2004-September/064784.html)
 #	if info.blit_hw :     flags = flags | SDL_HWACCEL
 	stencil = 16
@@ -292,11 +301,17 @@ def set_video(int width, int height, int fullscreen, int resizable, int quiet=Fa
 	# Wait until OpenGL is REALLY ready
 	cdef int i
 	from time import sleep
+	if not quiet:
+		sys.stdout.write("* Soya * OpenGL initialization ")
 	for i from 0 <= i < 10:
 		if glGetString(GL_RENDERER) != NULL: break
+		if not quiet:
+			sys.stdout.write(".")
 		sleep(0.1)
 	else:
-		sys.stderr.write("* Soya * ERROR : OpenGL is not ready... Soya will crash soon i guess :-(\n")
+		sys.stderr.write("\n* Soya * ERROR : OpenGL is not ready... Soya will crash soon i guess :-(\n")
+	if not quiet:
+		sys.stdout.write(" [OK]\n")
 	
 		
 	glViewport(0, 0, renderer.screen_width, renderer.screen_height)
