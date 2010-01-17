@@ -274,7 +274,8 @@ PROPORTION is the proportion of the current round's time that has passed (1.0 fo
 		"""MainLoop.render()
 
 Called by MainLoop.main_loop when rendering is needed; default implementation calls soya.render."""
-		for i in BEFORE_RENDER: i()
+		for function in BEFORE_RENDER:
+			function()
 		render()
 
 	property events:
