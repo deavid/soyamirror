@@ -357,6 +357,7 @@ SOUND_DOPPLER_FACTOR can be used to increase or decrease the Doppler effect."""
 		glewInit()
 		#dInitODE2(dAllocateMaskAll)
 		dInitODE2(~0)
+		geomterrain_init()
 		
 		SDL_UNICODE=0
 		
