@@ -27,30 +27,39 @@ sword.ode = True
 sword.x = 1.0
 sword.z = -5
 
-blade = soya.BoxedMass(0.00005,50,5,1)
-pommeau = soya.SphericalMass(50,0.5)
-pommeau.translate((25,0,0))
+sword2 = soya.Body(scene,sword_model)
+sword2.ode = True
+sword2.x = 1.0
+sword2.z = -3
+
+blade = soya.BoxedMass(0.05,50,5,1)
+pommeau = soya.SphericalMass(10,0.5)
+pommeau.translate((2,0,0))
 sword.mass = blade+pommeau
 
-joint = soya.BallJoint(sword)
+blade2 = soya.BoxedMass(0.015,50,5,1)
+blade2.translate((1,0,0))
+sword2.mass = blade2
+
+joint1 = soya.HingeJoint(sword2)
+joint2 = soya.HingeJoint(sword,sword2)
 
 
 
 def v (x,y,z):
 	return soya.Vector(sword,x,y,z)
-sword.add_force(v(10,200,0),v(25,0.001,0.002))
-sword.add_force(v(0,60,0),v(0,25,0.5))
-sword.add_force(v(0,0,-2303*5),v(-25,0.0001,0.0001))
+sword2.add_force(v(-10,50,0),v(2,0.01,0.02))
+sword.add_force(v(10,50,0),v(2,0.01,0.02))
 
-scene.turn_x = 34
-scene.turn_y = 23
-scene.turn_z = 12
 
 light = soya.Light(scene)
 light.set_xyz(0, 0, 15)
 
 camera = soya.Camera(scene)
-camera.set_xyz(1,1,15)
+camera.set_xyz(10,1,2)
+camera.look_at(sword)
+camera.rotate_y(50)
+camera.rotate_x(10)
 
 
 scene.set_xyz(0.5,0.5,-5)
