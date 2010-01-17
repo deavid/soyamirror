@@ -59,33 +59,31 @@ class Laser(PythonCoordSyst):
 		
 		pos   = self.position()
 		direc = Vector(self, 0.0, 0.0, -1.0)
-		if self.collide:
-			i = 0
+		if not self.collide:
+			pos   = pos + (direc * 32000.0)
+			to_draw.append((pos, None))
+		else:
+			nb_reflect = 0
 			raypicker = self.get_root()
-			while direc is not None and (i <= self.max_reflect):
-				i = i + 1
-
+			while direc is not None and (nb_reflect <= self.max_reflect):
+				nb_reflect = nb_reflect + 1
 				impact = raypicker.raypick(pos, direc, -1.0)
 				if not impact:
-					pos   = pos + (direc * 32000.0)
 					direc = None
+					pos   = pos + (direc * 32000.0)
 				else:
 					pos = impact[0]
 					
-					if self.reflect:
+					if not self.reflect:
+						direc = None
+					else:
 						normal = impact[1] % self
 						normal.normalize() # changing coordsys can alterate normal size
 						normal.set_length(-2.0 * direc.dot_product(normal))
 						direc = normal + direc
-						
-					else:
-						direc = None
 				
-				to_draw.append((pos, direct))
+				to_draw.append((pos, direc))
 				self.points.append(pos)
-		else:
-			pos   = pos + (direc * 32000.0)
-			to_draw.append((pos, None))
 
 		#rendering part
 		DEFAULT_MATERIAL.activate()
