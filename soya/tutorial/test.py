@@ -37,9 +37,9 @@ scene = soya.World()
 
 # Create a body class that interpolates between two States.
 
-class InterpolatingBody(soya.Cal3dBody):
+class InterpolatingBody(soya.Body):
 	def __init__(self, parent = None, model = None):
-		soya.Cal3dBody.__init__(self, parent, soya.AnimatedModel.get("balazar"))
+		soya.Body.__init__(self, parent, soya.AnimatedModel.get("balazar"))
 		
 		# Create two State objects, based on the current position of 'self'.
 		
@@ -49,18 +49,18 @@ class InterpolatingBody(soya.Cal3dBody):
 		self.factor = 0.0
 		
 	def advance_time(self, proportion):
-		soya.Cal3dBody.advance_time(self, proportion)
+		soya.Body.advance_time(self, proportion)
 		
 		self.factor += 0.01 * proportion
 		
 		# interpolate(state1, state2, factor) interpolates between state1 and state2.
 		
 		self.interpolate(self.state1, self.state2, self.factor)
-		print 
-		print self.state1.matrix
-		print self.state2.matrix
-		print self.matrix
-		print 
+		#print
+		#print self.state1.matrix
+		#print self.state2.matrix
+		#print self.matrix
+		#print
 
 
 body = InterpolatingBody(scene, soya.cube.Cube(None).to_model())
