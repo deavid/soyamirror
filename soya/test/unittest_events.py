@@ -62,12 +62,11 @@ class CoalesceTC(TestCase):
 
 class EventsTC(SoyaTestCase):
 
-
 	def test_queue_event(self):
 		self.main_loop.queue_event(DOWN_LEFT)
 		self.run_soya_rounds()
-		self.assertIn(DOWN_LEFT, self.main_loop.raw_events)
-		self.assertIn(DOWN_LEFT, self.main_loop.events)
+		self.assertTrue(DOWN_LEFT in self.main_loop.raw_events)
+		self.assertTrue(DOWN_LEFT in self.main_loop.events)
 
 	def test_no_coalesced(self):
 		input_ev = [DOWN_LEFT, MOUSE_MOTION_1, DOWN_A]
