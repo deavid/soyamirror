@@ -208,9 +208,11 @@ cdef class SimpleSpace(_Space):
 
 	cdef _create(self):
 		cdef dSpaceID parent_id
+		cdef void* tmp_buf
 		if self._space is None:
 			parent_id = NULL
 		else:
 			parent_id = <dSpaceID>self._space._OdeGeomID
-		
-		self._OdeGeomID = <dGeomID>dSimpleSpaceCreate(parent_id)
+
+		tmp_buf = dSimpleSpaceCreate(parent_id)		
+		self._OdeGeomID = <dGeomID>tmp_buf

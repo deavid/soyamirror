@@ -31,6 +31,7 @@ cdef int collide_edge(GLfloat *A, GLfloat *B,
 		cdef int n, num_contacts, nA, nB
 		cdef dContactGeom contactA, contactB
 		cdef GeomObject other
+		cdef void* tmp_buf
 
 		# First, do one direction
 		dGeomRaySetLength(_land_ray, _soya.point_distance_to(A, B))
@@ -52,7 +53,8 @@ cdef int collide_edge(GLfloat *A, GLfloat *B,
 				contact.normal[2] = (normalA[2] + normalB[2]) / 2.0
 
 				# Get the depth of the contact point in the colliding geom
-				other = <GeomObject>dGeomGetData(o2)
+				tmp_buf = dGeomGetData(o2)
+				other = <GeomObject>tmp_buf
 				contact.depth = other._point_depth(contact.pos[0], contact.pos[1], 
 																					 contact.pos[2])
 				contact.g1 = o1

@@ -392,7 +392,9 @@ cdef class _TreeModel(_SimpleModel):
 		cdef float*     raydata
 		cdef int        face_index
 		cdef CoordSyst  parent
-		parent  = <CoordSyst> chunk_get_ptr(items)
+		cdef void*      tmp_ptr
+		tmp_ptr = chunk_get_ptr(items)
+		parent  = <CoordSyst> tmp_ptr
 		raydata = parent._raypick_data(data)
 		face_index = chunk_get_int(items)
 		while face_index != -1:
@@ -403,7 +405,9 @@ cdef class _TreeModel(_SimpleModel):
 		cdef float*     raydata
 		cdef int        face_index
 		cdef CoordSyst  parent
-		parent  = <CoordSyst> chunk_get_ptr(items)
+		cdef void*      tmp_ptr
+		tmp_ptr = chunk_get_ptr(items)
+		parent  = <CoordSyst> tmp_ptr
 		raydata = parent._raypick_data(data)
 		face_index = chunk_get_int(items)
 		while face_index != -1:

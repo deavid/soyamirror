@@ -117,6 +117,7 @@ def collide(_Geom geom1, _Geom geom2, int max_contacts=8):
 #U#		cdef int n, num_contacts, nA, nB
 #U#		cdef dContactGeom contactA, contactB
 #U#		cdef _Geom other
+#U#		cdef void* tmp_ptr
 #U#		_land_ray = dCreateRay(NULL, 1.0)#XXX misplaced
 #U#
 #U#		# First, do one direction
@@ -141,7 +142,8 @@ def collide(_Geom geom1, _Geom geom2, int max_contacts=8):
 #U#				contact.normal[2] = (normalA[2] + normalB[2]) / 2.0
 #U#
 #U#				# Get the depth of the contact point in the colliding geom
-#U#				other = <_Geom>dGeomGetData(o2)
+#U#				tmp_ptr = dGeomGetData(o2)
+#U#				other = <_Geom>tmp_ptr
 #U#				contact.depth = other._point_depth(contact.pos[0], contact.pos[1], 
 #U#																					 contact.pos[2])
 #U#				contact.g1 = o1
