@@ -340,5 +340,4 @@
       * soya initialisation now write in the common stdout and stderr
       * Fix font related segfault when soya wasn't initialised
       * Fix Pudding MainLoop (thanks David Martinez)
-      * Work-around for OpenAL bug for absolute sound sources
 
