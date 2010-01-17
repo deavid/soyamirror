@@ -22,15 +22,13 @@ class MainLoop(soya.MainLoop):
 	def __init__(self, *scenes):
 		soya.MainLoop.__init__(self, *scenes)
 
-		self.events = []
 
 	def begin_round(self):
 		""" call soya.pudding.process event and put all events in self.events so the 
 		"game" can handle other events """
 
 		soya.MainLoop.begin_round(self)
-
-		self.events = process_event()
+		process_event(self.raw_events)
 
 	def main_loop(self):
 		""" resize all widgets and start the main_loop """
