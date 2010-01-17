@@ -52,7 +52,7 @@ LIBDIR = [
 	"/opt/local/lib", # For Mac OS X "darwin port"
 	"/usr/X11R6/lib",
 	"/usr/X11/lib",
-	"/sw/lib/", # For Mac OS X
+	"/sw/lib/", # For Mac OS X "fink"
 	#"/System/Library/Frameworks/OpenAL.framework/"
 	]
 	
