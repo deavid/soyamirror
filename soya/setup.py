@@ -60,6 +60,8 @@ COMPILE_ARGS = [
 	"-w",  # with GCC ; disable (Pyrex-dependant) warning
 	"-fsigned-char", # On Mac, char are unsigned by default, contrary to Linux or Windows.
 	]
+LINK_ARGS = [
+	]
 
 
 import os, os.path, sys, glob, distutils.core, distutils.sysconfig
@@ -198,9 +200,8 @@ if "darwin" in sys.platform:
 		LIBS.remove(lib)
 	for framework in FRAMEWORKS:
 		DEFINES.append(('HAS_FRAMEWORK_%s'%framework.upper(),1))
-		#os.environ['CFLAGS']= ('-DHAS_FRAMEWORK_%s '%framework.upper()) + os.environ.get('CFLAGS','')
-		os.environ['CFLAGS']= ('-framework %s '%framework) + os.environ.get('CFLAGS','')
-	os.environ['LDFLAGS']= '-Wl,-dylib_file,/System/Library/Frameworks/OpenGL.framework/Versions/A/Libraries/libGL.dylib:/System/Library/Frameworks/OpenGL.framework/Versions/A/Libraries/libGL.dylib '+os.environ.get('LDFLAGS','')
+		COMPILE_ARGS.append('-DHAS_FRAMEWORK_%s ' % framework.upper())
+		LINK_ARGS += ('-framework', framework)
 
 # Taken from Twisted ; thanks to Christopher Armstrong :
 #   make sure data files are installed in twisted package
@@ -236,17 +237,20 @@ if USE_PYREX:
 		Extension("soya._soya", SOYA_PYREX_SOURCES,
 							include_dirs=INCDIR, library_dirs=LIBDIR,
 							libraries=LIBS, define_macros=DEFINES,
-							extra_compile_args = COMPILE_ARGS, 
+							extra_compile_args = COMPILE_ARGS,
+							extra_link_args = LINK_ARGS,
 							),
 		Extension("soya.opengl",   ["opengl.pyx"],
 							include_dirs=INCDIR, library_dirs=LIBDIR,
 							libraries=LIBS, define_macros=DEFINES,
-							extra_compile_args = COMPILE_ARGS, 
+							extra_compile_args = COMPILE_ARGS,
+							extra_link_args = LINK_ARGS,
 							),
 		Extension("soya.sdlconst", ["sdlconst.pyx"],
 							include_dirs=INCDIR, library_dirs=LIBDIR,
 							libraries=LIBS, define_macros=DEFINES,
-							extra_compile_args = COMPILE_ARGS, 
+							extra_compile_args = COMPILE_ARGS,
+							extra_link_args = LINK_ARGS,
 							),
 		],
 		"cmdclass" : {
