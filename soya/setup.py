@@ -195,7 +195,6 @@ if "darwin" in sys.platform:
 		LIBS.remove(lib)
 	for framework in FRAMEWORKS:
 		DEFINES.append(('HAS_FRAMEWORK_%s'%framework.upper(),1))
-		COMPILE_ARGS.append('-DHAS_FRAMEWORK_%s ' % framework.upper())
 		LINK_ARGS += ('-framework', framework)
 
 # Taken from Twisted ; thanks to Christopher Armstrong :
