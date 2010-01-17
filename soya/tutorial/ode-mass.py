@@ -61,7 +61,6 @@ assert b.mass == m
 m.mass+=3
 assert b.mass < m
 
-sys.exit(0)
 # load a model
 head_model = soya.Model.get("caterpillar_head")
 # instanciate two Body
