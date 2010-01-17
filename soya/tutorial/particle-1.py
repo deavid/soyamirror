@@ -26,7 +26,6 @@ import sys, os, os.path, soya
 from random import random
 from math import sqrt
 from soya import sdlconst
-from soya import particle
 
 soya.init()
 soya.path.append(os.path.join(os.path.dirname(sys.argv[0]), "data"))
@@ -50,23 +49,23 @@ scene = soya.World()
 
 # here we use the built in FireWork system. auto_generate_particle is 
 # on by default so this will continue forever
-#fountain = particle.FlagFirework(scene, nb_particles=4, nb_sub_particles=10)
+#fountain = soya.FlagFirework(scene, nb_particles=4, nb_sub_particles=10)
 
 # this is slightly more dull
 # you will notice that this doesnt automatically set auto_generate_particle
-smoke=particle.Smoke(scene)
+smoke=soya.Smoke(scene)
 
 # here we use the same smoke particle system but set auto_generate_particle
 # so that it continues
-#smoke=particle.Smoke(scene)
+#smoke=soya.Smoke(scene)
 #smoke.auto_generate_particle=1
 
 # its also possible to create your own particle systems
 # i dont think you can beat looking at the source file model/particle.pyx
 # for understanding how to do this 
-class MyParticleSystem(particle.Smoke):
+class MyParticleSystem(soya.Smoke):
 	def __init__(self,parent):
-		particle.Particles.__init__(self,parent,nb_max_particles=50)
+		soya.Particles.__init__(self,parent,nb_max_particles=50)
 		self.set_colors((1.0, 1.0, 1.0, 1.0), (1.0, 0.0, 0.0,0.5),(1.0,1.0,0.,0.5),(0.5,0.5,0.5,0.5),(0.,0.,0.,0.5))
 		self.set_sizes ((0.19, 0.19), (0.35, 0.35))
 		self.auto_generate_particle=1
