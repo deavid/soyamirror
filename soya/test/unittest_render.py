@@ -53,7 +53,7 @@ class ScreenShotTC(SoyaTestCase):
 
 		# Screenshot in back buffer
 		soya.set_root_widget(self.red_camera)
-		soya.render(False)
+		soya.render(swap_buffer=False)
 		screenshot = soya.screenshot(use_back_buffer=True)
 		self.assertEquals(screenshot.getpixel((0,0)),(255, 0, 0))
 
@@ -65,7 +65,7 @@ class ScreenShotTC(SoyaTestCase):
 
 		# Screenshot in back buffer
 		soya.set_root_widget(self.red_camera)
-		soya.render(False)
+		soya.render(swap_buffer=False)
 
 		# Front buffer didn't changed
 		screenshot = soya.screenshot()
