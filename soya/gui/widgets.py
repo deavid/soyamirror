@@ -273,7 +273,8 @@ class RootLayer(Layer):
 		Layer.resize(self, x, y, width, height)
 		
 	def begin_round(self):
-		self.process_event(soya.process_event())
+		events = soya.MAIN_LOOP.raw_events
+		self.process_event(events)
 		if self.widgets_needing_resize:
 			for widget in self.widgets_needing_resize:
 				widget.resize(self.x, self.y, self.width, self.height)
