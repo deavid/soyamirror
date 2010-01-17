@@ -5,10 +5,11 @@ from soya import coalesce_motion_event
 DOWN_LEFT =  (KEYDOWN, K_LEFT, None) # add a valid modifier
 DOWN_A =  (KEYDOWN, K_a, None) # add a valid modifier
 
-MOUSE_MOTION_1   =  (MOUSEMOTION, 43, -35, 23, -20)
-MOUSE_MOTION_2   =  (MOUSEMOTION, 50, -30,  7,   5)
+MOUSE_MOTION_1   =  (MOUSEMOTION, 43, -35, 23, -20, 0)
+MOUSE_MOTION_1_C   =  (MOUSEMOTION, 43, -35, 23, -20)
+MOUSE_MOTION_2   =  (MOUSEMOTION, 50, -30,  7,   5, 0)
 MOUSE_MOTION_2_C =  (MOUSEMOTION, 50, -30, 30, -15)
-MOUSE_MOTION_3   =  (MOUSEMOTION, 45, -25, -5,   5)
+MOUSE_MOTION_3   =  (MOUSEMOTION, 45, -25, -5,   5, 0)
 MOUSE_MOTION_3_C =  (MOUSEMOTION, 45, -25, 25, -10)
 
 class CoalesceTC(TestCase):
@@ -38,7 +39,7 @@ class CoalesceTC(TestCase):
 	def test_mouse_single(self):
 		"""test that coalesce_motion_event don't alter list with a single
 		mouse motion event"""
-		self._assert_unaltered( [MOUSE_MOTION_1] )
+		self._assert_in_out( [MOUSE_MOTION_1], [MOUSE_MOTION_1_C] )
 
 	def test_mouse_double(self):
 		"""test that coalesce_motion_event don't alter list with two
@@ -70,7 +71,7 @@ class EventsTC(SoyaTestCase):
 
 	def test_no_coalesced(self):
 		input_ev = [DOWN_LEFT, MOUSE_MOTION_1, DOWN_A]
-		expected = [DOWN_LEFT, DOWN_A, MOUSE_MOTION_1]
+		expected = [DOWN_LEFT, DOWN_A, MOUSE_MOTION_1_C]
 		for event in input_ev:
 			self.main_loop.queue_event(event)
 		self.run_soya_rounds()

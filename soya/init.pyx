@@ -423,8 +423,11 @@ This is usefull since only the last one is usually releavant. The relative
 motion data is updated. The last mouse motion events is put at the very end of
 the list.
 
+In the process the last data event[5] about which button are pressed during the
+event is **lost** as it could not be coalesced efficiently.
+
 EVENTS should be a list of events, as returned by soya.process_event().
-The returned list has the same structure."""
+The returned list has the same structure except for the last data."""
 	# XXX Warning ???
 	return _coalesce_motion_event(events)
 

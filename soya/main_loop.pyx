@@ -284,8 +284,9 @@ Called by MainLoop.main_loop when rendering is needed; default implementation ca
 		Those events are all the yet unfetched event since the last fetch. In
 		general case, it means since the very beginning of the previous round.
 
-		Take note that Mouse motion have been coalesced. If you what them all, see
-		the raw_event property."""
+		Take note that Mouse motion have been coalesced, loosing the
+		pressed button informations. If you what them all, or need the
+		pressed button information see the raw_event property."""
 		def __get__(self):
 			return self._events
 
