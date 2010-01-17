@@ -27,7 +27,7 @@ class ScreenShotTC(SoyaTestCase):
 		self.blue_camera.look_at(self.blue_cube)
 
 		self.red_cube.set_xyz( 5, 0 , 0)
-		self.red_camera.set_xyz( 5, 10, 0)
+		self.red_camera.set_xyz( 5, 0, 1.1)
 		self.red_camera.look_at(self.red_cube)
 
 		self.light.set_xyz(0., 0., 20.)
@@ -43,7 +43,8 @@ class ScreenShotTC(SoyaTestCase):
 		screenshot = soya.screenshot()
 		self.assertEquals(screenshot.getpixel((0,0)),(255, 0, 0))
 
-	def test_render_back(self):
+	def test_render_back_read(self):
+		"""Test that rendering made without switching back buffer are accessible with screenshot"""
 		# Screenshot in front buffer
 		soya.set_root_widget(self.blue_camera)
 		soya.render()
@@ -55,6 +56,16 @@ class ScreenShotTC(SoyaTestCase):
 		soya.render(False)
 		screenshot = soya.screenshot(use_back_buffer=True)
 		self.assertEquals(screenshot.getpixel((0,0)),(255, 0, 0))
+
+	def test_render_does_not_alter(self):
+		"""Test that rendering in the back buffer doesn't alter the front one."""
+		# Screenshot in front buffer
+		soya.set_root_widget(self.blue_camera)
+		soya.render()
+
+		# Screenshot in back buffer
+		soya.set_root_widget(self.red_camera)
+		soya.render(False)
 
 		# Front buffer didn't changed
 		screenshot = soya.screenshot()
