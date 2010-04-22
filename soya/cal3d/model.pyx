@@ -1330,7 +1330,7 @@ cdef class _AnimatedModelData(_ModelData):
 			self._vertex_ok = 1
 	
 	cdef void _batch               (self, _Body body): self._model._batch(body)
-	cdef void _render              (self, _Body body): self._model._render(coord_syst)
+	cdef void _render              (self, _Body body): self._model._render(body)
 	cdef int  _shadow              (self, CoordSyst coord_syst, _Light light): return self._model._shadow(coord_syst, light)
 	cdef void _get_box             (self, float* box, float* matrix): self._model._get_box(box, matrix)
 	cdef void _raypick             (self, RaypickData raypick_data, CoordSyst raypickable):        self._model._raypick  (raypick_data, raypickable)

@@ -264,7 +264,7 @@ Detaching several meshes at the same time can be faster."""
 Only for Body associated with a AnimatedModel.
 
 Checks if the mesh called MESH_NAME is attached to the body."""
-		if self._data: return self._data._is_attached(mesh_names)
+		if self._data: return self._data._is_attached(mesh_name)
 		return 0
 		
 	def attach_to_bone(self, CoordSyst coordsyst, bone_name):

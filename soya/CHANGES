@@ -323,7 +323,7 @@
     * When re-starting a MainLoop, define it as the current MainLoop
       (aka. soya.MAIN_LOOP)
 
-* January 2009 :
+* January 2009 : Soya3D 0.15rc1
     * ODE 10 compatibility (required)
     * New collide property for lazer.
     * Quiet mode for soya initialisation and quit

@@ -379,8 +379,8 @@ portal.beyond from memory (with 'portal.beyond = None')."""
 		return self._beyond._raypick_b(raypick_data, raypickable, category)
 	
 	cdef void _collect_raypickables(self, Chunk* items, float* rsphere, float* sphere, int category):
-		if self._option & OBJECT_NON_SOLID: return
-
+		if self._option & NON_SOLID: return
+		
 		cdef CoordSyst child
 		cdef float* matrix
 		cdef float  s[4]

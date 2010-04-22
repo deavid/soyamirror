@@ -236,7 +236,7 @@ cdef class _World(_Body):
 		else:
 			if self._model is obj: return 1
 			for child in self.children:
-				if child._contains(model): return 1
+				if child._contains(obj): return 1
 		return 0
 	
 	# XXX TODO (e.g. using sphere_from_spheres)
@@ -590,9 +590,7 @@ Turns the world into a Model (a solid optimized / compiled model).
 See World.model_builder and ModelBuilder if you want to customize this process (e.g. for using
 trees, cell-shading or shadow)."""
 		if self.model_builder is None: return _DEFAULT_MODEL_BUILDER._to_model(self)
-		else:                      return self._model_builder   ._to_model(self)
-		if self.shapifier is None: return _DEFAULT_SHAPIFIER._shapify(self)
-		else:                      return self._shapifier   ._shapify(self)
+		else:                          return self._model_builder   ._to_model(self)
 		
 		
 	### ODE STUFF

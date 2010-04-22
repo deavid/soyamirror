@@ -238,7 +238,6 @@ cdef class Renderer:
 		# end of OpenGL rendering
 		glDepthMask(GL_TRUE)
 		glDisable(GL_BLEND)
-		if self.engine_option & FX_INITED: fx_advance_time()
 		# auto-reset renderer
 		self._reset()
 		
