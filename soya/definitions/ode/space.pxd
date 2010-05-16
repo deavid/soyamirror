@@ -6,5 +6,6 @@ cdef class _Space(_Geom):
 	
 	#cdef void _create(self, _Space space)
 	
-cdef class SimpleSpace(_Space)
+cdef class SimpleSpace(_Space):
+	pass
 	#cdef void _create(self, _Space space)

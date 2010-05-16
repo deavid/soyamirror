@@ -438,7 +438,6 @@ def get_screen_height(): return renderer.screen_height
 
 
 cdef class _DisplayList(_CObj):
-	cdef int _id
 	property id:
 		def __get__(self):
 			if self._id == 0: self._id = glGenLists(1)

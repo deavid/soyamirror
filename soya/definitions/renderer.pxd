@@ -76,5 +76,6 @@ cdef class Renderer:
 	cdef void _render_shadows(self)
 
 
-cdef class _DisplayList(_CObj)
+cdef class _DisplayList(_CObj):
+	cdef int _id
 

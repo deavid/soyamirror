@@ -1,8 +1,13 @@
-cdef class _PrimitiveGeom(_PlaceableGeom)
-cdef class GeomSphere(_PrimitiveGeom)
-cdef class GeomBox(_PrimitiveGeom)
-cdef class GeomCapsule(_PrimitiveGeom)
-cdef class GeomCylinder(_PrimitiveGeom)
+cdef class _PrimitiveGeom(_PlaceableGeom):
+	pass
+cdef class GeomSphere(_PrimitiveGeom):
+	pass
+cdef class GeomBox(_PrimitiveGeom):
+	pass
+cdef class GeomCapsule(_PrimitiveGeom):
+	pass
+cdef class GeomCylinder(_PrimitiveGeom):
+	pass
 
 
 #cdef class GeomPlan(_Geom):

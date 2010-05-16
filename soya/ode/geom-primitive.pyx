@@ -4,8 +4,6 @@
 
 # GeomSphere
 
-cdef class _PrimitiveGeom(_PlaceableGeom):
-	pass
 cdef class GeomSphere(_PrimitiveGeom):
 		"""Sphere geometry.
 
