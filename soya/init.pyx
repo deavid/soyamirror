@@ -189,17 +189,6 @@ cdef void base_quit():
 	if not soya.quiet:
 		sys.stdout.write("* Soya3D * Quit...\n")
 	
-	# renderer
-	#P3_list_dealloc(terrain_tri_recycler)
-	#free(NULL_packs)
-	# fx
-	if renderer.engine_option & FX_INITED: fx_quit()
-	# chunks
-	#for (i = 0; i < chunks->nb; i++)
-	#  P3_chunk_dealloc ((P3_chunk*) P3_list_get (chunks, i));
-	#P3_list_dealloc(chunks)
-	
-	
 	if SHADOW_DISPLAY_LIST != -1:
 		glDeleteLists(SHADOW_DISPLAY_LIST, 1)
 		chunk_dealloc(SHADOW_TESS_CHUNK)

@@ -770,7 +770,7 @@ It also resets the cycle animation time : i.e. cycles will restart from their be
 	#		dBodyAddRelForce(self._OdeBodyID,x,y,z)
 		
 	# addTorque
-	def add_torque(self,_Vector torque,_Point pos=None):
+	def add_torque(self,_Vector torque):
 		"""addTorque(t)
 
 		Add an external torque t given in absolute coordinates.
@@ -783,14 +783,7 @@ It also resets the cycle animation time : i.e. cycles will restart from their be
 		if not (self._option & BODY_HAS_ODE): self._activate_ode_body()
 		
 		torque._into(self._ode_parent, t)
-		if pos is None:
-			dBodyAddTorque(self._OdeBodyID, t[0], t[1], t[2])
-		else:
-			pos._into(self.ode_parent,p)
-			dBodyAddTorqueAtPos(t[0],t[1],t[2],p[0],p[1],p[2])
-
-		#dBodyAddTorque(self._OdeBodyID, t[0], t[1], t[2])
-
+		dBodyAddTorque(self._OdeBodyID, t[0], t[1], t[2])
 	
 
 	property force:
