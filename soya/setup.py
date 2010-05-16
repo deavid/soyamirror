@@ -101,6 +101,7 @@ if build_ext_pyrex and build_ext_cython:
     build_ext = build_ext_pyrex
     if '--cython' in sys.argv:
         build_ext = build_ext_cython
+        sys.argv.remove('--cython')
 elif build_ext_pyrex:
     build_ext = build_ext_pyrex
 elif build_ext_cython:
