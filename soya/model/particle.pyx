@@ -124,7 +124,7 @@ cdef class _Particles(CoordSyst):
 				
 	property removable:
 		def __get__(self):
-			return self._option & REMOVABLE
+			return self._option & PARTICLES_REMOVABLE
 		def __set__(self, int x):
 			if x: self._option = self._option |  PARTICLES_REMOVABLE
 			else: self._option = self._option & ~PARTICLES_REMOVABLE

@@ -894,9 +894,9 @@ and if the angle between their 2 faces is < ANGLE."""
 					((face.option & FACE_TRIANGLE) or (self._vertex_options[face.v[3]] & VERTEX_INVISIBLE))):
 				return
 				 
-			if ((self._vertex_options[face.v[0]] & P3_VERTEX_ALPHA) or
-					(self._vertex_options[face.v[1]] & P3_VERTEX_ALPHA) or
-					(self._vertex_options[face.v[2]] & P3_VERTEX_ALPHA) or
+			if ((self._vertex_options[face.v[0]] & VERTEX_ALPHA) or
+					(self._vertex_options[face.v[1]] & VERTEX_ALPHA) or
+					(self._vertex_options[face.v[2]] & VERTEX_ALPHA) or
 					((face.option & FACE_QUAD) and (self._vertex_options[face.v[3]] & VERTEX_ALPHA))):
 				
 				pack_batch_face(pack_get_alpha(face.pack), face, 0)

@@ -702,7 +702,7 @@ You MUST call this method after the terrain have been modified manually
 		self._nb_patch_width = <int> ((self._nb_vertex_width - 1) / self._patch_size)
 		self._nb_patch_depth = <int> ((self._nb_vertex_depth - 1) / self._patch_size)
 		self._nb_patchs = self._nb_patch_width * self._nb_patch_depth
-		if self._patchs != NULL: self.patchs._free_patchs()
+		if self._patchs != NULL: self._free_patchs()
 		self._patchs = <TerrainPatch*> malloc(self._nb_patchs * sizeof(TerrainPatch))
 		k = 0
 		for j from 0 <= j < self._nb_patch_depth:
