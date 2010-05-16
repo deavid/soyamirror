@@ -30,6 +30,7 @@ UNIVERSAL_BINARY = True #try to build a UB if possible
 
 
 INCDIR = [
+    ".",
 	#"ode-0.5/include",
 	"/usr/include",
 	"/usr/local/include",
@@ -81,16 +82,35 @@ INSTALLING = ("install" in sys.argv[1:]) and not ("--help" in sys.argv[1:])
 SDISTING = ("sdist" in sys.argv[1:]) and not ("--help" in sys.argv[1:])
 
 MACOSX_DEPLOYMENT_TARGET  = os.getenv('MACOSX_DEPLOYMENT_TARGET')
-try:
-	from Pyrex.Distutils import build_ext
-	USE_PYREX = 1
-except ImportError:
-	USE_PYREX = 0
-	print "No Pyrex found"
 
-if USE_PYREX: print "Pyrex compilation enabled!"
-else:          print "Pyrex compilation disabled."
-	
+# auto-detect cython, pyrex
+try:
+    from Cython.Distutils import build_ext as build_ext_cython
+except ImportError:
+    build_ext_cython = None
+
+try:
+    from Pyrex.Distutils import build_ext as build_ext_pyrex
+except ImportError:
+    build_ext_pyrex = None
+
+build_ext = None
+
+if build_ext_pyrex and build_ext_cython:
+    # prefere pyrex over cython
+    build_ext = build_ext_pyrex
+    if '--cython' in sys.argv:
+        build_ext = build_ext_cython
+elif build_ext_pyrex:
+    build_ext = build_ext_pyrex
+elif build_ext_cython:
+    build_ext = build_ext_cython
+
+if build_ext:
+    print build_ext.__module__.split('.')[0], "found - compilation enabled"
+else:
+    print "Pyrex/Cython not found - compilation disabled"
+
 # env hack as pyrex change this variable
 if MACOSX_DEPLOYMENT_TARGET is None:
 	os.environ.pop('MACOSX_DEPLOYMENT_TARGET',None)
@@ -217,7 +237,7 @@ def do(command):
 		
 	
 	
-if USE_PYREX:
+if build_ext:
 	# make pyrex recompile the soya module if any of the .pyx files have changed
 	# should probably recurse directories
 	# much nicer than having to use --force
