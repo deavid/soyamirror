@@ -102,7 +102,7 @@ coordinates TEX_X and TEX_Y, and the given DIFFUSE and EMISSIVE colors."""
 		self._emissive = emissive
 		
 	cdef void _render(self, CoordSyst coord_syst):
-		cdef float coords[3]
+		cdef float coords[3], emissive[4]
 		glTexCoord2f(self._tex_x, self._tex_y)
 		if not self._diffuse  is None:
 			# this call doesnt seem to work. model.pyx uses glColor so used again here 
@@ -110,7 +110,8 @@ coordinates TEX_X and TEX_Y, and the given DIFFUSE and EMISSIVE colors."""
 			# using glColor4fv(<float*>self._diffuse) doesnt work 
 			glColor4f(self._diffuse[0], self._diffuse[1], self._diffuse[2], self._diffuse[3])
 		if not self._emissive is None:
-			glMaterialfv(GL_FRONT, GL_EMISSION, <float*> self._emissive)
+			emissive[0], emissive[1], emissive[2], emissive[3] = self._emissive
+			glMaterialfv(GL_FRONT, GL_EMISSION, emissive)
 		if coord_syst is None: glVertex3fv(self._matrix)
 		else:
 			self._into(coord_syst, coords)
