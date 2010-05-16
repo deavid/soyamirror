@@ -37,7 +37,7 @@ cdef class _Model(_CObj):
 ctypedef struct DisplayList:
 	int      option
 	int      id
-	intptr_t material_id # it is a pointer - should be long not to fail on AMD64
+	uintptr_t material_id # it is a pointer - should be long not to fail on AMD64
 	int*     faces_id
 	Chunk*   chunk # Only used for initialization of the DisplayList
 	

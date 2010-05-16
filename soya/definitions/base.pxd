@@ -267,7 +267,7 @@ cdef extern from "matrix.h":
 
 cdef struct _Pack: # See material.pyx for doc and comments
 	int       option
-	intptr_t  material_id # it is a pointer - should be long not to fail on AMD64
+	uintptr_t  material_id # it is a pointer - should be long not to fail on AMD64
 	_Pack*    alpha
 	_Pack*    secondpass
 	CList*    batched_faces

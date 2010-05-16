@@ -165,7 +165,7 @@ cdef class _SimpleModel(_Model):
 		cdef int        i
 		cdef ModelFace* face
 		cdef            material_id2index
-		cdef intptr_t   ptr
+		cdef uintptr_t   ptr
 		material_id2index = {}
 		for i from 0 <= i < len(self._materials):
 			ptr = id(self._materials[i]) # Required for Python 2.4
