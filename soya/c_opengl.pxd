@@ -1425,9 +1425,16 @@ cdef extern from "include_glew.h":
 	
 	cdef void glewInit()
 	cdef GLboolean glewGetExtension(char* name)
-
+	cdef GLboolean glewIsSupported(char* name)
+	
 	# Shaders
-
+	int GLEW_ARB_vertex_program
+	int GLEW_ARB_fragment_program
+	
+	int GL_PROGRAM_STRING_ARB
+	int GL_PROGRAM_ERROR_STRING_ARB
+	int GL_PROGRAM_ERROR_POSITION_ARB
+	int GL_PROGRAM_FORMAT_ASCII_ARB
 	int GL_PROGRAM_OBJECT_ARB
 	int GL_SHADER_OBJECT_ARB
 	int GL_OBJECT_TYPE_ARB
@@ -1469,6 +1476,7 @@ cdef extern from "include_glew.h":
 	int GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS_ARB
 	int GL_OBJECT_ACTIVE_ATTRIBUTES_ARB
 	int GL_OBJECT_ACTIVE_ATTRIBUTE_MAX_LENGTH_ARB
+	int GL_VERTEX_PROGRAM_ARB
 	int GL_FRAGMENT_PROGRAM_ARB
 	int GL_PROGRAM_ALU_INSTRUCTIONS_ARB
 	int GL_PROGRAM_TEX_INSTRUCTIONS_ARB
@@ -1484,17 +1492,23 @@ cdef extern from "include_glew.h":
 	int GL_MAX_PROGRAM_NATIVE_TEX_INDIRECTIONS_ARB
 	int GL_MAX_TEXTURE_COORDS_ARB
 	int GL_MAX_TEXTURE_IMAGE_UNITS_ARB
-
-	cdef void glGetObjectParameterivARB(GLhandleARB object, GLenum pname, GLint *params)
-	cdef void glGetInfoLogARB(GLhandleARB object, GLsizei maxLength, GLsizei *length, GLchar *infoLog)
-	cdef void glShaderSourceARB(GLhandleARB shader, GLsizei nstrings, GLchar** strings, GLint *lengths)
-	cdef void glCompileShaderARB(GLhandleARB shader)
-	cdef GLhandleARB glCreateShaderObjectARB(GLenum shaderType)
-	cdef void glAttachObjectARB(GLhandleARB program, GLhandleARB shader)
-	cdef void glDetachObjectARB(GLhandleARB program, GLhandleARB shader)
-	cdef void glLinkProgramARB(GLhandleARB program)
-	cdef void glDeleteObjectARB(GLhandleARB object)
-
-
+	
+	# cdef void glGetObjectParameterivARB(GLhandleARB object, GLenum pname, GLint *params)
+	# cdef void glGetInfoLogARB(GLhandleARB object, GLsizei maxLength, GLsizei *length, GLchar *infoLog)
+	# cdef void glShaderSourceARB(GLhandleARB shader, GLsizei nstrings, GLchar** strings, GLint *lengths)
+	# cdef void glCompileShaderARB(GLhandleARB shader)
+	# cdef GLhandleARB glCreateShaderObjectARB(GLenum shaderType)
+	# cdef void glAttachObjectARB(GLhandleARB program, GLhandleARB shader)
+	# cdef void glDetachObjectARB(GLhandleARB program, GLhandleARB shader)
+	# cdef void glLinkProgramARB(GLhandleARB program)
+	# cdef void glDeleteObjectARB(GLhandleARB object)
+	
+	cdef void glGenProgramsARB(GLsizei n, GLuint* ids)
+	cdef void glBindProgramARB(GLenum target, GLuint id)
+	cdef void glProgramStringARB(GLenum target, GLenum format, GLsizei len, char* string)
+	cdef void glDeleteProgramsARB(GLsizei n, GLuint* ids)
+	cdef void glProgramEnvParameter4fARB(GLenum target, GLuint index, GLfloat v0, GLfloat v1, GLfloat v2, GLfloat v3)
+	cdef void glProgramLocalParameter4fARB(GLenum target, GLuint index, GLfloat v0, GLfloat v1, GLfloat v2, GLfloat v3)
+	cdef void glGetProgramStringARB(GLenum target, GLenum pname, void* string)
 	
 	#cdef void init_advanced_opengl()

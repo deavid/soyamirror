@@ -18,7 +18,7 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 
-cdef class _Deform(_ModelData):
+cdef class _BaseDeform(_ModelData):
 	cdef _Model _model
 	cdef _Model _data
 	cdef int    _option
@@ -30,8 +30,16 @@ cdef class _Deform(_ModelData):
 	cdef void _begin_round(self)
 	cdef void _advance_time(self, float proportion)
 	
+	
+cdef class _Deform(_BaseDeform):
 	cdef _deform_points(self, float* coords, float* r, int nb)
 	cdef _deform_point (self, float* coord, float* r)
 	
+
+
+cdef class _ShaderDeform(_BaseDeform):
+	cdef _ARBShaderProgram _shader
+	cdef object            _params
 	
+
 

@@ -260,7 +260,7 @@ Raise ValueError if the file is not found in soya.path."""
 	get = classmethod(get)
 	
 	def load(klass, filename):
-		"""SavedInAPath.get(filename)
+		"""SavedInAPath.load(filename)
 
 Loads the object of this class with the given FILENAME attribute.
 Contrary to get, load ALWAYS returns a new object.
@@ -1126,6 +1126,25 @@ Returns the list of the filename all the objects available in the current path."
 class DisplayList(_soya._DisplayList):
 	pass
 
+class ARBShaderProgram(SavedInAPath, _soya._ARBShaderProgram):
+	DIRNAME = "shaders"
+	_alls = weakref.WeakValueDictionary()
+	
+	def load(klass, filename):
+		dirname  = klass._get_directory_for_loading_and_check_export(filename, ext = "")
+		filename = filename.replace("/", os.sep)
+		code = open(os.path.join(dirname, klass.DIRNAME, filename), "r").read()
+		if   code.startswith("!!ARBfp"): type = soya.SHADER_TYPE_FRAGMENT
+		elif code.startswith("!!ARBvp"): type = soya.SHADER_TYPE_VERTEX
+		else:                            raise ValueError("Unsupported shader file : %s !" % filename)
+		obj = ARBShaderProgram(type, code)
+		obj.loaded()
+		obj.filename = filename
+		return obj
+	load = classmethod(load)
+	
+	def save(klass, filename = None): raise NotImplementedError("Soya cannot save shaders.")
+
 _soya.Image            = Image
 _soya.Material         = Material
 _soya.Model            = Model
@@ -1150,6 +1169,7 @@ _soya.BSPWorld         = BSPWorld
 _soya.Particles        = Particles
 _soya.Mass             = Mass
 _soya.Joint            = Joint
+_soya.ARBShaderProgram = ARBShaderProgram
 
 DEFAULT_MATERIAL = Material()
 DEFAULT_MATERIAL.filename  = "__DEFAULT_MATERIAL__"

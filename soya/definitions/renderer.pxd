@@ -79,3 +79,9 @@ cdef class Renderer:
 cdef class _DisplayList(_CObj):
 	cdef int _id
 
+cdef class _FrameBufferData(_CObj):
+	cdef void* color_data
+	cdef void* depth_data
+	cdef SDL_Surface* surface
+	cdef GLuint _tex_id
+	cdef int x, y, width, height

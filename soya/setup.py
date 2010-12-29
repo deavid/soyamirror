@@ -133,7 +133,7 @@ else:
 	LIBS = ["m", "GLEW", "SDL", "freetype", "cal3d", "stdc++","ode"]
 	FRAMEWORKS=[]
 
-SOYA_PYREX_SOURCES  = ["_soya.pyx", "matrix.c", "chunk.c"]
+SOYA_PYREX_SOURCES  = ["soya._soya.pyx", "matrix.c", "chunk.c"]
 SOYA_C_SOURCES      = ["_soya.c"  , "matrix.c", "chunk.c"]
 
 
@@ -242,11 +242,14 @@ if build_ext:
 	# make pyrex recompile the soya module if any of the .pyx files have changed
 	# should probably recurse directories
 	# much nicer than having to use --force
-	soya_pyx_mtime=os.path.getmtime('_soya.pyx')
+	soya_pyx_mtime=os.path.getmtime('soya._soya.pyx')
 	for f in glob.glob('*.pyx'):
 		if os.path.getmtime(f)>soya_pyx_mtime:
-			os.utime('_soya.pyx',None)
+			os.utime('soya._soya.pyx',None)
 			break
+
+	#SOYA_PYREX_SOURCES.remove('_soya.pyx')
+	#SOYA_PYREX_SOURCES.insert(0, 'soya._soya.pyx')
 	KARGS = {
 		"ext_modules" : [
 		Extension("soya._soya", SOYA_PYREX_SOURCES,
@@ -282,7 +285,7 @@ else:
 	print "This is OK as long as you don't modify Soya sources."
 	print
 	
- 
+	
 	KARGS = {
 		"ext_modules" : [
 		Extension("soya._soya", SOYA_C_SOURCES,

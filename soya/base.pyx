@@ -61,6 +61,7 @@ CAN_USE_TEX_BORDER = 1
 cdef Renderer renderer
 
 cdef GLint MAX_LIGHTS, MAX_CLIP_PLANES, MAX_TEXTURES, MAX_TEXTURE_SIZE
+cdef int HAS_SHADER
 
 def get_max_texture_size():
 	return MAX_TEXTURE_SIZE

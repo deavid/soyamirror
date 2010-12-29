@@ -49,7 +49,8 @@ scene = soya.World()
 
 # You can also use cal3d.parse_cfg_file(filename).
 
-sorcerer_model = soya.AnimatedModel.get("balazar")
+#sorcerer_model = soya.AnimatedModel.get("balazar")
+sorcerer_model = soya.AnimatedModel.get("MoCap3")
 
 # You can get the list of available mesh and animation names
 # as following:
@@ -70,7 +71,7 @@ sorcerer.rotate_y(-120.0)
 
 # Starts playing the animation called "marche" in cycle ("marche" is the French for walk).
 
-sorcerer.animate_blend_cycle("marche")
+sorcerer.animate_blend_cycle("Action")
 
 # To stop playing the animation:
 #

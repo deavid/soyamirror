@@ -195,23 +195,23 @@ cdef class _Body(CoordSyst):
 	def __repr__(self):
 		return "<%s, model=%s>" % (self.__class__.__name__, self._model)
 	
-	def add_deform(self, _Deform deform):
+	def add_deform(self, _BaseDeform deform):
 		if not deform._model is None:
 			raise ValueError("This Deform object is already used by another Body! Please create a new Deform!")
 		
 		deform._set_model(self._data)
 		self._data = deform
 		
-	def remove_deform(self, _Deform deform):
-		cdef _Model model
-		cdef _Deform previous
+	def remove_deform(self, _BaseDeform deform):
+		cdef _Model      model
+		cdef _BaseDeform previous
 		
 		if self._data is deform:
 			self._data = deform._model
 		else:
 			model    = self._data
 			previous = self._data
-			while model and isinstance(model, _Deform):
+			while model and isinstance(model, _BaseDeform):
 				if model is deform:
 					previous._set_model(deform._model)
 					break
@@ -226,10 +226,10 @@ cdef class _Body(CoordSyst):
 		def __get__(self):
 			deforms = []
 			cdef _Model model
-			cdef _Deform deform
+			cdef _BaseDeform deform
 			
 			model = self._data
-			while model and isinstance(model, _Deform):
+			while model and isinstance(model, _BaseDeform):
 				deform = model
 				deforms.insert(0, deform)
 				model = deform._model
@@ -659,7 +659,7 @@ It also resets the cycle animation time : i.e. cycles will restart from their be
 
 		#deformation stuff
 		if self._data: self._data._advance_time(proportion)
-			
+		
 	property linear_velocity:
 		def __set__(self,_Vector vel):
 			cdef float v[3]

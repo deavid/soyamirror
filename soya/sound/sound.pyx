@@ -116,6 +116,7 @@ Returns the global sound volume, a value between 0.0 (no sound) and 1.0 (default
 cdef float _ear_old_pos[3]
 cdef void _update_sound_listener_position(CoordSyst ear, float proportion):
 	if ear._option & COORDSYS_STATIC: return
+	if proportion == 0: return
 	
 	cdef float pos[6]
 	cdef float v[3]
@@ -124,9 +125,9 @@ cdef void _update_sound_listener_position(CoordSyst ear, float proportion):
 	ear._out(pos)
 	alListenerfv(AL_POSITION, pos)
 	alGetListenerfv(AL_POSITION, pos)
-	
+
 	if MAIN_LOOP is None: dt = proportion * 0.030
-	else:             dt = proportion * MAIN_LOOP.round_duration
+	else:                 dt = proportion * MAIN_LOOP.round_duration
 	alListener3f(AL_VELOCITY,
 							 (pos[0] - _ear_old_pos[0]) / dt,
 							 (pos[1] - _ear_old_pos[1]) / dt,

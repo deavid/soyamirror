@@ -182,7 +182,6 @@ cdef class Renderer:
 		cdef _World  world
 		cdef _Light  light
 		
-		#renderer.frustums = get_chunk()
 		renderer.frustums.nb = 0
 		
 		# RENDERING STEP 1 : BATCH
@@ -448,3 +447,196 @@ cdef class _DisplayList(_CObj):
 			glDeleteLists(self._id, 1)
 			self._id = -1
 
+# cdef class _FrameBufferData(_CObj):
+# 	def __init__(self):
+# 		cdef int red, green, blue, alpha, depth
+# 		glGetIntegerv(GL_RED_BITS  , &red)
+# 		glGetIntegerv(GL_GREEN_BITS, &green)
+# 		glGetIntegerv(GL_BLUE_BITS , &blue)
+# 		glGetIntegerv(GL_ALPHA_BITS, &alpha)
+# 		bbp = max(red, green, blue, alpha)
+# 		if   bpp <  8: bpp =  8
+# 		elif bpp < 16: bpp = 16
+# 		elif bpp < 32: bpp = 32
+# 		elif bpp < 64: bpp = 64
+		
+# 		self.color_data = malloc(3 * bpp * renderer.screen_width * renderer.screen_height)
+		
+# 		glGetIntegerv(GL_DEPTH_BITS, &depth)
+# 		bpp = depth
+# 		if   bpp <  8: bpp =  8
+# 		elif bpp < 16: bpp = 16
+# 		elif bpp < 32: bpp = 32
+# 		elif bpp < 64: bpp = 64
+		
+# 		self.depth_data = malloc(    depth * renderer.screen_width * renderer.screen_height)
+		
+# 	def __dealloc__(self):
+# 		free(self.color_data)
+# 		free(self.depth_data)
+		
+# 	def capture(self, int x = 0, int y = 0, int width = 0, int height = 0):
+# 		width  = width  or renderer.screen_width
+# 		height = height or renderer.screen_height
+# 		glReadBuffer(GL_BACK)
+# 		glReadPixels(x, y, width, height, GL_RGB, GL_UNSIGNED_BYTE, self.color_data)
+# 		glReadPixels(x, y, width, height, GL_DEPTH_COMPONENT, GL_FLOAT, self.depth_data)
+		
+# 	def restore(self, int x = 0, int y = 0, int width = 0, int height = 0):
+# 		width  = width  or renderer.screen_width
+# 		height = height or renderer.screen_height
+		
+# 		glDisable(GL_TEXTURE_2D)
+# 		glDisable(GL_LIGHTING)
+# 		glDisable(GL_ALPHA_TEST)
+# 		glDisable(GL_DEPTH_TEST)
+		
+# 		glRasterPos2i(x, y)
+# 		glDrawPixels(width, height, GL_RGB, GL_UNSIGNED_BYTE, self.color_data)
+# 		glDrawPixels(width, height, GL_DEPTH_COMPONENT, GL_FLOAT, self.depth_data)
+		
+# 		glEnable(GL_LIGHTING)
+# 		glEnable(GL_DEPTH_TEST)
+		
+# cdef class _FrameBufferData(_CObj):
+# 	def __init__(self):
+# 		cdef int depth
+# 		glGetIntegerv(GL_DEPTH_BITS, &depth)
+# 		bpp = depth
+# 		if   bpp <  8: bpp =  8
+# 		elif bpp < 16: bpp = 16
+# 		elif bpp < 32: bpp = 32
+# 		elif bpp < 64: bpp = 64
+		
+# 		self.depth_data = malloc(    depth * renderer.screen_width * renderer.screen_height)
+# 		self.surface = NULL
+		
+# 	def __dealloc__(self):
+# 		pass
+	
+# 	def capture(self, int x = 0, int y = 0, int width = 0, int height = 0):
+# 		width  = width  or renderer.screen_width
+# 		height = height or renderer.screen_height
+# 		glReadBuffer(GL_BACK)
+# 		glReadPixels(x, y, width, height, GL_DEPTH_COMPONENT, GL_FLOAT, self.depth_data)
+
+# 		cdef SDL_Rect rect
+# 		rect.x = 0
+# 		rect.y = 0
+# 		rect.w = 1
+# 		rect.h = 1
+		
+# 		if self.surface != NULL:
+# 			SDL_FreeSurface(self.surface)
+			
+# 		self.surface = SDL_DisplayFormat(renderer.screen);
+# 		print renderer.screen != self.surface
+		
+# 	def restore(self, int x = 0, int y = 0, int width = 0, int height = 0):
+# 		width  = width  or renderer.screen_width
+# 		height = height or renderer.screen_height
+		
+# 		glDisable(GL_TEXTURE_2D)
+# 		glDisable(GL_LIGHTING)
+# 		glDisable(GL_ALPHA_TEST)
+# 		glDisable(GL_DEPTH_TEST)
+		
+# 		glRasterPos2i(x, y)
+# 		glDrawPixels(width, height, GL_DEPTH_COMPONENT, GL_FLOAT, self.depth_data)
+		
+# 		glEnable(GL_LIGHTING)
+# 		glEnable(GL_DEPTH_TEST)
+		
+# 		cdef SDL_Rect rect
+# 		rect.x = x
+# 		rect.y = y
+# 		rect.w = width
+# 		rect.h = height
+# 		SDL_BlitSurface(self.surface, &rect, renderer.screen, &rect);
+
+
+cdef class _FrameBufferData(_CObj):
+	def __init__(self):
+		cdef int depth
+		glGetIntegerv(GL_DEPTH_BITS, &depth)
+		bpp = depth
+		if   bpp <  8: bpp =  8
+		elif bpp < 16: bpp = 16
+		elif bpp < 32: bpp = 32
+		elif bpp < 64: bpp = 64
+		
+		self.depth_data = malloc(    depth * renderer.screen_width * renderer.screen_height)
+		self.surface = NULL
+		
+	def __dealloc__(self):
+		pass
+	
+	def capture(self, int x = 0, int y = 0, int width = 0, int height = 0):
+		glFlush()
+
+		self.x = x
+		self.y = y
+		self.width  = power_of_2(width  or renderer.screen_width )
+		self.height = power_of_2(height or renderer.screen_height)
+		glReadBuffer(GL_BACK)
+		glReadPixels(self.x, self.y, self.width, self.height, GL_DEPTH_COMPONENT, GL_FLOAT, self.depth_data)
+		
+		glGenTextures(1, &(self._tex_id))
+		glPushAttrib(GL_TEXTURE_BIT)
+		glBindTexture(GL_TEXTURE_2D, self._tex_id)
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR)
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR)
+		glCopyTexImage2D(GL_TEXTURE_2D,
+										 0,
+										 GL_RGBA,
+										 self.x, self.y,
+										 self.width, self.height,
+										 0,
+										 )
+		glPopAttrib()
+		
+	def restore(self):
+		width  = width  or renderer.screen_width
+		height = height or renderer.screen_height
+		
+		glDisable(GL_TEXTURE_2D)
+		glDisable(GL_LIGHTING)
+		glDisable(GL_ALPHA_TEST)
+		glDisable(GL_DEPTH_TEST)
+		glDisable(GL_FOG)
+		glDisable(GL_CULL_FACE)
+		
+		glRasterPos2i(self.x, self.y)
+		glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE)
+		glDrawPixels(self.width, self.height, GL_DEPTH_COMPONENT, GL_FLOAT, self.depth_data)
+		glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE)
+		
+		global _DEFAULT_MATERIAL
+		_DEFAULT_MATERIAL.activate()
+		
+		glEnable(GL_TEXTURE_2D)
+		glBindTexture(GL_TEXTURE_2D, self._tex_id)
+		glDepthMask(GL_FALSE)
+		glPushMatrix()
+		glLoadIdentity()
+		glMatrixMode(GL_PROJECTION)
+		glPushMatrix()
+		glLoadIdentity()
+		glOrtho(0.0, renderer.screen_width, 0.0, renderer.screen_height, -1.0, 1.0)
+		
+		glBegin(GL_QUADS)
+		glTexCoord2f(0.0, 0.0); glVertex2i(self.x             , self.y)
+		glTexCoord2f(0.0, 1.0); glVertex2i(self.x             , self.y + self.height)
+		glTexCoord2f(1.0, 1.0); glVertex2i(self.x + self.width, self.y + self.height)
+		glTexCoord2f(1.0, 0.0); glVertex2i(self.x + self.width, self.y)
+		glEnd()
+		glPopMatrix()
+		glMatrixMode(GL_MODELVIEW)
+		glPopMatrix()
+		glDisable(GL_TEXTURE_2D)
+		
+		glEnable(GL_CULL_FACE)
+		glEnable(GL_FOG)
+		glEnable(GL_LIGHTING)
+		glEnable(GL_DEPTH_TEST)
+		

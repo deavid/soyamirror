@@ -1,4 +1,4 @@
-#LyX 1.6.4 created this file. For more info see http://www.lyx.org/
+#LyX 1.6.5 created this file. For more info see http://www.lyx.org/
 \lyxformat 345
 \begin_document
 \begin_header
@@ -6441,8 +6441,15 @@ a
  open your texture.
  Finally, position the UV coordinates by moving the vertex of the triangle
  or quad over the texture (NB if Blender does not show UV coordinates in
- the UV/image editor window, click on the Mesh -> UV Unwrap -> Reset menu
- in the 3D editor window).
+ the UV/image editor window, click on the UV Texture 
+\begin_inset Quotes eld
+\end_inset
+
+New
+\begin_inset Quotes erd
+\end_inset
+
+ button in the Mesh panel).
 \end_layout
 
 \begin_layout Standard

@@ -225,7 +225,7 @@ def set_gamma(float r_gamma,float g_gamma,float b_gamma):
 				sys.stderr.write(s + '\n')
 				raise RuntimeError(s)
 
-def set_video(int width, int height, int fullscreen, int resizable, int quiet=False):
+def set_video(int width, int height, int fullscreen, int resizable, int quiet = False, int sdl_blit = 0, int additional_flags = 0):
 	cdef int stencil, bits_per_pixel
 	#cdef unsigned int flags
 	cdef int flags
@@ -245,7 +245,8 @@ def set_video(int width, int height, int fullscreen, int resizable, int quiet=Fa
 	# Under Win32, ChangeDisplaySettings can change the bpp.
 	
 	bits_per_pixel = info.vfmt.BitsPerPixel
-	flags = <int>SDL_OPENGL | <int>SDL_GL_DOUBLEBUFFER | <int>SDL_HWPALETTE
+	flags = <int>SDL_OPENGL | <int>SDL_GL_DOUBLEBUFFER | <int>SDL_HWPALETTE | additional_flags
+	if sdl_blit: flags |= SDL_OPENGLBLIT
 	if fullscreen == 0: renderer.engine_option = renderer.engine_option & ~FULLSCREEN
 	else:
 		renderer.engine_option = renderer.engine_option |  FULLSCREEN
@@ -302,7 +303,10 @@ def set_video(int width, int height, int fullscreen, int resizable, int quiet=Fa
 	if not quiet:
 		sys.stdout.write(" [OK]\n")
 	
-		
+	init_shader()
+	if HAS_SHADER: sys.stdout.write("* Soya * Shaders are supported.\n")
+	else:          sys.stdout.write("* Soya * No shader support (GL_ARB_vertex_program or GL_ARB_fragment_program extension missing).\n")
+	
 	glViewport(0, 0, renderer.screen_width, renderer.screen_height)
 	glMatrixMode(GL_PROJECTION)
 	glLoadIdentity()
@@ -315,7 +319,7 @@ def set_video(int width, int height, int fullscreen, int resizable, int quiet=Fa
 		root_widget.resize(0, 0, renderer.screen_width, renderer.screen_height)
 		
 		
-cdef void init_video(char* title, int width, int height, int fullscreen, int resizable, int quiet):
+cdef void init_video(char* title, int width, int height, int fullscreen, int resizable, int quiet, int sdl_blit, int additional_flags):
 	import sys
 	if sys.platform == "darwin":
 		if not quiet:
@@ -327,13 +331,11 @@ cdef void init_video(char* title, int width, int height, int fullscreen, int res
 		s = "Could not initialize SDL : %s" % SDL_GetError()
 		sys.stderr.write(s + '\n')
 		raise RuntimeError(s)
-	set_video(width, height, fullscreen, resizable, quiet)
+	set_video(width, height, fullscreen, resizable, quiet, sdl_blit, additional_flags)
 	if title != NULL: SDL_WM_SetCaption(title, NULL)
 
 
-#def init(title = "Soya 3D", int width = 640, int height = 480, int fullscreen = 0, int resizeable = 1, int create_surface = 1, int sound = 0, sound_device = "'( ( devices '( native esd sdl alsa arts null ) ) )", int sound_frequency = 44100, float sound_reference_distance = 1.0, float sound_doppler_factor = 0.01):
-#	"""init(title = "Soya 3D", width = 640, height = 480, fullscreen = 0, resizeable = 1, create_surface = 1, sound = 0, sound_device = "'( ( devices '( native esd sdl alsa arts null ) ) )", sound_frequency = 44100, sound_reference_distance = 1.0, sound_doppler_factor = 0.01)
-def init(title = "Soya 3D", int width = 640, int height = 480, int fullscreen = 0, int resizeable = 1, int create_surface = 1, int sound = 0, sound_device = "", int sound_frequency = 44100, float sound_reference_distance = 1.0, float sound_doppler_factor = 0.01, int quiet=False):
+def init(title = "Soya 3D", int width = 640, int height = 480, int fullscreen = 0, int resizeable = 1, int create_surface = 1, int sound = 0, sound_device = "", int sound_frequency = 44100, float sound_reference_distance = 1.0, float sound_doppler_factor = 0.01, int quiet=False, int sdl_blit = 0, int additional_flags = 0):
 	"""init(title = "Soya 3D", width = 640, height = 480, fullscreen = 0, resizeable = 1, create_surface = 1, sound = 0, sound_device = "", sound_frequency = 44100, sound_reference_distance = 1.0, sound_doppler_factor = 0.01, quiet=False)
 
 Inits Soya 3D and display the 3D view.
@@ -355,7 +357,7 @@ SOUND_DOPPLER_FACTOR can be used to increase or decrease the Doppler effect."""
 	if not(renderer.engine_option & INITED):
 		base_init()
 		if create_surface:
-			init_video(title, width, height, fullscreen, resizeable, quiet)
+			init_video(title, width, height, fullscreen, resizeable, quiet, sdl_blit, additional_flags)
 		init_joysticks()
 		init_gl()
 		glewInit()
@@ -557,3 +559,24 @@ def get_mouse_rel_pos():
 
 	return (x,y)
 
+
+cdef void init_shader():
+	# Glew inits everything, thank !
+	# Newer glewIsSupported does not work ???
+	#if glewIsSupported("GL_ARB_vertex_program") and glewIsSupported("GL_ARB_fragment_program"):
+	if glewGetExtension("GL_ARB_vertex_program") and glewGetExtension("GL_ARB_fragment_program"):
+		HAS_SHADER = 1
+	else:
+		HAS_SHADER = 0
+		
+	# glGenProgramsARB             = (PFNGLGENPROGRAMSARBPROC)wglGetProcAddress("glGenProgramsARB");
+	# glDeleteProgramsARB          = (PFNGLDELETEPROGRAMSARBPROC)wglGetProcAddress("glDeleteProgramsARB");
+	# glBindProgramARB             = (PFNGLBINDPROGRAMARBPROC)wglGetProcAddress("glBindProgramARB");
+	# glProgramStringARB           = (PFNGLPROGRAMSTRINGARBPROC)wglGetProcAddress("glProgramStringARB");
+	# glProgramEnvParameter4fARB   = (PFNGLPROGRAMENVPARAMETER4FARBPROC)wglGetProcAddress("glProgramEnvParameter4fARB");
+	# glProgramLocalParameter4fARB = (PFNGLPROGRAMENVPARAMETER4FARBPROC)wglGetProcAddress("glProgramLocalParameter4fARB");
+	
+	# if (glGenProgramsARB == NULL) or (glDeleteProgramsARB == NULL) or (glBindProgramARB == NULL) or (glProgramStringARB == NULL) or (glProgramEnvParameter4fARB == NULL) or (glProgramLocalParameter4fARB == NULL):
+	# 	HAS_SHADER = 0
+	# else:
+	# 	HAS_SHADER = 1

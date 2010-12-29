@@ -43,7 +43,6 @@ cdef class _Camera(CoordSyst):
 		self._init_frustum()
 		
 	cdef __getcstate__(self):
-		#return struct.pack("<iffffffffffffffffffffff", self._option, self._matrix[0], self._matrix[1], self._matrix[2], self._matrix[3], self._matrix[4], self._matrix[5], self._matrix[6], self._matrix[7], self._matrix[8], self._matrix[9], self._matrix[10], self._matrix[11], self._matrix[12], self._matrix[13], self._matrix[14], self._matrix[15], self._matrix[16], self._matrix[17], self._matrix[18], self._front, self._back, self._fov), self._to_render
 		cdef Chunk* chunk
 		chunk = get_chunk()
 		chunk_add_int_endian_safe   (chunk, self._option)
@@ -55,7 +54,6 @@ cdef class _Camera(CoordSyst):
 	
 	cdef void __setcstate__(self, cstate):
 		self._validity = COORDSYS_INVALID
-		#self._option, self._matrix[0], self._matrix[1], self._matrix[2], self._matrix[3], self._matrix[4], self._matrix[5], self._matrix[6], self._matrix[7], self._matrix[8], self._matrix[9], self._matrix[10], self._matrix[11], self._matrix[12], self._matrix[13], self._matrix[14], self._matrix[15], self._matrix[16], self._matrix[17], self._matrix[18], self._front, self._back, self._fov = struct.unpack("<iffffffffffffffffffffff", cstate[0])
 		cstate2, self._to_render = cstate
 		
 		cdef Chunk* chunk

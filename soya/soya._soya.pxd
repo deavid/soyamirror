@@ -69,6 +69,7 @@ include "definitions/model/sprite.pxd"
 include "definitions/model/particle.pxd"
 include "definitions/model/terrain.pxd"
 include "definitions/model/model_builder.pxd"
+include "definitions/model/shader.pxd"
 include "definitions/model/deform.pxd"
 
 

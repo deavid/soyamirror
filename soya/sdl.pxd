@@ -25,6 +25,10 @@ cdef extern from "SDL/SDL_endian.h":
 SDL_ALLEVENTS = 0xFFFFFFFF
 
 cdef extern from "SDL/SDL.h":
+	ctypedef struct SDL_Rect:
+		unsigned short      x, y
+		unsigned short      w, h
+		
 	ctypedef struct SDL_Surface
 	ctypedef struct SDL_Joystick
 	ctypedef struct SDL_PixelFormat:
@@ -133,6 +137,7 @@ cdef extern from "SDL/SDL.h":
 	int SDL_ENABLE
 	int SDL_DISABLE
 	int SDL_OPENGL
+	int SDL_OPENGLBLIT
 	int SDL_HWACCEL
 	int SDL_HWSURFACE
 	int SDL_SWSURFACE
@@ -196,7 +201,11 @@ cdef extern from "SDL/SDL.h":
 	int             SDL_GetRelativeMouseState(int *x, int *y)
 	SDL_GrabMode    SDL_WM_GrabInput(SDL_GrabMode mode)
 	int             SDL_EnableUNICODE(int enable)
-
+	int             SDL_BlitSurface(SDL_Surface* src, SDL_Rect* src_rect, SDL_Surface* dest, SDL_Rect* dest_rect)
+	SDL_Surface*    SDL_DisplayFormat(SDL_Surface* src)
+	SDL_Surface*    SDL_CreateRGBSurface(int flag, int width, int height, int bpp, int r, int g, int b, int a)
+	void            SDL_FreeSurface(SDL_Surface* surface)
+	
 	ctypedef enum SDL_eventaction:
 		SDL_ADDEVENT
 		SDL_PEEKEVENT
@@ -453,3 +462,4 @@ cdef extern from "SDL/SDL.h":
 	int SDLK_POWER
 	int SDLK_EURO
 	int SDLK_UNDO
+
